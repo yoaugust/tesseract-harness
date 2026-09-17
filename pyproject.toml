@@ -255,6 +255,11 @@ dictation = [
     # rather than riding whichever extra happens to pull it in.
     "numpy>=1.24,<3",
 ]
+# Local spoken replies for mobile voice mode. Kokoro 0.9.x currently supports
+# Python 3.10-3.12; the route advertises unavailable on Python 3.13 installs.
+voice = [
+    "kokoro>=0.9.4,<1; python_version < '3.13'",
+]
 # Cursor SDK harness (`harness: cursor`). Optional like antigravity: the
 # harness imports the cursor-sdk lazily on first turn, so only `--harness
 # cursor` users need this extra (`omnigent[cursor]`). Was a baseline dependency;

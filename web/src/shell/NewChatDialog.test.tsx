@@ -2776,7 +2776,7 @@ describe("NewChatLandingScreen", () => {
     const actions = screen.getByTestId("new-chat-landing-actions");
     const landingContent = screen.getByTestId("new-chat-landing").firstElementChild;
 
-    expect(screen.getByTestId("new-chat-landing")).toHaveClass("pb-24");
+    expect(screen.getByTestId("new-chat-landing")).toHaveClass("pb-20", "md:pb-24");
     expect(landingContent).toHaveClass("max-w-[800px]", "md:px-10");
     expect(composerSurface.firstElementChild).toBe(workspaceControls);
     expect(workspaceControls).toContainElement(workspace);

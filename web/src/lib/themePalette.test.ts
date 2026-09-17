@@ -180,12 +180,12 @@ describe("themePalette", () => {
     expect(solarized?.tokens.dark.shellBackground).toBe("#002b36");
   });
 
-  it("keeps tesseract's text selection on the brand tint, not the neutral primary", () => {
+  it("keeps Tesseract's text selection on the brand tint", () => {
     const omni = PALETTES.find((palette) => palette.id === "omni")!;
-    expect(omni.tokens.light.selectionBackground).toBe("rgba(240, 1, 150, 0.1)");
-    expect(omni.tokens.light.selectionForeground).toBe("#651249");
-    expect(omni.tokens.dark.selectionBackground).toBe("rgba(240, 1, 150, 0.15)");
-    expect(omni.tokens.dark.selectionForeground).toBe("#f9a8d4");
+    expect(omni.tokens.light.selectionBackground).toBe("rgba(217, 35, 55, 0.13)");
+    expect(omni.tokens.light.selectionForeground).toBe("#821525");
+    expect(omni.tokens.dark.selectionBackground).toBe("rgba(239, 51, 76, 0.2)");
+    expect(omni.tokens.dark.selectionForeground).toBe("#ffb2bc");
   });
 
   it.each(PALETTES)("keeps $label selected text readable and its highlight visible", (palette) => {

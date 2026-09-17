@@ -107,6 +107,8 @@ interface ChatHeaderProps {
   sidebarOpen: boolean;
   /** Open the left sidebar. */
   onOpenSidebar: (peek?: boolean) => void;
+  /** Hide the redundant phone toggle when another persistent sessions control is visible. */
+  hideMobileSidebarToggle?: boolean;
   /** Whether the active session is a sub-agent (appends its identity). */
   isChildSession: boolean;
   /**
@@ -302,6 +304,7 @@ function PendingHeaderActions({ isMobile }: { isMobile: boolean }) {
 export function ChatHeader({
   sidebarOpen,
   onOpenSidebar,
+  hideMobileSidebarToggle = false,
   isChildSession,
   subAgentName,
   conversationId,
@@ -330,7 +333,7 @@ export function ChatHeader({
 }: ChatHeaderProps) {
   // Dwell on the toggle for 400ms to peek the sidebar; leaving before then cancels
   // the pending peek so a quick pass-over never opens it. Peek is a desktop
-  // hover affordance — on mobile the toggle just opens the full-screen overlay,
+  // hover affordance — on mobile the toggle opens the sessions bottom sheet,
   // so a tap's synthetic pointerenter must not trigger it.
   const isMobile = useIsMobileViewport();
   const { trackClick } = useOmnigentAnalytics();
@@ -587,6 +590,7 @@ export function ChatHeader({
                 // reopen a collapsed sidebar.
                 className={cn(
                   "chat-header-sidebar-toggle text-muted-foreground hover:text-foreground max-md:size-11 md:size-6",
+                  hideMobileSidebarToggle && "max-md:hidden",
                   MOBILE_GLASS_PILL,
                 )}
                 onPointerEnter={onPeekSidebar}

@@ -2771,22 +2771,28 @@ describe("Sidebar move-to-project action", () => {
 });
 
 describe("Sidebar mobile overlay background", () => {
-  it("keeps the opaque bg-card-solid override for the mobile full-screen overlay", () => {
+  it("keeps the shared glass surface instead of forcing an opaque mobile override", () => {
     mockConversations(THREE_TYPE_CONVERSATIONS);
     renderSidebar();
 
     const aside = screen.getByRole("complementary", { name: "Conversations" });
-    // On mobile the sidebar is a fixed full-screen overlay ON TOP of the
-    // chat. Its desktop look uses the translucent glass --card (60% alpha
-    // in dark mode) + backdrop blur, but WebKit/Safari drops the blur as
-    // soon as a Radix popper (the row kebab menu) opens — and never
-    // repaints it — so the chat bled through the overlay. The fix pins an
-    // opaque background below the md breakpoint. If this assertion fails,
-    // the override was removed and the Safari mobile bleed-through is back.
-    expect(aside.className).toContain("max-md:bg-card-solid");
-    // Desktop keeps the glass treatment: base bg-card must stay alongside
-    // the mobile override (removing it would kill the desktop frosted look).
+    // The Tesseract shell uses a translucent sidebar at every breakpoint;
+    // index.css strengthens the fill and blur on phones so the drawer remains
+    // readable without losing the shared glass treatment.
+    expect(aside.className).not.toContain("max-md:bg-card-solid");
     expect(aside.className).toMatch(/(^| )bg-card( |$)/);
+  });
+
+  it("presents sessions as a bottom sheet with an explicit exit arrow", () => {
+    const onClose = vi.fn();
+    mockConversations(THREE_TYPE_CONVERSATIONS);
+    renderSidebar(true, "/", undefined, undefined, [], onClose);
+
+    const aside = screen.getByRole("complementary", { name: "Conversations" });
+    expect(aside).toHaveClass("max-md:top-auto", "max-md:h-[82dvh]", "translate-y-0");
+
+    fireEvent.click(screen.getByTestId("sidebar-mobile-close"));
+    expect(onClose).toHaveBeenCalledOnce();
   });
 });
 

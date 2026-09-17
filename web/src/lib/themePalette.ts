@@ -4,11 +4,11 @@
 //
 //   1. MODE  — light / dark / system, owned by next-themes (toggles the
 //      `.dark` class on <html>; see components/theme/ThemeProvider.tsx).
-//   2. PALETTE — the color scheme (Omni pink, GitHub, Vercel, …), owned here.
+//   2. PALETTE — the color scheme (Tesseract red, GitHub, Vercel, …), owned here.
 //
 // A palette is applied as a `data-theme` attribute on <html>, so it composes
 // with the mode class: `:root:not(.dark)[data-theme="github"]` is GitHub-light
-// and `.dark[data-theme="github"]` is GitHub-dark. The default "omni" palette
+// and `.dark[data-theme="github"]` is GitHub-dark. The default Tesseract palette
 // carries no data attribute, so selecting it restores the brand look. Everything
 // is expressed through the existing CSS custom properties (--background,
 // --primary, --sidebar, …), so a palette re-skins the whole app without any
@@ -43,7 +43,7 @@ export type ThemePalette = (typeof themePalettes)[number];
 export const themeSelections = [...themePalettes, "custom"] as const;
 export type ThemeSelection = (typeof themeSelections)[number];
 
-/** Default palette: the Omni brand tokens already defined in `:root` / `.dark`. */
+/** Default palette: the Tesseract brand tokens already defined in `:root` / `.dark`. */
 export const DEFAULT_PALETTE: ThemePalette = "omni";
 
 /** A few representative colors used to render a palette's preview swatch. */
@@ -213,85 +213,85 @@ export const PALETTES: readonly PaletteMeta[] = [
   {
     id: "omni",
     label: "tesseract",
-    blurb: "The signature pink brand look.",
+    blurb: "Carbon black with a precise signal-red accent.",
     light: {
-      bg: "#fdf7fb",
+      bg: "#faf8f8",
       card: "#ffffff",
-      accent: "#df3c85",
-      border: "#e8ecf0",
-      text: "#11171c",
+      accent: "#d92337",
+      border: "#e7dfe1",
+      text: "#181416",
     },
-    dark: { bg: "#160e24", card: "#28223a", accent: "#df3c85", border: "#2a2440", text: "#f4f5f7" },
+    dark: { bg: "#08090b", card: "#151518", accent: "#ef334c", border: "#29292e", text: "#f5f4f4" },
     tokens: {
       light: paletteTokens({
-        background: "#ffffff",
-        foreground: "#27272a",
-        card: "#ffffff",
+        background: "#faf9f9",
+        foreground: "#211c1e",
+        card: "rgba(255, 255, 255, 0.72)",
         cardSolid: "#ffffff",
-        popoverForeground: "#11171c",
-        primary: "#11171c",
+        popover: "rgba(255, 255, 255, 0.92)",
+        popoverForeground: "#181416",
+        primary: "#d92337",
         primaryForeground: "#ffffff",
-        // Selection is the brand tint that also marks the sidebar's active
-        // row, not an opaque primary block (near-black on this palette).
-        selectionBackground: "rgba(240, 1, 150, 0.1)",
-        selectionForeground: "#651249",
-        secondary: "#eceef1",
-        muted: "#0000000f",
-        mutedForeground: "#71717a",
-        codeBackground: "#0000000f",
-        accent: "#d7edfe",
-        accentForeground: "#04355d",
-        border: "#e4e4e7",
-        borderStrong: "#a1a1aa",
-        buttonBorder: "#d6d6d6",
-        ring: "#11171c",
-        brandAccent: "#df3c85",
-        sidebar: "#fdfafa",
-        sidebarPrimary: "#2272b4",
-        sidebarRing: "#2272b4",
-        sidebarActive: "rgba(240, 1, 150, 0.1)",
-        sidebarActiveForeground: "#651249",
-        sidebarBackground: "linear-gradient(90deg, #fffefe, #fcf6fa)",
-        shellBackground: "var(--background)",
+        selectionBackground: "rgba(217, 35, 55, 0.13)",
+        selectionForeground: "#821525",
+        secondary: "#eee9ea",
+        muted: "rgba(33, 28, 30, 0.06)",
+        mutedForeground: "#756d70",
+        codeBackground: "rgba(33, 28, 30, 0.07)",
+        accent: "rgba(217, 35, 55, 0.09)",
+        accentForeground: "#9f1b2b",
+        border: "#e7dfe1",
+        borderStrong: "#a69b9e",
+        buttonBorder: "#d8cfd1",
+        ring: "#d92337",
+        brandAccent: "#d92337",
+        sidebar: "rgba(250, 249, 249, 0.54)",
+        sidebarPrimary: "#d92337",
+        sidebarRing: "rgba(217, 35, 55, 0.5)",
+        sidebarActive: "rgba(217, 35, 55, 0.1)",
+        sidebarActiveForeground: "#9f1b2b",
+        sidebarBackground: "rgba(250, 249, 249, 0.42)",
+        shellBackground:
+          "radial-gradient(circle at 18% 0%, rgba(217, 35, 55, 0.055), transparent 34%), #faf9f9",
       }),
       dark: paletteTokens({
-        background: "#0e1013",
-        foreground: "oklch(0.965 0.003 240)",
-        card: "rgba(31, 39, 45, 0.6)",
-        cardSolid: "#181f25",
-        popover: "rgba(26, 33, 41, 0.8)",
-        primary: "#e8ecf0",
-        primaryForeground: "#11171c",
-        // pink-300 rather than the sidebar's pink-400 so selected text stays
-        // >= 4.5:1 over the tinted code and muted surfaces.
-        selectionBackground: "rgba(240, 1, 150, 0.15)",
-        selectionForeground: "#f9a8d4",
-        secondary: "#1f272d",
-        secondaryForeground: "#e8ecf0",
-        muted: "color-mix(in srgb, #92a4b3 15%, #262f36)",
-        mutedForeground: "#92a4b3",
-        codeBackground: "oklch(0.38 0.005 240)",
-        accent: "#04355d",
-        accentForeground: "#4299e0",
-        border: "oklch(0.28 0.005 240)",
-        borderStrong: "#a1a1aa",
-        buttonBorder: "#d6d6d6",
-        input: "oklch(0.28 0.005 240)",
-        ring: "#e8ecf0",
-        brandAccent: "#df3c85",
-        sidebar: "rgba(17, 23, 28, 0.75)",
-        sidebarPrimary: "oklch(0.64 0.22 254)",
-        sidebarPrimaryForeground: "oklch(0.12 0.004 240)",
-        sidebarAccent: "oklch(0.245 0.005 240)",
-        sidebarAccentForeground: "oklch(0.965 0.003 240)",
-        sidebarBorder: "oklch(0.28 0.005 240)",
-        sidebarRing: "oklch(0.92 0.003 240 / 0.4)",
-        sidebarActive: "rgba(240, 1, 150, 0.15)",
-        sidebarActiveForeground: "#f472b6",
+        background: "#08090b",
+        foreground: "#f5f4f4",
+        card: "rgba(21, 21, 24, 0.72)",
+        cardSolid: "#151518",
+        tray: "rgba(25, 24, 27, 0.82)",
+        popover: "rgba(18, 18, 21, 0.92)",
+        popoverForeground: "#f5f4f4",
+        primary: "#ef334c",
+        primaryForeground: "#ffffff",
+        selectionBackground: "rgba(239, 51, 76, 0.2)",
+        selectionForeground: "#ffb2bc",
+        secondary: "#1d1d21",
+        secondaryForeground: "#f5f4f4",
+        muted: "rgba(255, 255, 255, 0.075)",
+        mutedForeground: "#a7a0a3",
+        codeBackground: "#1b1b1f",
+        accent: "rgba(239, 51, 76, 0.13)",
+        accentForeground: "#ff8e9d",
+        border: "#29292e",
+        borderStrong: "#57575f",
+        buttonBorder: "#39393f",
+        input: "#2d2d32",
+        ring: "#ef334c",
+        brandAccent: "#ef334c",
+        sidebar: "rgba(8, 9, 11, 0.46)",
+        sidebarPrimary: "#ef334c",
+        sidebarPrimaryForeground: "#ffffff",
+        sidebarAccent: "rgba(255, 255, 255, 0.07)",
+        sidebarAccentForeground: "#f5f4f4",
+        sidebarBorder: "rgba(255, 255, 255, 0.08)",
+        sidebarRing: "rgba(239, 51, 76, 0.55)",
+        sidebarActive: "rgba(239, 51, 76, 0.15)",
+        sidebarActiveForeground: "#ff8e9d",
         sidebarBackground:
-          "linear-gradient(transparent 35%, rgba(92, 48, 108, 0.2)), linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 60%)",
+          "linear-gradient(180deg, rgba(239, 51, 76, 0.045), transparent 38%), rgba(8, 9, 11, 0.46)",
         shellBackground:
-          "radial-gradient(rgba(100, 40, 180, 0.12), transparent 50%), radial-gradient(at 80% 20%, rgba(80, 30, 140, 0.08), transparent 45%), linear-gradient(145deg, #1a0e2d, #0e1418, #130e1b)",
+          "radial-gradient(circle at 16% -8%, rgba(239, 51, 76, 0.12), transparent 34%), radial-gradient(circle at 88% 12%, rgba(133, 17, 34, 0.055), transparent 28%), linear-gradient(145deg, #0d0b0d 0%, #08090b 48%, #0b0b0e 100%)",
       }),
     },
   },

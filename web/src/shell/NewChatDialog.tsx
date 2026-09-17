@@ -285,6 +285,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { PoweredByOmnigent } from "@/components/PoweredByOmnigent";
 import { SkillPills } from "@/components/SkillPills";
 import { ComposerMicButton } from "@/components/ComposerMicButton";
+import { VoiceModeButton } from "@/components/VoiceModeButton";
 import type { CostControlMode } from "@/components/CostRoutingControl";
 import {
   composerSendShortcutKeys,
@@ -4400,14 +4401,14 @@ export function NewChatLandingScreen() {
     }
   }, [pickerLoading, pickerSelectionError, pickerEdits]);
 
-  const canSubmit =
-    message.trim().length > 0 &&
+  const canSubmitConfiguration =
     !pickerLoading &&
     !workspaceLoading &&
     pickerSelectionError === null &&
     selectedAgent != null &&
     (sandboxSelected ? sandboxRepoValid : selectedHost?.status === "online" && workspaceValid) &&
     !creating;
+  const canSubmit = message.trim().length > 0 && canSubmitConfiguration;
 
   // Why submit is disabled, surfaced as the button's tooltip. Checked in the
   // order a user fills the form — location first, then message — so the
@@ -4739,11 +4740,12 @@ export function NewChatLandingScreen() {
     if (!onScreenRef.current) writeLandingDraft(draftRef.current);
   }
 
-  async function handleCreate() {
+  async function handleCreate(voiceMessage?: string) {
     // Mirror the Send button's disabled condition (canSubmit) so the Enter-key
     // and form-submit paths that call this directly can't create a session with
     // a blank message, host, agent, or workspace.
-    if (!canSubmit) return;
+    const submittedMessage = (voiceMessage ?? message).trim();
+    if (!canSubmitConfiguration || !submittedMessage) return;
     // A create is actually happening: report it for pointer clicks (via the
     // form submit) and Enter-key sends alike. After the guard so guarded no-ops
     // don't emit, matching the disabled Start button.
@@ -4859,7 +4861,7 @@ export function NewChatLandingScreen() {
       // prompt the agent actually receives, not the raw textarea value.
       const initialPrompt =
         buildMentionPreamble(mentionedItems, selectedAgent?.harness ?? null) +
-        sanitizeInitialPrompt(message);
+        sanitizeInitialPrompt(submittedMessage);
       // Native terminal agents open terminal-first: `omnigent.ui: terminal`
       // tells the UI to render the terminal wrapper, and `omnigent.wrapper`
       // selects which CLI bridge the runner launches — the values are the
@@ -5319,45 +5321,81 @@ export function NewChatLandingScreen() {
   );
 
   return (
-    // pb-24 lifts the centered hero and composer by 48px for optical balance.
+    // Desktop stays centered; mobile is a compact command surface with its own dock.
     <div
       ref={setLandingSurface}
-      className="relative flex flex-1 items-center justify-center pb-24"
+      className="relative flex flex-1 items-center justify-center pt-6 pb-20 md:pt-0 md:pb-24"
       data-testid="new-chat-landing"
     >
       {/* Padding lives inside the 800px cap, so the composer renders at
           800 − 80 = 720px max on desktop. px-4 on phones (16px gutters)
           keeps the composer from feeling cramped against the viewport
           edges; widens to the full px-10 at the md breakpoint and up. */}
-      <div className="flex w-full max-w-[800px] flex-col items-center px-4 pt-8 pb-16 md:select-none md:px-10">
-        <div className="mb-6 flex w-full flex-col items-center justify-center gap-3.5">
-          {selectedProject ? (
-            // Landing inside a project: swap Otto's eyes for the project's
-            // icon — the default pink folder, or a chosen emoji — and name the
-            // project. Sized to Otto's h-16 box so the centered composer doesn't
-            // shift when toggling between the two landings.
-            <ProjectLandingIcon
-              projectId={configProjectId}
-              projectName={selectedProject}
-              config={storedProjectConfig}
-              // Gate editing until the config resolves: the PATCH replaces the
-              // whole blob, so a write before the name→id and config have loaded
-              // would wipe the project's other defaults. A label-only folder
-              // (`configProjectId === null`) has no first-class config to lose.
-              configReady={
-                !projectListLoading &&
-                (configProjectId === null || storedProjectConfig !== undefined)
-              }
-            />
-          ) : (
-            <BrandLogo variant="eyes" className="h-14 w-auto shrink-0" />
-          )}
-          {selectedProject || heading ? (
-            <h1 className="min-w-0 break-words text-center text-[1.5em] md:text-[2.15em] font-normal tracking-[-0.05em] text-foreground line-clamp-2 sm:text-left">
-              {selectedProject || heading}
-            </h1>
-          ) : null}
-        </div>
+      <div className="flex w-full max-w-[800px] flex-col items-center px-4 pt-6 pb-10 md:select-none md:px-10 md:pt-8 md:pb-16">
+        {isMobileViewport ? (
+          <div className="mobile-command-hero mb-5 flex w-full flex-col items-start gap-3 px-1">
+            <div className="flex w-full items-center justify-between gap-3 text-[11px] font-semibold tracking-[0.11em] uppercase">
+              <span className="text-brand-accent">tesseract remote</span>
+              <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                <span
+                  className={cn(
+                    "size-1.5 rounded-full",
+                    selectedHost?.status === "online" ? "bg-success" : "bg-muted-foreground",
+                  )}
+                />
+                {selectedHost?.status === "online" ? "Computer online" : "Select computer"}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              {selectedProject ? (
+                <ProjectLandingIcon
+                  projectId={configProjectId}
+                  projectName={selectedProject}
+                  config={storedProjectConfig}
+                  configReady={
+                    !projectListLoading &&
+                    (configProjectId === null || storedProjectConfig !== undefined)
+                  }
+                />
+              ) : (
+                <BrandLogo variant="eyes" className="h-9 w-auto shrink-0" />
+              )}
+              <div className="min-w-0">
+                <h1 className="line-clamp-2 break-words text-[1.65rem] leading-tight font-medium tracking-[-0.045em] text-foreground">
+                  {selectedProject || "What should tesseract do?"}
+                </h1>
+                <p className="mt-1 truncate text-sm text-muted-foreground">
+                  {selectedProject
+                    ? `Working in ${selectedProject}`
+                    : selectedHostDisplayName
+                      ? `Ready on ${selectedHostDisplayName}`
+                      : "Choose a computer and send a command"}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="mb-6 flex w-full flex-col items-center justify-center gap-3.5">
+            {selectedProject ? (
+              <ProjectLandingIcon
+                projectId={configProjectId}
+                projectName={selectedProject}
+                config={storedProjectConfig}
+                configReady={
+                  !projectListLoading &&
+                  (configProjectId === null || storedProjectConfig !== undefined)
+                }
+              />
+            ) : (
+              <BrandLogo variant="eyes" className="h-14 w-auto shrink-0" />
+            )}
+            {selectedProject || heading ? (
+              <h1 className="min-w-0 line-clamp-2 break-words text-center text-[2.15em] font-medium tracking-[-0.045em] text-foreground">
+                {selectedProject || heading}
+              </h1>
+            ) : null}
+          </div>
+        )}
         {/* Drop cue, spanning the landing surface. */}
         {isDragActive && landingSurface ? <FileDropOverlay container={landingSurface} /> : null}
         <div
@@ -6314,6 +6352,18 @@ export function NewChatLandingScreen() {
                         setPickedHarness={handleSetPickedHarness}
                       />
                     )}
+                    <VoiceModeButton
+                      busy={creating}
+                      disabled={!canSubmitConfiguration}
+                      replyKey={null}
+                      replyText={null}
+                      onCommand={(text) => {
+                        if (!canSubmitConfiguration) return false;
+                        setMessage(text);
+                        void handleCreate(text);
+                        return true;
+                      }}
+                    />
                     <ComposerMicButton
                       className="size-8 md:size-7"
                       enableHotkey

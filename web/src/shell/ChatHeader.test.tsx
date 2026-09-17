@@ -82,6 +82,7 @@ function renderHeader(props: {
   pending?: boolean;
   mobileMenu?: typeof mobileMenu;
   onOpenSidebar?: (peek?: boolean) => void;
+  hideMobileSidebarToggle?: boolean;
   onFork?: () => void;
 }) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -92,6 +93,7 @@ function renderHeader(props: {
           <ChatHeader
             sidebarOpen={props.sidebarOpen}
             onOpenSidebar={props.onOpenSidebar ?? (() => {})}
+            hideMobileSidebarToggle={props.hideMobileSidebarToggle}
             isChildSession={props.isChildSession ?? false}
             subAgentName={props.subAgentName ?? null}
             // Defaults to no active session: PresenceAvatars / AgentInfoButton /
@@ -231,6 +233,12 @@ describe("ChatHeader — open-sidebar toggle visibility", () => {
     // present. A regression here would hide the only way to reopen the
     // sidebar via pointer.
     expect(screen.getByRole("button", { name: "Open sidebar" })).toBeInTheDocument();
+  });
+
+  it("hides the redundant phone toggle when the mobile command dock is present", () => {
+    renderHeader({ sidebarOpen: false, hideMobileSidebarToggle: true });
+
+    expect(screen.getByRole("button", { name: "Open sidebar" })).toHaveClass("max-md:hidden");
   });
 
   it("cancels the pending peek as soon as the toggle is pressed", () => {

@@ -443,6 +443,18 @@
   background: var(--background);
 }
 
+/* The conversation rail is a layer of the canvas, not a second opaque page.
+ * Palette tokens still choose its tint; blur and saturation keep every built-in
+ * and custom appearance legible without giving up the transparent treatment. */
+:root:not(.dark):not([data-theme]) .conversations-sidebar:not(.is-peek),
+:root:not(.dark)[data-theme] .conversations-sidebar:not(.is-peek),
+.dark:not([data-theme]) .conversations-sidebar:not(.is-peek),
+.dark[data-theme] .conversations-sidebar:not(.is-peek) {
+  background-color: color-mix(in srgb, var(--sidebar) 58%, transparent);
+  backdrop-filter: blur(26px) saturate(128%);
+  -webkit-backdrop-filter: blur(26px) saturate(128%);
+}
+
 /* A desktop peek floats over the chat instead of pushing it aside, so its
  * gradient layers need an opaque base rather than the translucent card color. */
 :root:not(.dark):not([data-theme]) .conversations-sidebar.is-peek,
@@ -462,18 +474,101 @@ html:not(.dark) .conversations-sidebar:not(.is-peek) {
   box-shadow: inset -8px 0 12px -8px rgb(0 0 0 / 5%);
 }
 
-/* Below md the sidebar is a full-screen overlay ON TOP of the chat, so it has
- * to be opaque — the rules above set `background` as a shorthand, which resets
- * background-color and would otherwise let the conversation show through the
- * translucent layers. Restores what Sidebar.tsx's max-md:bg-card-solid does on
- * desktop. Above md the sidebar pushes content aside instead of covering it,
- * so it keeps its translucent canvas there. */
+/* The mobile rail is a focused bottom sheet rather than a desktop sidebar squeezed
+ * down. It keeps a stronger glass fill so the underlying conversation becomes
+ * atmosphere, not competing content. */
 @media (width < 48rem) {
   :root:not(.dark):not([data-theme]) .conversations-sidebar,
   :root:not(.dark)[data-theme] .conversations-sidebar,
   .dark:not([data-theme]) .conversations-sidebar,
   .dark[data-theme] .conversations-sidebar {
-    background-color: var(--card-solid);
+    background: color-mix(in srgb, var(--card-solid) 94%, transparent);
+    border-right: 0;
+    box-shadow: 0 -24px 70px -34px rgb(0 0 0 / 70%);
+    backdrop-filter: blur(30px) saturate(125%);
+    -webkit-backdrop-filter: blur(30px) saturate(125%);
+  }
+
+  .app-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 15rem;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at 50% -30%,
+      color-mix(in srgb, var(--brand-accent) 18%, transparent),
+      transparent 70%
+    );
+    opacity: 0.72;
+  }
+
+  .mobile-command-nav {
+    position: fixed;
+    z-index: 40;
+    right: 1rem;
+    bottom: calc(0.75rem + var(--omnigent-inset-bottom));
+    left: 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 22rem;
+    margin-inline: auto;
+    padding: 0.35rem;
+    border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+    border-radius: 1.1rem;
+    background: color-mix(in srgb, var(--card-solid) 78%, transparent);
+    box-shadow: 0 18px 50px -22px rgb(0 0 0 / 80%);
+    backdrop-filter: blur(28px) saturate(135%);
+    -webkit-backdrop-filter: blur(28px) saturate(135%);
+  }
+
+  .mobile-command-nav-item {
+    display: flex;
+    min-width: 0;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 0.8rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+    font-weight: 550;
+    letter-spacing: -0.01em;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .mobile-command-nav-item[data-active="true"] {
+    color: var(--sidebar-active-foreground);
+    background: var(--sidebar-active);
+  }
+
+  .mobile-command-hero {
+    animation: mobile-command-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  [data-testid="new-chat-landing-composer"] {
+    border-color: color-mix(in srgb, var(--brand-accent) 22%, var(--border));
+    background: color-mix(in srgb, var(--card-solid) 78%, transparent);
+    box-shadow: 0 22px 70px -36px rgb(0 0 0 / 85%);
+    backdrop-filter: blur(22px) saturate(125%);
+    -webkit-backdrop-filter: blur(22px) saturate(125%);
+  }
+
+  [data-testid="new-chat-landing-workspace-controls"] {
+    background: color-mix(in srgb, var(--card-solid) 64%, transparent);
+  }
+}
+
+@keyframes mobile-command-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -804,13 +899,13 @@ aside[aria-label="Workspace"][data-maximized] {
 
 /* Remaining native-shell adjustments are specific to the mobile layout. */
 @media (width < 48rem) {
-  /* Slide animation for the mobile drawer. Covers BOTH paths that move the
+  /* Slide animation for the mobile sheet. Covers BOTH paths that move the
      panel: the edge-swipe drag settles via an inline `transform`, while the
      button toggle (and the drag's resting open/closed state) is driven by
-     Tailwind v4's `translate-x` utilities — which animate the `translate`
+     Tailwind v4's `translate-y` utilities — which animate the `translate`
      property, not `transform`. Listing only `transform` (as before) left the
      toggle un-transitioned, so tapping the collapse/expand button snapped the
-     drawer instantly with no animation. Transition both so the toggle slides
+     sheet instantly with no animation. Transition both so the toggle slides
      too. Suppressed inline (`transition: none`) while a drag is live so the
      overlay tracks the finger 1:1. */
   :is([data-ios-native], [data-android-native]) .conversations-sidebar {
@@ -820,19 +915,16 @@ aside[aria-label="Workspace"][data-maximized] {
     will-change: transform, translate;
   }
 
-  /* Leading-edge shadow so the drawer reads as a native layer lifted above the
-     chat while it slides, instead of a flat sheet. Scoped to the open/dragging
+  /* Top-edge shadow so the sheet reads as a native layer lifted above the
+     chat while it rises. Scoped to the open/dragging
      state via `:not([data-collapsed])` (the sidebar sets `data-collapsed` only
-     when closed) so the drawer doesn't cast a sliver along the screen's left
-     edge while parked off-screen. The drawer stops short of the right edge, so
-     the shadow stays visible while open, separating it from the strip of chat
-     behind. iOS-only: the web overlay is unchanged. */
+     when closed) so it doesn't cast a sliver while parked off-screen. */
   :is([data-ios-native], [data-android-native]) .conversations-sidebar:not([data-collapsed]) {
-    box-shadow: 8px 0 28px -6px rgb(0 0 0 / 0.22);
+    box-shadow: 0 -8px 28px -6px rgb(0 0 0 / 0.22);
   }
 
   .dark :is([data-ios-native], [data-android-native]) .conversations-sidebar:not([data-collapsed]) {
-    box-shadow: 8px 0 30px -4px rgb(0 0 0 / 0.55);
+    box-shadow: 0 -8px 30px -4px rgb(0 0 0 / 0.55);
   }
 
   [data-ios-native] :is(input, textarea, select, [contenteditable="true"]) {
@@ -946,9 +1038,8 @@ aside[aria-label="Workspace"][data-maximized] {
  * Backdrop sampling stops at the sidebar: the `.conversations-sidebar` carries
  * a translate for its slide, which makes it a backdrop root, so the chips frost
  * the drawer's own content rather than the chat behind it — which is what we
- * want. If WebKit drops the filter (it does, once a Radix popper opens — see
- * `max-md:bg-card-solid` on the sidebar), the fill and rim still read as a
- * chip. */
+ * want. If WebKit drops the filter after a Radix popper opens, the fill and
+ * rim still keep the control legible over the translucent drawer. */
 @media (width < 48rem) {
   .sidebar-glass-chip {
     /* Opaque --card-solid base UNDER the glass tint: WebKit drops
@@ -1038,6 +1129,13 @@ aside[aria-label="Workspace"][data-maximized] {
      * documentElement by the Appearance setting / lib/uiFontPreferences.ts)
      * with the system stack as the fallback when it's unset. */
     font-family: var(--ui-font-family, var(--font-sans));
+    font-optical-sizing: auto;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
     /* Keep the desktop rem grid fixed so font preferences cannot resize icons,
      * controls, spacing, or radii. Typography is mapped separately below. */
     font-size: 16px;

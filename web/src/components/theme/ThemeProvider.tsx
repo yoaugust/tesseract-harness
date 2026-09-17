@@ -18,7 +18,7 @@ function NativeThemeSync() {
 /**
  * App-wide theme provider configured for Tailwind's `.dark` class variant.
  *
- * Defaults to system preference and stores explicit user selection under
+ * Defaults to Tesseract's dark presentation and stores explicit user selection under
  * an web-specific key so it does not collide with unrelated local apps
  * on the same host.
  *
@@ -29,7 +29,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="dark"
       enableSystem
       disableTransitionOnChange
       storageKey="web-theme"

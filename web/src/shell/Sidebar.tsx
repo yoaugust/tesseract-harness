@@ -21,6 +21,7 @@ import {
   ArchiveRestoreIcon,
   CheckIcon,
   CheckIcon as CheckMarkIcon,
+  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ClockIcon,
@@ -354,8 +355,8 @@ interface SidebarProps {
   /**
    * Live open fraction (0 = closed, 1 = open) while the iOS shell's left-edge
    * swipe is dragging the sidebar; `null` when not dragging. When set, the
-   * mobile overlay tracks it directly (transition suppressed) so the drawer
-   * follows the finger; on release the parent clears it and toggles `open`,
+   * mobile sheet tracks it directly (transition suppressed); on release the
+   * parent clears it and toggles `open`,
    * letting the CSS transition animate to the resting state.
    */
   dragProgress?: number | null;
@@ -741,7 +742,7 @@ function SidebarImpl({
   const inboxCount = pendingApprovals + unseenComments;
 
   // Row-Link click handler. The Link navigates natively (so modifier/middle
-  // clicks open tabs); we only close the drawer on a plain primary click on
+  // clicks open tabs); we only close the sheet on a plain primary click on
   // mobile. Stable identity (useStableCallback) so it doesn't defeat the row memo.
   const onNavClick = useStableCallback((e: MouseEvent<HTMLAnchorElement>) => {
     if (e.defaultPrevented) return;
@@ -828,8 +829,8 @@ function SidebarImpl({
 
   // Desktop-only drag-to-resize, mirroring the right rail. The width is
   // exposed as a CSS variable consumed by the ``md:w-[var(--sidebar-width)]``
-  // class so it only applies on desktop — on mobile the sidebar is a
-  // full-screen overlay (``fixed inset-0``) and the variable is ignored.
+  // class so it only applies on desktop — on mobile the sidebar is a bottom
+  // sheet and the variable is ignored.
   const { width: sidebarWidth, handleProps: resizeHandleProps } = useResizableSidebar();
 
   // While the iOS edge-swipe is dragging, the overlay is on-screen and
@@ -838,9 +839,9 @@ function SidebarImpl({
   const dragging = dragProgress != null;
   const effectiveOpen = open || dragging || peek;
 
-  // The mobile drawer is a `fixed inset-0` overlay, so the iOS shell-lock
+  // The mobile sheet is fixed-positioned, so the iOS shell-lock
   // (useIOSViewportLock) — which only resizes flow content inside .app-shell —
-  // doesn't lift it above the soft keyboard. Pad the drawer's bottom by the
+  // doesn't lift it above the soft keyboard. Pad the sheet's bottom by the
   // keyboard inset so every session row can still scroll into view while an
   // inline rename holds the keyboard up. No-op off iOS / keyboard closed.
   const keyboardInset = useIOSNativeKeyboardInset(effectiveOpen);
@@ -879,16 +880,12 @@ function SidebarImpl({
 
   return (
     <>
-      {/* Mobile: the drawer stops short of the right edge, leaving a strip of
-      the chat visible; this scrim covers that strip so tapping it dismisses the
-      drawer — the gesture that replaced the collapse icon. Full-bleed and
-      behind the drawer (z-45 vs z-50), so only the strip is actually reachable.
-      Tracks the finger during an edge-swipe drag.
+      {/* Mobile: sessions rise as a bottom sheet. The scrim covers the exposed
+      canvas above it so tapping outside dismisses the sheet. It stays behind
+      the sheet (z-45 vs z-50) and tracks native gesture progress.
 
-      A labeled <button>, not a bare div: with the collapse toggle gone on
-      mobile this is the drawer's only non-navigational way out, so it has to be
-      reachable by keyboard and announced by a screen reader, not just findable
-      by sighted users with a pointer. Parked, it leaves the tab order and the
+      A labeled <button>, not a bare div: the outside-dismiss surface is still
+      reachable by keyboard and announced by a screen reader. Parked, it leaves the tab order and the
       a11y tree via tabIndex/aria-hidden rather than the `inert` the drawer
       uses: React 18 doesn't know `inert` as a boolean attribute and drops it,
       so a focusable control relying on it would stay tabbable while closed.
@@ -938,37 +935,25 @@ function SidebarImpl({
           // shell, where it pushes the card below the traffic lights
           // (see the [data-electron-mac] rules in index.css).
           "conversations-sidebar flex flex-col bg-card md:select-none",
-          // Mobile (default): a fixed drawer that slides in via translate-x
-          // and stops short of the right edge, leaving a tappable strip of the
-          // chat behind it. The floating-card treatment below is desktop-only.
-          // bg-card-solid (opaque): the overlay sits on top of the chat, and
-          // WebKit drops the glass rule's backdrop-filter once a Radix popper
-          // opens (and never repaints it), letting the chat bleed through the
-          // 60%-alpha glass --card. Desktop keeps the translucent bg-card —
-          // there the sidebar pushes content aside, so nothing sits behind it.
-          "max-md:bg-card-solid",
-          // `max-md:right-14` is the ChatGPT-style peek strip: the drawer covers
-          // most of the phone but stops short of the right edge so the chat stays
-          // visible (and tappable through the scrim) behind it.
+          // Mobile (default): a rounded bottom sheet. The shared
+          // conversations-sidebar rule supplies a stronger frosted surface on
+          // phones and a lighter glass treatment on desktop.
           "fixed inset-0 z-50",
-          // The settings nav takes the sidebar over and its "Back" row is the
-          // only way out, so there the drawer stays full-bleed (and gets no
-          // dismiss scrim) rather than offering a tap that strands the user.
-          !inSettings && "max-md:right-14",
-          // Mobile only: animate the slide so the iOS edge-swipe settles
-          // smoothly on release. Suppressed inline while a drag is live (the
-          // overlay must track the finger 1:1). Scoped to transform so it can't
-          // re-introduce the width-animation lag the base comment warns about,
-          // and gated to mobile so the desktop floating card is unaffected.
+          // Settings remains a full-screen navigation surface; only the
+          // sessions browser gets the compact sheet treatment.
+          !inSettings &&
+            "max-md:top-auto max-md:h-[82dvh] max-md:rounded-t-[1.5rem] max-md:border-t max-md:border-border/70",
+          // Mobile only: settle vertically so the list visibly comes from the
+          // bottom. Scoped to transform so desktop resizing remains instant.
           "max-md:transition-transform max-md:duration-200 max-md:ease-out",
-          effectiveOpen ? "translate-x-0" : "-translate-x-full",
+          effectiveOpen ? "translate-y-0" : "translate-y-full",
           // Desktop: a full-height panel flush to the window edge, carrying
           // the brand gradient canvas (see html:not(.dark) .conversations-sidebar
           // in index.css) and separated from the white content by a right
           // divider — no outer margin or rounding. Width (the user-resizable
           // variable) animates →0 to push main; when closed the border
           // collapses too so nothing lingers.
-          "md:translate-x-0 md:overflow-hidden",
+          "md:translate-x-0 md:translate-y-0 md:overflow-hidden",
           // Normal desktop flow: relative panel that pushes main. Suppressed while
           // peeking so its `md:inset-auto`/`md:relative` don't override the
           // floating-card positioning below (same `md:` layer, source order wins).
@@ -988,10 +973,10 @@ function SidebarImpl({
           {
             "--sidebar-width": `${sidebarWidth}px`,
             ...(keyboardInset > 0 ? { paddingBottom: keyboardInset } : null),
-            // Track the finger: map the 0→1 open fraction to translateX
-            // -100%→0% and kill the transition so it follows the drag exactly.
+            // Track the native gesture: map the 0→1 open fraction to the
+            // sheet's 100%→0% vertical travel and kill the settle transition.
             ...(dragging
-              ? { transform: `translateX(${(dragProgress - 1) * 100}%)`, transition: "none" }
+              ? { transform: `translateY(${(1 - dragProgress) * 100}%)`, transition: "none" }
               : null),
           } as CSSProperties
         }
@@ -1005,7 +990,7 @@ function SidebarImpl({
       >
         {/* Right-edge resize handle (desktop only), mirroring the right rail's
           left-edge handle. Hidden on mobile, where the sidebar is a
-          full-screen overlay with no resize affordance; the parent's ``inert``
+          bottom sheet with no resize affordance; the parent's ``inert``
           when closed also keeps it from being draggable while collapsed.
           Hidden while peeking too — the peek card is a fixed-width flyout, not
           a resizable panel. */}
@@ -1024,12 +1009,18 @@ function SidebarImpl({
           brand mark is dropped and the actions slide left to sit beside the
           window controls (see the [data-electron-mac] rules in index.css).
           Inert in a browser and on other platforms, which keep the row below. */}
-            <div className="sidebar-header-row flex h-12 shrink-0 items-center justify-between pr-3 pl-4">
+            <div className="sidebar-header-row relative flex h-12 shrink-0 items-center justify-between pr-3 pl-4 max-md:h-14 max-md:pt-1">
+              {!inSettings && (
+                <span
+                  aria-hidden="true"
+                  className="absolute top-2 left-1/2 hidden h-1 w-9 -translate-x-1/2 rounded-full bg-muted-foreground/25 max-md:block"
+                />
+              )}
               {/* Brand mark doubles as the "home" affordance: clicking it
             returns to `/`, the new-session composer. Without this there
             is no way back to the landing composer once you're inside a
             session. Reuses onNavClick so a plain primary click closes
-            the sidebar on mobile (where it's a full-screen overlay) but
+            the sidebar on mobile (where it's a bottom sheet) but
             modifier/middle clicks still open `/` in a new tab. */}
               <Link
                 to="/"
@@ -1068,6 +1059,22 @@ function SidebarImpl({
                 onToggle={peek ? () => onOpen?.() : onClose}
                 onOpenSearch={onOpenSearch}
               />
+              {!inSettings && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Close sessions"
+                  onClick={(event) => {
+                    event.currentTarget.blur();
+                    onClose();
+                  }}
+                  data-testid="sidebar-mobile-close"
+                  className="sidebar-glass-chip ml-1 hidden size-11 rounded-full text-foreground max-md:inline-flex"
+                >
+                  <ChevronDownIcon className="size-[22px]" />
+                </Button>
+              )}
             </div>
 
             <div className="flex flex-col gap-0 px-2 pt-2 pb-0" data-testid="sidebar-primary-nav">
@@ -1261,7 +1268,7 @@ function SidebarImpl({
               </nav>
               {/* Mobile: Settings floats over the bottom of the session list, with
           Search floating at the top of the header row — the two icons the
-          drawer keeps once the collapse toggle is gone. */}
+          sheet keeps once the collapse toggle is gone. */}
               <SidebarSettingsButton
                 testId="sidebar-settings-float"
                 className="absolute right-3 bottom-3 md:hidden"
@@ -5615,7 +5622,7 @@ function BulkActionBar({
 /**
  * Returns true on mobile viewports (below the `md` breakpoint of
  * 768px). Used to gate the auto-close-on-navigation behavior — on
- * mobile the sidebar is a full-screen overlay so dismissing on action
+ * mobile the sidebar is a bottom sheet so dismissing on action
  * is what reveals the destination; on desktop the sidebar pushes content
  * aside and staying open is more useful.
  *

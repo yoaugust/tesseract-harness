@@ -195,6 +195,7 @@ import {
   type WorkspaceFile,
 } from "@/hooks/useWorkspaceChangedFiles";
 import { ComposerMicButton } from "@/components/ComposerMicButton";
+import { VoiceModeButton } from "@/components/VoiceModeButton";
 import { isCostRoutingSession, isSubagentRoutingSession } from "@/components/CostRoutingControl";
 import {
   SMART_ROUTING_ARMS,
@@ -2373,6 +2374,37 @@ function ComposerImpl(
   // `/skill` token stays aligned once the draft grows past the visible rows.
   const backdropRef = useRef<HTMLDivElement>(null);
   const isStreaming = status === "streaming";
+  const voiceReplyText = useChatStore((state) => {
+    for (let index = state.blocks.length - 1; index >= 0; index -= 1) {
+      const block = state.blocks[index];
+      if (
+        block?.type === "text_done" &&
+        block.ctx.agent === null &&
+        !block.interrupted &&
+        block.fullText.trim()
+      ) {
+        return block.fullText;
+      }
+    }
+    return null;
+  });
+  const voiceReplyKey = useChatStore((state) => {
+    for (let index = state.blocks.length - 1; index >= 0; index -= 1) {
+      const block = state.blocks[index];
+      if (
+        block?.type === "text_done" &&
+        block.ctx.agent === null &&
+        !block.interrupted &&
+        block.fullText.trim()
+      ) {
+        return (
+          block.ctx.itemId ??
+          `${block.ctx.responseId}:${block.ctx.timestamp}:${block.fullText.length}`
+        );
+      }
+    }
+    return null;
+  });
 
   // Read-only when either the user lacks a write grant OR the session
   // is structurally non-interactive (``readOnlyReason``). The
@@ -3140,6 +3172,23 @@ function ComposerImpl(
     submit({ resetNativeInputSession: true });
   };
 
+  const sendVoiceCommand = (text: string): boolean => {
+    const command = text.trim();
+    if (!command || disabled || isReadOnly || hasPendingElicitation || composerLockedByBtw) {
+      return false;
+    }
+    trackClick("chat.composer.voice_send", "button");
+    appendEntry(command);
+    onSend(command);
+    dirtyRef.current = true;
+    clearComposerAfterSend(false);
+    setFiles([]);
+    setAttachmentError(null);
+    setMentionedItems([]);
+    setMention(null);
+    return true;
+  };
+
   const applyRecall = (ta: HTMLTextAreaElement, recalled: ComposerDraft) => {
     recallingRef.current = true;
     replaceText(recalled.text, recalled.replyDraft);
@@ -3695,6 +3744,13 @@ function ComposerImpl(
                   openNonce={pickerOpenNonce}
                 />
               </div>
+              <VoiceModeButton
+                busy={isWorking}
+                disabled={disabled || isReadOnly || hasPendingElicitation || composerLockedByBtw}
+                replyKey={voiceReplyKey}
+                replyText={voiceReplyText}
+                onCommand={sendVoiceCommand}
+              />
               <ComposerMicButton
                 className="size-8 md:size-7"
                 enableHotkey

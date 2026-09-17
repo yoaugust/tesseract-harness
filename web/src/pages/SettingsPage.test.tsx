@@ -601,8 +601,8 @@ describe("SettingsPage", () => {
     fireEvent.click(screen.getByTestId("reset-appearance-button"));
     fireEvent.click(screen.getByTestId("reset-appearance-confirm"));
 
-    // Mode is restored to "system".
-    expect(mocks.setTheme).toHaveBeenCalledWith("system");
+    // Mode is restored to Tesseract's dark default.
+    expect(mocks.setTheme).toHaveBeenCalledWith("dark");
 
     // Fonts are back to their defaults.
     expect((screen.getByTestId("ui-font-size-input") as HTMLInputElement).value).toBe("13");

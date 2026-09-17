@@ -18,17 +18,17 @@ export function isThemeMode(value: string | undefined): value is ThemeMode {
 }
 
 /**
- * Normalize persisted theme selection to the app's default system mode.
+ * Normalize persisted theme selection to the app's default dark mode.
  *
  * Unknown values can only come from localStorage drift or manual edits.
- * Falling back to `system` matches the provider's documented default
+ * Falling back to `dark` matches the provider's documented default
  * and avoids rendering a menu with no selected radio item.
  *
  * @param value Stored theme string, e.g. `"system"`.
  * @returns Supported theme mode to use in controls.
  */
 export function normalizeThemeMode(value: string | undefined): ThemeMode {
-  return isThemeMode(value) ? value : "system";
+  return isThemeMode(value) ? value : "dark";
 }
 
 /**

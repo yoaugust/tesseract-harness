@@ -105,6 +105,7 @@ from omnigent.server.routes.sessions import (
 from omnigent.server.routes.sharing import create_sharing_router
 from omnigent.server.routes.terminal_attach import create_terminal_attach_router
 from omnigent.server.routes.usage import create_usage_router
+from omnigent.server.routes.voice import create_voice_router
 from omnigent.server.runner_session_init import RunnerSessionInitializer
 from omnigent.server.scheduled import ScheduledTaskScheduler
 from omnigent.server.ws_origin import WebSocketOriginMiddleware
@@ -166,6 +167,7 @@ class ServerInfoResponse(BaseModel):
     harness_install_enabled: bool
     installable_harnesses: list[str]
     dictation_available: bool
+    voice_available: bool
     branding: BrandingInfo
 
 
@@ -2531,6 +2533,9 @@ def create_app(
         from omnigent.server.dictation import engine_availability
 
         dictation_available, _ = engine_availability()
+        from omnigent.server.voice import engine_availability as voice_engine_availability
+
+        voice_available, _ = voice_engine_availability()
         return ServerInfoResponse.model_validate(
             {
                 "accounts_enabled": accounts_enabled,
@@ -2552,6 +2557,7 @@ def create_app(
                 "harness_install_enabled": harness_install_enabled,
                 "installable_harnesses": installable_harnesses,
                 "dictation_available": dictation_available,
+                "voice_available": voice_available,
                 "branding": branding_snapshot.config(),
             }
         )
@@ -2735,6 +2741,11 @@ def create_app(
         create_dictation_router(auth_provider=auth_provider),
         prefix="/v1",
         tags=["dictation"],
+    )
+    app.include_router(
+        create_voice_router(auth_provider=auth_provider),
+        prefix="/v1",
+        tags=["voice"],
     )
     app.include_router(
         create_terminal_attach_router(

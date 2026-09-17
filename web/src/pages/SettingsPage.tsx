@@ -755,7 +755,7 @@ function AppearanceSection() {
 
   const resetAppearance = () => {
     // Reset every appearance preference back to the product default.
-    setTheme("system");
+    setTheme("dark");
 
     writeTerminalThemeMode(TERMINAL_THEME_DEFAULT);
 

@@ -193,6 +193,8 @@ export interface ServerInfo {
    * backend (Electron, Firefox/Chromium).
    */
   dictation_available: boolean;
+  /** True when the server can synthesize local spoken replies. */
+  voice_available?: boolean;
   /** Operator branding, or null when the built-in identity should be used. */
   branding?: Branding | null;
 }
@@ -251,6 +253,7 @@ export const FALLBACK_SERVER_INFO: ServerInfo = {
   harness_install_enabled: false,
   installable_harnesses: [],
   dictation_available: false,
+  voice_available: false,
   branding: null,
 };
 
@@ -352,6 +355,7 @@ export async function resolveServerInfo(): Promise<ServerInfo> {
             ? data.installable_harnesses.filter((h): h is string => typeof h === "string")
             : [],
           dictation_available: data.dictation_available === true,
+          voice_available: data.voice_available === true,
           branding: parseBranding(data.branding),
         };
         return cachedServerInfo;

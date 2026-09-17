@@ -98,6 +98,7 @@ import { FilesPanelDrawer } from "./FilesPanelDrawer";
 import type { ChangedSort } from "./FlatFileList";
 import { GithubPanel } from "./GithubPanel";
 import { MobilePanelDrawer } from "./MobilePanelDrawer";
+import { MobileCommandNav } from "./MobileCommandNav";
 import { isMobileViewport, Sidebar } from "./Sidebar";
 import { SidebarHeaderActions } from "./SidebarHeaderActions";
 import { useSettingsRoute } from "./settingsNav";
@@ -124,11 +125,9 @@ import type { RightRailTab } from "./railTabs";
 /**
  * Top-level layout. The sidebar and right panels are responsive:
  *
- *   - **Mobile (`< md`)**: fixed full-screen overlays. When open they cover
- *     the chat with a translate-x slide-in. The sidebar's own X button
- *     dismisses (no backdrop — the overlay covers the viewport edge-to-edge,
- *     so there is no "outside" to click, and a `bg-black/20` layer behind
- *     it caused a persistent grey artifact at the iOS safe-area insets).
+ *   - **Mobile (`< md`)**: sessions use a bottom sheet; workspace tools retain
+ *     their focused overlays. The sheet has an outside-dismiss scrim and a
+ *     down-arrow exit, while the active conversation remains visible above it.
  *   - **Desktop (`md+`)**: static flex siblings. Open ↔ closed animates
  *     each panel's width, pushing the main content accordingly. No backdrop —
  *     side panels aren't covering anything.
@@ -2041,6 +2040,7 @@ export function AppShell() {
                     // appeared. Left collapsed, the breadcrumb stays put beneath
                     // the floating card (and in the title-bar strip on mac).
                     sidebarOpen={sidebarOpen}
+                    hideMobileSidebarToggle={!conversationId && !inSettings && !extensionId}
                     onOpenSidebar={(peek?: boolean) => {
                       if (peek) {
                         setSidebarPeek(true);
@@ -2105,12 +2105,19 @@ export function AppShell() {
                   />
                 )}
                 <main
-                  className="relative flex min-h-0 min-w-0 flex-1 flex-col"
+                  className={cn(
+                    "relative flex min-h-0 min-w-0 flex-1 flex-col",
+                    !conversationId && !inSettings && "max-md:pb-20",
+                  )}
                   data-shell-header={extensionOwnsHeader ? "hidden" : "visible"}
                   data-session-id={conversationId}
                 >
                   <Outlet />
                 </main>
+
+                {!conversationId && !inSettings && !extensionId && !sidebarOpen && (
+                  <MobileCommandNav onOpenSessions={handleSidebarOpen} />
+                )}
 
                 {/* Debug-mode execution-logs rail — desktop only, hidden when a
               push panel is open (the panel itself becomes the focus). Only

@@ -1,7 +1,6 @@
-// Behaviour tests for the mobile sidebar drawer shape: it stops short of the
-// right edge so a strip of the chat stays visible, tapping that strip dismisses
-// it (replacing the collapse toggle, which is now desktop-only), and Search /
-// Settings float at the top and bottom of the drawer.
+// Behaviour tests for the mobile sessions sheet: it rises from the bottom,
+// tapping the exposed canvas dismisses it, an explicit down-arrow provides a
+// second exit, and Search / Settings remain available in the sheet.
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
@@ -121,8 +120,8 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("mobile sidebar drawer", () => {
-  it("dismisses when the exposed strip of the chat is tapped", () => {
+describe("mobile sessions sheet", () => {
+  it("dismisses when the exposed canvas above the sheet is tapped", () => {
     const onClose = vi.fn();
     renderSidebar({ onClose });
 
@@ -143,10 +142,7 @@ describe("mobile sidebar drawer", () => {
     expect(scrim).toHaveAttribute("aria-hidden", "true");
   });
 
-  it("exposes the dismiss as a labeled control, not a bare click target", () => {
-    // With the collapse toggle gone on mobile, the scrim is the only
-    // non-navigational way out — so it has to be reachable and announced,
-    // not just tappable.
+  it("exposes the outside dismiss as a labeled control, not a bare click target", () => {
     renderSidebar();
 
     const scrim = screen.getByTestId("sidebar-scrim");
@@ -165,21 +161,33 @@ describe("mobile sidebar drawer", () => {
     expect(screen.getByRole("complementary", { name: "Conversations" })).toHaveClass("z-50");
   });
 
-  it("stops the drawer short of the right edge so the chat stays reachable", () => {
+  it("anchors the session browser to the bottom instead of either side", () => {
     renderSidebar();
 
     expect(screen.getByRole("complementary", { name: "Conversations" })).toHaveClass(
-      "max-md:right-14",
+      "max-md:top-auto",
+      "max-md:h-[82dvh]",
+      "translate-y-0",
     );
   });
 
-  it("drops the peek strip and the scrim on the settings page, where Back is the only exit", () => {
+  it("provides a visible down-arrow exit for the sheet", () => {
+    const onClose = vi.fn();
+    renderSidebar({ onClose });
+
+    fireEvent.click(screen.getByTestId("sidebar-mobile-close"));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("drops the sheet chrome and scrim on Settings, where Back is the only exit", () => {
     renderSidebar({ route: "/settings" });
 
     expect(screen.queryByTestId("sidebar-scrim")).toBeNull();
     expect(screen.getByRole("complementary", { name: "Conversations" })).not.toHaveClass(
-      "max-md:right-14",
+      "max-md:h-[82dvh]",
     );
+    expect(screen.queryByTestId("sidebar-mobile-close")).toBeNull();
   });
 
   it("floats Settings at the bottom and hides the desktop collapse toggle on mobile", () => {
@@ -260,12 +268,12 @@ function setIOSViewport(layoutHeight: number, visibleHeight: number): void {
   });
 }
 
-// The mobile drawer is a `fixed inset-0` overlay that the iOS shell-lock (which
+// The mobile sheet is fixed-positioned, so the iOS shell-lock (which
 // only resizes flow content inside .app-shell) can't lift above the soft
 // keyboard. It pads its own bottom by the keyboard inset so the session list
 // stays fully scrollable while an inline rename holds the keyboard up —
 // without it the last rows sit behind the keyboard and can never be reached.
-describe("mobile sidebar drawer keyboard inset", () => {
+describe("mobile sessions sheet keyboard inset", () => {
   afterEach(() => {
     delete (window as unknown as Record<string, unknown>).omnigentNative;
     vi.unstubAllGlobals();
