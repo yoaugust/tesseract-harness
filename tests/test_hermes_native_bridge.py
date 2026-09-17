@@ -295,7 +295,9 @@ def test_write_policy_hook_config_creates_expected_files(tmp_path) -> None:
     assert "_OMNIGENT_SESSION_ID=session-123" in wrapper_text
     assert "_OMNIGENT_AUTH_HEADERS=" in wrapper_text
     assert sys.executable in wrapper_text
-    assert "hermes_policy_hook.py" in wrapper_text
+    hook_path = b._hermes_policy_hook_path()
+    assert hook_path.is_file()
+    assert str(hook_path) in wrapper_text
 
     # config.yaml with hook registered.
     config = json.loads((hermes_home / "config.yaml").read_text())
@@ -357,6 +359,37 @@ def test_write_policy_hook_config_merges_user_model(tmp_path, monkeypatch) -> No
     assert config["model"] == "claude-sonnet-4-20250514"
     assert config["providers"] == {"anthropic": {}}
     assert config["hooks_auto_accept"] is True
+
+
+def test_write_policy_hook_config_preserves_computer_use_settings(tmp_path, monkeypatch) -> None:
+    bridge_dir = tmp_path / "bridge"
+    bridge_dir.mkdir()
+    user_hermes = tmp_path / ".hermes"
+    user_hermes.mkdir()
+
+    import yaml
+
+    user_config = {
+        "platform_toolsets": {"cli": ["terminal", "computer_use"]},
+        "computer_use": {
+            "permission_mode": "bounded",
+            "capability_manifest": "/tmp/computer-use-capabilities.yaml",
+            "max_image_dimension": 1024,
+        },
+        "agent": {
+            "disabled_toolsets": ["computer_use"],
+            "max_turns": 999,
+        },
+    }
+    (user_hermes / "config.yaml").write_text(yaml.dump(user_config))
+
+    monkeypatch.setattr(b.Path, "home", staticmethod(lambda: tmp_path))
+
+    hermes_home = b.write_policy_hook_config(bridge_dir, "http://localhost:6767", "s3")
+    config = json.loads((hermes_home / "config.yaml").read_text())
+    assert config["platform_toolsets"] == {"cli": ["terminal", "computer_use"]}
+    assert config["computer_use"] == user_config["computer_use"]
+    assert config["agent"] == {"disabled_toolsets": ["computer_use"]}
 
 
 def test_read_hermes_home_returns_path_when_exists(tmp_path) -> None:
@@ -515,6 +548,7 @@ def test_inject_relay_into_policy_hook_rewrites_wrapper(tmp_path: Path) -> None:
     assert "http://127.0.0.1:9999" in text
     assert "_OMNIGENT_RELAY_TOKEN" in text
     assert "relay-tok" in text
+    assert str(b._hermes_policy_hook_path()) in text
     # Original server vars still present for fallback path.
     assert "_OMNIGENT_SERVER_URL" in text
 

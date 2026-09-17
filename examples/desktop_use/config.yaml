@@ -1,0 +1,108 @@
+# Desktop Use — a model-neutral computer-use agent.
+#
+# The `cua-driver` MCP process starts on the Tesseract runner, not on the API
+# server. Point a runner at the Mac you want to control, then connect the web or
+# mobile client to the server as usual. The model intentionally stays unpinned.
+# The request-driven OpenAI Agents harness is the portable default; override it
+# at launch with `--harness hermes` (or another tool-capable harness).
+#
+# Prerequisites on each desktop host:
+#   1. Install cua-driver and make `cua-driver` available on PATH.
+#   2. Run `cua-driver permissions grant` once on macOS and approve
+#      Accessibility + Screen Recording when macOS asks.
+#   3. Check the host with `cua-driver doctor`.
+#
+# Try it locally:
+#   omnigent run examples/desktop_use
+#   omnigent run examples/desktop_use --harness hermes
+#   omnigent run examples/desktop_use --harness openai-agents -m <model>
+
+spec_version: 1
+name: desktop-use
+description: >-
+  A model-neutral desktop agent that controls the computer attached to its
+  Tesseract runner through cua-driver. Supports native macOS applications,
+  browser tabs, screenshots, keyboard and pointer input, clipboard workflows,
+  verification, and optional trajectory recording.
+
+executor:
+  type: omnigent
+  config:
+    harness: openai-agents
+
+instructions: |
+  You are a careful desktop assistant operating the computer attached to your
+  Tesseract runner.
+
+  Inspect state before acting. Prefer accessibility-tree references and exact
+  browser element references over guessed coordinates. After a meaningful
+  action, read the relevant window or browser state and verify the requested
+  result instead of assuming it worked.
+
+  Ask the user before actions with external or hard-to-reverse consequences,
+  including sending messages, publishing, purchasing, deleting data, changing
+  security settings, or exposing clipboard/private content. Never weaken the
+  computer driver's permissions or safety configuration. If macOS permissions
+  are missing, report which permission is needed and stop that action.
+
+  Browser tools are for an exactly bound browser tab. Native desktop tools are
+  for application windows and system UI. Start a computer-use session before a
+  sequence of actions and end it when the task is complete.
+
+tools:
+  computer:
+    type: mcp
+    description: Runner-local native desktop and browser control via cua-driver.
+    command: cua-driver
+    args: [mcp]
+    # Normal work surface only. Driver administration, self-update, forced
+    # process termination, deprecated compatibility, and trajectory replay are
+    # intentionally not exposed to an always-on model.
+    tools:
+      - check_permissions
+      - health_report
+      - start_session
+      - end_session
+      - list_sessions
+      - get_session
+      - list_apps
+      - launch_app
+      - bring_to_front
+      - get_accessibility_tree
+      - list_windows
+      - get_window_state
+      - get_desktop_state
+      - zoom
+      - verify_state
+      - get_screen_size
+      - get_cursor_position
+      - click
+      - double_click
+      - right_click
+      - drag
+      - move_cursor
+      - scroll
+      - press_key
+      - hotkey
+      - type_text
+      - set_value
+      - invoke_menu
+      - set_window_frame
+      - clipboard_read
+      - clipboard_write
+      - browser_prepare
+      - get_browser_state
+      - browser_navigate
+      - browser_click
+      - browser_pointer
+      - browser_type
+      - browser_dialog
+      - browser_download
+      - browser_set_input_files
+      - get_agent_cursor_state
+      - set_agent_cursor_enabled
+      - set_agent_cursor_motion
+      - set_agent_cursor_theme
+      - get_recording_state
+      - start_recording
+      - stop_recording

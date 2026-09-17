@@ -325,14 +325,15 @@ declares the passthrough.
 
 </details>
 
-#### 🐙 Polly and 🟠🔵 Debby
+#### Example agents
 
-Two example agents ship with the repo, and they make good first sessions:
+Several example agents ship with the repo, and they make good first sessions:
 
 ```bash
 omnigent run examples/polly/
 omnigent run examples/debby/
 omnigent run examples/deep-research/
+omnigent run examples/desktop_use/
 
 # ...or on a different harness (sub-agents keep their own):
 omnigent run examples/polly/ --harness <harness>
@@ -355,6 +356,12 @@ cross-checked report. It plans sub-queries, searches the live web and reads
 full pages through an MCP search server, and verifies each claim across
 independent sources. It's also the simplest example to copy from: one agent
 plus one `tools/mcp/*.yaml` server, no sub-agents.
+
+**🖥️ Desktop Use** is a model-neutral computer operator. It runs
+`cua-driver` on the selected host through MCP, so the web UI can supervise a
+Mac now and a persistent GUI cloud host later without coupling desktop control
+to one model vendor. See [`examples/desktop_use/`](examples/desktop_use/) for
+macOS permissions, phone access, and always-on host setup.
 
 **Prefer the browser?** One command starts the local server and registers this
 machine as a host:

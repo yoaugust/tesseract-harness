@@ -267,21 +267,35 @@ def build_hermes_native_spawn_env(session_id: str) -> dict[str, str]:
 
 
 # Keys from the user's ``~/.hermes/config.yaml`` that the per-session
-# HERMES_HOME needs in order to authenticate with the inference provider.
+# HERMES_HOME needs for inference and tool availability.
 _USER_CONFIG_KEYS = frozenset(
     {
+        "computer_use",
         "model",
+        "platform_toolsets",
         "providers",
         "fallback_providers",
         "credential_pool_strategies",
     }
 )
 
+_USER_AGENT_CONFIG_KEYS = frozenset({"disabled_toolsets"})
+
 _HERMES_HOME_SUBDIR = "hermes_home"
 
 
+def _hermes_policy_hook_path() -> Path:
+    """Return the installed Hermes policy-hook script path."""
+    from omnigent.inner import hermes_policy_hook
+
+    path = Path(hermes_policy_hook.__file__).resolve()
+    if not path.is_file():
+        raise RuntimeError(f"Hermes policy hook is missing at {path}")
+    return path
+
+
 def _load_user_hermes_config() -> _ConfigObject:
-    """Load inference-relevant keys from the user's ``~/.hermes/config.yaml``."""
+    """Load inference- and tool-relevant user Hermes configuration."""
     user_config = Path.home() / ".hermes" / "config.yaml"
     if not user_config.is_file():
         return {}
@@ -289,7 +303,13 @@ def _load_user_hermes_config() -> _ConfigObject:
         import yaml
 
         full = yaml.safe_load(user_config.read_text()) or {}
-        return {k: v for k, v in full.items() if k in _USER_CONFIG_KEYS}
+        filtered = {k: v for k, v in full.items() if k in _USER_CONFIG_KEYS}
+        agent = full.get("agent")
+        if isinstance(agent, dict):
+            filtered_agent = {k: v for k, v in agent.items() if k in _USER_AGENT_CONFIG_KEYS}
+            if filtered_agent:
+                filtered["agent"] = filtered_agent
+        return filtered
     except Exception:  # noqa: BLE001
         _logger.debug("Failed to load user Hermes config at %s", user_config, exc_info=True)
         return {}
@@ -338,7 +358,7 @@ def write_policy_hook_config(
     # token-bearing hook wrapper.
     _ensure_dir(hermes_home)
 
-    hook_script_path = str(Path(__file__).resolve().parent / "inner" / "hermes_policy_hook.py")
+    hook_script_path = str(_hermes_policy_hook_path())
 
     # Wrapper shell script: sets env vars and execs the Python hook. It bakes a
     # one-shot auth token + workspace-routing header, so it is owner-only
@@ -438,7 +458,7 @@ def inject_relay_into_policy_hook(
     if not wrapper.is_file():
         return False
 
-    hook_script_path = str(Path(__file__).resolve().parent / "inner" / "hermes_policy_hook.py")
+    hook_script_path = str(_hermes_policy_hook_path())
     from omnigent.native.native_policy_hook import _RELAY_TOKEN_ENV, _RELAY_URL_ENV
 
     new_text = (

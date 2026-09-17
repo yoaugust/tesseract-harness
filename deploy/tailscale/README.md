@@ -17,20 +17,31 @@ other device you own.
 
 - Tailscale installed on your server machine and every client device.
   All signed in to the same Tailscale account.
-- tesseract server running locally (e.g. `omnigent server` or
-  `docker compose up -d` from `deploy/docker/`).
+- tesseract server running locally using either:
+  - the bare CLI (`omnigent start` or `omnigent server`) on the default
+    `localhost:6767`; or
+  - Docker Compose from `deploy/docker/` on `localhost:8000`.
 
 ## Tailnet-only access (phone / tablet / remote laptop)
 
-Expose the local server over HTTPS to every device on your tailnet:
+Expose the local server over HTTPS to every device on your tailnet. Run the
+command that matches how you started tesseract:
 
 ```bash
-tailscale serve https / http://localhost:8000
+# Bare CLI (`omnigent start` or `omnigent server`)
+tailscale serve --bg 6767
+
+# Docker Compose
+tailscale serve --bg 8000
 ```
 
 Tailscale issues a TLS certificate for `https://<machine>.ts.net` and
-proxies traffic to `localhost:8000`. No other device on the internet can
-reach it.
+proxies traffic to the selected local port. No other device on the internet
+can reach it.
+
+The server coordinates sessions, while host-local tools run on the host or
+runner selected for the session. If you select this laptop, its shell,
+filesystem, local MCP servers, and computer-use drivers run on this laptop.
 
 Set two environment variables on the server before starting it:
 
@@ -82,8 +93,14 @@ tailnet. **Tailscale Funnel** fixes this: it makes a specific port
 reachable from the public internet while keeping the same
 `<machine>.ts.net` hostname.
 
+Run the command that matches how you started tesseract:
+
 ```bash
-tailscale funnel 8000
+# Bare CLI (`omnigent start` or `omnigent server`)
+tailscale funnel --bg 6767
+
+# Docker Compose
+tailscale funnel --bg 8000
 ```
 
 Then point the sandbox config at the public Tailscale URL:
@@ -108,10 +125,12 @@ sandbox:
 
 ## Summary
 
-| Goal | Command | Reachable from |
-|---|---|---|
-| Access from devices on your tailnet | `tailscale serve https / http://localhost:8000` | Tailnet only |
-| Cloud sandbox hosts + tailnet | `tailscale funnel 8000` | Public internet + tailnet |
+| Goal | Server mode | Command | Reachable from |
+|---|---|---|---|
+| Access from devices on your tailnet | Bare CLI | `tailscale serve --bg 6767` | Tailnet only |
+| Access from devices on your tailnet | Docker Compose | `tailscale serve --bg 8000` | Tailnet only |
+| Cloud sandbox hosts + tailnet | Bare CLI | `tailscale funnel --bg 6767` | Public internet + tailnet |
+| Cloud sandbox hosts + tailnet | Docker Compose | `tailscale funnel --bg 8000` | Public internet + tailnet |
 
 ## Environment variable reference
 
