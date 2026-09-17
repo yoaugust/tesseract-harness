@@ -75,6 +75,13 @@ describe("settingsNavGroups", () => {
     });
   });
 
+  it("offers Remote access on every deployment", () => {
+    const item = settingsNavGroups(false, false)
+      .flatMap((group) => group.items)
+      .find((candidate) => candidate.id === "remote");
+    expect(item).toMatchObject({ id: "remote", label: "Remote access" });
+  });
+
   it("flags Keyboard shortcuts as hidden on mobile, but not the other items", () => {
     const items = settingsNavGroups(false, false).flatMap((g) => g.items);
     const shortcuts = items.find((i) => i.id === "shortcuts");

@@ -18,6 +18,7 @@ import {
   SettingsIcon,
   Share2Icon,
   ShieldCheckIcon,
+  SmartphoneIcon,
   TerminalIcon,
   UserCogIcon,
   UsersIcon,
@@ -41,6 +42,7 @@ export type SettingsSectionId =
   | "account"
   | "members"
   | "policies"
+  | "remote"
   | "sharing"
   | "archived"
   | "cli"
@@ -56,6 +58,7 @@ const SECTION_IDS: readonly SettingsSectionId[] = [
   "account",
   "members",
   "policies",
+  "remote",
   "sharing",
   "archived",
   "cli",
@@ -93,6 +96,7 @@ export function settingsNavGroups(
 ): SettingsNavGroup[] {
   const general: SettingsNavItem[] = [
     { id: "general", label: "General", icon: SettingsIcon },
+    { id: "remote", label: "Remote access", icon: SmartphoneIcon },
     { id: "appearance", label: "Appearance", icon: PaletteIcon },
     { id: "git", label: "Git", icon: GitBranchIcon },
     { id: "shortcuts", label: "Keyboard shortcuts", icon: KeyboardIcon, hideOnMobile: true },

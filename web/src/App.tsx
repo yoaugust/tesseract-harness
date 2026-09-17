@@ -46,6 +46,10 @@ const ApprovePage = withPageView(
   "approve",
   lazy(() => import("@/pages/ApprovePage").then((m) => ({ default: m.ApprovePage }))),
 );
+const RemoteConnectPage = withPageView(
+  "remote_connect",
+  lazy(() => import("@/pages/RemoteConnectPage").then((m) => ({ default: m.RemoteConnectPage }))),
+);
 const InboxPage = withPageView(
   "inbox",
   lazy(() => import("@/pages/InboxPage").then((m) => ({ default: m.InboxPage }))),
@@ -165,6 +169,7 @@ function App({ basename }: AppProps = {}) {
           </>
         )}
         <Route path={`${prefix}/approve/:sessionId/:elicitationId`} element={<ApprovePage />} />
+        <Route path={`${prefix}/remote/connect`} element={<RemoteConnectPage />} />
         <Route element={<AppShell />}>
           <Route path={prefix || "/"} element={<ChatPage />} />
           <Route path={`${prefix}/c/:conversationId`} element={<ChatPage />} />
