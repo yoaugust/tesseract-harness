@@ -1,6 +1,6 @@
-"""The one representation of an Omnigent server URL.
+"""The one representation of an tesseract server URL.
 
-An Omnigent server is addressed by two related but distinct URLs:
+An tesseract server is addressed by two related but distinct URLs:
 
 - the **API base** — what requests are sent to. For a Databricks
   workspace-hosted deployment this is the API proxy mount
@@ -42,7 +42,7 @@ def is_workspace_hosted_url(base_url: str) -> bool:
     that only applies there (see
     :func:`omnigent.cli_auth.databricks_request_headers`).
 
-    :param base_url: Omnigent server base URL, e.g.
+    :param base_url: tesseract server base URL, e.g.
         ``"https://example.databricks.com/api/2.0/omnigent"``.
     :returns: ``True`` when the URL path is the workspace API mount.
     """
@@ -67,7 +67,7 @@ def org_id_from_url(url: str) -> str | None:
 
 @dataclass(frozen=True)
 class ServerUrl:
-    """An Omnigent server URL: canonical API base plus workspace selector.
+    """An tesseract server URL: canonical API base plus workspace selector.
 
     Construct via :meth:`from_api_base` (which resolves the org id from
     the URL itself or the stored login record), or directly when the org
@@ -165,14 +165,14 @@ class ServerUrl:
 
 
 def display_server_url(base_url: str) -> str:
-    """Map an Omnigent server base URL to the user-facing form to show.
+    """Map an tesseract server base URL to the user-facing form to show.
 
     Convenience wrapper over :attr:`ServerUrl.display` for call sites that
     hold a plain API-base string: the org id is resolved from the URL's
     own ``?o=`` query or the stored ``omnigent login`` record (see
     :meth:`ServerUrl.from_api_base`).
 
-    :param base_url: Omnigent server base URL, e.g.
+    :param base_url: tesseract server base URL, e.g.
         ``"https://example.databricks.com/api/2.0/omnigent"`` or
         ``"http://127.0.0.1:6767"``.
     :returns: The display URL, e.g.

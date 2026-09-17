@@ -163,7 +163,7 @@ The Kiro Web picker now runs `kiro-cli chat --list-models --format json` on the
 bound runner and forwards the CLI's model ids, default, descriptions, context
 windows, and credit rates. The server caches the runner response through the
 same asynchronous picker path as Codex, so provider changes no longer require an
-Omnigent source update and snapshots do not block on the CLI process.
+tesseract source update and snapshots do not block on the CLI process.
 
 ## CI Model Configuration
 
@@ -231,5 +231,5 @@ surfaces those fields whenever it returns an unverified static catalog.
 ## Kimi Example Default
 
 The Kimi launcher example declares only the harness. With no explicit
-`--model` or session override, Omnigent omits `HARNESS_KIMI_MODEL` and lets the
+`--model` or session override, tesseract omits `HARNESS_KIMI_MODEL` and lets the
 Kimi CLI use the default from its own provider configuration.

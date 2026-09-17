@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# Omnigent uninstaller. POSIX sh by design so it still works when the Python
+# tesseract uninstaller. POSIX sh by design so it still works when the Python
 # wheel is wedged or PATH is broken.
 
 set -u
 
-MARKER_BEGIN="# >>> Omnigent installer >>>"
-MARKER_END="# <<< Omnigent installer <<<"
+MARKER_BEGIN="# >>> tesseract installer >>>"
+MARKER_END="# <<< tesseract installer <<<"
 TAB=$(printf '\t')
 TARGETS=""
 DRY_RUN=false
@@ -584,15 +584,15 @@ desktop_paths() {
   case "$(uname -s)" in
     Darwin)
       printf '%s\n' \
-        "$HOME/Library/Application Support/Omnigent" \
-        "$HOME/Library/Caches/Omnigent" \
-        "$HOME/Library/Logs/Omnigent"
+        "$HOME/Library/Application Support/tesseract" \
+        "$HOME/Library/Caches/tesseract" \
+        "$HOME/Library/Logs/tesseract"
       ;;
     *)
       printf '%s\n' \
-        "${XDG_CONFIG_HOME:-$HOME/.config}/Omnigent" \
-        "${XDG_CACHE_HOME:-$HOME/.cache}/Omnigent" \
-        "${XDG_STATE_HOME:-$HOME/.local/state}/Omnigent"
+        "${XDG_CONFIG_HOME:-$HOME/.config}/tesseract" \
+        "${XDG_CACHE_HOME:-$HOME/.cache}/tesseract" \
+        "${XDG_STATE_HOME:-$HOME/.local/state}/tesseract"
       ;;
   esac
 }
@@ -698,7 +698,7 @@ emit_json() {
 }
 
 if ! has_shell_install_signal; then
-  record_action anchor omnigent detect failed "" "no Omnigent install detected"
+  record_action anchor omnigent detect failed "" "no tesseract install detected"
   EXIT_CODE=3
   [ "$JSON" = true ] && emit_json
   exit "$EXIT_CODE"

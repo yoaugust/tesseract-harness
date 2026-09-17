@@ -1,4 +1,4 @@
-"""Built-in policy functions shipped with Omnigent.
+"""Built-in policy functions shipped with tesseract.
 
 Each submodule exports a ``POLICY_REGISTRY`` list — a catalog of
 policy callables with their handler paths, descriptions, and

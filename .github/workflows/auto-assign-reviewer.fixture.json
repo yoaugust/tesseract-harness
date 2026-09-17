@@ -130,7 +130,7 @@
     {
       "key": "server",
       "label": "comp:server",
-      "definition": "The Omnigent server: HTTP API, session creation and lifecycle, request routing.",
+      "definition": "The tesseract server: HTTP API, session creation and lifecycle, request routing.",
       "paths": [
         "omnigent/server/"
       ],

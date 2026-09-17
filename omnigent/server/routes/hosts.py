@@ -811,7 +811,7 @@ def create_hosts_router(
         # lost CAS or a failed launch can roll it back, leaving no orphan
         # worktree on the host.
         git_branch: str | None = None
-        # CreatedWorktree | None — set ONLY when Omnigent creates a worktree
+        # CreatedWorktree | None — set ONLY when tesseract creates a worktree
         # (create mode). Left None in bind mode so the rollback below never
         # force-removes the user's pre-existing worktree.
         worktree = None

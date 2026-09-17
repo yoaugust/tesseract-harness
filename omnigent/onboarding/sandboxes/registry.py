@@ -1,6 +1,6 @@
 """Sandbox provider registry.
 
-Core Omnigent contributes built-in sandbox providers directly. Optional
+Core tesseract contributes built-in sandbox providers directly. Optional
 community packages contribute additional providers through the
 ``omnigent.sandbox_providers`` entry point group.
 
@@ -131,7 +131,7 @@ def _config_model_module(config_model: type[object]) -> str | None:
 
 
 def _builtin_contribution() -> SandboxProviderContribution:
-    """The built-in sandbox-provider contribution from core Omnigent."""
+    """The built-in sandbox-provider contribution from core tesseract."""
     return SandboxProviderContribution(
         name="omnigent",
         providers={

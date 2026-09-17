@@ -2373,7 +2373,7 @@ def register_core_routes(
         # ``silent`` so bind-time auto-apply doesn't inject visible
         # ``/model X`` items into a fresh pane.
         # Effort and model both go through the unified ``/events``
-        # dispatch — Omnigent server stays harness-agnostic; the runner
+        # dispatch — tesseract server stays harness-agnostic; the runner
         # dispatches by harness (claude-native injects the slash
         # command into tmux, other harnesses 204 no-op). See
         # ``_forward_session_change_to_runner`` for the shared
@@ -2399,7 +2399,7 @@ def register_core_routes(
                 timeout_s=_TUI_INJECT_FORWARD_TIMEOUT_S,
             )
             # Append a durable [System: model changed to X] note for sessions
-            # whose history Omnigent writes. Gate on the wrapper label (NOT
+            # whose history tesseract writes. Gate on the wrapper label (NOT
             # omnigent.ui, which chat-first SDK terminal-view sessions like
             # polly/debby also carry) — see _persist_model_change_note for the
             # full rationale. live_forward (== not silent) already excludes
@@ -2837,12 +2837,12 @@ def register_core_routes(
             extra_labels[_CODEX_NATIVE_BYPASS_SANDBOX_LABEL_KEY] = "1"
 
         # When the fork binds a NATIVE target, the native CLI won't replay
-        # the copied Omnigent transcript on its own — mark the fork so the
+        # the copied tesseract transcript on its own — mark the fork so the
         # runner carries history into the native harness. Same-family: clone
         # the source's native transcript when present, else rebuild from the
-        # copied Omnigent items. Cross-family: the source's native transcript
-        # is the wrong format, so ALWAYS rebuild from the copied Omnigent
-        # items (the converters consume Omnigent's normalized item shape, so
+        # copied tesseract items. Cross-family: the source's native transcript
+        # is the wrong format, so ALWAYS rebuild from the copied tesseract
+        # items (the converters consume tesseract's normalized item shape, so
         # the source harness doesn't matter). SDK targets replay the
         # transcript as context regardless, so the marker is inert for them.
         # claude/codex/pi native rebuild the transcript (each rebuilds its
@@ -2865,7 +2865,7 @@ def register_core_routes(
         # so it always skips the source directive too. A managed fork gets its
         # OWN fresh sandbox, whose filesystem has no copy of the source's local
         # native rollout, so the clone is likewise doomed — skip the directive
-        # so the runner rebuilds from the copied Omnigent items instead.
+        # so the runner rebuilds from the copied tesseract items instead.
         resume_source_native_session = (
             (not switching_agent or copy_model_settings)
             and not target_is_cursor
@@ -3161,7 +3161,7 @@ def register_core_routes(
         # carries history regardless of family: the switch clears
         # external_session_id and drops the fork-source directive, so the
         # runner rebuilds the native transcript from this session's own
-        # Omnigent items (a format-agnostic conversion). SDK targets replay
+        # tesseract items (a format-agnostic conversion). SDK targets replay
         # the AP transcript as context regardless.
         copy_model_settings = await asyncio.to_thread(
             _same_provider_family, current_agent, target_agent

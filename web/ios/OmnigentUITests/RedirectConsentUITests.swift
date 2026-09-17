@@ -36,7 +36,7 @@ final class RedirectConsentUITests: XCTestCase {
     ]
     app.launch()
 
-    let alert = app.alerts["Open this Omnigent link?"]
+    let alert = app.alerts["Open this tesseract link?"]
     XCTAssertTrue(
       alert.waitForExistence(timeout: 15), "Expected the consent alert for \(deepLink).")
     alert.buttons["Open"].tap()

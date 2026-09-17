@@ -1,6 +1,6 @@
 """Hermes readiness + config reporting for ``omnigent setup``.
 
-Like :mod:`omnigent.onboarding.goose_auth`, Omnigent manages **no** Hermes
+Like :mod:`omnigent.onboarding.goose_auth`, tesseract manages **no** Hermes
 credentials: Hermes owns its own auth via ``hermes model`` (an interactive
 provider/model picker) which writes the chosen provider + model into
 ``~/.hermes/config.yaml``. This module is a thin, read-only reporter — it

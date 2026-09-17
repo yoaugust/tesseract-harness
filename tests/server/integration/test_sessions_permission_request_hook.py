@@ -404,7 +404,7 @@ async def test_top_level_elicitations_route_is_not_mounted(
     client: httpx.AsyncClient,
 ) -> None:
     """
-    Omnigent no longer exposes ``POST /v1/elicitations/{id}``.
+    tesseract no longer exposes ``POST /v1/elicitations/{id}``.
 
     Approval verdicts must travel through the session event route so
     they share normal session scoping and authorization. If the AP
@@ -1654,7 +1654,7 @@ async def test_permission_request_hook_timeout_clears_pending_index(
     """
     The pending-elicitations index is decremented when the hook
     times out — Claude's fail-ask fallback (user answers in the
-    TUI instead of the web UI) is the ONLY signal the Omnigent server
+    TUI instead of the web UI) is the ONLY signal the tesseract server
     gets that the prompt is done.
 
     Without this, the sidebar badge stays stuck forever: the
@@ -2422,7 +2422,7 @@ async def test_codex_elicitation_resolved_event_clears_hook_wait(
     when another Codex client answers the JSON-RPC request first. The
     server must resolve the parked hook wait and publish the standard
     ``response.elicitation_resolved`` SSE event for the deterministic
-    Omnigent elicitation id.
+    tesseract elicitation id.
     """
     agent = await create_test_agent(client, "test-codex-resolved-event")
     session_id = await _create_session(client, agent["id"])

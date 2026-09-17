@@ -1228,7 +1228,7 @@ async def test_session_snapshot_serves_pi_model_options_from_extension_push(
     ``ctx.modelRegistry``) via ``external_model_options``, landing in
     ``_pushed_model_options_cache``. The snapshot serves that directly — no
     runner round-trip — so the picker populates regardless of how pi
-    authenticated (Omnigent provider OR pi's own ``/login``). Before any push,
+    authenticated (tesseract provider OR pi's own ``/login``). Before any push,
     the snapshot returns ``[]`` and hides the picker.
     """
     from omnigent.server.routes import sessions as _mod

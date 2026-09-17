@@ -8,7 +8,7 @@ The callable follows the Service Policies V0 contract:
 ``fn(event) -> {"result": ..., "reason": ...}``.
 
 Gates on the agent-facing tool name ``search_web`` rather than
-``web_search`` because the latter is a reserved Omnigent built-in (see
+``web_search`` because the latter is a reserved tesseract built-in (see
 ``omnigent/tools/builtins/__init__.py:BUILTIN_NAMES``); the example
 YAML names its local search tool ``search_web`` to avoid the
 collision.

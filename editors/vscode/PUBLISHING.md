@@ -1,6 +1,6 @@
-# Publishing the Omnigent VS Code extension
+# Publishing the tesseract VS Code extension
 
-This directory holds the Omnigent VS Code extension. It is published
+This directory holds the tesseract VS Code extension. It is published
 under the shared **`databricks`** VS Code Marketplace publisher (and the
 `databricks` Open VSX namespace), which means releases flow through the
 Databricks security-hardened release path — direct publishing from this repo is
@@ -59,7 +59,7 @@ create the release.
    ```
 
    Reload VS Code, start a local server (`omnigent server`), and run the
-   **Omnigent: Open** command — confirm it opens an editor pane showing the
+   **tesseract: Open** command — confirm it opens an editor pane showing the
    running server's UI (not a blank pane or an error). This catches packaging
    problems (missing files, a broken bundle) before anything reaches the
    marketplaces.

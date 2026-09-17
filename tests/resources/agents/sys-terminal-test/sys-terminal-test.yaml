@@ -1,5 +1,5 @@
 # sys-terminal-test agent — exercises the AP-side ``sys_terminal_*``
-# tool family through Omnigent mode integration.
+# tool family through tesseract mode integration.
 #
 # This is an OMNIGENT-FLAVORED YAML (no ``spec_version: 1``).
 # Per ``designs/OMNIGENT_TERMINAL_BRIDGE.md`` §3 (Non-goals), AP-native

@@ -320,7 +320,7 @@ def format_traceback(
 
 
 def _title(name: str) -> str:
-    """Capitalize the app name for sentence display (``omnigent`` → ``Omnigent``)."""
+    """Capitalize the app name for sentence display (``omnigent`` → ``tesseract``)."""
     return name[:1].upper() + name[1:] if name else name
 
 

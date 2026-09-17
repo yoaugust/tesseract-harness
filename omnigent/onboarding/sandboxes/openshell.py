@@ -21,7 +21,7 @@ Notes that shape this launcher:
   gateway (its endpoint, TLS material, and OIDC token) from the gateway
   selected by ``openshell gateway select`` — i.e. ``$OPENSHELL_GATEWAY``
   or ``~/.config/openshell/active_gateway``. There is no base-URL knob.
-- **Custom host image.** Omnigent boots its prebaked host image, which
+- **Custom host image.** tesseract boots its prebaked host image, which
   rides in ``SandboxSpec.template.image``. The SDK's public ``create``
   takes only a ``SandboxSpec`` and does not re-export the spec
   protobufs, so the spec is built from the generated ``openshell._proto``

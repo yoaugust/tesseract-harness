@@ -53,7 +53,7 @@ export const CustomOperatorLogo: Story = {
           ...FALLBACK_SERVER_INFO,
           branding: {
             app_name: "Acme Agent",
-            heading: "What should we build?",
+            heading: "Welcome home, boss.",
             logos: { main: logoDataUri, loading: logoDataUri, favicon: null },
             powered_by: true,
           },

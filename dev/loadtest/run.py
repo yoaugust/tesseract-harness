@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Runner for the Omnigent host load test — boot a local stack, drive real turns.
+"""Runner for the tesseract host load test — boot a local stack, drive real turns.
 
 One command that boots the whole stack, runs the load, and writes a report.
 Because turns execute on the **host** (a runner subprocess it spawns → LLM), and
@@ -57,7 +57,7 @@ _CSV_PREFIX = "report"
 def _build_parser() -> argparse.ArgumentParser:
     """Build the runner's argument parser."""
     parser = argparse.ArgumentParser(
-        description="Boot a local Omnigent stack and load-test it with real host turns.",
+        description="Boot a local tesseract stack and load-test it with real host turns.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--users", type=int, default=4, help="Concurrent hosts (locust -u).")
@@ -271,7 +271,7 @@ def _write_summary(
     lines.append("")
     lines.append(
         "- **turn** is the headline: one full post→idle agent turn that ran on a "
-        "simulated host's runner (mocked LLM), so it is Omnigent's own per-turn "
+        "simulated host's runner (mocked LLM), so it is tesseract's own per-turn "
         "overhead, not provider latency."
     )
     lines.append(

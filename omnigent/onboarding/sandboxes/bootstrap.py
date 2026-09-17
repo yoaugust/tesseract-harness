@@ -1,13 +1,13 @@
 """
-Provider-agnostic sandbox bootstrap for Omnigent hosts.
+Provider-agnostic sandbox bootstrap for tesseract hosts.
 
 Composes a :class:`~omnigent.onboarding.sandboxes.base.SandboxLauncher`
-into the full host-bootstrap flow: build the Omnigent wheels locally,
+into the full host-bootstrap flow: build the tesseract wheels locally,
 ship + install them in the sandbox, run the Databricks Apps OAuth flow
 *inside the sandbox* (driving the browser step from the local machine
 over a forwarded callback port), and register the sandbox as a host by
 holding ``omnigent host`` open in it. The end state is a sandbox whose
-sessions are reachable from the Omnigent server's UI, TUI, and
+sessions are reachable from the tesseract server's UI, TUI, and
 ``omnigent resume``.
 
 The OAuth token is minted and stored by the sandbox's own CLI rather
@@ -91,7 +91,7 @@ def build_wheels(
     pypi_proxy: str | None = None,
 ) -> None:
     """
-    Build the Omnigent wheels and pack them into a single tarball.
+    Build the tesseract wheels and pack them into a single tarball.
 
     Builds the three packages in :data:`WHEEL_PACKAGE_PATHS` via
     ``uv build --wheel`` into a staging directory, then tars the staging
@@ -121,7 +121,7 @@ def build_wheels(
             "`curl -LsSf https://astral.sh/uv/install.sh | sh` and retry."
         )
 
-    click.echo(f"▸ Building Omnigent wheels → {tgz_path}")
+    click.echo(f"▸ Building tesseract wheels → {tgz_path}")
     env = os.environ.copy()
     if pypi_proxy is not None:
         env.setdefault("UV_INDEX_URL", pypi_proxy)
@@ -197,7 +197,7 @@ def ship_wheels(
     wheels_tgz: Path,
 ) -> None:
     """
-    Install Omnigent wheels into a sandbox.
+    Install tesseract wheels into a sandbox.
 
     Performs three remote operations, in order: ship wheels.tgz →
     pip install (the launcher supplies the image-appropriate flags) →
@@ -345,7 +345,7 @@ def _probe_server(server_url: str) -> httpx.Response | None:
 class DerivedWorkspace:
     """
     Databricks workspace coordinates derived from unauthenticated
-    probes of an Omnigent server URL.
+    probes of an tesseract server URL.
 
     Consumed in two places: seeding the sandbox's ``~/.databrickscfg``
     before the in-sandbox login, and pinning the LOCAL ``databricks
@@ -477,7 +477,7 @@ def login_app_oauth_in_sandbox(
         ``SandboxCapabilityError`` naming the ``--no-auth`` escape
         hatch).
     :param sandbox_id: Target sandbox, e.g. ``"fast-tarantula-6030"``.
-    :param server_url: Omnigent server URL to log in to, e.g.
+    :param server_url: tesseract server URL to log in to, e.g.
         ``"https://myapp-123.aws.databricksapps.com"``. Required
         unless *skip*.
     :param workspace: The workspace fronting *server_url*, from
@@ -668,7 +668,7 @@ def connect_sandbox_host(
 
     :param launcher: The provider's launcher.
     :param sandbox_id: Target sandbox.
-    :param server_url: Omnigent App URL the runner registers with.
+    :param server_url: tesseract App URL the runner registers with.
     :param host_name: Optional override for the host's registered
         name. ``None`` keeps whatever's already in the sandbox's
         config.yaml (usually ``socket.gethostname()``).
@@ -715,7 +715,7 @@ def bootstrap_sandbox_host(
         provision a new one.
     :param sandbox_name: Label for a new sandbox (ignored when
         *sandbox_id* is set).
-    :param server_url: Omnigent server URL the sandbox logs in to.
+    :param server_url: tesseract server URL the sandbox logs in to.
         Required unless *skip_auth*.
     :param workspace: The workspace fronting *server_url*, from
         :func:`derive_workspace` (the CLI derives once per command).

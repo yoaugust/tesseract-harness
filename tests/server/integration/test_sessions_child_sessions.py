@@ -1521,7 +1521,7 @@ async def test_native_subagent_message_uses_native_terminal_forward(
 
     A ``sys_session_send`` call creates a child session and then posts a
     user message to that child. If the child sub-agent uses
-    ``claude-native`` or ``codex-native``, Omnigent must forward the prompt to
+    ``claude-native`` or ``codex-native``, tesseract must forward the prompt to
     the runner's native terminal event shape and must not persist its
     own AP-side copy; the native transcript forwarder is the single
     writer for conversation items.
@@ -1559,7 +1559,7 @@ async def test_native_subagent_message_uses_native_terminal_forward(
 
     def _handler(request: httpx.Request) -> httpx.Response:
         """
-        Capture the event Omnigent forwards to the fake runner.
+        Capture the event tesseract forwards to the fake runner.
 
         :param request: HTTP request sent to the fake runner.
         :returns: Accepted response.

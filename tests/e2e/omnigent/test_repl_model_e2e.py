@@ -1,4 +1,4 @@
-"""E2E: /model command in the Omnigent REPL under pexpect.
+"""E2E: /model command in the tesseract REPL under pexpect.
 
 Migrated to mock LLM: drives ``/model`` against a mock ``omnigent run``
 REPL and asserts the slash-command surface — show / set / show-after-set

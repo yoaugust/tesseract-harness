@@ -583,7 +583,7 @@ class IssueDuplicatesTest(unittest.TestCase):
                 },
                 {
                     "number": 2920,
-                    "title": "Omnigent server fails to start on native Windows",
+                    "title": "tesseract server fails to start on native Windows",
                     "body": "os.getuid() is missing on Windows, so the server exits.",
                     "state": "open",
                 },
@@ -649,7 +649,7 @@ class IssueDuplicatesTest(unittest.TestCase):
     def test_crash_traceback_boilerplate_is_excluded_from_scoring(self):
         traceback = (
             "### Description\n"
-            "This crash was auto-reported by Omnigent's crash handler.\n"
+            "This crash was auto-reported by tesseract's crash handler.\n"
             "**Exception:** `PermissionError: Operation not permitted`\n"
             "**Traceback:**\n"
             "```\n"
@@ -677,7 +677,7 @@ class IssueDuplicatesTest(unittest.TestCase):
                 "state": "open",
                 "body": (
                     "### Description\n"
-                    "This crash was auto-reported by Omnigent's crash handler.\n"
+                    "This crash was auto-reported by tesseract's crash handler.\n"
                     f"**Exception:** `{exception}`\n"
                     "**Command:** `/Users/x/.local/bin/omnigent`\n"
                     "**Traceback:**\n"
@@ -708,7 +708,7 @@ class IssueDuplicatesTest(unittest.TestCase):
     def test_identical_crash_reports_still_score_as_duplicates(self):
         """Stripping the template must not erase a genuine repeat crash."""
         termios = (
-            "This crash was auto-reported by Omnigent's crash handler.\n"
+            "This crash was auto-reported by tesseract's crash handler.\n"
             "**Exception:** `ModuleNotFoundError: No module named 'termios'`\n"
             "**Command:** `omnigent setup`\n"
         )

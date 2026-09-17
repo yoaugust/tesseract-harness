@@ -632,7 +632,7 @@ async def test_supervise_transcript_yolo_auto_accepts_without_card(
     """Under yolo, a settled tool gate is accepted in-pane — no web card.
 
     cursor-agent's Run Everything mode still sometimes leaves a pending marker
-    long enough for Omnigent to otherwise mirror an ApprovalCard and stall a
+    long enough for tesseract to otherwise mirror an ApprovalCard and stall a
     piloted parent. Auto-accept must send ``y`` and never POST the permission
     hook.
     """

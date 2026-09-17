@@ -11,7 +11,7 @@ correctly reports ``harness: "codex-native"`` and a persisted
 controls — never renders.
 
 The journey is the reporter's: define a custom agent with a native Codex
-executor, start it as a top-level session, open it in Omnigent Web, and look
+executor, start it as a top-level session, open it in tesseract Web, and look
 for the composer's configuration gear. The agent registration, session
 create, harness resolution, and label shape are all real server behavior;
 only the runner's async Codex ``model/list`` catalog report is stubbed into
@@ -156,7 +156,7 @@ def test_custom_codex_native_session_shows_model_and_effort_controls(
     """A label-less codex-native session exposes the Model / Effort controls.
 
     Journey (from the bug report): define a custom agent with a native Codex
-    executor → start it as a top-level session → open it in Omnigent Web →
+    executor → start it as a top-level session → open it in tesseract Web →
     the composer must show the configuration gear with the Codex model picker
     and the model-derived reasoning-effort selector, exactly as the built-in
     Codex wrapper session does.

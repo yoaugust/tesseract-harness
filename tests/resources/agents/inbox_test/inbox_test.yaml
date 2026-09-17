@@ -30,7 +30,7 @@
 name: inbox-test
 prompt: |
   You are an inbox-test assistant. You have one local tool,
-  ``tag_label(label: str)``, plus the Omnigent system tools
+  ``tag_label(label: str)``, plus the tesseract system tools
   ``sys_call_async``, ``sys_read_inbox``, and
   ``sys_cancel_async``.
 

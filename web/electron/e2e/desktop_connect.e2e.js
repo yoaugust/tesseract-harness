@@ -65,7 +65,7 @@ describe(
         //    Key on the home composer heading, reliably visible on the desktop
         //    layout (the sidebar brand collapses into the macOS title-bar row
         //    and reads as hidden there).
-        const landed = window.getByText("What should we build?");
+        const landed = window.getByText("let's work, boss");
         await landed.waitFor({ state: "visible", timeout: 20_000 });
         assert.ok(await landed.isVisible(), "app shell did not render after connect");
       } finally {

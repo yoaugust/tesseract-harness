@@ -957,7 +957,7 @@ async def test_session_snapshot_reflects_terminal_pending_cache(
     """The GET snapshot reads ``_session_terminal_pending_cache`` so a
     client connecting mid-spin-up sees ``terminal_pending=True``.
 
-    This is the reconnect channel: the Omnigent session stream has no replay
+    This is the reconnect channel: the tesseract session stream has no replay
     buffer, so a client that connects after the runner emitted the
     pending event would otherwise miss it. Re-reading via GET proves
     the value travels cache → response builder → snapshot.
@@ -1119,7 +1119,7 @@ async def test_external_subagent_start_mints_child_session(
     ``GET /v1/sessions/{parent_id}/child_sessions``.
 
     The forwarder uses this signal to register Claude Code's own
-    Task-tool subagents (which never POST to Omnigent themselves) so the
+    Task-tool subagents (which never POST to tesseract themselves) so the
     Subagents rail can show them.
     """
     agent = await create_test_agent(client)
@@ -4398,9 +4398,9 @@ async def test_post_external_session_status_publishes_session_status(
 
     The native Claude forwarder posts this when Claude Code's Stop /
     StopFailure hooks fire so the web UI's idle/running indicator
-    updates without going through the Omnigent task lifecycle.
+    updates without going through the tesseract task lifecycle.
     A regression here would break the idle indicator for
-    ``omnigent claude`` sessions: Omnigent would never learn Claude
+    ``omnigent claude`` sessions: tesseract would never learn Claude
     finished and the UI would stay stuck on whatever transient
     state it last saw.
     """
@@ -4751,10 +4751,10 @@ async def test_post_external_session_status_idle_forwards_persisted_assistant_ou
     """
     Native idle status forwarding includes AP-persisted assistant text.
 
-    The native forwarder posts transcript items to Omnigent server, then posts
+    The native forwarder posts transcript items to tesseract server, then posts
     ``external_session_status: idle``. The runner's sub-agent registry
     needs the durable assistant text in that status forward because it
-    may not have the Omnigent transcript in local memory.
+    may not have the tesseract transcript in local memory.
     """
     from omnigent.server.routes import sessions as sessions_module
 
@@ -5063,7 +5063,7 @@ async def test_post_external_session_status_propagates_runner_delivery_failure(
     Runner delivery failure for a non-Codex sub-agent is preserved by AP.
 
     Native child terminal status is only successful when the runner confirms
-    delivery to the parent's inbox. If Omnigent returned ``{"queued": false}`` after
+    delivery to the parent's inbox. If tesseract returned ``{"queued": false}`` after
     a runner 503, the child forwarder would believe the result was ACKed while
     the parent never receives it.
     """
@@ -5135,7 +5135,7 @@ async def test_post_external_session_status_propagates_runner_delivery_failure(
     error = status_resp.json()["error"]
     assert error["code"] == "runner_unavailable"
     # The runner's delivery-not-confirmed reason is retained in AP's error
-    # message. If absent, Omnigent flattened the failure and made diagnosis harder.
+    # message. If absent, tesseract flattened the failure and made diagnosis harder.
     assert "missing_parent_inbox" in error["message"]
 
 
@@ -5421,7 +5421,7 @@ async def test_post_external_session_interrupted_publishes_session_interrupted(
     Codex-native uses this when app-server reports a terminal
     ``turn/completed`` status of ``interrupted``. The event must decorate
     the active web turn as cancelled, but must not persist a transcript item
-    or start / steer an Omnigent task.
+    or start / steer an tesseract task.
     """
     published: list[tuple[str, dict[str, Any]]] = []
 
@@ -5831,7 +5831,7 @@ async def test_post_external_session_usage_rejects_empty_payload(
     A payload missing both context_tokens and context_window 400s.
 
     Defends against a forwarder logic bug or partial deploy that would
-    otherwise round-trip a no-op event to Omnigent every poll.
+    otherwise round-trip a no-op event to tesseract every poll.
     """
     agent = await create_test_agent(client)
     session = await _create_session(client, agent["id"])
@@ -5868,7 +5868,7 @@ async def test_external_session_usage_persists_cumulative_cost(
     A claude-native ``cumulative_cost_usd`` is persisted to ``session_usage``.
 
     claude-native can't produce a ``response.completed`` (Claude Code is a
-    separate process), so the Omnigent relay's ``_accumulate_session_usage`` never
+    separate process), so the tesseract relay's ``_accumulate_session_usage`` never
     runs for it. Instead the forwarder sends Claude Code's own cumulative
     ``cost.total_cost_usd`` on this event; the server must persist it so a
     Cost-Ask policy reading ``event.context.usage.total_cost_usd`` sees a real
@@ -5969,7 +5969,7 @@ async def test_external_session_usage_cumulative_cost_is_set_not_added(
     Successive cumulative-cost posts SET (not accumulate) — native reports
     running totals, so two posts of 0.42 then 0.90 must leave 0.90, not 1.32.
 
-    A failure (1.32) would mean the native path wrongly reused the Omnigent relay's
+    A failure (1.32) would mean the native path wrongly reused the tesseract relay's
     add-delta semantics, double-counting the session cost.
     """
     agent = await create_test_agent(client)
@@ -8459,7 +8459,7 @@ async def test_patch_model_override_records_note_for_terminal_view_sdk_session(
     This is the polly / debby case: when such an agent is launched via
     ``omnigent run``, the runner stamps ``omnigent.ui: terminal`` to enable
     the web Chat/Terminal toggle (runner ``app.py``), but the brain is an
-    in-process claude-sdk agent whose history Omnigent writes — so a web
+    in-process claude-sdk agent whose history tesseract writes — so a web
     ``/model`` switch should land a durable ``[System: ...]`` note. Gating on
     ``omnigent.ui`` (the pre-fix behavior) wrongly suppressed it; the gate
     must key on the ``omnigent.wrapper`` native label instead.
@@ -9048,10 +9048,10 @@ async def test_interrupt_on_claude_native_session_skips_idle_publish_on_runner_f
 ) -> None:
     """
     If the runner couldn't deliver the Escape (e.g. tmux pane gone),
-    Omnigent must NOT lie to the UI by publishing idle. The spinner spins
+    tesseract must NOT lie to the UI by publishing idle. The spinner spins
     is the right signal — it tells the user the cancel didn't land.
 
-    After the interrupt-unification refactor the Omnigent side no longer
+    After the interrupt-unification refactor the tesseract side no longer
     publishes ``session.status: idle`` itself at all. Idle on a
     claude-native interrupt now comes from the runner's PTY activity
     watcher once the pane quiesces after the Escape (a failed Escape
@@ -9125,10 +9125,10 @@ async def test_stop_session_forwards_stop_session_event_to_runner(
     POST ``/events`` ``stop_session`` forwards the event verbatim to
     the bound runner's ``/events`` endpoint.
 
-    The Omnigent server stays harness-agnostic: it doesn't kill anything
+    The tesseract server stays harness-agnostic: it doesn't kill anything
     itself, it relays a ``{"type": "stop_session"}`` event to the
     runner, whose dispatch decides what to do (hard-kill tmux for
-    claude-native, 204 for in-process). This pins that the Omnigent forward
+    claude-native, 204 for in-process). This pins that the tesseract forward
     fires and addresses the runner's per-session ``/events`` path with
     the right body — a regression that dropped the forward, mangled
     the body, or hit the wrong URL would silently make the web UI's
@@ -9177,7 +9177,7 @@ async def test_stop_session_forwards_stop_session_event_to_runner(
         set_runner_client(None)
 
     # Exactly one POST to the session's /events path, carrying the
-    # stop_session type. 0 = the Omnigent branch didn't forward (no-op stop
+    # stop_session type. 0 = the tesseract branch didn't forward (no-op stop
     # button); 2+ = a duplicate relay. Snapshot GETs are filtered out
     # by the handler, so this isolates the control-event forward.
     events_forwards = [
@@ -9212,10 +9212,10 @@ async def test_stop_session_surfaces_runner_failure_as_error(
 
     Unlike effort/model_change (where a dropped forward is benign), a
     failed ``stop_session`` means the session is still alive. If the
-    Omnigent server swallowed the runner's 503 and returned 202
+    tesseract server swallowed the runner's 503 and returned 202
     ``{queued: false}``, the web UI would close its confirmation
     dialog as if the session stopped — the exact silent-failure the
-    review flagged. This pins that the Omnigent route raises (non-2xx)
+    review flagged. This pins that the tesseract route raises (non-2xx)
     instead, so the frontend mutation lands in its error state and
     can tell the user the stop didn't land. The bare-ConnectionError
     leg pins the WS-tunnel transport error mapping to the same clean
@@ -9540,8 +9540,8 @@ class _ForwardedEffort:
     """
     One forward of an effort change to the runner.
 
-    :param url: Fully-qualified runner URL the Omnigent server POSTed to.
-    :param body: Parsed JSON body the Omnigent server sent, or ``None``
+    :param url: Fully-qualified runner URL the tesseract server POSTed to.
+    :param body: Parsed JSON body the tesseract server sent, or ``None``
         when the request had no body.
     """
 
@@ -10336,7 +10336,7 @@ async def test_patch_permission_mode_rejects_non_claude_session(
         # (1) Native + claude-accepted level → POSTs effort_change.
         # The motivating case: dropdown click on a running pane.
         (True, "high", "high", "high"),
-        # (2) Non-native + same level → Omnigent server is harness-agnostic
+        # (2) Non-native + same level → tesseract server is harness-agnostic
         # so it ALSO POSTs effort_change. The runner's /events
         # dispatch will 204 no-op (covered by a runner-side test);
         # AP's job is just to forward.
@@ -10344,10 +10344,10 @@ async def test_patch_permission_mode_rejects_non_claude_session(
         # (3) Clear on native session → persisted None gets forwarded
         # as effort=None. The runner-side native handler decides to
         # skip injection (Claude has no slash for "use spawn default").
-        # Before refactor, Omnigent would short-circuit and not POST at all.
+        # Before refactor, tesseract would short-circuit and not POST at all.
         (True, "default", None, None),
         # (4) Level in EFFORT_VALUES but not CLAUDE_EFFORTS (``none``,
-        # ``minimal``). After refactor Omnigent no longer filters — it
+        # ``minimal``). After refactor tesseract no longer filters — it
         # forwards as-is, and the runner-side handler skips injection.
         (True, "none", "none", "none"),
     ],
@@ -10361,9 +10361,9 @@ async def test_patch_reasoning_effort_forwards_effort_change_event(
 ) -> None:
     """
     PATCH effort always forwards an ``effort_change`` event to
-    runner ``/events`` — harness-agnostic on the Omnigent side.
+    runner ``/events`` — harness-agnostic on the tesseract side.
 
-    Before the refactor, Omnigent server made a native-only POST to
+    Before the refactor, tesseract server made a native-only POST to
     ``/claude-native-effort`` and filtered out clear / unsupported
     values. After the refactor:
 
@@ -10372,7 +10372,7 @@ async def test_patch_reasoning_effort_forwards_effort_change_event(
     * The body is the new ``effort_change`` discriminator with the
       persisted level (or ``None`` for clear) — runner-side dispatch
       decides what to do with it.
-    * Omnigent server does not check ``_is_native_terminal_session``
+    * tesseract server does not check ``_is_native_terminal_session``
       and does not filter on level — every PATCH that changes effort
       sends the event.
 
@@ -10441,7 +10441,7 @@ async def test_patch_reasoning_effort_forwards_effort_change_event(
         await fake_runner.aclose()
         set_runner_client(None)
 
-    # Exactly one POST to the unified /events route. 0 = Omnigent server
+    # Exactly one POST to the unified /events route. 0 = tesseract server
     # silently dropped the forward (regression in the harness-agnostic
     # always-forward path); 2+ = a legacy branch (e.g. the deleted
     # _forward_claude_native_effort helper) snuck back in alongside
@@ -10467,7 +10467,7 @@ async def test_patch_reasoning_effort_forwards_effort_change_event(
     )
 
     # No POST to the legacy ``/claude-native-effort`` route should
-    # happen anymore — its callsite is gone from Omnigent server. A non-
+    # happen anymore — its callsite is gone from tesseract server. A non-
     # empty list here means the deleted ``_forward_claude_native_effort``
     # helper (or an equivalent native-only branch) was re-introduced.
     legacy_forwards = [f for f in captured if "/claude-native-effort" in f.url]
@@ -10568,7 +10568,7 @@ async def test_patch_reasoning_effort_swallows_runner_failure(
     Updated for the unified-events refactor: the URL the runner
     rejects is now ``/events`` (not the deleted
     ``/claude-native-effort``), but the swallow-and-return-200
-    contract on the Omnigent side is unchanged.
+    contract on the tesseract side is unchanged.
     """
     from omnigent.runtime import set_runner_client
 
@@ -10623,7 +10623,7 @@ async def test_patch_reasoning_effort_swallows_runner_failure(
 
     # One effort_change forward was attempted (proves we got far
     # enough to talk to the runner — i.e. the failure was swallowed,
-    # not skipped). 0 = Omnigent server bailed before forwarding (regression
+    # not skipped). 0 = tesseract server bailed before forwarding (regression
     # in the always-forward contract).
     events_forwards = [
         f
@@ -11092,7 +11092,7 @@ async def test_external_codex_subagent_terminal_status_accepted_without_runner(
     ``external_session_status`` on a Codex internal child does not require
     runner delivery.
 
-    Omnigent-spawned native sub-agents must forward terminal status to the
+    tesseract-spawned native sub-agents must forward terminal status to the
     parent runner inbox. Codex AgentControl children are tracked inside the
     same app-server thread tree and have no runner inbox entry, so the
     ``_require_external_status_forward`` guard must be bypassed for them.

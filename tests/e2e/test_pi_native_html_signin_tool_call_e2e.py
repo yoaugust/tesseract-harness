@@ -3,8 +3,8 @@
 The journey
 -----------
 A user runs a pi-native session (``omnigent pi``) on a topology with an
-authenticating edge (a reverse proxy or an IdP) in front of the Omnigent
-server. The Pi agent calls a bridged Omnigent tool, which the extension
+authenticating edge (a reverse proxy or an IdP) in front of the tesseract
+server. The Pi agent calls a bridged tesseract tool, which the extension
 dispatches by POSTing a JSON-RPC ``tools/call`` to
 ``POST /v1/sessions/{id}/mcp``. When the caller's auth has lapsed, the proxy
 answers that route with an HTTP ``200`` **sign-in document** (``text/html``)
@@ -20,7 +20,7 @@ Observed today (the bug)
 prefix of the response body. The throw is caught by the enclosing ``catch``,
 which returns the raw error message verbatim as the tool result:
 
-    Omnigent tool call failed: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    tesseract tool call failed: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
 
 Two defects, both reproduced by this test on the current build:
 
@@ -50,7 +50,7 @@ it. Only the network boundary is faulted -- ``globalThis.fetch`` answers the
 ``/mcp`` route with the reported ``200 text/html`` sign-in page (the reported
 trigger). The Pi agent's own entry point is exercised: the model-invoked
 ``pi.registerTool({... execute})`` callback the bridge registers for each
-Omnigent tool.
+tesseract tool.
 
 Usage::
 
@@ -79,7 +79,7 @@ pytestmark = pytest.mark.skipif(
 # runs from there so it resolves the same checkout's extension file.
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# A registered Omnigent tool the extension will expose via pi.registerTool. Its
+# A registered tesseract tool the extension will expose via pi.registerTool. Its
 # execute() round-trips through POST /v1/sessions/{id}/mcp -- the boundary the
 # bug lives at.
 _TOOL_NAME = "sys_os_shell"

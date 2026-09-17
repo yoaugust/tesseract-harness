@@ -103,13 +103,13 @@ class TestRowToItem:
             "event": {
                 "type": "content.part",
                 "uuid": "67ce67f7",
-                "part": {"type": "text", "text": "This is **Omnigent**."},
+                "part": {"type": "text", "text": "This is **tesseract**."},
             },
         }
         item = _row_to_item(9, row)
         assert item is not None
         assert item.role == "assistant"
-        assert item.text == "This is **Omnigent**."
+        assert item.text == "This is **tesseract**."
         assert item.response_id == "kimi:67ce67f7"
 
     def test_think_part_is_reasoning(self) -> None:
@@ -522,7 +522,7 @@ class TestReadNewIncremental:
     def test_usage_state_survives_terminal_recreation(self, tmp_path: Path) -> None:
         """clear_kimi_bridge_state resets only the wire cursor.
 
-        The cumulative usage state belongs to the Omnigent session, not the
+        The cumulative usage state belongs to the tesseract session, not the
         terminal: zeroing it on terminal recreation would make every later
         cumulative post a server-ignored decrease.
         """
@@ -3088,7 +3088,7 @@ class TestForwardLoopUsage:
     ) -> None:
         """Resuming a pre-existing kimi session must not bill its history.
 
-        Only usage stamped at/after the Omnigent launch epoch counts; the
+        Only usage stamped at/after the tesseract launch epoch counts; the
         transcript is still mirrored in full.
         """
         home = tmp_path / "home"

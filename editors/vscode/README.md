@@ -1,6 +1,6 @@
-# Omnigent for VS Code
+# tesseract for VS Code
 
-A minimal VS Code extension that opens your **running local Omnigent server** inside
+A minimal VS Code extension that opens your **running local tesseract server** inside
 the editor — an editor-beside pane that iframes the same UI you see at
 `http://127.0.0.1:6767`. It is a thin client of the local server's existing HTTP API
 (`server/API.md`); there is nothing new to run on the server side.
@@ -16,8 +16,8 @@ scope for now.
 - On activation the extension discovers a locally running server via
   `~/.omnigent/local_server.pid` and a `/health` probe (or uses `omnigent.serverUrl`
   when set to a localhost URL).
-- The Omnigent activity-bar view offers an **Open Omnigent** button. The
-  **Omnigent: Open** command (`omnigent.open`) — also on the editor title bar and in the
+- The tesseract activity-bar view offers an **Open tesseract** button. The
+  **tesseract: Open** command (`omnigent.open`) — also on the editor title bar and in the
   command palette — opens an editor-beside pane that frames the running server.
 - The iframe path is used for **local** servers only; a local server is loopback and
   needs no auth, so no token ever appears in the iframe URL.

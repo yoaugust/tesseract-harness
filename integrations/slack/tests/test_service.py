@@ -497,7 +497,7 @@ async def test_app_mention_creates_session_and_posts_response(tmp_path: Path) ->
     info_text = slack.posts[0]["text"]
     assert "debby" in info_text  # agent name
     assert "claude-native" in info_text  # harness
-    assert "/c/conv_1|Open in Omnigent>" in info_text  # web-UI link
+    assert "/c/conv_1|Open in tesseract>" in info_text  # web-UI link
     # The config summary comes FIRST, then the "Working on it…" ack: the thread
     # reads metadata → ack → answer.
     assert slack.posts[0]["order"] < slack.acks[0]["order"]
@@ -659,7 +659,7 @@ async def test_session_info_omits_missing_fields(tmp_path: Path) -> None:
 
     info_text = slack.posts[0]["text"]
     assert "None" not in info_text
-    assert "/c/conv_1|Open in Omnigent>" in info_text  # link still present
+    assert "/c/conv_1|Open in tesseract>" in info_text  # link still present
 
 
 async def test_no_ack_when_session_cannot_start_host_unavailable(tmp_path: Path) -> None:
@@ -2138,7 +2138,7 @@ class ServerErrorClient(FakeOmnigentClient):
     ) -> str:
         # Mirrors a 500 from POST /v1/sessions: a bare OmnigentError, NOT one of
         # the specifically-handled subclasses.
-        raise OmnigentError("Omnigent request failed with 500: internal_error")
+        raise OmnigentError("tesseract request failed with 500: internal_error")
 
 
 async def _wait_for_posts(client: FakeSlackClient, count: int) -> None:
@@ -2410,7 +2410,7 @@ class RunnerUnavailableTurnClient(FakeOmnigentClient):
     ) -> AsyncIterator[dict[str, Any]]:
         self.turns.append((session_id, text))
         self.turn_host_types.append(host_type)
-        raise RunnerUnavailableError("Omnigent runner is unavailable.")
+        raise RunnerUnavailableError("tesseract runner is unavailable.")
         yield  # pragma: no cover -- makes this an async generator
 
 

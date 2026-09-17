@@ -1,5 +1,5 @@
 """
-Round-trip invariant tests for the Omnigent ↔ AgentSpec
+Round-trip invariant tests for the tesseract ↔ AgentSpec
 adapter.
 
 Asserts
@@ -57,7 +57,7 @@ def hello_world_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def executor_block_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML with an ``executor:`` block declaring
+    tesseract YAML with an ``executor:`` block declaring
     model + harness + profile. Round-trip checks that every
     executor field survives both directions unchanged.
     """
@@ -78,7 +78,7 @@ def executor_block_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def function_tool_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML with one function-type tool pointing at a
+    tesseract YAML with one function-type tool pointing at a
     real importable callable. Round-trip checks that the
     dotted-path encoding is lossless across both directions.
     """
@@ -154,7 +154,7 @@ def test_roundtrip_hello_world_is_incomplete_for_omnigent(
     """
     A bare ``name`` + ``prompt`` YAML (no executor block) does
     NOT round-trip — the synthesized AgentSpec has no harness or
-    model, which Omnigent' strict spec rejects on the way
+    model, which tesseract' strict spec rejects on the way
     back. This is intentional: the omnigent validator requires
     a harness when ``executor.type == "omnigent"``, and that
     requirement is the reason the round-trip surfaces as a

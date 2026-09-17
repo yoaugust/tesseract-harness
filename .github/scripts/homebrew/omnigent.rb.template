@@ -1,4 +1,4 @@
-# Homebrew formula TEMPLATE for the Omnigent CLI (`omnigent` / `omni`).
+# Homebrew formula TEMPLATE for the tesseract CLI (`omnigent` / `omni`).
 #
 # The volatile parts of this formula are regenerated on every release by
 # `generate_formula.py` (run from `.github/workflows/homebrew-tap-pr.yml`) and

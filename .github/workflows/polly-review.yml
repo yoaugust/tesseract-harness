@@ -1,6 +1,6 @@
 name: Polly AI Review
 
-# Spins up a local Omnigent server + runner inside the CI runner, starts a
+# Spins up a local tesseract server + runner inside the CI runner, starts a
 # Polly session with the PR diff, waits for the cross-vendor review to
 # complete, and posts the findings as a PR comment. Uses the same LLM
 # gateway secrets as the e2e suite (LLM_API_KEY + GATEWAY_BASE_URL).
@@ -149,7 +149,7 @@ jobs:
           echo "duplicate=true" >> "$GITHUB_OUTPUT"
           {
             echo "<!-- polly-skipped-sha: ${head_sha} -->"
-            echo "## <img src=\"https://raw.githubusercontent.com/omnigent-ai/omnigent/main/docs/images/omnigent-logo.svg\" alt=\"\" height=\"20\" valign=\"middle\" /> Polly AI Review skipped"
+            echo "## <img src=\"https://raw.githubusercontent.com/yoaugust/tesseract-harness/main/docs/images/tesseract-logo.svg\" alt=\"\" height=\"20\" valign=\"middle\" /> Polly AI Review skipped"
             echo ""
             echo "\`${head_sha:0:7}\` already has a [review](${prior}), so there is nothing new to look at."
             echo ""
@@ -278,7 +278,7 @@ jobs:
           "
           echo "DATABRICKS_BEARER=${LLM_API_KEY}" >> "$GITHUB_ENV"
 
-      - name: Write Omnigent provider config
+      - name: Write tesseract provider config
         if: steps.trigger.outputs.skip != 'true' && steps.creds.outputs.available == 'true'
         env:
           GATEWAY_BASE_URL: ${{ secrets.GATEWAY_BASE_URL }}
@@ -576,7 +576,7 @@ jobs:
           {
             echo "<!-- polly-review-bot -->"
             echo "<!-- polly-reviewed-sha: ${HEAD_SHA} -->"
-            echo "## <img src=\"https://raw.githubusercontent.com/omnigent-ai/omnigent/main/docs/images/omnigent-logo.svg\" alt=\"\" height=\"20\" valign=\"middle\" /> Polly AI Review"
+            echo "## <img src=\"https://raw.githubusercontent.com/yoaugust/tesseract-harness/main/docs/images/tesseract-logo.svg\" alt=\"\" height=\"20\" valign=\"middle\" /> Polly AI Review"
             echo ""
             echo "$REVIEW_TEXT"
             echo ""

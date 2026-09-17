@@ -54,7 +54,7 @@ fun usesInWebViewAuth(origin: String?): Boolean {
     return IN_WEBVIEW_AUTH_DOMAINS.any { host == it || host.endsWith(".$it") }
 }
 
-/** Path the Omnigent SPA is mounted at inside a Databricks workspace. */
+/** Path the tesseract SPA is mounted at inside a Databricks workspace. */
 const val WORKSPACE_UI_PATH = "/omnigent"
 
 /**
@@ -76,7 +76,7 @@ private fun isDatabricksWorkspaceHost(host: String?): Boolean {
  * is anything else — a non-workspace host, or a URL that already carries a path
  * (a deliberate deep link we must not override).
  *
- * A bare workspace root shows the Databricks landing page, not Omnigent, so the
+ * A bare workspace root shows the Databricks landing page, not tesseract, so the
  * shell rewrites it to [WORKSPACE_UI_PATH]. Query and fragment survive because
  * `?o=<org>` selects which workspace the request lands in.
  */

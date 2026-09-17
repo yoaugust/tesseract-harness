@@ -1,7 +1,7 @@
-# Databricks Asset Bundle config for the Omnigent Slack bot.
+# Databricks Asset Bundle config for the tesseract Slack bot.
 #
 # Deploys the Slack Socket-Mode bot + its Databricks web-auth enrollment
-# page as a Databricks App. Unlike the Omnigent server app, this needs no
+# page as a Databricks App. Unlike the tesseract server app, this needs no
 # Lakebase or UC volume — it's a stateless (tokens re-enroll) pure-PyPI
 # package. deploy.py copies the package source into src/ and wraps
 # `databricks bundle deploy` + `bundle run`. See README.md.
@@ -22,7 +22,7 @@ variables:
     description: >
       Custom U2M OAuth app client id. Public (not a secret) — passed inline.
   server_url:
-    description: "Base URL of the Omnigent server app (the bot talks to this)."
+    description: "Base URL of the tesseract server app (the bot talks to this)."
   app_url:
     description: >
       This bot app's own public URL, used to build the enrollment link posted
@@ -43,7 +43,7 @@ resources:
     # count is UI-only in the Beta), so this is enforced by NOT turning it on.
     omnigent-slack:
       name: ${var.app_name}
-      description: "Omnigent Slack bot with Databricks web-auth enrollment."
+      description: "tesseract Slack bot with Databricks web-auth enrollment."
       source_code_path: ./src
 
       # Secrets live in a Databricks secret scope, never in this file. Each

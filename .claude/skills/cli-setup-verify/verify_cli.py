@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Drive the Omnigent CLI through a PTY in a throwaway sandbox and verify it.
+"""Drive the tesseract CLI through a PTY in a throwaway sandbox and verify it.
 
 This is the reusable engine behind the ``cli-setup-verify`` skill (see
 ``SKILL.md`` next to this file for the playbook and CUJ catalog). One run:

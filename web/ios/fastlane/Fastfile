@@ -100,11 +100,11 @@ default_platform(:ios)
 FLAVORS = {
   public: {
     bundle_id: "ai.omnigent.ios",
-    display_name: "Omnigent",
+    display_name: "tesseract",
   },
   internal: {
     bundle_id: "ai.omnigent.ios.internal",
-    display_name: "Omnigent (Databricks)",
+    display_name: "tesseract (Databricks)",
   },
 }.freeze
 
@@ -120,7 +120,7 @@ platform :ios do
     )
   end
 
-  desc "Build and run the Omnigent app in the iOS Simulator"
+  desc "Build and run the tesseract app in the iOS Simulator"
   lane :simulator do |options|
     device = options[:device] || ENV.fetch("OMNIGENT_IOS_SIMULATOR", "iPhone 17 Pro")
     build_dir = File.expand_path("build", __dir__)
@@ -203,7 +203,7 @@ platform :ios do
     server_pid = nil
     begin
       server_pid = omnigent_start_process(
-        "Omnigent server",
+        "tesseract server",
         {
           "HOME" => home_dir,
           "OMNIGENT_DATA_DIR" => data_dir,

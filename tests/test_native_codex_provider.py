@@ -201,7 +201,7 @@ def test_resolve_native_codex_launch_subscription_ignores_private_inherited_home
     """
     A private inherited ``CODEX_HOME`` does not hide the real Codex login.
 
-    Nested Omnigent runs can inherit a per-session private Codex home from
+    Nested tesseract runs can inherit a per-session private Codex home from
     the parent native terminal. Subscription routing must check the same real
     ``~/.codex`` source that the app-server launch will bridge from; otherwise
     it falls through to a key provider even though the Codex CLI is logged in.

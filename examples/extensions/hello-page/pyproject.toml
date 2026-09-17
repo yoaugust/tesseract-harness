@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "omnigent-hello-extension"
 version = "0.1.0"
-description = "Reference browser-page extension for Omnigent"
+description = "Reference browser-page extension for tesseract"
 requires-python = ">=3.12"
 dependencies = ["omnigent>=0.11.0.dev0,<1"]
 

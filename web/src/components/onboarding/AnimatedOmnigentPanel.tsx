@@ -1,4 +1,4 @@
-// The onboarding card + animated pixel panel + centered starfish logo.
+// The onboarding card + animated pixel panel + centered tesseract logo.
 //
 // Ported from the design handoff, with `motion` replaced by CSS transitions
 // (see AnimatedOmnigentPanel.css) so we add no animation-library dependency —
@@ -10,7 +10,7 @@
 
 import type { ReactNode } from "react";
 import PixelBlast from "./PixelBlast";
-import omnigentLogo from "@/assets/omnigent-starfish-icon.png";
+import tesseractLogo from "@/assets/tesseract-logo.png";
 import "./AnimatedOmnigentPanel.css";
 
 // Fixed card width + logo size — the flow only varies height/panelHeight per
@@ -45,7 +45,7 @@ export function AnimatedOmnigentPanel({
     <section
       className={`omnigent-card${autoHeight ? " omnigent-card--auto" : ""}`}
       style={{ width: CARD_WIDTH, ...(autoHeight ? {} : { height }) }}
-      aria-label="Omnigent onboarding"
+      aria-label="tesseract onboarding"
     >
       <div className="omnigent-animated-panel" style={{ height: panelHeight }}>
         <div className="omnigent-pixel-field" aria-hidden="true">
@@ -55,8 +55,8 @@ export function AnimatedOmnigentPanel({
         </div>
 
         <img
-          src={omnigentLogo}
-          alt="Omnigent"
+          src={tesseractLogo}
+          alt="tesseract"
           className={`omnigent-panel-logo${centeredLogo ? " omnigent-panel-logo--centered" : ""}`}
           style={{ width: LOGO_SIZE, height: LOGO_SIZE }}
         />

@@ -1,6 +1,6 @@
-# Omnigent load test
+# tesseract load test
 
-A load test where **each simulated user is a real Omnigent host**. Sibling to
+A load test where **each simulated user is a real tesseract host**. Sibling to
 `dev/benchmarks/`: benchmarks measure single-request latency in isolation; this
 drives **concurrent, end-to-end load** — hosts → sessions → real multi-turn
 conversations.
@@ -11,7 +11,7 @@ repeatedly creates a **host-bound session** and drives a **real multi-turn
 conversation** on it. Every turn is a genuine
 `POST .../events` → server → the user's host → a runner subprocess it spawns →
 LLM → stream → `idle` loop. The **LLM is mocked** (zero latency), so the numbers
-isolate Omnigent's own dispatch / streaming / history-handling overhead rather
+isolate tesseract's own dispatch / streaming / history-handling overhead rather
 than provider latency. `-u N` scales the number of hosts.
 
 ## Capacity note (read this)

@@ -22,7 +22,7 @@ _MISSING_INFORMATION_TEXT = {
     MissingInformation.EXPECTED_BEHAVIOR: "what you expected to happen",
     MissingInformation.OBSERVED_BEHAVIOR: "what happened instead, including the exact error",
     MissingInformation.VERSION_OR_ENVIRONMENT: (
-        "the Omnigent version and relevant environment details"
+        "the tesseract version and relevant environment details"
     ),
     MissingInformation.DIAGNOSTIC_EVIDENCE: (
         "logs, screenshots, or session IDs that show the failure"

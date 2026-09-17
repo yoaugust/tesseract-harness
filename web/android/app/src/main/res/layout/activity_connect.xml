@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Mirrors the iOS shell's ConnectView: brand wordmark (which embeds the starfish)
+  Mirrors the iOS shell's ConnectView: tesseract mark
   on top, muted subtitle, a "Server URL" label + bordered field, a filled primary
   button, an inline error line, and bordered recent-server rows. Brand colors come
   from values[-night]/colors.xml (ported from the iOS DesignTokens); type uses the
@@ -29,7 +29,7 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/connect_logo_desc"
             android:maxHeight="56dp"
-            android:src="@drawable/omnigents_logo" />
+            android:src="@drawable/tesseract_logo" />
 
         <TextView
             android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-"""Shared terminal-output styling for the Omnigent CLI.
+"""Shared terminal-output styling for the tesseract CLI.
 
 This is the one place that owns the consoles, the brand palette, and the
 status / structure helpers that every command should print through, so

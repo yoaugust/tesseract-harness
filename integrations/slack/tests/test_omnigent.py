@@ -476,7 +476,7 @@ async def test_launch_runner_errors_when_no_online_host() -> None:
         await client.aclose()
 
     assert raised is not None
-    assert "No online Omnigent hosts" in str(raised)
+    assert "No online tesseract hosts" in str(raised)
 
 
 @respx.mock
@@ -658,7 +658,7 @@ async def test_run_turn_ends_on_idless_idle_for_in_process_harness() -> None:
 @respx.mock
 async def test_run_turn_ignores_idless_idle_flap_on_claude_native_cold_start() -> None:
     # Incident: a claude-native turn on a freshly-launched runner posted
-    # "Omnigent completed without returning response text" ~5s after submit, even
+    # "tesseract completed without returning response text" ~5s after submit, even
     # though the agent later produced a full answer. During cold start (runner
     # booted, message submitted, but the LLM hasn't returned its first token) the
     # PTY-activity watcher emits an id-less `running` then an id-less `idle` flap.

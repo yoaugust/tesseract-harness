@@ -4,7 +4,7 @@ Grok Build (``grok agent stdio``) advertises ACP ``authMethods`` on
 ``initialize`` — including ``cached_token`` when ``~/.grok/auth.json`` holds a
 valid token — and marks it as ``_meta.defaultAuthMethodId``. The agent then
 rejects ``session/new`` with ``Authentication required`` until the client sends
-``authenticate``. Omnigent's generic ACP executor
+``authenticate``. tesseract's generic ACP executor
 (``omnigent/inner/acp_executor.py``) goes ``initialize`` -> ``session/new``
 without ever sending ``authenticate``, so every turn on such an agent dies
 with ``inner executor error: ACP session/new failed: Authentication required``

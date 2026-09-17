@@ -1,4 +1,4 @@
-"""Public API for installed Omnigent extensions."""
+"""Public API for installed tesseract extensions."""
 
 from omnigent.extensions.api import (
     EXTENSION_API_VERSION,

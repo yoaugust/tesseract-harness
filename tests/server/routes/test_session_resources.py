@@ -665,10 +665,10 @@ async def test_claude_native_message_forwards_to_runner_without_persisting(
     client: httpx.AsyncClient,
 ) -> None:
     """
-    Claude-native web-chat input is runner injection, not Omnigent persistence.
+    Claude-native web-chat input is runner injection, not tesseract persistence.
 
     This fails if the route regresses to the legacy create-or-steer
-    path, which would either start a duplicate Omnigent agent task or make
+    path, which would either start a duplicate tesseract agent task or make
     the web UI render a non-terminal-originated user message.
     """
     fake_runner = _FakeRunnerClient(payload={})
@@ -756,7 +756,7 @@ async def test_claude_native_message_surfaces_runner_sse_failure(
     """
     Runner SSE ``response.failed`` means terminal injection failed.
 
-    This fails if the Omnigent route treats the runner's streaming HTTP 200
+    This fails if the tesseract route treats the runner's streaming HTTP 200
     as success while the harness reports that ``tmux send-keys`` did
     not deliver the message.
     """
@@ -3625,7 +3625,7 @@ async def test_relay_persists_terminal_resource_created_from_runner() -> None:
     """The relay persists a ``resource_event`` for a runner-emitted create.
 
     An agent ``sys_terminal_launch`` makes the runner emit
-    ``session.resource.created`` on its SSE stream. The Omnigent relay must
+    ``session.resource.created`` on its SSE stream. The tesseract relay must
     persist a durable ``resource_event`` item so a client reconnecting
     mid-turn rediscovers the terminal in the snapshot — matching the
     REST resource path.
@@ -4155,8 +4155,8 @@ async def test_relay_dedupes_duplicate_error_persistence_but_forwards_live_frame
 async def test_native_dispatch_fast_fails_and_consumes_message_on_terminal_error() -> None:
     """Definitive native terminal failure consumes the user message quickly.
 
-    The Omnigent server first asks the runner to ensure the native terminal.
-    When the runner returns a structured startup failure, Omnigent must not
+    The tesseract server first asks the runner to ensure the native terminal.
+    When the runner returns a structured startup failure, tesseract must not
     create a pending input or forward into the dead terminal. It should
     persist the user message plus a durable error item instead.
     """
@@ -4204,7 +4204,7 @@ async def test_native_dispatch_fast_fails_and_consumes_message_on_terminal_error
     errors = [i for i in store.appended_items if i.type == "error"]
     assert [i.type for i in store.appended_items] == ["message", "error"]
     # One message means the failed turn was consumed. Zero would leave
-    # the input pending forever; two would mean the Omnigent fast-fail path
+    # the input pending forever; two would mean the tesseract fast-fail path
     # duplicated the user's message.
     assert len(messages) == 1
     assert messages[0].created_by == "alice@example.com"
@@ -4490,7 +4490,7 @@ async def test_native_dispatch_reports_malformed_runner_error_body() -> None:
     """Opaque framework 500 bodies become explicit ensure errors.
 
     If the runner/tunnel returns a plain ``Internal Server Error`` body
-    instead of the structured native startup error JSON, Omnigent still fast
+    instead of the structured native startup error JSON, tesseract still fast
     fails the message. The transcript should not invent a missing
     native CLI cause or persist the raw HTTP body; it should say the
     runner returned a malformed ensure response.
@@ -4543,7 +4543,7 @@ async def test_native_dispatch_reports_malformed_runner_error_body() -> None:
 async def test_native_dispatch_transport_error_does_not_fallback_to_forwarding() -> None:
     """Runner transport failure is a definitive AP-side ensure error.
 
-    If Omnigent cannot reach the runner's terminal ensure endpoint, it must
+    If tesseract cannot reach the runner's terminal ensure endpoint, it must
     consume the user message and record an explicit ensure failure. It
     should not fall back to forwarding the message and waiting on the
     old boot grace path, because that reintroduces the slow hang.

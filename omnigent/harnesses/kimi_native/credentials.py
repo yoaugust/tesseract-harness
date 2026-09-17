@@ -1,4 +1,4 @@
-"""Per-session ``KIMI_CODE_HOME`` builder that injects Omnigent hooks.
+"""Per-session ``KIMI_CODE_HOME`` builder that injects tesseract hooks.
 
 Kimi Code reads a single ``config.toml`` at ``$KIMI_CODE_HOME/config.toml``
 (default ``~/.kimi-code``) and stores its auth (``oauth/`` + ``credentials/``)
@@ -10,7 +10,7 @@ runner points the launched ``kimi`` process at a session-scoped home that:
   providers keep working — EXCEPT the ``sessions/`` store and its index, which
   stay session-private so the transcript forwarder's wire-log discovery can
   never adopt a parallel session's log — and
-- carries a ``config.toml`` that is the user's config text with two Omnigent
+- carries a ``config.toml`` that is the user's config text with two tesseract
   ``[[hooks]]`` appended — a ``PreToolUse`` deny-gate and a ``PermissionRequest``
   read-only surface, both dispatched to :mod:`omnigent.harnesses.kimi_native.hook`.
 
@@ -31,7 +31,7 @@ from pathlib import Path
 KIMI_CODE_HOME_ENV_VAR = "KIMI_CODE_HOME"
 _CONFIG_FILE = "config.toml"
 #: Global-home entries kept session-private instead of symlinked: config.toml
-#: is rebuilt with the Omnigent hooks, and the sessions store + its index stay
+#: is rebuilt with the tesseract hooks, and the sessions store + its index stay
 #: per-session so parallel kimi sessions cannot adopt each other's wire logs.
 _PRIVATE_ENTRIES = frozenset({_CONFIG_FILE, "sessions", "session_index.jsonl"})
 
@@ -51,7 +51,7 @@ def resolve_user_kimi_home() -> Path:
 
 
 def render_kimi_hooks_toml(*, bridge_dir: Path, python_executable: str | None = None) -> str:
-    """Render the two Omnigent ``[[hooks]]`` entries as TOML text.
+    """Render the two tesseract ``[[hooks]]`` entries as TOML text.
 
     Both hooks dispatch to :mod:`omnigent.harnesses.kimi_native.hook` with the bridge
     dir baked into the command (no secrets on the command line — the hook reads
@@ -86,7 +86,7 @@ def render_kimi_hooks_toml(*, bridge_dir: Path, python_executable: str | None = 
     # to answer the card — after which kimi's own TUI prompt stands.
     return (
         "\n"
-        "# --- Omnigent native hooks (auto-generated; do not edit) ---\n"
+        "# --- tesseract native hooks (auto-generated; do not edit) ---\n"
         "[[hooks]]\n"
         'event = "PreToolUse"\n'
         f'command = "{pre}"\n'
@@ -105,13 +105,13 @@ def build_kimi_session_home(
     bridge_dir: Path,
     python_executable: str | None = None,
 ) -> dict[str, str]:
-    """Materialize a session-scoped ``KIMI_CODE_HOME`` with Omnigent hooks.
+    """Materialize a session-scoped ``KIMI_CODE_HOME`` with tesseract hooks.
 
     Symlinks every entry of the user's global kimi home into *session_home*
-    except ``config.toml`` (rebuilt below with the Omnigent hooks) and the
+    except ``config.toml`` (rebuilt below with the tesseract hooks) and the
     ``sessions`` store + ``session_index.jsonl`` (kept session-private so
     parallel kimi sessions cannot adopt each other's wire logs), then writes a
-    ``config.toml`` that is the user's config plus the Omnigent hooks.
+    ``config.toml`` that is the user's config plus the tesseract hooks.
     Best-effort and idempotent: re-running rewrites ``config.toml`` and leaves
     existing symlinks in place.
 

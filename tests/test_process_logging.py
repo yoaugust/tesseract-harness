@@ -219,7 +219,7 @@ def test_terminal_log_formatter_abbreviates_warning_and_source() -> None:
 def test_terminal_supports_color_no_color_overrides_ambient_force(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """NO_COLOR disables ambient force-color hints, but not Omnigent-owned mirrors."""
+    """NO_COLOR disables ambient force-color hints, but not tesseract-owned mirrors."""
     monkeypatch.setenv("NO_COLOR", "1")
     monkeypatch.setenv("FORCE_COLOR", "1")
     monkeypatch.setenv("CLICOLOR_FORCE", "1")

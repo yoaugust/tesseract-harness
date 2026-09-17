@@ -522,7 +522,7 @@ def test_build_kiro_mcp_config_targets_serve_mcp(tmp_path: Path) -> None:
 
 
 def test_write_kiro_workspace_mcp_config_merges_preserving_user_servers(tmp_path: Path) -> None:
-    """The Omnigent server is merged into <workspace>/.kiro/settings/mcp.json
+    """The tesseract server is merged into <workspace>/.kiro/settings/mcp.json
     without clobbering a user's pre-existing workspace servers."""
     workspace = tmp_path / "repo"
     settings = workspace / ".kiro" / "settings"

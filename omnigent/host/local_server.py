@@ -1,4 +1,4 @@
-"""Persistent background local Omnigent server lifecycle.
+"""Persistent background local tesseract server lifecycle.
 
 When ``run`` / ``claude`` / ``codex`` are invoked without a
 ``--server`` URL, the work happens against a server that lives on *this*
@@ -58,7 +58,7 @@ _DOOMED_CHILD_EXIT_GRACE_S = _LOCAL_SERVER_READY_TIMEOUT_SECONDS
 
 class LocalServerStartupError(click.ClickException):
     """
-    The background local Omnigent server failed to start or become ready.
+    The background local tesseract server failed to start or become ready.
 
     A dedicated :class:`click.ClickException` subclass so the top-level CLI
     can tell a server-startup failure apart from a stale-host tunnel
@@ -124,7 +124,7 @@ def server_config_signature(*, include_features: bool = True) -> str:
     """
     Compute a signature of the server-affecting config for one invocation.
 
-    The daemon (in local mode) spawns the Omnigent server once and never
+    The daemon (in local mode) spawns the tesseract server once and never
     re-reads its spawn config, so a reused server silently keeps the auth
     mode — and the *code* — it was born with. Stamping this signature lets
     reuse detect when a later invocation wants a *different* server (e.g.
@@ -494,7 +494,7 @@ class LocalServerStartup:
 
 
 def ensure_local_omnigent_server() -> LocalServerStartup:
-    """Ensure a persistent background local Omnigent server is running.
+    """Ensure a persistent background local tesseract server is running.
 
     Reuses a healthy server recorded in the pidfile; otherwise spawns a
     detached ``omnigent server`` on a free loopback port, backed by the
@@ -814,9 +814,9 @@ def _pid_listening_on_port(port: int) -> int | None:
 
 
 def _local_server_health_ok(base_url: str) -> bool:
-    """Return ``True`` if *base_url* answers ``/health`` as an Omnigent server.
+    """Return ``True`` if *base_url* answers ``/health`` as an tesseract server.
 
-    Confirms a listener is actually an Omnigent server (``GET /health`` →
+    Confirms a listener is actually an tesseract server (``GET /health`` →
     200 with ``{"status": "ok"}``) before the off-switch stops it, so we
     never kill an unrelated process that happens to hold the port.
 
@@ -845,7 +845,7 @@ def stop_untracked_local_server(port: int = _DEFAULT_LOCAL_PORT) -> int | None:
     record, a respawn that landed on a different port, a crash). Such a
     server then escapes :func:`stop_local_omnigent_server`, which only knows the
     pidfile PID — so ``omnigent stop`` / ``server stop`` would leave it
-    running. This sweep covers that hole: if a live Omnigent server answers
+    running. This sweep covers that hole: if a live tesseract server answers
     ``/health`` on the canonical loopback *port*, find its PID and terminate
     it. Call it AFTER :func:`stop_local_omnigent_server` so a normally-tracked
     server is already gone and ``/health`` no longer answers (this is a

@@ -1,4 +1,4 @@
-// Recording harness for the Omnigent desktop shell (Electron).
+// Recording harness for the tesseract desktop shell (Electron).
 //
 // Every OTHER e2e recording lane is a pytest-playwright test under
 // tests/e2e_ui/, because the bug lives in the SPA and pytest-playwright's

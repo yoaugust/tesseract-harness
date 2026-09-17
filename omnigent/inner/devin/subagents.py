@@ -18,7 +18,7 @@ it to this module is what keeps that coupling from reaching the generic ACP
 executor.
 
 Devin needs no capability negotiation: the same capture shows it emitting these
-keys while Omnigent advertised only ``clientCapabilities.fs``. That is dialect-
+keys while tesseract advertised only ``clientCapabilities.fs``. That is dialect-
 specific, not a protocol rule — Claude Code's ACP bridge withholds its nested
 transcript unless the client opts in via
 ``clientCapabilities._meta["subagent-transcript"]``, and keys parentage on

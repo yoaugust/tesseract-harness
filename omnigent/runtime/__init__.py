@@ -317,7 +317,7 @@ def set_runner_router(router: RunnerRouter | None) -> None:
     """
     Set the conversation-aware runner router.
 
-    Production Omnigent servers use this instead of a process-wide runner
+    Production tesseract servers use this instead of a process-wide runner
     client so each dispatch resolves the correct runner from
     ``conversations.runner_id`` and the live tunnel registry.
 
@@ -408,14 +408,14 @@ def get_harness_process_manager() -> HarnessProcessManager:
 
     :returns: The manager instance set by the FastAPI lifespan.
     :raises RuntimeError: If the lifespan startup hasn't run yet
-        (e.g. workflow invoked before Omnigent boot completed, or in a
+        (e.g. workflow invoked before tesseract boot completed, or in a
         unit-test setting that didn't call
         :func:`set_harness_process_manager`).
     """
     pm = _globals._harness_process_manager
     if pm is None:
         raise RuntimeError(
-            "HarnessProcessManager not initialized — Omnigent lifespan startup "
+            "HarnessProcessManager not initialized — tesseract lifespan startup "
             "must call set_harness_process_manager() before any workflow "
             "dispatches to a non-default harness"
         )

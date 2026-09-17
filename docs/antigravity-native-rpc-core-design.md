@@ -40,7 +40,7 @@ connect-RPC service `exa.language_server_pb.LanguageServerService`, TLS HTTP/2 o
 
 ### 2.1 Timeout gotcha (critical)
 
-A `WAITING` interaction **times out** server-side (→ `CORTEX_STEP_STATUS_ERROR`), after which agy **auto-retries with a fresh `WAITING` step at a higher `stepIndex`**. Omnigent elicitations wait on a human (potentially slow), so:
+A `WAITING` interaction **times out** server-side (→ `CORTEX_STEP_STATUS_ERROR`), after which agy **auto-retries with a fresh `WAITING` step at a higher `stepIndex`**. tesseract elicitations wait on a human (potentially slow), so:
 
 - The bridge must **re-read the freshest `WAITING` step at delivery time** — never trust the `trajectoryId/stepIndex` captured at detection.
 - On a timeout-retry, the bridge must **re-surface / update** the elicitation against the new step.

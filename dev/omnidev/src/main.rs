@@ -1,4 +1,4 @@
-//! omnidev — dev tooling for Omnigent.
+//! omnidev — dev tooling for tesseract.
 //!
 //! Three surfaces in one binary:
 //! - **pod supervisor** (bare `omnidev`): manages an isolated dev instance for
@@ -43,7 +43,7 @@ use state::Shared;
 use supervisor::{Cmd, Supervisor};
 
 #[derive(Parser, Debug)]
-#[command(name = "omnidev", about = "Dev tooling for Omnigent", version)]
+#[command(name = "omnidev", about = "Dev tooling for tesseract", version)]
 struct Args {
     #[command(subcommand)]
     command: Option<Command>,
@@ -99,7 +99,7 @@ enum Command {
 /// Flags for the default (no-subcommand) pod-supervisor run.
 #[derive(clap::Args, Debug)]
 struct RunArgs {
-    /// Process profile for an Omnigent integration with a different repository layout.
+    /// Process profile for an tesseract integration with a different repository layout.
     #[arg(long)]
     profile: Option<PathBuf>,
 
@@ -210,7 +210,7 @@ fn run_omnigent(args: RunArgs, passthrough: Vec<String>) -> Result<()> {
 }
 
 /// Default path: the pod supervisor for the current checkout. This is the only
-/// path that requires an Omnigent checkout.
+/// path that requires an tesseract checkout.
 #[tokio::main]
 async fn run_supervisor(args: RunArgs) -> Result<()> {
     let cwd = std::env::current_dir()?;

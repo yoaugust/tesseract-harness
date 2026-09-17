@@ -6,7 +6,7 @@ server and snapshots structural observations (exit code, stderr
 cleanliness, assistant text length).
 
 **What breaks if this fails:**
-- Omnigent' ``CodexExecutor`` regresses (``codex app-server``
+- tesseract' ``CodexExecutor`` regresses (``codex app-server``
   subprocess orchestration, App Server JSON-RPC protocol, the
   message-stream translation in ``codex_executor.run_turn``).
 - The ``codex`` CLI binary disappears from PATH or its

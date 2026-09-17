@@ -410,7 +410,7 @@ _BROWSER_ACTION_NO_RENDERER_RESULT: dict[str, Any] = {"error": "no browser rende
 
 
 _BROWSER_ACTION_TIMEOUT_RESULT: dict[str, Any] = {
-    "error": "browser action timed out — is the session open in the Omnigent desktop app?"
+    "error": "browser action timed out — is the session open in the tesseract desktop app?"
 }
 
 
@@ -821,7 +821,7 @@ _MODEL_OPTIONS_ENDPOINT_BY_WRAPPER: dict[str, str] = {
     # pi-native is deliberately NOT here: its catalog is PUSHED by the resident
     # extension (``external_model_options`` → ``_pushed_model_options_cache``),
     # not fetched from a runner route, so the picker works in every auth path
-    # (Omnigent provider OR pi's own ``/login``) — see ``_fetch_model_options``.
+    # (tesseract provider OR pi's own ``/login``) — see ``_fetch_model_options``.
 }
 
 

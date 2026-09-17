@@ -91,7 +91,7 @@ class RunnerUnavailableError(OmnigentError):
 
 
 class AuthRequiredError(OmnigentError):
-    """The Omnigent server rejected an unauthenticated request (HTTP 401).
+    """The tesseract server rejected an unauthenticated request (HTTP 401).
 
     The Slack bot has no way to authenticate yet, so callers surface this as a
     "not supported" message during setup rather than retrying.
@@ -99,7 +99,7 @@ class AuthRequiredError(OmnigentError):
 
 
 class ServerUnreachableError(OmnigentError):
-    """The Omnigent server could not be reached at all (transport failure).
+    """The tesseract server could not be reached at all (transport failure).
 
     Ends a turn only when the FIRST connection fails — nothing is running
     server-side yet to rejoin. A refused re-open inside the reconnect window
@@ -205,7 +205,7 @@ def _is_auth_redirect(location: str) -> bool:
 
 @dataclass(frozen=True, slots=True)
 class ValidatedServer:
-    """Outcome of probing an Omnigent server during Slack setup.
+    """Outcome of probing an tesseract server during Slack setup.
 
     ``managed_hosts`` is whether the server can provision a sandbox for a
     session itself, so setup can offer that instead of dead-ending a user who
@@ -319,7 +319,7 @@ class OmnigentClient:
         # itself is unreachable — distinct from an HTTP error response, which
         # ``_raise_for_status`` classifies.
         return ServerUnreachableError(
-            f"Could not reach Omnigent server at {self._client.base_url}: {exc}"
+            f"Could not reach tesseract server at {self._client.base_url}: {exc}"
         )
 
     async def _request(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
@@ -376,7 +376,7 @@ class OmnigentClient:
     async def check_health(self) -> None:
         # Liveness probe against the public ``/health`` endpoint, confirming the
         # server is reachable before setup lists its agents and hosts.
-        self._logger.debug("Probing Omnigent server health")
+        self._logger.debug("Probing tesseract server health")
         response = await self._request("GET", "/health")
         await _raise_for_status(response)
 
@@ -410,11 +410,11 @@ class OmnigentClient:
         """
         info = await self._get_json("/v1/info")
         if info is None:
-            self._logger.info("Omnigent server info unavailable; managed sandboxes not offered")
+            self._logger.info("tesseract server info unavailable; managed sandboxes not offered")
             return False, None
         enabled = info.get("managed_sandboxes_enabled") is True
         provider = info.get("sandbox_provider")
-        self._logger.debug("Omnigent managed sandboxes enabled=%s provider=%s", enabled, provider)
+        self._logger.debug("tesseract managed sandboxes enabled=%s provider=%s", enabled, provider)
         return enabled, provider if isinstance(provider, str) and provider else None
 
     async def create_session(
@@ -427,7 +427,7 @@ class OmnigentClient:
         # Don't log the title — it embeds the user's message text; log only the
         # agent id (everywhere else we log lengths, not content).
         self._logger.info(
-            "Creating Omnigent session agent_id=%s host_type=%s", agent_id, host_type
+            "Creating tesseract session agent_id=%s host_type=%s", agent_id, host_type
         )
         body: dict[str, Any] = {"agent_id": agent_id, "title": title}
         if host_type == "managed":
@@ -445,8 +445,8 @@ class OmnigentClient:
             # it surfaces to the Slack thread, and a server body can carry
             # internal detail (matches the discipline in _raise_for_status).
             self._logger.warning("Create session response had no id: %r", payload)
-            raise OmnigentError("Omnigent server returned no session id.")
-        self._logger.info("Created Omnigent session session_id=%s", session_id)
+            raise OmnigentError("tesseract server returned no session id.")
+        self._logger.info("Created tesseract session session_id=%s", session_id)
         return session_id
 
     async def delete_session(self, session_id: str) -> None:
@@ -454,16 +454,16 @@ class OmnigentClient:
 
         A 404 is benign — the session is already gone, which is the goal.
         """
-        self._logger.info("Deleting Omnigent session session_id=%s", session_id)
+        self._logger.info("Deleting tesseract session session_id=%s", session_id)
         response = await self._request("DELETE", f"/v1/sessions/{session_id}")
         if response.status_code == 404:
             return
         await _raise_for_status(response)
-        self._logger.info("Deleted Omnigent session session_id=%s", session_id)
+        self._logger.info("Deleted tesseract session session_id=%s", session_id)
 
     async def submit_message(self, session_id: str, text: str) -> None:
         self._logger.info(
-            "Submitting Slack message to Omnigent session_id=%s chars=%s",
+            "Submitting Slack message to tesseract session_id=%s chars=%s",
             session_id,
             len(text),
         )
@@ -476,7 +476,7 @@ class OmnigentClient:
         }
         response = await self._request("POST", f"/v1/sessions/{session_id}/events", json=payload)
         await _raise_for_status(response)
-        self._logger.debug("Submitted Omnigent message session_id=%s", session_id)
+        self._logger.debug("Submitted tesseract message session_id=%s", session_id)
 
     async def resolve_elicitation(
         self,
@@ -499,7 +499,7 @@ class OmnigentClient:
         unexpected status is surfaced.
         """
         self._logger.info(
-            "Resolving Omnigent elicitation session_id=%s elicitation_id=%s accepted=%s "
+            "Resolving tesseract elicitation session_id=%s elicitation_id=%s accepted=%s "
             "has_content=%s",
             session_id,
             elicitation_id,
@@ -531,12 +531,12 @@ class OmnigentClient:
         # path on the host.
         if not workspace:
             raise OmnigentError(
-                "A workspace path is required to launch an Omnigent runner. "
+                "A workspace path is required to launch an tesseract runner. "
                 "Re-run setup and set a workspace."
             )
         target_host = host_id or await self._select_random_online_host()
         self._logger.info(
-            "Launching Omnigent runner session_id=%s host_id=%s workspace=%s",
+            "Launching tesseract runner session_id=%s host_id=%s workspace=%s",
             session_id,
             target_host,
             workspace,
@@ -551,12 +551,12 @@ class OmnigentClient:
         # so the caller can tell the user to start a host.
         if response.status_code in (404, 409):
             self._logger.warning(
-                "Omnigent host unavailable host=%s status=%s body=%r",
+                "tesseract host unavailable host=%s status=%s body=%r",
                 target_host,
                 response.status_code,
                 response.text,
             )
-            raise HostUnavailableError(f"Omnigent host {target_host} is not available.")
+            raise HostUnavailableError(f"tesseract host {target_host} is not available.")
         await _raise_for_status(response)
         payload = response.json()
         runner_id = _extract_runner_id(payload)
@@ -564,11 +564,11 @@ class OmnigentClient:
             # Log the raw body for operators; keep it out of the thread-facing
             # exception (see create_session / _raise_for_status).
             self._logger.warning("Launch runner response had no id: %r", payload)
-            raise OmnigentError("Omnigent server returned no runner id.")
+            raise OmnigentError("tesseract server returned no runner id.")
 
         await self.wait_for_runner_online(runner_id)
         self._logger.info(
-            "Launched Omnigent runner session_id=%s runner_id=%s host_id=%s",
+            "Launched tesseract runner session_id=%s runner_id=%s host_id=%s",
             session_id,
             runner_id,
             target_host,
@@ -576,15 +576,15 @@ class OmnigentClient:
         return runner_id
 
     async def list_agents(self) -> list[dict[str, Any]]:
-        self._logger.debug("Listing built-in Omnigent agents")
+        self._logger.debug("Listing built-in tesseract agents")
         agents = await self._get_list("/v1/agents", "data", "agents")
-        self._logger.info("Found built-in Omnigent agents count=%s", len(agents))
+        self._logger.info("Found built-in tesseract agents count=%s", len(agents))
         return agents
 
     async def list_hosts(self) -> list[dict[str, Any]]:
-        self._logger.debug("Listing Omnigent hosts")
+        self._logger.debug("Listing tesseract hosts")
         hosts = await self._get_list("/v1/hosts", "hosts", "data")
-        self._logger.info("Found Omnigent hosts count=%s", len(hosts))
+        self._logger.info("Found tesseract hosts count=%s", len(hosts))
         return hosts
 
     async def wait_for_runner_online(self, runner_id: str) -> None:
@@ -597,7 +597,7 @@ class OmnigentClient:
                 return
             if asyncio.get_running_loop().time() >= deadline:
                 raise HostUnavailableError(
-                    f"Timed out waiting for launched Omnigent runner to come online: {runner_id}"
+                    f"Timed out waiting for launched tesseract runner to come online: {runner_id}"
                 )
             await asyncio.sleep(1)
 
@@ -610,11 +610,11 @@ class OmnigentClient:
         ]
         if not host_ids:
             raise HostUnavailableError(
-                "No online Omnigent hosts are available to launch a runner."
+                "No online tesseract hosts are available to launch a runner."
             )
         host_id = random.choice(host_ids)
         self._logger.info(
-            "Selected random Omnigent host host_id=%s candidates=%s",
+            "Selected random tesseract host host_id=%s candidates=%s",
             host_id,
             len(host_ids),
         )
@@ -674,12 +674,12 @@ class OmnigentClient:
             ) as response:
                 await _raise_for_status(response)
                 connected = True
-                self._logger.debug("Connected to Omnigent SSE stream session_id=%s", session_id)
+                self._logger.debug("Connected to tesseract SSE stream session_id=%s", session_id)
                 yield iter_sse_events(response.aiter_lines())
         except httpx.HTTPError as exc:
             if connected:
                 raise StreamInterruptedError(
-                    f"Omnigent stream to {self._client.base_url} dropped mid-turn: {exc}"
+                    f"tesseract stream to {self._client.base_url} dropped mid-turn: {exc}"
                 ) from exc
             raise self._unreachable(exc) from exc
 
@@ -821,7 +821,7 @@ class OmnigentClient:
                                 # socket is dead (half-open). End rather than hang.
                                 pending.cancel()
                                 self._logger.info(
-                                    "Omnigent stream silent for %ss (no heartbeat) — "
+                                    "tesseract stream silent for %ss (no heartbeat) — "
                                     "ending turn session_id=%s",
                                     idle_grace_seconds,
                                     session_id,
@@ -835,7 +835,7 @@ class OmnigentClient:
                             pending = None
 
                             self._logger.debug(
-                                "Received Omnigent event session_id=%s type=%s",
+                                "Received tesseract event session_id=%s type=%s",
                                 session_id,
                                 event.get("type"),
                             )
@@ -868,7 +868,7 @@ class OmnigentClient:
 
                             if is_hard_terminal_event(event):
                                 self._logger.info(
-                                    "Omnigent turn reached hard-terminal event "
+                                    "tesseract turn reached hard-terminal event "
                                     "session_id=%s type=%s",
                                     session_id,
                                     event.get("type"),
@@ -938,7 +938,7 @@ class OmnigentClient:
                                 )
                                 if id_bearing_match or id_less_end:
                                     self._logger.info(
-                                        "Omnigent turn ended session_id=%s status=%s "
+                                        "tesseract turn ended session_id=%s status=%s "
                                         "response_id=%s",
                                         session_id,
                                         status,
@@ -981,7 +981,7 @@ class OmnigentClient:
                     # classified: a mid-tail drop stays the non-alarming "lost the
                     # live connection", a run of refused re-opens is "server down".
                     self._logger.info(
-                        "Omnigent stream reconnect exhausted (%s attempts) session_id=%s: %s",
+                        "tesseract stream reconnect exhausted (%s attempts) session_id=%s: %s",
                         attempt,
                         session_id,
                         exc,
@@ -995,14 +995,14 @@ class OmnigentClient:
                 activity = await self.get_session_activity(session_id)
                 if activity.status in ("idle", "failed"):
                     self._logger.info(
-                        "Omnigent stream dropped; server reports turn ended "
+                        "tesseract stream dropped; server reports turn ended "
                         "status=%s session_id=%s",
                         activity.status,
                         session_id,
                     )
                     return
                 self._logger.info(
-                    "Omnigent stream dropped mid-turn; reconnecting "
+                    "tesseract stream dropped mid-turn; reconnecting "
                     "(attempt %s) session_id=%s: %s",
                     attempt,
                     session_id,
@@ -1130,7 +1130,7 @@ class OmnigentClient:
         read failure (the caller must not be left mid-turn if the snapshot fetch
         fails).
         """
-        self._logger.debug("Fetching latest Omnigent assistant item session_id=%s", session_id)
+        self._logger.debug("Fetching latest tesseract assistant item session_id=%s", session_id)
         payload = await self._get_json(
             f"/v1/sessions/{session_id}/items", params={"limit": 100, "order": "desc"}
         )
@@ -1253,14 +1253,14 @@ async def _raise_for_status(response: httpx.Response) -> None:
         # send a token" from "the server rejected the token it was sent".
         had_bearer = "authorization" in response.request.headers
         _logger.warning(
-            "Omnigent request failed status=%s url=%s had_bearer=%s body=%r",
+            "tesseract request failed status=%s url=%s had_bearer=%s body=%r",
             response.status_code,
             response.request.url,
             had_bearer,
             body,
         )
         if response.status_code == 503 and error_code == "runner_unavailable":
-            raise RunnerUnavailableError("Omnigent runner is unavailable.") from exc
+            raise RunnerUnavailableError("tesseract runner is unavailable.") from exc
         # A 3xx redirect means an auth proxy in front of the server is bouncing
         # an unauthenticated request to its login page — the omnigent API itself
         # never redirects its own endpoints. This is how a Databricks-App-hosted
@@ -1269,11 +1269,11 @@ async def _raise_for_status(response: httpx.Response) -> None:
         # starts the per-user login/enrollment instead of reporting "unreachable".
         if response.is_redirect:
             raise AuthRequiredError(
-                f"Omnigent server requires authentication for {response.request.url}"
+                f"tesseract server requires authentication for {response.request.url}"
             ) from exc
         if response.status_code == 401:
             raise AuthRequiredError(
-                f"Omnigent server requires authentication for {response.request.url}"
+                f"tesseract server requires authentication for {response.request.url}"
             ) from exc
         if response.status_code == 412 and error_code == "harness_not_configured":
             # A precondition failure the user CAN act on (the harness isn't set up
@@ -1284,7 +1284,7 @@ async def _raise_for_status(response: httpx.Response) -> None:
                 error_message or "The selected harness isn't configured on the host."
             ) from exc
         raise OmnigentError(
-            f"Omnigent request failed with status {response.status_code}."
+            f"tesseract request failed with status {response.status_code}."
         ) from exc
 
 

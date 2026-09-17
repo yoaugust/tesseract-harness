@@ -1,6 +1,6 @@
 # AWS Analyst — query governed AWS data through official awslabs MCP servers.
 #
-# This example agent wires two AWS Labs MCP servers as Omnigent connectors:
+# This example agent wires two AWS Labs MCP servers as tesseract connectors:
 #   - Amazon Redshift  (awslabs.redshift-mcp-server)
 #   - Amazon S3 Tables (awslabs.s3-tables-mcp-server)
 # Both run read-only by default. The agent uses them to answer analytical

@@ -1,6 +1,6 @@
 """Tests for the Hermes pre_tool_call policy hook's relay-tool skip.
 
-Omnigent relay tools (surfaced into Hermes as ``mcp_omnigent_*``) are gated when
+tesseract relay tools (surfaced into Hermes as ``mcp_omnigent_*``) are gated when
 the relay dispatches them back through the server's tool path. The hook must NOT
 gate them a second time (that parks a duplicate approval card whose long-poll
 hangs, wedging the turn). Hermes' own tools are still gated here.
@@ -73,6 +73,6 @@ def test_native_and_other_mcp_tools_are_still_gated(
     monkeypatch: pytest.MonkeyPatch, wired_env: None, tool_name: str
 ) -> None:
     _result, server_called = _run(monkeypatch, tool_name)
-    # Hermes' own tools (and non-Omnigent MCP servers) do NOT round-trip the
+    # Hermes' own tools (and non-tesseract MCP servers) do NOT round-trip the
     # relay, so the hook stays their policy gate.
     assert server_called is True

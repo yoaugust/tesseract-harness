@@ -8,7 +8,7 @@ track is dropped and the switch folds into the header kebab instead
 (``ViewModeMenuItems`` in the same file, surfaced by ``ChatHeader``). iOS is a
 mobile-width shell, so it takes the same kebab placement as the mobile web
 header — not the retired native bottom pill below the composer
-(``web/ios/Omnigent/ChatTerminalBar.swift``), which the SPA must never float.
+(``web/ios/tesseract/ChatTerminalBar.swift``), which the SPA must never float.
 
 The SPA owns the whole placement decision (drop the header track on mobile,
 put the switch in the kebab, keep the native bottom bar hidden), so the
@@ -174,7 +174,7 @@ def test_ios_shell_folds_switcher_into_kebab_not_below_composer(
 ) -> None:
     """Under the iOS bridge the switcher folds into the kebab, like mobile web.
 
-    Drives the journey — open a terminal-first Omnigent session in the iOS
+    Drives the journey — open a terminal-first tesseract session in the iOS
     app, view the chat with the composer visible, look below the composer —
     and asserts the parity contract: the segmented header switcher is gone on
     the phone viewport, the Chat/Terminal switch lives inside the header kebab

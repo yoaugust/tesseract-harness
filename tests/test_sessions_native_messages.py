@@ -45,7 +45,7 @@ def test_codex_native_session_uses_codex_harness_for_web_messages() -> None:
     """
     Codex-native sessions use the native bypass and dispatch web
     messages into the ``codex-native`` harness instead of the normal
-    Omnigent persistence path.
+    tesseract persistence path.
     """
     from omnigent.server.routes import sessions as sessions_routes
 
@@ -143,7 +143,7 @@ def test_transcript_forwarded_native_sessions_use_native_bypass() -> None:
 def test_unknown_wrapper_session_does_not_use_native_bypass() -> None:
     """
     Non-native wrapper labels must not enter the native terminal
-    bypass, otherwise Omnigent would skip persistence for regular sessions.
+    bypass, otherwise tesseract would skip persistence for regular sessions.
     """
     from omnigent.server.routes import sessions as sessions_routes
 

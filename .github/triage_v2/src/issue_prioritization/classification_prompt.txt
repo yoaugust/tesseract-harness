@@ -1,4 +1,4 @@
-Classify this Omnigent GitHub issue.
+Classify this tesseract GitHub issue.
 
 Output only JSON with these fields:
 - type: Bug, Feature, or Docs
@@ -50,7 +50,7 @@ Impact rubric:
 - Feature low: unclear value or a tiny papercut.
 
 Core user journeys (CUJs):
-- install or upgrade Omnigent and authenticate;
+- install or upgrade tesseract and authenticate;
 - connect project source and provision its sandbox;
 - create, start, or resume a session;
 - submit a request and receive agent progress and results;

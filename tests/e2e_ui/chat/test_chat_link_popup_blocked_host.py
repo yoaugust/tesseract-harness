@@ -1,6 +1,6 @@
 """E2E: chat hyperlinks must still navigate where popup creation is blocked.
 
-The Omnigent SPA is also mounted inside host applications (e.g. a workspace
+The tesseract SPA is also mounted inside host applications (e.g. a workspace
 browser pane) that do not grant popup creation, so ``window.open`` /
 ``target="_blank"`` is silently swallowed there. Chat links render with
 ``target="_blank"`` only, so in such a host a plain click does nothing: no

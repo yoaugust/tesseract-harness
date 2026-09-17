@@ -1,7 +1,7 @@
-# Omnigent Desktop (Electron)
+# tesseract Desktop (Electron)
 
 A thin [Electron](https://www.electronjs.org) desktop shell around the
-existing Omnigent web UI. It shows the **same** UI you get in a browser, but
+existing tesseract web UI. It shows the **same** UI you get in a browser, but
 adds native niceties:
 
 - **OS-native desktop notifications** (via the main-process `Notification`
@@ -26,7 +26,7 @@ adds native niceties:
   frontmost app _can_ produce: it **bounces the macOS dock icon** (or flashes
   the taskbar frame on Windows/Linux), and on macOS it **plays the chosen sound
   itself** (via `afplay`) instead of the suppressed notification sound. Because
-  the shell plays it, the alert is audible **whether Omnigent is backgrounded or
+  the shell plays it, the alert is audible **whether tesseract is backgrounded or
   in front** — and the toast's own sound is muted so the cue never doubles.
 - **Multiple windows** (**Server → New Window**, `Cmd/Ctrl+N`). Each window is
   an independent view, opening on the current window's URL so you can then
@@ -50,7 +50,7 @@ adds native niceties:
   C, V, X, Z — work inside the webview's text fields. **Settings…** uses the
   native `Cmd+,` accelerator on macOS (`Ctrl+,` elsewhere) and routes the
   focused connected window through the SPA without reloading it. On macOS,
-  **About Omnigent** opens a shell-owned modal showing the platform app and
+  **About tesseract** opens a shell-owned modal showing the platform app and
   detected CLI versions; the CLI section points users to `omni upgrade`.
   **Check for Updates…** in
   the Server menu opens the same modal and starts a check. **Update now** in the
@@ -102,7 +102,7 @@ shell-owned pages for connecting to a server and native utilities such as the
 About modal. On launch:
 
 1. If no server URL is saved yet, it shows the setup page (one input +
-   Connect). You enter your Omnigent server URL (default
+   Connect). You enter your tesseract server URL (default
    `http://localhost:8000`).
 2. It persists that URL to the per-user app data dir (`settings.json` under
    Electron's `userData` path) and **loads the server's own origin**, where
@@ -129,14 +129,14 @@ conversations can be watched at once.
 ## Debugging a packaged macOS build
 
 Developer Tools are disabled by default in the production app. To opt in, quit
-Omnigent, set its macOS user default, and reopen it:
+tesseract, set its macOS user default, and reopen it:
 
 ```bash
 defaults write ai.omnigent.desktop DeveloperMode -bool true
 ```
 
 The **Debug → Developer Tools** menu is then available in the packaged app. To
-turn production debugging off again, quit Omnigent and remove the override:
+turn production debugging off again, quit tesseract and remove the override:
 
 ```bash
 defaults delete ai.omnigent.desktop DeveloperMode
@@ -259,7 +259,7 @@ positioned over a placeholder `<div>` the SPA measures — not an in-page elemen
 ```mermaid
 sequenceDiagram
     participant A as Agent (runner — any host)
-    participant S as Omnigent server
+    participant S as tesseract server
     participant R as Renderer / BrowserPane (this PR)
     participant V as WebContentsView (local Chromium)
 
@@ -405,7 +405,7 @@ pnpm install     # installs electron + electron-builder
 pnpm start        # launches the Electron shell
 ```
 
-The shell opens on the bundled setup page. Point it at a running Omnigent
+The shell opens on the bundled setup page. Point it at a running tesseract
 server (see below), Connect, and you're in.
 
 > Note: this loads the UI from whatever server URL you give it — it does
@@ -441,7 +441,7 @@ pnpm run build:win         # NSIS installer
 ```
 
 Output lands in `electron/dist/` (the DMG is named
-`Omnigent-<version>-<arch>.dmg`).
+`tesseract-<version>-<arch>.dmg`).
 
 ## macOS code signing & notarization
 
@@ -514,9 +514,9 @@ to add a few minutes per architecture (Apple-side processing). Verify the
 result with:
 
 ```bash
-spctl -a -vv dist/mac-arm64/Omnigent.app   # → "accepted, source=Notarized Developer ID"
-codesign --verify --verbose=2 dist/Omnigent-*-arm64.dmg
-xcrun stapler validate -v dist/Omnigent-*-arm64.dmg
+spctl -a -vv dist/mac-arm64/tesseract.app   # → "accepted, source=Notarized Developer ID"
+codesign --verify --verbose=2 dist/tesseract-*-arm64.dmg
+xcrun stapler validate -v dist/tesseract-*-arm64.dmg
 ```
 
 `build:mac:release` **fails loudly** if signing or notarization credentials
@@ -525,7 +525,7 @@ so a release artifact can't silently ship unsigned or unnotarized.
 
 ## Getting a server to point at
 
-Any reachable Omnigent server works. For a quick local target, run the
+Any reachable tesseract server works. For a quick local target, run the
 server from this repo:
 
 ```bash
@@ -598,7 +598,7 @@ menu (when starting a chat) tags this machine and offers to connect it. Choosing
 it calls `controlHost("start")` over the bridge. Because that call originates in
 server-served code, the main process does not treat it as the user's consent: on
 the first `start`/`restart` for a server origin it shows a **native confirmation
-dialog** ("Allow _host_ to manage Omnigent on this machine?") with **Don't Allow**
+dialog** ("Allow _host_ to manage tesseract on this machine?") with **Don't Allow**
 (default) / **Allow Once** / **Always Allow**. Only after approval does it — once
 the CLI is authenticated for the server (remote only; local needs none) — either
 adopt a daemon already serving that server (one you started by hand) or spawn
@@ -683,7 +683,7 @@ hand-add its origin to `settings.json`:
 ```
 
 (`settings.json` lives in Electron's per-user `userData` dir — on macOS,
-`~/Library/Application Support/Omnigent/settings.json`.)
+`~/Library/Application Support/tesseract/settings.json`.)
 
 ## Multiple servers
 

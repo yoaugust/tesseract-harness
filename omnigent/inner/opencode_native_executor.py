@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent web turns into a native OpenCode session.
+"""Executor that bridges tesseract web turns into a native OpenCode session.
 
 Built on :class:`omnigent.native.native_server_harness.NativeServerHarness`: the
 runner owns the ``opencode serve`` process + SSE forwarder, and this
@@ -115,9 +115,9 @@ def _bridge_dir_from_env() -> Path:
 
 def _request_session_id_from_env() -> str | None:
     """
-    Resolve the Omnigent session id that requested this harness process.
+    Resolve the tesseract session id that requested this harness process.
 
-    :returns: Omnigent session id, e.g. ``"conv_abc123"``, or ``None``.
+    :returns: tesseract session id, e.g. ``"conv_abc123"``, or ``None``.
     """
     raw = os.environ.get(OPENCODE_NATIVE_REQUEST_SESSION_ID_ENV_VAR, "").strip()
     return raw or None

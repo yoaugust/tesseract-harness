@@ -1,6 +1,6 @@
 # repro-agent
 
-Reproduce a bug **live in your running Omnigent app** and capture it as a
+Reproduce a bug **live in your running tesseract app** and capture it as a
 durable end-to-end test. It runs against whatever server you already have (the
 server `omnigent run` spins up, or one you pass with `--server`) and authors the
 reproduction test into **this** checkout.

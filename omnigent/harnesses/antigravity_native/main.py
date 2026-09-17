@@ -1,8 +1,8 @@
-"""Native Antigravity (agy) TUI wrapper for the Omnigent CLI.
+"""Native Antigravity (agy) TUI wrapper for the tesseract CLI.
 
 ``omnigent antigravity`` treats the Antigravity ``agy`` CLI as a
 terminal-first program, mirroring ``omnigent codex`` / ``omnigent claude``.
-It creates or binds an Omnigent session, launches ``agy`` in a runner-owned
+It creates or binds an tesseract session, launches ``agy`` in a runner-owned
 tmux terminal resource, then attaches the local TTY (directly to the
 runner's tmux when same-machine, else over the WebSocket terminal bridge).
 
@@ -18,7 +18,7 @@ Differences from the Codex / Claude wrappers (Phase 1 scope):
   there is no app-server process to start, no ``--remote`` transport, and no
   thread-init handshake.
 * **RPC mirroring (read path) and RPC web-turn delivery (write path).** agy's
-  conversation mirrors into the Omnigent chat view via the RPC read driver
+  conversation mirrors into the tesseract chat view via the RPC read driver
   (:mod:`omnigent.harnesses.antigravity_native.reader`), which polls/streams agy's
   connect-RPC trajectory steps. Web-UI turns are delivered into the native agy
   conversation (the write path) by the native executor
@@ -166,7 +166,7 @@ _SESSION_LABELS = {
 @dataclass(frozen=True)
 class LaunchedAntigravityTerminal:
     """
-    Terminal resource returned by the Omnigent runner launch path.
+    Terminal resource returned by the tesseract runner launch path.
 
     :param terminal_id: Terminal resource id, e.g.
         ``"terminal_antigravity_main"``.
@@ -186,7 +186,7 @@ class PreparedAntigravityTerminal:
     """
     Prepared native Antigravity terminal attachment details.
 
-    :param session_id: Omnigent session/conversation id.
+    :param session_id: tesseract session/conversation id.
     :param terminal_id: Terminal resource id to attach.
     :param bridge_dir: Native Antigravity bridge directory shared with the
         ``antigravity-native`` harness.
@@ -220,12 +220,12 @@ def run_antigravity_native(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch the Antigravity (agy) TUI in an Omnigent terminal and attach.
+    Launch the Antigravity (agy) TUI in an tesseract terminal and attach.
 
-    :param server: Resolved Omnigent server URL, e.g.
-        ``"http://127.0.0.1:8123"``. ``None`` starts a local Omnigent
+    :param server: Resolved tesseract server URL, e.g.
+        ``"http://127.0.0.1:8123"``. ``None`` starts a local tesseract
         server using the existing chat-server machinery.
-    :param session_id: Optional existing Omnigent conversation id to
+    :param session_id: Optional existing tesseract conversation id to
         resume, e.g. ``"conv_abc123"``. ``None`` creates a new bundled
         session.
     :param antigravity_args: Raw pass-through args appended to the ``agy``
@@ -238,7 +238,7 @@ def run_antigravity_native(
         tests can supply a fake executable.
     :param model: Optional model label passed to agy via ``--model``,
         e.g. ``"gemini-2.5-pro"``. ``None`` lets agy use its default.
-    :param permission_mode: Optional Omnigent permission mode, e.g.
+    :param permission_mode: Optional tesseract permission mode, e.g.
         ``"bypassPermissions"``. ``"bypassPermissions"`` maps to agy's
         ``--dangerously-skip-permissions`` (its only pre-emptive control);
         any other value (or ``None``) leaves agy's default ``request-review``
@@ -312,7 +312,7 @@ def _materialize_antigravity_agent_spec(tmpdir: Path) -> Path:
         "executor": {"harness": "antigravity-native"},
         # Opt the native session into the child-session spawn writes so the
         # wrapped agy can author agent configs and launch them as sub-agent
-        # sessions. The Omnigent MCP relay (wired in #1194 — see
+        # sessions. The tesseract MCP relay (wired in #1194 — see
         # ``antigravity_native_bridge.write_mcp_config`` and the runner's
         # ``_ensure_comment_relay_started``) derives its advertised
         # ``sys_session_*`` write surface from this ``spawn: true`` gate.
@@ -327,7 +327,7 @@ def _materialize_antigravity_agent_spec(tmpdir: Path) -> Path:
             "cwd": ".",
             "sandbox": {"type": "none"},
         },
-        # Declare a default shell terminal so the Omnigent MCP relay advertises
+        # Declare a default shell terminal so the tesseract MCP relay advertises
         # the ``sys_terminal_*`` family to the wrapped agy (the relay's gate is
         # a non-empty ``terminals:`` block on this spec). This also feeds the
         # web-UI new-terminal affordance (``server/routes/sessions.py``), so it
@@ -352,16 +352,16 @@ def _run_with_local_server(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Start a local Omnigent server, launch agy, and attach to it.
+    Start a local tesseract server, launch agy, and attach to it.
 
     :param spec_path: Generated Antigravity wrapper agent spec.
-    :param session_id: Optional existing Omnigent session id.
+    :param session_id: Optional existing tesseract session id.
     :param resume_picker: When ``True`` and ``session_id is None``, run the
         picker.
     :param antigravity_args: Raw pass-through agy args.
     :param command: agy executable to run.
     :param model: Optional agy model id.
-    :param permission_mode: Optional Omnigent permission mode (e.g.
+    :param permission_mode: Optional tesseract permission mode (e.g.
         ``"bypassPermissions"``) threaded into the agy argv assembly.
     :param headless: ``True`` when no interactive client will attach (forces
         the agy permission-bypass flag so an unattended turn does not hang).
@@ -451,23 +451,23 @@ def _run_with_remote_server(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch agy on a remote Omnigent server via a daemon-spawned runner.
+    Launch agy on a remote tesseract server via a daemon-spawned runner.
 
     The CLI binds a daemon runner to the session, then launches the agy
     terminal itself (the runner has no agy auto-create branch). Attach
     prefers the runner's tmux when it is local, else the WebSocket PTY
     bridge.
 
-    :param base_url: Remote Omnigent server base URL, e.g.
+    :param base_url: Remote tesseract server base URL, e.g.
         ``"https://example.databricks.com"``.
     :param spec_path: Generated Antigravity wrapper agent spec.
-    :param session_id: Optional existing Omnigent session id.
+    :param session_id: Optional existing tesseract session id.
     :param resume_picker: When ``True`` and ``session_id is None``, run the
         picker.
     :param antigravity_args: Raw pass-through agy args.
     :param command: agy executable to run.
     :param model: Optional agy model id.
-    :param permission_mode: Optional Omnigent permission mode (e.g.
+    :param permission_mode: Optional tesseract permission mode (e.g.
         ``"bypassPermissions"``) threaded into the agy argv assembly.
     :param headless: ``True`` when no interactive client will attach (forces
         the agy permission-bypass flag so an unattended turn does not hang).
@@ -575,7 +575,7 @@ async def _prepare_antigravity_terminal(
     """
     Create/bind a session and launch its agy terminal resource.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers; ``{}`` for the local server.
     :param session_id: Optional existing session id.
     :param runner_id: Runner id to bind to the session, or ``None``.
@@ -584,7 +584,7 @@ async def _prepare_antigravity_terminal(
     :param antigravity_args: Raw pass-through agy args.
     :param command: agy executable to run.
     :param model: Optional agy model id.
-    :param permission_mode: Optional Omnigent permission mode threaded into the
+    :param permission_mode: Optional tesseract permission mode threaded into the
         agy argv assembly.
     :param headless: ``True`` when no interactive client will attach (forces
         the agy permission-bypass flag).
@@ -727,8 +727,8 @@ async def _await_runner_antigravity_terminal(
     ``clear_bridge_state`` would wipe the bridge state the runner wrote, breaking
     web-turn injection). Uses ``time.monotonic`` for the deadline.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param timeout_s: Max seconds to wait for the runner-owned terminal.
     :returns: The runner-owned terminal details, or ``None`` if none appeared
         within *timeout_s* (the caller then launches one itself).
@@ -767,8 +767,8 @@ async def _prepare_antigravity_terminal_via_daemon(
     itself (:func:`_launch_and_record`) as a fallback when the runner produced
     none within :data:`_RUNNER_TERMINAL_AUTOCREATE_TIMEOUT_S`.
 
-    :param base_url: Omnigent server base URL.
-    :param headers: HTTP auth headers for Omnigent requests.
+    :param base_url: tesseract server base URL.
+    :param headers: HTTP auth headers for tesseract requests.
     :param session_id: Existing session id to resume, or ``None`` for a
         fresh session.
     :param session_bundle: Gzipped agent bundle. Required when
@@ -776,7 +776,7 @@ async def _prepare_antigravity_terminal_via_daemon(
     :param antigravity_args: Raw pass-through agy args.
     :param command: agy executable to run.
     :param model: Optional agy model id.
-    :param permission_mode: Optional Omnigent permission mode threaded into the
+    :param permission_mode: Optional tesseract permission mode threaded into the
         agy argv assembly.
     :param headless: ``True`` when no interactive client will attach (forces
         the agy permission-bypass flag).
@@ -960,8 +960,8 @@ async def _launch_and_record(
     conversation (:mod:`omnigent.harnesses.antigravity_native.reader`) keeps an in-memory
     seen-set only.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param bridge_id: Opaque bridge id keying the bridge directory.
     :param conversation_id: On resume, agy's real (discovered) conversation id
         to pass as ``--conversation``. On a fresh launch, the minted
@@ -971,7 +971,7 @@ async def _launch_and_record(
     :param antigravity_args: Raw pass-through agy args.
     :param command: agy executable to run.
     :param model: Optional agy model id.
-    :param permission_mode: Optional Omnigent permission mode threaded into the
+    :param permission_mode: Optional tesseract permission mode threaded into the
         agy argv assembly (maps ``"bypassPermissions"`` to the bypass flag).
     :param headless: ``True`` when no interactive client will attach (forces
         the agy permission-bypass flag so an unattended turn does not hang).
@@ -1000,7 +1000,7 @@ async def _launch_and_record(
     # launch does. agy has no --mcp-config flag and ignores every ANTIGRAVITY_* env
     # knob, so its MCP relay config and its settings can only be scoped through the
     # hidden --gemini_dir. Without this the CLI launch read the user's real
-    # ~/.gemini: agy saw no Omnigent relay (hence no sys_* tools, #1194), and the
+    # ~/.gemini: agy saw no tesseract relay (hence no sys_* tools, #1194), and the
     # survey/trust seeds below rewrote the user's own settings.json. HOME stays real
     # so keyring-backed auth (macOS Keychain) keeps working (#1477).
     await asyncio.to_thread(write_mcp_config, bridge_dir)
@@ -1075,7 +1075,7 @@ async def _attach_terminal(
     terminal and the CLI launched its own (``prepared.reattached is False``), this
     spawns — for the attach's lifetime, cancelled in ``finally`` — the RPC read
     driver (:func:`omnigent.harnesses.antigravity_native.reader.run_reader_with_bridge`,
-    which mirrors agy's conversation into the Omnigent chat view and surfaces
+    which mirrors agy's conversation into the tesseract chat view and surfaces
     WAITING interactions as real-time elicitations) and a one-shot cold-start
     (:func:`_cold_start_agy_conversation`) that mints agy's real cascade id so the
     reader can bind it. These run CONCURRENTLY with the attach because the CLI
@@ -1100,7 +1100,7 @@ async def _attach_terminal(
         but not the reader's client). There is no pre-tool policy audit on this
         path; real-time elicitation is the enforcement surface now.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers (mutated in place by ``recover``).
     :param prepared: Prepared terminal details.
     :param recover: Optional async reconnect-recovery callback. ``None``
@@ -1238,7 +1238,7 @@ async def _cold_start_agy_conversation(
     lsof-attributable. This polls that resolver until a port binds, then
     ``StartCascade``s a generated ``uuid4``.
 
-    The cold-started id is also PATCHed onto the Omnigent session as
+    The cold-started id is also PATCHed onto the tesseract session as
     ``external_session_id`` (best-effort, mirroring the runner cold-start and
     codex/pi) so a later ``omnigent antigravity --resume`` reads it back and passes
     ``--conversation <id>`` to continue agy's actual conversation — the read-path
@@ -1260,7 +1260,7 @@ async def _cold_start_agy_conversation(
         the real cold-started id is written into.
     :param session_id: Owning session/conversation id (for log correlation and
         the ``external_session_id`` PATCH target).
-    :param base_url: Omnigent server base URL for the ``external_session_id``
+    :param base_url: tesseract server base URL for the ``external_session_id``
         PATCH.
     :param headers: HTTP auth headers for the PATCH (the local server has none; a
         remote server's bearer is used as-is).
@@ -1368,7 +1368,7 @@ async def _attach_direct_tmux(socket_path: Path, tmux_target: str) -> _AttachOut
     Lower latency than the WebSocket PTY relay because there is no server
     round-trip. ``TMUX`` is dropped from the child environment so a user
     who runs ``omnigent antigravity`` from inside their own tmux can still
-    attach to Omnigent's private tmux server. After the attach child
+    attach to tesseract's private tmux server. After the attach child
     exits, a ``has-session`` probe distinguishes a user *detach* (session
     still alive) from agy *exiting* (session gone).
 
@@ -1416,10 +1416,10 @@ async def _create_antigravity_session(
     read-path replacement for the retired forwarder's id capture, so a later
     ``--resume`` continues agy's actual conversation.
 
-    :param client: HTTP client pointed at the Omnigent server.
+    :param client: HTTP client pointed at the tesseract server.
     :param bundle: Gzipped Antigravity wrapper agent bundle.
     :param bridge_id: Opaque bridge id to write on the session labels.
-    :returns: New Omnigent session id, e.g. ``"conv_abc123"``.
+    :returns: New tesseract session id, e.g. ``"conv_abc123"``.
     :raises click.ClickException: If creation fails.
     """
     labels = dict(_SESSION_LABELS)
@@ -1448,10 +1448,10 @@ async def _fetch_antigravity_session(
     client: httpx.AsyncClient, session_id: str
 ) -> dict[str, object]:
     """
-    Fetch an existing Omnigent session snapshot.
+    Fetch an existing tesseract session snapshot.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :returns: Decoded session payload.
     :raises click.ClickException: If the lookup fails or returns non-object JSON.
     """
@@ -1479,8 +1479,8 @@ async def _launch_antigravity_terminal(
     """
     Launch the server-backed agy terminal resource.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent session id.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract session id.
     :param argv: Full agy command list from :func:`build_agy_launch`. The
         first element is the agy binary; the rest are its args.
     :param env: Environment overrides for the terminal process from
@@ -1581,8 +1581,8 @@ async def _find_running_antigravity_terminal(
     """
     Return the existing running agy terminal id if present.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :returns: Terminal details, or ``None`` when the wrapper should launch
         a new terminal (missing, stopped, or runner unavailable).
     :raises click.ClickException: If the server rejects the lookup for a
@@ -1616,9 +1616,9 @@ async def _close_antigravity_terminal(
     """
     Best-effort close of the AP-side agy terminal resource.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers.
-    :param session_id: Omnigent session id.
+    :param session_id: tesseract session id.
     :param terminal_id: Terminal resource id.
     :returns: None.
     """
@@ -1663,7 +1663,7 @@ def _resolve_session_id_for_resume(
     """
     Translate resume inputs into a concrete antigravity-native session id.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers; ``{}`` for the local server.
     :param session_id: Explicit session id, e.g. ``"conv_abc123"``.
     :param resume_picker: ``True`` for bare ``--resume``.
@@ -1681,7 +1681,7 @@ def _resolve_session_id_for_resume(
         """
         Run the async antigravity-native picker.
 
-        :returns: Selected Omnigent session id, or ``None``.
+        :returns: Selected tesseract session id, or ``None``.
         """
         async with OmnigentClient(
             base_url=base_url,

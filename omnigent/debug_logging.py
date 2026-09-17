@@ -1,10 +1,10 @@
 """Client-side debug-log sink that ships process logs to a Databricks table.
 
-Every Omnigent Python entrypoint (server / runner / host / harness) writes its
+Every tesseract Python entrypoint (server / runner / host / harness) writes its
 logs to a local file via :mod:`omnigent.process_logging`. This module adds an
 extra logging handler that also forwards each record, as JSON, to a Databricks
 Delta table through the ZeroBus REST ingest endpoint, so a whole session's logs
-can be queried in one place (see the Omnigent Debuggability Plan, OMNI-4198).
+can be queried in one place (see the tesseract Debuggability Plan, OMNI-4198).
 
 By default, the sink is enabled only when the ``OMNIGENT_DEBUG_LOG_*``
 environment variables are present -- the internal ``omni`` config CLI sets them

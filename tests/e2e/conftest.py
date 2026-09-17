@@ -1640,7 +1640,7 @@ def send_user_message_to_session(
     POST a user message to *session_id* and return the input response_id.
 
     The events endpoint returns ``{"queued": True, "item_id": "..."}``
-    but runner-native sessions do not create Omnigent DBOS task rows for
+    but runner-native sessions do not create tesseract DBOS task rows for
     the turn. For session-dispatch tests, use this id only as the
     turn grouping key in ``conversation_items``; poll the session
     snapshot with :func:`poll_session_until_terminal` instead of
@@ -1753,7 +1753,7 @@ def poll_session_until_terminal(
     Poll a runner-native session snapshot until the turn is terminal.
 
     Session dispatch runs on the runner and therefore may not create a
-    pollable Omnigent ``Task`` for ``GET /v1/responses/{response_id}``. This
+    pollable tesseract ``Task`` for ``GET /v1/responses/{response_id}``. This
     helper returns a Responses-like dict synthesized from the session
     snapshot: terminal status from ``session.status`` and output from
     non-user ``conversation_items`` sharing the turn ``response_id``.
@@ -1814,7 +1814,7 @@ def poll_for_pending_tool_calls(
 
     By default this uses ``GET /v1/responses/{response_id}`` for
     legacy/background response tests. Pass ``session_id`` for
-    runner-native session turns, which do not create Omnigent DBOS task rows
+    runner-native session turns, which do not create tesseract DBOS task rows
     for ``response_id`` and must be observed through the session
     snapshot.
 

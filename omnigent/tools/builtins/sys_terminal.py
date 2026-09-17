@@ -252,7 +252,7 @@ def _synthesize_parent_os_env(
 
 # ── JSON Schemas ──────────────────────────────────────────────
 # Mirror the legacy inner Session ``sys_terminal_*`` schemas so
-# agents in the wild see an unchanged tool surface under Omnigent mode.
+# agents in the wild see an unchanged tool surface under tesseract mode.
 
 
 _LAUNCH_SCHEMA: dict[str, Any] = {
@@ -766,7 +766,7 @@ class SysTerminalLaunchTool(Tool):
            ``"."``, or ``"./"``).
         3. ``spec.os_env.cwd`` if it's set to a meaningful path
            (not ``None``, ``""``, ``"."``, or ``"./"``).
-        4. ``ctx.workspace`` — the per-task workspace Omnigent creates
+        4. ``ctx.workspace`` — the per-task workspace tesseract creates
            in ``runtime/workflow.py``.
 
         :param cwd_override: Per-call override (or ``None``).

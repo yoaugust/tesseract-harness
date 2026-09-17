@@ -1,4 +1,4 @@
-"""Policy type hierarchy for Omnigent.
+"""Policy type hierarchy for tesseract.
 
 Policies intercept messages at various phases (request, response, tool_call,
 tool_result) and can allow, ask for approval, or deny content. They can be
@@ -80,7 +80,7 @@ class _PolicySession(Protocol):
 
 
 _POLICY_SYSTEM_PROMPT = (
-    "You are an Omnigent policy evaluator. Return exactly one JSON object and nothing else."
+    "You are an tesseract policy evaluator. Return exactly one JSON object and nothing else."
 )
 
 

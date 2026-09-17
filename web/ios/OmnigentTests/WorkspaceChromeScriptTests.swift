@@ -3,7 +3,7 @@ import XCTest
 @testable import Omnigent
 
 final class WorkspaceChromeScriptTests: XCTestCase {
-  /// The rule must key on Omnigent's own embed root, not on the monolith-owned
+  /// The rule must key on tesseract's own embed root, not on the monolith-owned
   /// workspace nav markup, and must win over it (fixed + full-inset + top layer).
   func testCSSPromotesTheEmbedRootToAFullViewportOverlay() {
     XCTAssertEqual(

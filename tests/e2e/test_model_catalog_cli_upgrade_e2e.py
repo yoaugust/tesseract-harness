@@ -1,6 +1,6 @@
 """E2E: a harness CLI upgrade must refresh the shared model catalog.
 
-Omnigent caches each native harness's model catalog on disk, keyed by a
+tesseract caches each native harness's model catalog on disk, keyed by a
 launch-config fingerprint (``omnigent/model_catalog_store.py``). The key
 covers the launch config only — not the binary that answered the probe — so
 upgrading the CLI keeps the same key, and every consumer (the pre-launch
@@ -9,7 +9,7 @@ model names until the 1h staleness TTL passes.
 
 The journey, per harness, exactly as a user hits it:
 
-1. Omnigent runs with the harness CLI at build A; the host boots and its
+1. tesseract runs with the harness CLI at build A; the host boots and its
    boot probe fills the catalog — the picker shows build A's model names.
 2. The CLI auto-updates **in place** to build B (same path, new binary).
 3. The user reopens the app — the host restarts and serves the picker

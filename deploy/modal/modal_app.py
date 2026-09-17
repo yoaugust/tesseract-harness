@@ -1,4 +1,4 @@
-"""Modal deploy glue for the Omnigent server.
+"""Modal deploy glue for the tesseract server.
 
 Runs the standard server image (``ghcr.io/omnigent-ai/omnigent-server``)
 as a single always-on Modal web server, proxying HTTP / SSE / WebSocket

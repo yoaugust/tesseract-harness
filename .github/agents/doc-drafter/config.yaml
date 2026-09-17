@@ -69,7 +69,7 @@ guardrails:
           gate_pushes: false
 
 prompt: |
-  You are the Omnigent documentation drafter. A single pull request has merged
+  You are the tesseract documentation drafter. A single pull request has merged
   into the omnigent code repo and been classified as needing a user-facing
   documentation update. Your job: write that update into the omnigent-site docs.
   You author documentation prose (MDX) only — you NEVER write product source code

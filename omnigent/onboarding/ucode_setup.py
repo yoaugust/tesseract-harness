@@ -1,4 +1,4 @@
-"""Setup helpers for invoking ucode from Omnigent."""
+"""Setup helpers for invoking ucode from tesseract."""
 
 from __future__ import annotations
 
@@ -64,7 +64,7 @@ def build_ucode_configure_command(
     workspace_urls: Sequence[str],
     agents: Sequence[str] = _UCODE_AGENT_NAMES,
 ) -> list[str]:
-    """Build the ``ucode configure`` command Omnigent runs.
+    """Build the ``ucode configure`` command tesseract runs.
 
     :param ucode_command: Command prefix that invokes ucode, e.g.
         ``("/usr/bin/ucode",)`` or ``("uvx", "--from",
@@ -101,7 +101,7 @@ def configure_ucode_for_workspace(
     wires the coding harnesses (Claude, Codex, Pi) to the Unity AI Gateway
     of exactly the one workspace the user supplied when adding a
     ``kind: databricks`` provider via ``omnigent setup --no-internal-beta``.
-    ucode writes ``~/.ucode/state.json``, which Omnigent then reads for
+    ucode writes ``~/.ucode/state.json``, which tesseract then reads for
     per-harness model defaults, base URLs, and the token-refresh command.
 
     :param workspace_url: The Databricks workspace URL whose model-serving
@@ -127,7 +127,7 @@ def configure_ucode_for_workspace(
             f"`ucode configure` exited with code {result.returncode}; "
             "see the command output above for details."
         )
-    click.echo("ucode configuration complete. Omnigent will use state.json for harness setup.")
+    click.echo("ucode configuration complete. tesseract will use state.json for harness setup.")
 
 
 def ucode_workspace_exists(workspace_url: str) -> bool:

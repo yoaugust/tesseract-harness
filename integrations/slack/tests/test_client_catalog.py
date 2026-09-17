@@ -9,7 +9,7 @@ catalog listed a phantom ``/oauth/device/token`` while the real ``/oauth/token``
 ``/oauth/revoke``, ``/auth/cli-login``, ``/auth/cli-poll`` calls went unlisted.)
 
 This test closes that gap from the client side: it parses the modules that talk
-to the Omnigent server with ``ast``, extracts every HTTP call, normalizes each
+to the tesseract server with ``ast``, extracts every HTTP call, normalizes each
 path to the catalog's ``{param}`` template form, and asserts every one appears in
 the catalog. A new/renamed endpoint that isn't cataloged fails here with a
 ``file:line`` pointer to ``fakes.py``'s ``OMNIGENT_ENDPOINTS``.
@@ -18,7 +18,7 @@ Scope: the two modules whose httpx client is bound to the OMNIGENT SERVER —
 ``omnigent.py`` (the main API surface, via the ``_request`` / ``_get_list`` /
 ``_get_json`` / ``stream`` helpers) and ``oauth.py`` (the login flow, via direct
 ``client.get`` / ``client.post`` calls). ``databricks_oauth.py`` is deliberately
-excluded: its client targets the Databricks WORKSPACE, not the Omnigent server.
+excluded: its client targets the Databricks WORKSPACE, not the tesseract server.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ from pathlib import Path
 from fakes import OMNIGENT_ENDPOINTS
 
 _SRC = Path(__file__).resolve().parents[1] / "src" / "omnigent_slack"
-# Modules whose HTTP client is bound to the Omnigent server base URL.
+# Modules whose HTTP client is bound to the tesseract server base URL.
 _SCANNED_SOURCES = [_SRC / "omnigent.py", _SRC / "oauth.py"]
 
 # Helper calls where (method, path) sit at args 0, 1 (omnigent.py):

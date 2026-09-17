@@ -1,10 +1,10 @@
 """Runner-side MCP proxy manager.
 
-Routes all MCP calls through the Omnigent server's
+Routes all MCP calls through the tesseract server's
 ``POST /v1/sessions/{session_id}/mcp`` endpoint (MCP Streamable HTTP,
 JSON-RPC 2.0) instead of connecting to external MCP servers directly.
 
-The Omnigent server holds the live connections in its
+The tesseract server holds the live connections in its
 :class:`omnigent.server.mcp_pool.ServerMcpPool` and enforces
 TOOL_CALL + TOOL_RESULT policies on every call before forwarding to the
 real MCP server.  :class:`ProxyMcpManager` implements the same public
@@ -14,9 +14,9 @@ it can be substituted transparently at every dispatch site in
 
 When to use each implementation:
 
-- **AP mode** (out-of-process runner paired with Omnigent server):
+- **AP mode** (out-of-process runner paired with tesseract server):
   ``ProxyMcpManager(session_id, server_client)`` — all tool calls flow
-  through the Omnigent server, policy enforced centrally.
+  through the tesseract server, policy enforced centrally.
 - **No-AP / test mode**:
   ``RunnerMcpManager(stdio_cwd=...)`` — direct MCP connections, runner
   enforces policy locally via :class:`RunnerToolPolicyGate`.
@@ -94,7 +94,7 @@ def _input_response(
 
     if not verdict.approved:
         return {"action": "decline"}
-    # The Omnigent server always populates ``params.requestedSchema`` on its
+    # The tesseract server always populates ``params.requestedSchema`` on its
     # InputRequiredResult; a missing schema with supplied content fails closed.
     params = _json_object(input_request.get("params")) if input_request else None
     schema = _json_object(params.get("requestedSchema")) if params else None
@@ -139,19 +139,19 @@ def _json_object_list(value: object) -> list[_JsonObject]:
 
 
 class ProxyMcpManager:
-    """Routes runner-side MCP calls through the Omnigent server MCP proxy endpoint.
+    """Routes runner-side MCP calls through the tesseract server MCP proxy endpoint.
 
     Drop-in substitute for :class:`omnigent.runner.mcp_manager.RunnerMcpManager`
-    used in Omnigent mode.  The runner creates one instance per session on first MCP use
+    used in tesseract mode.  The runner creates one instance per session on first MCP use
     and passes it to :func:`omnigent.runner.tool_dispatch.execute_tool` in place
     of a direct manager.
 
     :param session_id: The AP-allocated session (conversation) id, e.g.
         ``"conv_abc123"``.  Used to build the proxy endpoint URL:
         ``/v1/sessions/{session_id}/mcp``.
-    :param ap_client: An :class:`httpx.AsyncClient` pointed at the Omnigent server.
+    :param ap_client: An :class:`httpx.AsyncClient` pointed at the tesseract server.
         Must already carry the runner's service auth (e.g. Databricks bearer
-        token) so requests are accepted by the Omnigent server's auth middleware.
+        token) so requests are accepted by the tesseract server's auth middleware.
     """
 
     def __init__(
@@ -163,8 +163,8 @@ class ProxyMcpManager:
     ) -> None:
         """Create a proxy manager bound to one session.
 
-        :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
-        :param ap_client: HTTP client pointed at the Omnigent server.
+        :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
+        :param ap_client: HTTP client pointed at the tesseract server.
         :param publish_event: Optional callback that puts an SSE event on
             the runner's per-session outbound queue.  Required for the
             approval flow so ``response.elicitation_resolved`` is emitted
@@ -188,15 +188,15 @@ class ProxyMcpManager:
         return f"/v1/sessions/{self._session_id}/mcp"
 
     async def schemas_for(self, spec: AgentSpec) -> McpSchemasResult:
-        """Fetch tool schemas from the Omnigent server MCP proxy (``tools/list``).
+        """Fetch tool schemas from the tesseract server MCP proxy (``tools/list``).
 
-        Sends a ``tools/list`` JSON-RPC 2.0 request to the Omnigent server's MCP
+        Sends a ``tools/list`` JSON-RPC 2.0 request to the tesseract server's MCP
         proxy endpoint.  Returns tool schemas in the same flat OpenAI
         function-tool format as
         :meth:`omnigent.runner.mcp_manager.RunnerMcpManager.schemas_for`.
 
         Tool names are returned with the server namespace prefix applied by
-        the Omnigent server (e.g. ``github__search``).  This ensures the harness
+        the tesseract server (e.g. ``github__search``).  This ensures the harness
         sees collision-safe names even when multiple MCP servers define tools
         with the same bare name.
 
@@ -271,7 +271,7 @@ class ProxyMcpManager:
             name = tool.get("name")
             if not isinstance(name, str) or not name:
                 continue
-            # The Omnigent server returns ``inputSchema`` (JSON Schema from MCP).
+            # The tesseract server returns ``inputSchema`` (JSON Schema from MCP).
             # Convert to the ``parameters`` key expected by LLM providers,
             # normalizing the same way RunnerMcpManager does via
             # _normalize_input_schema (ensure ``properties`` key is present).
@@ -301,13 +301,13 @@ class ProxyMcpManager:
         tool_name: str,
         arguments: _JsonObject,
     ) -> str:
-        """Dispatch a tool call via the Omnigent server MCP proxy (``tools/call``).
+        """Dispatch a tool call via the tesseract server MCP proxy (``tools/call``).
 
-        Sends a ``tools/call`` JSON-RPC 2.0 request.  The Omnigent server enforces
+        Sends a ``tools/call`` JSON-RPC 2.0 request.  The tesseract server enforces
         TOOL_CALL and TOOL_RESULT policies before forwarding to the real MCP
         server.
 
-        **ASK policy / approval flow**: when the Omnigent server returns an
+        **ASK policy / approval flow**: when the tesseract server returns an
         ``InputRequiredResult`` (MCP MRTR spec), this method parks on the
         runner-side approval Future until the user accepts or declines, then
         retries once with the user's decision in ``inputResponses``.
@@ -318,12 +318,12 @@ class ProxyMcpManager:
         :param tool_name: Tool name as seen by the LLM, e.g.
             ``"github__search"`` or ``"sys_os_read"``.
         :param arguments: Decoded tool arguments dict.
-        :returns: Tool output string.  On denial the Omnigent server returns an
+        :returns: Tool output string.  On denial the tesseract server returns an
             MCP error response which is converted here to a JSON error string
             so the harness can feed it to the LLM as a tool result.
         :raises RuntimeError: On network failure or unexpected protocol errors.
         """
-        del spec  # Omnigent server resolves spec from session context
+        del spec  # tesseract server resolves spec from session context
 
         operation_id = f"mcpop_{uuid.uuid4().hex}"
         registry = self._execution_registry
@@ -443,7 +443,7 @@ class ProxyMcpManager:
                     f"MCP proxy returned a non-object result for tool {tool_name!r}"
                 )
 
-            # ── ASK: Omnigent server returned InputRequiredResult ───────────────
+            # ── ASK: tesseract server returned InputRequiredResult ───────────────
             # Park for user approval and retry with inputResponses per the
             # MCP Multi Round-Trip Requests spec.
             if result.get("resultType") == "input_required":
@@ -456,7 +456,7 @@ class ProxyMcpManager:
                     input_requests = {}
                 request_state_value = result.get("requestState")
                 request_state = request_state_value if isinstance(request_state_value, str) else ""
-                # The Omnigent server uses the elicitation_id as the key in
+                # The tesseract server uses the elicitation_id as the key in
                 # inputRequests (MRTR spec: keys are server-assigned and the
                 # client CAN read them — only requestState is opaque).
                 elicitation_id = next(iter(input_requests), "")
@@ -524,11 +524,11 @@ class ProxyMcpManager:
             return json.dumps(result)
 
     async def prewarm(self, spec: AgentSpec) -> None:
-        """No-op — the Omnigent server warms connections lazily via ServerMcpPool.
+        """No-op — the tesseract server warms connections lazily via ServerMcpPool.
 
         :param spec: Ignored.
         """
         del spec
 
     async def shutdown(self) -> None:
-        """No-op — the Omnigent server owns and manages MCP connections."""
+        """No-op — the tesseract server owns and manages MCP connections."""

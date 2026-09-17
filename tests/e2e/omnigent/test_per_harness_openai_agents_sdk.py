@@ -6,7 +6,7 @@ mock LLM server and snapshots structural observations (exit code,
 stderr cleanliness, assistant text length).
 
 **What breaks if this fails:**
-- Omnigent' ``OpenAIAgentsSDKExecutor`` regresses (the Runner
+- tesseract' ``OpenAIAgentsSDKExecutor`` regresses (the Runner
   lifecycle, the Responses-API adapter in
   ``omnigent.open_responses_sdk``, the MCP tool bridging, or
   the event stream translation to ``ExecutorEvent`` types).
@@ -117,7 +117,7 @@ def test_per_harness_openai_agents_sdk_one_shot(
         pytest.skip(
             "openai-agents-sdk harness prerequisite missing: "
             "the 'agents' Python package (openai-agents) must be "
-            "installed in the Omnigent venv. Skipping — package absent."
+            "installed in the tesseract venv. Skipping — package absent."
         )
 
     model = f"mock-harness-openai-{uuid.uuid4().hex[:8]}"

@@ -4,7 +4,7 @@ Tests for :mod:`omnigent.resume_dispatch` — the top-level
 
 The dispatcher's job is to translate the user's "take me back to
 where I was" intent into the right wrapper call. The two important
-properties under test are (a) we always preserve the Omnigent
+properties under test are (a) we always preserve the tesseract
 conversation id end-to-end (no new id minted on resume) and (b)
 claude-native conversations route to ``run_claude_native``,
 everything else surfaces a clear redirect hint.
@@ -29,7 +29,7 @@ def test_run_resume_picker_form_requires_server() -> None:
     ``omnigent resume`` (no conv id, no --server) must fail loud.
 
     Without ``target`` we'd open the cross-agent picker; without
-    ``--server`` we have no Omnigent endpoint to query. Starting an
+    ``--server`` we have no tesseract endpoint to query. Starting an
     empty local server just for the picker would race with any
     other ``omnigent`` process the user has running, so we
     redirect via UsageError instead of silently doing it.
@@ -88,11 +88,11 @@ def test_dispatch_by_runtime_claude_native_remote_routes_to_wrapper(
     """
     Remote claude-native conv ⇒ ``run_claude_native(server=..., session_id=conv_id)``.
 
-    The Omnigent conv id MUST be preserved as ``session_id`` (the
+    The tesseract conv id MUST be preserved as ``session_id`` (the
     wrapper's resume kwarg). A bug that passed ``None`` would mint a
     fresh session and the user would lose their prior context.
     Also asserts ``server`` carries through so the wrapper hits the
-    right Omnigent server.
+    right tesseract server.
     """
     monkeypatch.setattr(
         resume_dispatch,
@@ -116,7 +116,7 @@ def test_dispatch_by_runtime_claude_native_remote_routes_to_wrapper(
         server="https://example.com/",  # trailing slash — must be normalized
     )
 
-    # session_id preserves the Omnigent conv id end-to-end.
+    # session_id preserves the tesseract conv id end-to-end.
     assert captured["session_id"] == "4e92b5a0c0ee6db3f874f9c4a3f855a5"
     # Trailing slash stripped — the wrapper expects a bare base URL.
     assert captured["server"] == "https://example.com"
@@ -131,7 +131,7 @@ def test_dispatch_by_runtime_opencode_native_routes_to_wrapper(
 
     Regression for the seam's coverage expansion: the old hand-written
     ``if native_agent.key == "<x>"`` chain covered 10 harnesses but *not*
-    ``opencode``, so an opencode-native resume fell through to the Omnigent
+    ``opencode``, so an opencode-native resume fell through to the tesseract
     REPL and double-posted each turn (the same latent bug the chat-redirect
     path had). Routing through ``resolve_hook_for_key`` covers all 11; this
     pins that opencode now reaches its wrapper.
@@ -169,7 +169,7 @@ def test_dispatch_by_runtime_codex_native_remote_routes_to_wrapper(
     """
     Remote codex-native conv ⇒ ``run_codex_native(server=..., session_id=conv_id)``.
 
-    The Omnigent conv id must be preserved exactly like the
+    The tesseract conv id must be preserved exactly like the
     claude-native path, but the runtime-specific passthrough kwarg is
     ``codex_args``.
     """
@@ -269,7 +269,7 @@ def test_dispatch_by_runtime_antigravity_native_remote_routes_to_wrapper(
     """
     Remote antigravity-native conv ⇒ ``run_antigravity_native(server=..., session_id=...)``.
 
-    The Omnigent conv id must be preserved exactly like the codex/claude
+    The tesseract conv id must be preserved exactly like the codex/claude
     paths, but the runtime-specific passthrough kwarg is
     ``antigravity_args``.
 
@@ -555,7 +555,7 @@ def test_read_wrapper_label_local_reads_persistent_store(
     Local dispatch classifies sessions from ``~/.omnigent/chat.db``.
 
     :param monkeypatch: Pytest monkeypatch fixture.
-    :param tmp_path: Temporary persistent Omnigent directory.
+    :param tmp_path: Temporary persistent tesseract directory.
     :returns: None.
     """
     import omnigent.chat as chat_mod

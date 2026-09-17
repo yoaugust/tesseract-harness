@@ -115,10 +115,10 @@ class _HeartbeatRunnerClient:
 @pytest.mark.asyncio
 async def test_runner_relay_ready_waits_for_runner_heartbeat() -> None:
     """
-    Omnigent relay readiness is set only after the runner stream heartbeat.
+    tesseract relay readiness is set only after the runner stream heartbeat.
 
     Production breakage this catches: accepting a user message after
-    merely scheduling the relay task, before Omnigent has actually subscribed
+    merely scheduling the relay task, before tesseract has actually subscribed
     to runner output. A fast harness can otherwise complete before the
     relay is listening, producing a successful CLI run with empty
     stdout.

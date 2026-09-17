@@ -385,7 +385,7 @@ def test_run_with_remote_server_unreachable_server_raises_clean_error(
     tmp_path: Path,
 ) -> None:
     """
-    An unreachable Omnigent server fails with an actionable message, not a
+    An unreachable tesseract server fails with an actionable message, not a
     raw httpx traceback.
 
     The daemon flow's first server contact is the session create; if the

@@ -17,7 +17,7 @@
   background-color: rgba(250, 204, 21, 0.3);
 }
 
-/* Paint Monaco surfaces with the active Omnigent card tone so the file editor
+/* Paint Monaco surfaces with the active tesseract card tone so the file editor
    follows both the app mode and palette instead of the syntax theme's fixed
    background. The gutter uses a separate Monaco variable. */
 html .monaco-editor,

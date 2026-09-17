@@ -32,13 +32,13 @@ _AUTOLINK_RE = re.compile(r"<((?:https?://)[^>\s]+)>")
 # "# Title" (space after #), so they never match.
 _PR_REF_RE = re.compile(r"(?<![\w/#])#(\d+)\b")
 
-AUTHOR = "Omnigent maintainers"
+AUTHOR = "tesseract maintainers"
 # Average adult reading speed; used only for the "N min read" byline estimate.
 _WORDS_PER_MINUTE = 200
 
 WHATS_NEXT = """## What's Next
 
-Install or upgrade Omnigent:
+Install or upgrade tesseract:
 
 ```bash
 uv tool install --python 3.12 omnigent   # or: pip install "omnigent"

@@ -7,7 +7,7 @@ name: Draft release notes
 #   1. Open a PR to omnigent/main updating the granular CHANGELOG.md (harvested
 #      from each merged PR's "## Changelog" section), so the draft's
 #      "Full Changelog" link resolves before the release goes public.
-#   2. Synthesize concise, curated release notes (an Omnigent agent collapses the
+#   2. Synthesize concise, curated release notes (an tesseract agent collapses the
 #      merged PRs into ~4-5 themed highlights per section) and drop them into the
 #      GitHub Release DRAFT body for the coordinator to edit.
 #

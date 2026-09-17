@@ -1,6 +1,6 @@
 # Managed app configuration (iOS)
 
-Administrators can preset the server URLs the Omnigent iOS app offers, so people
+Administrators can preset the server URLs the tesseract iOS app offers, so people
 in an organization pick their server from a list instead of typing it.
 
 This page is the configuration specification. Apple's guidance is to publish it

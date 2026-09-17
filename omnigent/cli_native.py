@@ -1,7 +1,7 @@
 """Native coding-agent (TUI) CLI subcommands.
 
 Each ``omnigent <tool>`` command (``claude``, ``codex``, ``pi``, …) launches a
-vendor CLI inside an Omnigent-managed terminal. They were extracted from
+vendor CLI inside an tesseract-managed terminal. They were extracted from
 :mod:`omnigent.cli` so that file stops carrying ~1400 lines of near-identical
 launchers and so a future registry-driven step can generate them from
 ``native_agents()`` rather than hand-maintaining one ``@cli.command`` per tool.
@@ -102,7 +102,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to claude-native sessions."
         ),
@@ -188,7 +188,7 @@ def register_native_commands(cli: click.Group) -> None:
         claude_args: tuple[str, ...],
     ) -> None:
         # Param docs live in comments — Click uses the docstring for --help.
-        # :param server: Remote Omnigent server URL, or None for local.
+        # :param server: Remote tesseract server URL, or None for local.
         # :param resume: None, picker sentinel, or a conversation id.
         # :param session_id: Legacy ``--session`` id; mutually exclusive with ``--resume``.
         # :param use_claude_config: When True, skip ucode/Databricks auth and use
@@ -198,7 +198,7 @@ def register_native_commands(cli: click.Group) -> None:
         # :param smart_routing: When True, arm Smart Routing for the session so
         #     the first typed message picks the model.
         # :param claude_args: Pass-through args for ``claude``.
-        """Launch Claude Code with Omnigent.
+        """Launch Claude Code with tesseract.
 
         \b
         Examples:
@@ -249,7 +249,7 @@ def register_native_commands(cli: click.Group) -> None:
         startup_profiler.mark("arguments validated")
 
         # Ensure the host daemon (local when ``--server`` is omitted/empty,
-        # remote otherwise) and resolve the concrete Omnigent server URL. The daemon
+        # remote otherwise) and resolve the concrete tesseract server URL. The daemon
         # owns the runner; the CLI only connects. ``--host`` is now redundant
         # (the daemon is always ensured) and kept only as a no-op for scripts.
         startup_profiler.mark("ensuring backend")
@@ -326,7 +326,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to codex-native sessions."
         ),
@@ -367,7 +367,7 @@ def register_native_commands(cli: click.Group) -> None:
         codex_args: tuple[str, ...],
     ) -> None:
         # Param docs live in comments — Click uses the docstring for --help.
-        # :param server: Remote Omnigent server URL, or None for local.
+        # :param server: Remote tesseract server URL, or None for local.
         # :param resume: None, picker sentinel, or a conversation id.
         # :param session_id: Legacy ``--session`` id; mutually exclusive with ``--resume``.
         # :param model: Codex model id.
@@ -375,7 +375,7 @@ def register_native_commands(cli: click.Group) -> None:
         # :param smart_routing: When True, arm Smart Routing for the session so
         #     the first typed message picks the model.
         # :param codex_args: Pass-through args for ``codex`` before ``resume``.
-        """Launch Codex with Omnigent.
+        """Launch Codex with tesseract.
 
         \b
         Examples:
@@ -414,7 +414,7 @@ def register_native_commands(cli: click.Group) -> None:
         auto_open_conversation = _resolve_auto_open_conversation_from_config(cfg)
 
         # Ensure the host daemon (local when ``--server`` is omitted/empty,
-        # remote otherwise) and resolve the concrete Omnigent server URL. Codex follows
+        # remote otherwise) and resolve the concrete tesseract server URL. Codex follows
         # the same ownership model as attach/run/claude: the daemon-spawned runner
         # owns the app-server and TUI; the CLI attaches to the tmux terminal.
         server = _ensure_backend(server)
@@ -470,7 +470,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to opencode-native sessions."
         ),
@@ -492,7 +492,7 @@ def register_native_commands(cli: click.Group) -> None:
         model: str | None,
         opencode_args: tuple[str, ...],
     ) -> None:
-        # :param server: Remote Omnigent server URL, or None for local.
+        # :param server: Remote tesseract server URL, or None for local.
         # :param resume: None, picker sentinel, or a conversation id.
         # :param session_id: Legacy ``--session`` id; mutually exclusive with ``--resume``.
         # :param model: OpenCode model id pinned on the wrapper spec.
@@ -502,7 +502,7 @@ def register_native_commands(cli: click.Group) -> None:
         # (opencode-native resolves its binary on the runner side; if a spec/env
         # path to thread a client override through is added later, this stays
         # consistent with the other native commands' env/config override model.)
-        """Launch OpenCode with Omnigent.
+        """Launch OpenCode with tesseract.
 
         \b
         Examples:
@@ -573,7 +573,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to pi-native sessions."
         ),
@@ -593,7 +593,7 @@ def register_native_commands(cli: click.Group) -> None:
         session_id: str | None,
         pi_args: tuple[str, ...],
     ) -> None:
-        """Launch Pi with Omnigent.
+        """Launch Pi with tesseract.
 
         \b
         Examples:
@@ -662,7 +662,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to cursor-native sessions."
         ),
@@ -702,7 +702,7 @@ def register_native_commands(cli: click.Group) -> None:
     ) -> None:
         # Param docs live in comments — Click uses the docstring for --help.
         # :param model: Cursor model id passed to cursor-agent as ``--model``.
-        """Launch Cursor with Omnigent.
+        """Launch Cursor with tesseract.
 
         \b
         Examples:
@@ -779,7 +779,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to kiro-native sessions."
         ),
@@ -829,7 +829,7 @@ def register_native_commands(cli: click.Group) -> None:
         prompt: str | None,
         kiro_args: tuple[str, ...],
     ) -> None:
-        """Launch Kiro with Omnigent.
+        """Launch Kiro with tesseract.
 
         \b
         Examples:
@@ -909,7 +909,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to goose-native sessions."
         ),
@@ -929,7 +929,7 @@ def register_native_commands(cli: click.Group) -> None:
         session_id: str | None,
         goose_args: tuple[str, ...],
     ) -> None:
-        """Launch Goose with Omnigent.
+        """Launch Goose with tesseract.
 
         \b
         Examples:
@@ -996,7 +996,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to hermes-native sessions."
         ),
@@ -1016,7 +1016,7 @@ def register_native_commands(cli: click.Group) -> None:
         session_id: str | None,
         hermes_args: tuple[str, ...],
     ) -> None:
-        """Launch Hermes with Omnigent.
+        """Launch Hermes with tesseract.
 
         \b
         Examples:
@@ -1083,7 +1083,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to antigravity-native sessions."
         ),
@@ -1105,7 +1105,7 @@ def register_native_commands(cli: click.Group) -> None:
         model: str | None,
         antigravity_args: tuple[str, ...],
     ) -> None:
-        """Launch Antigravity (agy) with Omnigent.
+        """Launch Antigravity (agy) with tesseract.
 
         \b
         Examples:
@@ -1187,7 +1187,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to qwen-native sessions."
         ),
@@ -1207,7 +1207,7 @@ def register_native_commands(cli: click.Group) -> None:
         session_id: str | None,
         qwen_args: tuple[str, ...],
     ) -> None:
-        """Launch Qwen Code with Omnigent.
+        """Launch Qwen Code with tesseract.
 
         \b
         Examples:
@@ -1274,7 +1274,7 @@ def register_native_commands(cli: click.Group) -> None:
         flag_value=_RESUME_PICKER_SENTINEL,
         default=None,
         help=(
-            "Resume a prior Omnigent conversation. With a conversation id "
+            "Resume a prior tesseract conversation. With a conversation id "
             "(e.g. ``--resume conv_abc123``) attaches directly; with no value "
             "opens an interactive picker scoped to kimi-native sessions."
         ),
@@ -1294,15 +1294,15 @@ def register_native_commands(cli: click.Group) -> None:
         session_id: str | None,
         kimi_args: tuple[str, ...],
     ) -> None:
-        """Launch Kimi Code with Omnigent.
+        """Launch Kimi Code with tesseract.
 
         Boots Moonshot AI's interactive ``kimi`` TUI
         (https://github.com/MoonshotAI/Kimi-Code) in a runner-owned terminal and
-        attaches your TTY — the native experience, embedded in the Omnigent web
-        UI. No Omnigent provider config is needed: kimi authenticates against its
+        attaches your TTY — the native experience, embedded in the tesseract web
+        UI. No tesseract provider config is needed: kimi authenticates against its
         own backend (``kimi login`` for OAuth, or a Moonshot API key).
 
-        For the headless SDK harness (per-turn ``kimi -p`` behind the Omnigent
+        For the headless SDK harness (per-turn ``kimi -p`` behind the tesseract
         REPL) use ``omnigent run --harness kimi`` instead.
 
         \b

@@ -11,17 +11,17 @@ Operator/deploy guide: [`../deploy/databricks/README.md`](../deploy/databricks/R
 
 ## Goal
 
-Let a Slack user drive an Omnigent server that is deployed as a
+Let a Slack user drive an tesseract server that is deployed as a
 Databricks App in **header/proxy mode**, where:
 
 - the Databricks Apps proxy authenticates every request and injects
   `X-Forwarded-Email` (the app trusts it verbatim; the proxy is the only
-  reachable path — see the Omnigent server deploy's `deploy/databricks/README.md`),
-- the Omnigent server cannot mint its own tokens (`mint_runner_token` returns `None` in
+  reachable path — see the tesseract server deploy's `deploy/databricks/README.md`),
+- the tesseract server cannot mint its own tokens (`mint_runner_token` returns `None` in
   header mode, `omnigent/server/auth.py`),
 - Slack events arrive over a Socket-Mode websocket with **no** authenticated
   HTTP request, so there is no `x-forwarded-access-token` to relay and no
-  unauthenticated Omnigent endpoint to run the existing device flow against.
+  unauthenticated tesseract endpoint to run the existing device flow against.
 
 ## Core idea
 
@@ -32,7 +32,7 @@ link is sent to the workspace `/oidc/v1/authorize` screen, signs in and
 consents, and Databricks redirects back to the bot's `/auth/callback` with a
 single-use code. The bot exchanges that code (PKCE-bound) at `/oidc/v1/token`
 for an **access + refresh** token pair with `offline_access`, and forwards the
-access token as the bearer for that user's requests to the Omnigent server (Databricks'
+access token as the bearer for that user's requests to the tesseract server (Databricks'
 on-behalf-of pattern). Because the grant includes a refresh token, the bot
 rotates it transparently — the user signs in once, not hourly.
 
@@ -47,8 +47,8 @@ leaks `all-apis`-level access for each enrolled user, the same breadth a
 `databricks-cli` token carries.
 
 Why `all-apis` anyway: the token's scopes must be a **superset** of the scopes
-the Omnigent server declares, or its Databricks proxy rejects the token (401
-on `/api`, 302→login elsewhere). The Omnigent server accepts `all-apis`, and we have not
+the tesseract server declares, or its Databricks proxy rejects the token (401
+on `/api`, 302→login elsewhere). The tesseract server accepts `all-apis`, and we have not
 yet confirmed a narrower scope its proxy will accept while still authenticating.
 So `all-apis` is the best option available right now — the flow works and is
 per-user and refreshable — but narrowing the scope is a real, tracked follow-up
@@ -89,7 +89,7 @@ per-user delegated token (the request maps to the real user via the proxy's
       is refused);
    e. **stashes** the tokens under a single-use confirm id and renders a
       **consent page** naming the exact identities ("You are about to connect
-      your Omnigent `<server>` account `<idp-email>` with Slack user
+      your tesseract `<server>` account `<idp-email>` with Slack user
       `<slack-email>`") with a **Confirm** button — storing **nothing** yet.
 5. Confirm submits a **POST** carrying the confirm id. The POST handler looks up
    the stashed tokens and stores the pair keyed by
@@ -100,16 +100,16 @@ per-user delegated token (the request maps to the real user via the proxy's
 
 The authorization code is single-use, so it's exchanged once on the GET and the
 resulting tokens held in a short-lived in-memory stash until the confirming POST
-— a credential is never persisted without the user affirming the Omnigent↔Slack
+— a credential is never persisted without the user affirming the tesseract↔Slack
 account linkage on a page that names both identities.
 
 ### Per-request (steady state)
 
 - Bot resolves the stored token for `(team,user,server)`.
-- Calls the Omnigent server with `Authorization: Bearer <access token>`.
-- The Omnigent server's proxy validates it and injects **`X-Forwarded-Email` for
-  the real user** → `server/auth.py` header mode maps it to the Omnigent user.
-- **No Omnigent server changes.** Identity mapping is entirely the existing
+- Calls the tesseract server with `Authorization: Bearer <access token>`.
+- The tesseract server's proxy validates it and injects **`X-Forwarded-Email` for
+  the real user** → `server/auth.py` header mode maps it to the tesseract user.
+- **No tesseract server changes.** Identity mapping is entirely the existing
   header path.
 - On 401 (access-token expiry) the bot refreshes via `/oidc/v1/token` using the
   stored refresh token and retries — transparently, no re-enrollment. Only if
@@ -118,7 +118,7 @@ account linkage on a page that names both identities.
 
 ### Transport
 
-Identity and transport are independent. The bot talks to the Omnigent server over
+Identity and transport are independent. The bot talks to the tesseract server over
 ordinary HTTP request/response + SSE (`omnigent.py`), which is what it already
 uses for every other server — no `wss://` tunnel through the proxy is required.
 This design is only about **identity**.
@@ -130,7 +130,7 @@ The row we ship is the last one. Note its blast radius is **`all-apis` today**
 identity + refresh, NOT a narrower token. Scope-limiting is possible in principle
 but unrealized (see the section above).
 
-| Approach | Per-user identity? | Token blast radius | Refresh? | Omnigent server change? |
+| Approach | Per-user identity? | Token blast radius | Refresh? | tesseract server change? |
 |---|---|---|---|---|
 | SP app-to-app (M2M) | ❌ all users collapse to one SP | n/a (wrong identity) | — | none, but unusable |
 | Store raw `all-apis` user token | ✅ | ❌ `all-apis` (full workspace) | ❌ ~1h | none |
@@ -141,7 +141,7 @@ but unrealized (see the section above).
 
 ### Strengths
 
-- **Solves the identity problem with zero Omnigent server changes** — reuses the
+- **Solves the identity problem with zero tesseract server changes** — reuses the
   existing header-mode path; the proxy does the mapping.
 - **Per-user delegated identity** — each token acts as the real Slack user (via
   the proxy's `X-Forwarded-Email`), not a shared service principal. (Its blast
@@ -156,7 +156,7 @@ but unrealized (see the section above).
   must match the signed Slack email (closes the confused-deputy).
 - **Confirm-before-store** — the GET exchanges the code but stores nothing; the
   token is persisted only on the Confirm POST, so a credential is never saved
-  without the user affirming the exact Omnigent↔Slack linkage on a named page.
+  without the user affirming the exact tesseract↔Slack linkage on a named page.
 
 ### Weaknesses / risks (current state)
 
@@ -164,9 +164,9 @@ but unrealized (see the section above).
    (`OMNIGENT_SLACK_DATABRICKS_SCOPES`; `openid` + `offline_access` always added),
    so a stolen store yields workspace-broad, per-user access — not the
    narrowly-scoped grant the mechanism theoretically allows. It stays `all-apis`
-   because the token's scopes must be a **superset** of what the Omnigent server
+   because the token's scopes must be a **superset** of what the tesseract server
    declares (or its proxy rejects the token), and we haven't confirmed a narrower
-   scope its proxy accepts. **Follow-up:** find the Omnigent server's minimal accepted
+   scope its proxy accepts. **Follow-up:** find the tesseract server's minimal accepted
    scope and set it here; until then this is the accepted residual risk.
 2. **omnigent-slack holds refreshable user tokens for many users** — a
    higher-value target than a short-lived-token store. Mitigations in place:
@@ -187,7 +187,7 @@ but unrealized (see the section above).
    `databricks.yml`. A shared/persistent nonce store would remove reason (b) but
    not (a).
 4. **Consumer vs workspace access** — a Slack user with only consumer access may
-   authenticate at the enrollment page but still be rejected by the Omnigent server
+   authenticate at the enrollment page but still be rejected by the tesseract server
    (mirrors the CLI "not assigned to this application" case).
 
 ### Security properties
@@ -215,9 +215,9 @@ but unrealized (see the section above).
 
 ## Open questions / follow-ups
 
-1. **Minimum scopes** the Omnigent server's proxy will accept (must be a superset of
+1. **Minimum scopes** the tesseract server's proxy will accept (must be a superset of
    the app's declared scopes) — narrow `OMNIGENT_SLACK_DATABRICKS_SCOPES` from
-   the `all-apis` default to the Omnigent server's exact scope once confirmed.
+   the `all-apis` default to the tesseract server's exact scope once confirmed.
 2. **Pending-verifier durability:** the in-memory PKCE verifier map means a bot
    restart between link-issue and callback loses it (the user re-runs
    `/omnigent`) and the app must run as a single replica (weakness #3). A

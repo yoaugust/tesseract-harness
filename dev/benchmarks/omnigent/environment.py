@@ -1,7 +1,7 @@
 """Benchmark environment lifecycle.
 
 :class:`BenchEnvironment` is an async context manager that stands up a real
-Omnigent ``server`` with no Databricks credentials. Two modes:
+tesseract ``server`` with no Databricks credentials. Two modes:
 
 - ``with_runner=False`` (default): server + SQLite DB only. Enough for the
   HTTP/API journeys, which never drive an agent turn.

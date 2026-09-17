@@ -155,7 +155,7 @@ async def test_agent_with_policies_denies_long_sleep(
     Contrary to the user's initial note that the legacy 2-arg
     ``(content, phase)`` callable signature from
     ``examples/tool_functions.py`` wouldn't fire under
-    Omnigent' engine: it DOES. The engine calls 2-arg
+    tesseract' engine: it DOES. The engine calls 2-arg
     callables as ``(ctx, context)``, and ``block_long_sleep``
     inspects ``content.get("name")`` which works because
     :class:`EvaluationContext` is a :func:`dataclasses.dataclass`
@@ -164,7 +164,7 @@ async def test_agent_with_policies_denies_long_sleep(
     returned dict shape structurally.
 
     Claim: the omnigent YAML + its legacy-style example
-    callable actually works through Omnigent' engine. If
+    callable actually works through tesseract' engine. If
     this ever regresses (e.g. the callable adapter path is
     tightened), the regression is visible in this test.
     """

@@ -232,7 +232,7 @@ The store is the base for two credential needs; the encryption above is shared,
 the delivery differs.
 
 **MCP auth → Databricks AI Gateway (AIGW), primary.** Routing MCP through AIGW
-makes per-MCP OAuth *Databricks's* problem, not Omnigent's. The store then holds
+makes per-MCP OAuth *Databricks's* problem, not tesseract's. The store then holds
 only a small `provider="databricks"` exchange grant (per-user, KMS-encrypted);
 the server performs the omni→databricks token exchange + refresh, and the
 sandbox's MCP proxy fetches a short-lived AIGW token from the broker per
@@ -242,7 +242,7 @@ later.
 
 **GitHub clone stays on the broker.** MCP can't `git clone`, so the GitHub App
 token remains in the store and the broker vends it into the sandbox for git
-(the credential-helper path); a wrapper `gh` CLI can do the Open-in-Omnigent PR
+(the credential-helper path); a wrapper `gh` CLI can do the Open-in-tesseract PR
 stamp instead of the MCP proxy.
 
 ### Phased plan

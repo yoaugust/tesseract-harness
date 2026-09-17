@@ -165,11 +165,11 @@ def _catalog_cache_root() -> Path:
     """Return the platform user-cache directory for model catalogs."""
     home = Path.home()
     if sys.platform == "darwin":
-        return home / "Library" / "Caches" / "Omnigent" / "model-catalog"
+        return home / "Library" / "Caches" / "tesseract" / "model-catalog"
     if os.name == "nt":
         local_app_data = os.environ.get("LOCALAPPDATA")
         root = Path(local_app_data) if local_app_data else home / "AppData" / "Local"
-        return root / "Omnigent" / "Cache" / "model-catalog"
+        return root / "tesseract" / "Cache" / "model-catalog"
     xdg_cache = os.environ.get("XDG_CACHE_HOME")
     root = Path(xdg_cache).expanduser() if xdg_cache else home / ".cache"
     return root / "omnigent" / "model-catalog"

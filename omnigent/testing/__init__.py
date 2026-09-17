@@ -1,4 +1,4 @@
-"""Test-environment safety helpers for the Omnigent suite.
+"""Test-environment safety helpers for the tesseract suite.
 
 Houses additive guardrails that assert a test run is pointed at
 throwaway resources (a tmp/in-memory SQLite DB, no dev/prod ports)

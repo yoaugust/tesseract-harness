@@ -23,7 +23,7 @@ Local usage::
       uv run --no-sync pytest tests/e2e_ui --ui-base-url http://127.0.0.1:5173
 
 ``omnigent server`` is documented at ``omnigent/cli.py:server``:
-it spins up uvicorn with the Omnigent app and spawns an out-of-process
+it spins up uvicorn with the tesseract app and spawns an out-of-process
 runner that reconnects over the WebSocket tunnel. The fixture passes
 ``--database-uri`` and ``--artifact-location`` pointing at the
 pytest tmp dir so the test never touches the user's default
@@ -441,7 +441,7 @@ def _register_agent_yaml(
 ) -> str | None:
     """Register an agent via multipart ``POST /v1/sessions`` from a raw YAML body.
 
-    ``arcname`` defaults to ``config.yaml`` for native Omnigent specs. Pass a
+    ``arcname`` defaults to ``config.yaml`` for native tesseract specs. Pass a
     ``*.yaml`` filename for omnigent-flavored single-file specs; the
     compat loader only routes those through the omnigent translator when
     the extracted bundle has no root ``config.yaml``.

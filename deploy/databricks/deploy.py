@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy Omnigent to a Databricks App via Databricks Asset Bundles.
+"""Deploy tesseract to a Databricks App via Databricks Asset Bundles.
 
 End-to-end orchestrator that wraps `databricks bundle deploy` +
 `databricks bundle run`. The build pieces (version stamp, wheel
@@ -280,7 +280,7 @@ def _core_release_wheels(
 
 
 def _wheel_version(wheel: Path, prefix: str) -> str:
-    """Extract a deploy version from an Omnigent wheel filename.
+    """Extract a deploy version from an tesseract wheel filename.
 
     :param wheel: Built wheel path, e.g.
         ``dist/omnigent-0.1.0.post123-py3-none-any.whl``.
@@ -318,7 +318,7 @@ def _derive_deploy_version_from_wheels(wheels: list[Path]) -> str:
 
 
 def _sweep_local_src_wheels(keep: set[str]) -> None:
-    """Delete Omnigent wheels from src/ whose filename is not in `keep`.
+    """Delete tesseract wheels from src/ whose filename is not in `keep`.
 
     Old deploys accumulate wheels here. Databricks Apps installs the
     source directory as a project, so stale wheels can keep local path
@@ -489,7 +489,7 @@ def build_uv_pyproject(
     :param oversize_wheels: Wheels too large for the app source directory.
     :param deploy_version: Version stamped into the wheels, e.g.
         ``"0.1.0.post123"``.
-    :param extension_wheels: Omnigent extension wheels (``omnigent.extensions``
+    :param extension_wheels: tesseract extension wheels (``omnigent.extensions``
         entry points) installed alongside the server, e.g.
         ``src/omnigent_hello_extension-0.1.0-py3-none-any.whl``.
     :returns: Complete TOML text for ``src/pyproject.toml``.
@@ -786,7 +786,7 @@ def _parse_args() -> argparse.Namespace:
         type=Path,
         metavar="WHEEL",
         help=(
-            "Prebuilt Omnigent extension wheel to install alongside the server "
+            "Prebuilt tesseract extension wheel to install alongside the server "
             "(repeatable), e.g. dist-ext/omnigent_hello_extension-0.1.0-py3-none-any.whl. "
             "The server discovers it through its omnigent.extensions entry point."
         ),
@@ -1093,7 +1093,7 @@ def main() -> int:
         wheel.stat().st_size > _WORKSPACE_WHEEL_LIMIT_BYTES for wheel in extension_wheels
     ):
         raise SystemExit(
-            "uv-based Databricks Apps deploys require every Omnigent wheel to "
+            "uv-based Databricks Apps deploys require every tesseract wheel to "
             "fit under the 10 MB Workspace file cap. Reduce the Python payload "
             "or pass --skip-web-ui; the SPA ships outside the wheel."
         )

@@ -6,7 +6,7 @@ finishes, the runner delivers the result into the parent's inbox and POSTs a
 the wake is the *sole* delivery signal that makes the parent surface the
 result without further user input.
 
-If the Omnigent server is briefly unreachable at child-completion time (a
+If the tesseract server is briefly unreachable at child-completion time (a
 routine tunnel reconnect, a server redeploy), the wake POST exhausts its
 bounded retry budget and gives up. The result then sits stranded in the
 parent's inbox forever: no later reconnect or turn re-attempts the wake, so

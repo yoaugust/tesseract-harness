@@ -12,7 +12,7 @@ configured from env vars the parent process sets before spawning.
 
 V1 config-flow limitation (documented in the design doc's
 Autonomous decisions section): config arrives via env vars rather
-than per-spec data on the request body. Omnigent sets these env vars
+than per-spec data on the request body. tesseract sets these env vars
 in its own process before calling
 :meth:`HarnessProcessManager.get_client`; the spawned subprocess
 inherits them. Single-config-per-AP-process; multi-spec
@@ -48,7 +48,7 @@ Env vars read at startup:
   ``Bash/Read/Edit/Write/Glob/Grep`` to the LLM. When unset,
   the wrap falls back to a default
   ``OSEnvSpec(type="caller_process", sandbox=type="none")`` so
-  Omnigent mode parity with the legacy non-AP path holds for
+  tesseract mode parity with the legacy non-AP path holds for
   specs that don't declare an ``os_env:`` block.
 - ``HARNESS_CLAUDE_SDK_RETRY_POLICY``: JSON-encoded
   :class:`RetryPolicy` (from :func:`dataclasses.asdict`)
@@ -118,7 +118,7 @@ _ENV_GATEWAY_BASE_URL = "HARNESS_CLAUDE_SDK_GATEWAY_BASE_URL"
 _ENV_GATEWAY_AUTH_COMMAND = "HARNESS_CLAUDE_SDK_GATEWAY_AUTH_COMMAND"
 _ENV_GATEWAY_AUTH_REFRESH_INTERVAL_MS = "HARNESS_CLAUDE_SDK_GATEWAY_AUTH_REFRESH_INTERVAL_MS"
 # Shell command the Claude CLI invokes to retrieve a bearer token.
-# Set by the Omnigent workflow layer when executor.auth: {type: api_key, …} is
+# Set by the tesseract workflow layer when executor.auth: {type: api_key, …} is
 # declared.  Passed into ClaudeSDKExecutor.api_key_helper so it reaches
 # settings.apiKeyHelper at turn time (not read from os.environ — the
 # executor strips ANTHROPIC_API_KEY before connecting to avoid subscription
@@ -136,7 +136,7 @@ def _resolve_os_env() -> OSEnvSpec:
     Resolve the inner-executor :class:`OSEnvSpec` from env config.
 
     Reads :data:`_ENV_OS_ENV` and decodes the JSON-encoded dict
-    Omnigent serialized via :func:`dataclasses.asdict` on its
+    tesseract serialized via :func:`dataclasses.asdict` on its
     :class:`OSEnvSpec`. When the env var is missing or
     malformed, falls back to ``caller_process + sandbox=none``
     so the SDK still exposes the natives — leaving them off by
@@ -187,7 +187,7 @@ def _resolve_retry_policy() -> RetryPolicy:
     Reads :data:`_ENV_RETRY_POLICY` and delegates to
     :meth:`RetryPolicy.from_json` for the round-trip. Falls
     back to ``RetryPolicy()`` (defaults) when the env var is
-    missing — Omnigent omits the env var when ``llm.retry`` matches
+    missing — tesseract omits the env var when ``llm.retry`` matches
     defaults, so this is the common path.
 
     Validation/parse errors are logged and demoted to the

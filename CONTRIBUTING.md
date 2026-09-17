@@ -1,6 +1,6 @@
-# Contributing to Omnigent
+# Contributing to tesseract
 
-Thanks for your interest in improving Omnigent. Issues and pull requests are
+Thanks for your interest in improving tesseract. Issues and pull requests are
 welcome. For larger changes, open an issue first so we can discuss the approach.
 
 Please don't include secrets, internal URLs, customer data, or private
@@ -49,7 +49,7 @@ missing from the model. Automation preserves those overrides and does not
 replace a maintainer-set priority with its own proposal. The queue is rerun as
 issues change, while unchanged LLM classifications are reused.
 
-For bugs, include the observed impact, reproduction evidence, Omnigent version,
+For bugs, include the observed impact, reproduction evidence, tesseract version,
 platform, and affected harness or authentication mode. Direct steps are best,
 but a clear intermittent observation, controlled test, diagnostics, or concrete
 analysis of the failing code path can also give maintainers enough to
@@ -160,7 +160,7 @@ For full-stack manual testing, use `omnidev`.
 `omnidev` runs the current checkout's server, host, and Vite frontend in one
 terminal. Each checkout path, including each worktree, gets isolated state,
 configuration, database, artifacts, logs, and automatically allocated ports,
-so it can run alongside your normal Omnigent installation and other worktrees.
+so it can run alongside your normal tesseract installation and other worktrees.
 
 Install the supervisor once from an up-to-date checkout:
 
@@ -191,7 +191,7 @@ omnidev omnigent agent list
 ```
 
 Keep `omnidev` in the foreground and quit with `q` or `Ctrl-C` so it tears down
-all three processes. An interactive terminal inside an existing Omnigent
+all three processes. An interactive terminal inside an existing tesseract
 session also works; use `git rev-parse --show-toplevel` to confirm that its
 current checkout is the one you intend to test.
 

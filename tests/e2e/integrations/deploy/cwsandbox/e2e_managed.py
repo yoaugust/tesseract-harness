@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-End-to-end test: create a managed session against an Omnigent server, and have
+End-to-end test: create a managed session against an tesseract server, and have
 the agent run a REAL workload — an LLM turn against the CoreWeave / W&B inference
 endpoint — from inside the managed CHILD sandbox the server provisions.
 

@@ -1,4 +1,4 @@
-"""Usage telemetry for the Omnigent server.
+"""Usage telemetry for the tesseract server.
 
 This package provides fire-and-forget product analytics.  Import the
 top-level helpers rather than reaching into submodules directly:

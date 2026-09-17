@@ -1,4 +1,4 @@
-# Fly.io config for Omnigent. Deploy with the CLI from this directory:
+# Fly.io config for tesseract. Deploy with the CLI from this directory:
 #   fly deploy -c deploy/fly/fly.toml
 # Pulls the prebuilt image directly (the fast CLI path). Pairs with SQLite on a
 # persistent volume by default — no separate database app. Full walkthrough

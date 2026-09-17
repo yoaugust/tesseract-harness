@@ -1,7 +1,7 @@
-# Omnigent on Islo
+# tesseract on Islo
 
 [Islo](https://islo.dev) sandboxes give you disposable cloud machines for
-running Omnigent hosts, two ways:
+running tesseract hosts, two ways:
 
 - **CLI-launched**: `omnigent sandbox create` / `connect` provisions a
   sandbox from your terminal, ships your local checkout into it, and
@@ -30,7 +30,7 @@ of this guide:
 
 ## Prerequisites
 
-Install Omnigent with the Islo extra, install the
+Install tesseract with the Islo extra, install the
 [Islo CLI](https://docs.islo.dev), and create an API key. Make the key
 available where the launcher runs — your shell for the CLI flow, the
 **server** process for managed sandboxes:
@@ -62,7 +62,7 @@ no `~/.config` file is needed where the launcher runs.
 
 Sandboxes boot from `ghcr.io/omnigent-ai/omnigent-host:latest`, published
 by CI from the `host` target of
-[`deploy/docker/Dockerfile`](../docker/Dockerfile) with Omnigent and its
+[`deploy/docker/Dockerfile`](../docker/Dockerfile) with tesseract and its
 dependencies preinstalled — including the coding-harness CLIs (`claude`,
 `codex`, `pi`, `kiro-cli`), so agents on any harness run without an in-sandbox
 install.
@@ -77,10 +77,10 @@ docker build -f deploy/docker/Dockerfile --target host \
 docker push docker.io/<you>/omnigent-host:latest
 ```
 
-Then point Omnigent at it — `OMNIGENT_ISLO_HOST_IMAGE` for the CLI flow,
+Then point tesseract at it — `OMNIGENT_ISLO_HOST_IMAGE` for the CLI flow,
 or `sandbox.islo.image` in the server config for the managed flow. For a
 private registry, configure the pull credentials on the Islo side (Islo
-pulls the image, not Omnigent).
+pulls the image, not tesseract).
 
 > [!IMPORTANT]
 > **Native terminals need `bubblewrap`.** The `claude-native` /
@@ -125,7 +125,7 @@ sandbox keeps billing until removed via `islo rm <id>` or the
 ### Live smoke checklist
 
 Use this checklist before opening a provider-change PR, or when validating
-a new Islo account/key. It assumes your Omnigent server is reachable from
+a new Islo account/key. It assumes your tesseract server is reachable from
 Islo's cloud at `https://your-host` (for local testing, expose it with a
 tunnel and use the public URL).
 
@@ -142,7 +142,7 @@ islo rm <id-printed-by-create>
 ```
 
 Expected result: `create` provisions the sandbox and ships wheels,
-`connect` registers the host with the Omnigent server, `islo ls` shows the
+`connect` registers the host with the tesseract server, `islo ls` shows the
 sandbox while it exists, and `islo rm` deletes it. If `connect` cannot
 reach the server, first verify the `--server` URL from a machine outside
 your laptop network.
@@ -224,7 +224,7 @@ credentials enter the sandbox for the server connection.
 
 Managed Islo sandboxes pause after 15 idle minutes by default. When a new
 message arrives for a session bound to an offline Islo-managed host,
-Omnigent resumes the same sandbox id, mints a fresh launch token, and
+tesseract resumes the same sandbox id, mints a fresh launch token, and
 restarts `omnigent host` against the existing workspace. Deleting the
 session still deletes the sandbox.
 
@@ -338,7 +338,7 @@ Claude Pro/Max token, a Codex access token), use
 #### Path A under managed hosts
 
 This is where the gateway shines: when the **server** launches sandboxes,
-you configure **no model credential on the Omnigent side at all**. The
+you configure **no model credential on the tesseract side at all**. The
 flow:
 
 ```
@@ -351,11 +351,11 @@ server ──ISLO_API_KEY──▶ Islo API "create sandbox" ──▶ sandbox u
    agent's claude → api.anthropic.com (phantom key) ──▶ Islo gateway swaps in the real key
 ```
 
-The Omnigent server only ever holds `ISLO_API_KEY` — the credential it
+The tesseract server only ever holds `ISLO_API_KEY` — the credential it
 uses to *create* sandboxes. Because every managed sandbox is created under
 that Islo account, and integrations are connected at the **account/team**
 level, each one inherits the connected Claude credential through the
-gateway automatically. The only Omnigent-side knob is which gateway a
+gateway automatically. The only tesseract-side knob is which gateway a
 managed sandbox uses:
 
 ```yaml
@@ -368,7 +368,7 @@ sandbox:
 
 Two consequences worth internalizing:
 
-- **No model secret lives in the Omnigent server's config or
+- **No model secret lives in the tesseract server's config or
   environment** — nothing to leak there. Contrast [Option B under managed
   hosts](#option-b--omnigent-env-injection-your-own-key-or-a-subscription),
   where the key sits in `sandbox.islo.env` (copied from the server's env
@@ -378,7 +378,7 @@ Two consequences worth internalizing:
   dedicated service/CI Islo account, run `islo login --tool claude` while
   authenticated as *that* account — not a personal laptop login.
 
-### Option B — Omnigent env injection (your own key or a subscription)
+### Option B — tesseract env injection (your own key or a subscription)
 
 Bring your own credential by naming it in `OMNIGENT_ISLO_SANDBOX_ENV`
 (CLI) or `sandbox.islo.env` (managed); the launcher copies the value from
@@ -493,9 +493,9 @@ guide](../modal/README.md#git-credentials-private-repositories).
   `idle_pause_after_s: null` to opt out and manage sandbox lifetime
   yourself. The policy is set when the sandbox is created, so changing it
   affects new managed sandboxes, not existing ones. This uses Islo's
-  pause/resume lifecycle because the workspace survives and Omnigent can
+  pause/resume lifecycle because the workspace survives and tesseract can
   wake it on the next message. Daytona's 15-minute provider default is
-  disabled in Omnigent instead, because Daytona auto-stop would otherwise
+  disabled in tesseract instead, because Daytona auto-stop would otherwise
   kill the host between turns.
 - **Managed resume.** Paused or stopped server-managed Islo sandboxes can
   resume in place under the same sandbox id and workspace. Session delete

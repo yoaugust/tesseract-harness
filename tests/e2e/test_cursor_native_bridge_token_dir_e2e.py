@@ -4,7 +4,7 @@
 ``$TMPDIR/omnigent-<uid>/cursor-native/<digest>/``. At terminal launch the
 runner calls :func:`omnigent.harnesses.cursor_native.bridge.write_mcp_config`, which
 routes through :func:`write_mcp_bridge_config` to write ``bridge.json`` — the
-bearer token for the Omnigent MCP relay's localhost control endpoint.
+bearer token for the tesseract MCP relay's localhost control endpoint.
 
 On a multi-user POSIX host an attacker can pre-create an ancestor of that tree
 (``$TMPDIR/omnigent-<uid>``) as a symlink or a group/other-writable directory.

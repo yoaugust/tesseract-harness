@@ -2823,7 +2823,7 @@ def test_run_repl_auto_opens_conversation_when_session_starts(
         """
         Capture the browser-open request.
 
-        :param base_url: Omnigent server base URL.
+        :param base_url: tesseract server base URL.
         :param conversation_id: Conversation id passed to the opener.
         :param enabled: Whether auto-open was enabled.
         :param warn: Warning sink passed by production code.
@@ -3525,7 +3525,7 @@ def test_prepare_chat_session_via_daemon_reports_unparseable_proxy_env(
     # Exact match: proves the error names the target server and the parse
     # failure (a substring URL probe here trips CodeQL's url-sanitization rule).
     assert str(excinfo.value) == (
-        "Could not connect to the Omnigent server at "
+        "Could not connect to the tesseract server at "
         "https://example.databricksapps.com. "
         "Check the URL, your network connection, and any HTTP proxy settings. "
         "(the proxy environment could not be parsed: Invalid port: ':')"
@@ -3991,7 +3991,7 @@ async def _run_one_shot(
     """
     Drive ``_query_sessions_once`` with a faked ``SessionsChat.query``.
 
-    :param client: The fake Omnigent client supplying the transcript.
+    :param client: The fake tesseract client supplying the transcript.
     :param query_impl: The async ``query`` behavior to install.
     :param monkeypatch: pytest monkeypatch fixture.
     :returns: Whatever ``_query_sessions_once`` returns.
@@ -4407,7 +4407,7 @@ def test_redirect_native_resume_handles_cursor(monkeypatch: pytest.MonkeyPatch) 
     """A cursor-native resume hands off to ``omnigent cursor`` (direct attach).
 
     Regression: without a cursor branch in ``_redirect_native_resume_if_needed``
-    the resume fell through to the Omnigent REPL, which drove an Omnigent turn
+    the resume fell through to the tesseract REPL, which drove an tesseract turn
     per message (persisting its own user item) *while* the cursor forwarder
     mirrored the same message from the cursor store — recording each user
     message twice. The redirect keeps the TUI the single source of turns.
@@ -4449,7 +4449,7 @@ def test_redirect_native_resume_covers_every_native_agent(
     """Every native wrapper redirects — the seam closed the old 6-of-11 gap.
 
     The hand-written dispatch only covered claude/codex/pi/kiro/cursor/kimi, so a
-    goose/hermes/antigravity/qwen/opencode resume fell through to the Omnigent
+    goose/hermes/antigravity/qwen/opencode resume fell through to the tesseract
     REPL and double-posted. Routing through the provider seam covers all of them;
     goose stands in for the formerly-uncovered set here.
     """
@@ -4506,7 +4506,7 @@ def test_cursor_native_resume_never_drives_an_omnigent_turn(
     """Resuming a cursor-native conversation must not enter the turn-driving REPL.
 
     This is the behavior that makes the user's message appear exactly once. The
-    duplicate had two sources: (1) the Omnigent turn the REPL drives, which
+    duplicate had two sources: (1) the tesseract turn the REPL drives, which
     persists its own user item, and (2) the cursor forwarder mirroring the same
     message back from the cursor store. ``_chat_with_server`` must short-circuit
     on the wrapper redirect *before* either ``_run_repl`` or ``_run_one_shot``
@@ -4527,10 +4527,10 @@ def test_cursor_native_resume_never_drives_an_omnigent_turn(
     )
 
     def _fail_repl(*_args: object, **_kwargs: object) -> None:
-        raise AssertionError("_run_repl drove an Omnigent turn for a cursor-native resume")
+        raise AssertionError("_run_repl drove an tesseract turn for a cursor-native resume")
 
     def _fail_one_shot(*_args: object, **_kwargs: object) -> None:
-        raise AssertionError("_run_one_shot drove an Omnigent turn for a cursor-native resume")
+        raise AssertionError("_run_one_shot drove an tesseract turn for a cursor-native resume")
 
     monkeypatch.setattr(chat_module, "_run_repl", _fail_repl)
     monkeypatch.setattr(chat_module, "_run_one_shot", _fail_one_shot)

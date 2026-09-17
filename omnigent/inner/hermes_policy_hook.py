@@ -1,4 +1,4 @@
-"""Hermes ``pre_tool_call`` shell hook for Omnigent policy enforcement.
+"""Hermes ``pre_tool_call`` shell hook for tesseract policy enforcement.
 
 Registered as a ``pre_tool_call`` hook in the per-session
 ``HERMES_HOME/config.yaml`` written by :func:`_populate_hermes_home`
@@ -14,7 +14,7 @@ Hermes pipes a JSON payload to stdin before each tool execution::
         "cwd": "..."
     }
 
-The hook evaluates ``PHASE_TOOL_CALL`` policy via the Omnigent server.
+The hook evaluates ``PHASE_TOOL_CALL`` policy via the tesseract server.
 To block, it writes to stdout::
 
     {"decision": "block", "reason": "..."}
@@ -23,7 +23,7 @@ Empty JSON or ``{}`` means allow.
 
 Environment variables (set by the wrapper shell script):
 
-    _OMNIGENT_SERVER_URL  : Base URL of the Omnigent server
+    _OMNIGENT_SERVER_URL  : Base URL of the tesseract server
                             (e.g. ``http://127.0.0.1:6767``).
     _OMNIGENT_SESSION_ID  : Session / conversation ID for policy
                             evaluation.
@@ -54,7 +54,7 @@ def main() -> None:
     tool_name = payload.get("tool_name") or "unknown"
     tool_input = payload.get("tool_input") or {}
 
-    # Omnigent relay tools are already gated when the relay dispatches them back
+    # tesseract relay tools are already gated when the relay dispatches them back
     # through the server's tool path; gating them here too parks a duplicate approval
     # card whose long-poll hangs. Hermes' own tools lack the prefix and stay gated.
     if tool_name.startswith(("mcp_omnigent_", "mcp__omnigent__")):
@@ -141,9 +141,9 @@ def main() -> None:
     if action == "POLICY_ACTION_DENY":
         out: dict[str, str] = {"decision": "block"}
         if reason:
-            out["reason"] = f"Tool '{tool_name}' denied by Omnigent policy: {reason}"
+            out["reason"] = f"Tool '{tool_name}' denied by tesseract policy: {reason}"
         else:
-            out["reason"] = f"Tool '{tool_name}' denied by Omnigent policy"
+            out["reason"] = f"Tool '{tool_name}' denied by tesseract policy"
         json.dump(out, sys.stdout)
     elif action == "POLICY_ACTION_ASK":
         # The server resolves ASK by parking the HTTP request until the

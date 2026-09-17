@@ -177,7 +177,7 @@ describe(
           await urlField.fill(server.serverUrl);
           await window.locator("#connect").click();
           await window
-            .getByText("What should we build?")
+            .getByText("let's work, boss")
             .waitFor({ state: "visible", timeout: 20_000 });
           await window.waitForFunction(
             () =>

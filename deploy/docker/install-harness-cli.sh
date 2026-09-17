@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install-harness-cli.sh — install optional harness CLIs into an Omnigent host
+# install-harness-cli.sh — install optional harness CLIs into an tesseract host
 # image, selected by harness NAME.
 #
 # The host image's default CLI set (claude / codex / pi via npm, plus pinned

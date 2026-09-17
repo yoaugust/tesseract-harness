@@ -3,7 +3,7 @@ Interactive stderr/stdin picker for ``--resume``.
 
 A keyboard selector for picking a saved conversation: arrow keys
 move the highlighted row, Enter resumes it, and q/Esc cancels.
-Conversations come from Omnigent' conversation store.
+Conversations come from tesseract' conversation store.
 
 Two entry points share one rendering loop:
 
@@ -196,7 +196,7 @@ def _runtime_badge(row: _ConversationRow) -> str:
     """
     Compute the runtime metadata label string for one picker row.
 
-    The badge surfaces which Omnigent wrapper owns the session so a
+    The badge surfaces which tesseract wrapper owns the session so a
     cross-agent picker can be skimmed at a glance. For now we
     distinguish terminal-native wrappers; other agents render as
     ``[chat]`` because the picker

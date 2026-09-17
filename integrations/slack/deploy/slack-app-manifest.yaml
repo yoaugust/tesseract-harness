@@ -1,4 +1,4 @@
-# Slack app manifest for the Omnigent bot.
+# Slack app manifest for the tesseract bot.
 #
 # Create the app from this rather than clicking through the settings:
 # api.slack.com/apps -> Create New App -> From an app manifest -> pick the
@@ -14,13 +14,13 @@
 # Keep this in step with the scope table in ../README.md.
 
 display_information:
-  name: Omnigent
-  description: Run Omnigent agent sessions from Slack threads and DMs.
+  name: tesseract
+  description: Run tesseract agent sessions from Slack threads and DMs.
   background_color: "#1f2933"
 
 features:
   bot_user:
-    display_name: Omnigent
+    display_name: tesseract
     always_online: false
   app_home:
     # The messages tab is what lets a user DM the bot at all, and it defaults
@@ -37,7 +37,7 @@ features:
       # Socket Mode delivers the payload over the websocket and ignores this
       # URL, but the field is required, so it points somewhere unroutable.
       url: https://example.invalid/slack/commands
-      description: Configure Omnigent, or sign out
+      description: Configure tesseract, or sign out
       usage_hint: "config | logout"
       should_escape: false
 

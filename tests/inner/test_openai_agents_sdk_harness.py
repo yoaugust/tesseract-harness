@@ -28,7 +28,7 @@ def test_harness_module_registered_in_module_registry() -> None:
     Without this entry, the runner subprocess can't find the wrap
     when AP-side tries to spawn it for an
     ``executor.harness == "openai-agents"`` spec. The registry key
-    matches the Omnigent YAML spelling (no ``-sdk`` suffix); the
+    matches the tesseract YAML spelling (no ``-sdk`` suffix); the
     Python module name retains ``_sdk`` because the underlying
     package is ``openai-agents`` and the executor class is
     ``OpenAIAgentsSDKExecutor``.

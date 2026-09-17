@@ -365,7 +365,7 @@ class _AnswerReply:
             await self._reply.stop(
                 GENERIC_FAILURE_TEXT
                 if errored
-                else "Omnigent completed without returning response text."
+                else "tesseract completed without returning response text."
             )
         await self._clear_ack()
         return delivered_answer

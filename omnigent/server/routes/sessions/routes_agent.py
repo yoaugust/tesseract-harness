@@ -366,7 +366,7 @@ def register_agent_routes(
         (reached through the WS tunnel the runner opened at startup).
         This split ensures:
 
-        - Policy runs on the Omnigent server where the ConversationStore and
+        - Policy runs on the tesseract server where the ConversationStore and
           label state live.
         - Stdio MCP subprocesses spawn on the runner's machine with the
           correct ``cwd``, environment, and installed tooling.

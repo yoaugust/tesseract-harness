@@ -66,7 +66,7 @@ def append_dead_letter(
     rotate out); disk stays bounded at ~2x the cap.
 
     :param bridge_dir: Native forwarder bridge directory the dead-letter file lives in.
-    :param session_id: Omnigent conversation id the dropped event targeted,
+    :param session_id: tesseract conversation id the dropped event targeted,
         e.g. ``"conv_abc123"``.
     :param event_type: Session event type that was dropped, e.g.
         ``"external_conversation_item"``.
@@ -183,8 +183,8 @@ async def post_external_session_status(
     sub-agents, the parent-inbox wake. Shared by the claude-native and
     cursor-native forwarders so the event shape stays in one place.
 
-    :param client: Omnigent HTTP client.
-    :param session_id: Omnigent session/conversation id.
+    :param client: tesseract HTTP client.
+    :param session_id: tesseract session/conversation id.
     :param status: Session status value, e.g. ``"idle"`` or ``"failed"``.
     :param output: Optional text attached to ``data``. On a ``"failed"`` edge
         the server surfaces it as ``last_task_error`` so the UI shows a detail
@@ -205,7 +205,7 @@ async def post_external_session_status(
         timer) rather than as static completed cards. ``None`` (the default)
         preserves the bare, turn-agnostic status edges (e.g. the sub-agent
         quiescence badge) that don't map to a turn.
-    :raises httpx.HTTPError: If the Omnigent request fails or is rejected.
+    :raises httpx.HTTPError: If the tesseract request fails or is rejected.
     """
     data: dict[str, object] = {"status": status}
     if output:
@@ -245,7 +245,7 @@ async def post_session_event_with_retry(
     duplicate the item. Other event types are idempotent/transient and
     are retried.
 
-    :param client: HTTP client for Omnigent event posts.
+    :param client: HTTP client for tesseract event posts.
     :param url: Full request URL, e.g. ``"/v1/sessions/conv_x/events"``.
     :param payload: JSON payload to POST, e.g. ``{"type": ..., "data": ...}``.
     :param event_type: Session event type, e.g.

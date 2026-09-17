@@ -1,6 +1,6 @@
 """OpenClaw/acpx config bridge for ``omnigent setup``.
 
-Reads a user's acpx/OpenClaw agent registry and converts it into Omnigent's
+Reads a user's acpx/OpenClaw agent registry and converts it into tesseract's
 generic ``acp:`` agent entries. The bridge stores only launch commands; each
 agent keeps its own authentication.
 """
@@ -31,7 +31,7 @@ class OpenClawAgentEntry:
 
     @property
     def command_line(self) -> str:
-        """Return the shell command Omnigent should persist."""
+        """Return the shell command tesseract should persist."""
         return shlex.join([self.command, *self.args])
 
 

@@ -8,7 +8,7 @@ runner-owned tmux pane, and each web-UI turn is injected into that pane
 :class:`omnigent.inner.cursor_native_executor.CursorNativeExecutor`. The TUI's
 own conversation store is tailed by
 :mod:`omnigent.harnesses.cursor_native.forwarder`, which mirrors ``cursor-agent``'s
-replies back onto the Omnigent conversation as assistant items.
+replies back onto the tesseract conversation as assistant items.
 
 These tests drive the full stack the way a user does — spawn ``omnigent
 cursor``, then talk to the session **through the server** (``POST
@@ -396,7 +396,7 @@ def test_cursor_native_cli_exposes_omnigent_mcp_tools(
     tmp_path: Path,
     request: pytest.FixtureRequest,
 ) -> None:
-    """``omnigent cursor`` wires Omnigent tools into Cursor's native MCP client.
+    """``omnigent cursor`` wires tesseract tools into Cursor's native MCP client.
 
     Spawns a real cursor-native session, waits for the runner-owned Cursor TUI
     to start, then asks ``cursor-agent``'s own MCP subcommand to discover the
@@ -437,7 +437,7 @@ def test_cursor_native_cli_exposes_omnigent_mcp_tools(
         mcp_config_path = pwd_dir / ".cursor" / "mcp.json"
         assert mcp_config_path.is_file(), "cursor-native did not write .cursor/mcp.json"
         assert (bridge_dir / "bridge.json").is_file(), "serve-mcp token bridge was not written"
-        assert (bridge_dir / "tool_relay.json").is_file(), "Omnigent tool relay was not started"
+        assert (bridge_dir / "tool_relay.json").is_file(), "tesseract tool relay was not started"
 
         payload = json.loads(mcp_config_path.read_text(encoding="utf-8"))
         server = payload["mcpServers"]["omnigent"]
@@ -491,10 +491,10 @@ def test_cursor_native_cli_mcp_can_call_sys_tool(
     tmp_path: Path,
     request: pytest.FixtureRequest,
 ) -> None:
-    """Cursor-native's generated Omnigent MCP server can call ``sys_*`` tools.
+    """Cursor-native's generated tesseract MCP server can call ``sys_*`` tools.
 
     Launches a real Cursor TUI, then calls the same generated ``.cursor/mcp.json``
-    Omnigent relay that Cursor uses. The tool call is direct JSON-RPC over the
+    tesseract relay that Cursor uses. The tool call is direct JSON-RPC over the
     generated stdio server rather than model-steered prose, so it deterministically
     proves the Cursor-native MCP wiring can execute relayed ``sys_*`` tools.
     """

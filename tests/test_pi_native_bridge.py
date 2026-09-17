@@ -198,7 +198,7 @@ def test_clear_inbox_is_a_noop_without_an_inbox(tmp_path: Path) -> None:
 def test_write_extension_files_embeds_tools(tmp_path: Path) -> None:
     """write_extension_files embeds the tool list so the extension can register it.
 
-    The runner builds the session's Omnigent tool surface (sys_* tools) and
+    The runner builds the session's tesseract tool surface (sys_* tools) and
     passes it to write_extension_files; the extension reads ``config.tools`` and
     registers each via ``pi.registerTool``. The config must round-trip the list
     verbatim so the schemas reach the Pi agent unchanged.

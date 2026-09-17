@@ -492,7 +492,7 @@ def add_menu_options() -> list[AddOption]:
         ),
         _opt(
             "Pi — original auth",
-            "Use Pi's own auth (~/.pi/agent) as-is, without Omnigent managing the provider.",
+            "Use Pi's own auth (~/.pi/agent) as-is, without tesseract managing the provider.",
             SUBSCRIPTION_KIND,
             cli="pi",
         ),

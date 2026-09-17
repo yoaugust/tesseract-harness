@@ -232,7 +232,7 @@ class SQLiteStore:
 
         Backs ``/omnigent logout``: after this the user is fully reset —
         their agent/host/workspace choice is gone and their channel/DM
-        threads no longer map to any Omnigent session, so a later message
+        threads no longer map to any tesseract session, so a later message
         starts fresh (once they reconfigure).
         """
         async with aiosqlite.connect(self._path) as db:

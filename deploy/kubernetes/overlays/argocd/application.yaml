@@ -1,5 +1,5 @@
 ---
-# Sample ArgoCD Application CR for deploying Omnigent with the kubernetes
+# Sample ArgoCD Application CR for deploying tesseract with the kubernetes
 # sandbox provider. Fork the repo, edit config/secrets in your fork, then
 # set repoURL and targetRevision below. Apply to the argocd namespace.
 #

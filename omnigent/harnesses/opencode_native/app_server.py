@@ -20,7 +20,7 @@ Responsibilities:
 
 Security posture: bind to ``127.0.0.1`` only, random per-session password,
 per-session XDG dirs (never the user's global OpenCode state). The server
-is runner-internal — the web UI attaches to Omnigent terminal resources,
+is runner-internal — the web UI attaches to tesseract terminal resources,
 never to the OpenCode HTTP port.
 """
 
@@ -211,7 +211,7 @@ def list_opencode_cli_model_options(
     ``opencode serve`` currently exposes only the public/free subset from
     ``GET /api/model`` on some installs, while ``opencode models`` returns the
     logged-in, refreshed catalog users see in the native TUI. Use this for the
-    Omnigent picker and fall back to the server API if it fails.
+    tesseract picker and fall back to the server API if it fails.
 
     :param opencode_path: Optional explicit executable path.
     :param refresh: Whether to pass ``--refresh`` so newly released models
@@ -340,7 +340,7 @@ def filtered_server_env(
 
     :param bridge_dir: Native OpenCode bridge directory.
     :param auth_secret: Server password for basic auth.
-    :param extra_env: Additional provider env (e.g. from Omnigent setup).
+    :param extra_env: Additional provider env (e.g. from tesseract setup).
     :returns: The environment mapping for the server subprocess.
     """
     extra_names = {

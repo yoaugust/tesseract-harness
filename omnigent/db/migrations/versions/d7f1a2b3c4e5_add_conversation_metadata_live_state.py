@@ -20,7 +20,7 @@ in-memory caches of the replica holding the session's runner tunnel):
   elicitation (approval-prompt) count. NULL means never written.
 
 All three are written by the pod holding the runner tunnel. They live on
-``omnigent_conversation_metadata`` (Omnigent operational state, beside
+``omnigent_conversation_metadata`` (tesseract operational state, beside
 ``runner_id``/``host_id``), so writes cannot bump
 ``conversations.updated_at`` — which drives sidebar ordering.
 """

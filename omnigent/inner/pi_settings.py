@@ -85,7 +85,7 @@ def prepare_managed_pi_agent_dir(
     Seed a managed ``PI_CODING_AGENT_DIR`` with the user's global Pi settings.
 
     Copies (merges) ``settings.json`` from the user's global agent dir into
-    *managed_dir*, applies *overlay* (e.g. Omnigent retry policy), and
+    *managed_dir*, applies *overlay* (e.g. tesseract retry policy), and
     symlinks install trees (``npm/``, ``git/``) so ``packages`` entries keep
     working. The user's ``~/.pi/agent`` is never modified.
 

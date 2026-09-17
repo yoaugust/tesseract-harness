@@ -1,4 +1,4 @@
-"""Tests for the OpenCode SSE -> Omnigent event forwarder translation."""
+"""Tests for the OpenCode SSE -> tesseract event forwarder translation."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ _SESSION = "ses_1"
 
 
 class _RecordingServerClient:
-    """httpx-shaped stub recording Omnigent event POSTs."""
+    """httpx-shaped stub recording tesseract event POSTs."""
 
     def __init__(self) -> None:
         self.posts: list[tuple[str, dict[str, Any]]] = []

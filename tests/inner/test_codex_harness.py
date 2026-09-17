@@ -217,7 +217,7 @@ def test_executor_factory_decodes_os_env_json(
 ) -> None:
     """``HARNESS_CODEX_OS_ENV`` decodes into the inner OSEnvSpec.
 
-    Omnigent serializes ``spec.os_env`` via :func:`dataclasses.asdict`
+    tesseract serializes ``spec.os_env`` via :func:`dataclasses.asdict`
     and JSON-encodes the result; the wrap must reconstruct an
     :class:`OSEnvSpec` (with nested sandbox spec) so
     :class:`CodexExecutor` sees the same config a non-AP mode

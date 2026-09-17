@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent web-chat turns into the native Kimi TUI.
+"""Executor that bridges tesseract web-chat turns into the native Kimi TUI.
 
 It does not launch ``kimi`` — the ``omnigent kimi`` wrapper already
 launched the interactive TUI in the session terminal. Each web-UI turn injects
@@ -106,7 +106,7 @@ class KimiNativeExecutor(Executor):
             self._approval_pending_retries += 1
             if self._approval_pending_retries > _MAX_APPROVAL_PENDING_RETRIES:
                 raise PermanentLLMError(str(exc), code="kimi_approval_pending") from exc
-            # Semantic Omnigent errors preserve retry classification through the adapter.
+            # Semantic tesseract errors preserve retry classification through the adapter.
             raise RetryableLLMError(str(exc), code="connection_error") from exc
         except RuntimeError as exc:
             yield ExecutorError(message=describe_exception(exc))

@@ -13,10 +13,10 @@ provider. This guide's for the production deployment story where
 governance, audit, cost tracking, and managed scale matter.
 
 > **Databricks customer? Start with the managed offering.**
-> [Omnigent on Databricks](https://docs.databricks.com/aws/en/omnigent/)
+> [tesseract on Databricks](https://docs.databricks.com/aws/en/omnigent/)
 > (Beta) is a fully managed service: Databricks operates the omnigent
 > server for you, already wired to workspace identity, Foundation
-> Models, AI Gateway, and MLflow Tracing. You enable the **Omnigent**
+> Models, AI Gateway, and MLflow Tracing. You enable the **tesseract**
 > preview in your workspace settings and follow the quickstart there.
 > No deploy tooling, no Lakebase bootstrap, no bundle to maintain. That
 > is the recommended path for most Databricks users.

@@ -64,7 +64,7 @@ def test_build_session_home_preserves_user_config_and_appends_hooks(
     # User config preserved …
     assert parsed["default_model"] == "kimi-code/x"
     assert "managed" in parsed["providers"]
-    # … and the Omnigent hooks appended.
+    # … and the tesseract hooks appended.
     assert {h["event"] for h in parsed["hooks"]} == {"PreToolUse", "PermissionRequest"}
 
 

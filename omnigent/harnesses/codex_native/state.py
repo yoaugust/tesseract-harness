@@ -4,7 +4,7 @@ The native Codex wrapper records the cwd used to create a session so a
 later ``omnigent codex --resume <conv_id>`` can launch Codex from the
 same workspace. This state is intentionally client-side: local
 filesystem paths belong to the user's machine and should not be stored
-on the shared Omnigent server.
+on the shared tesseract server.
 
 Layout (per conversation):
 
@@ -69,7 +69,7 @@ def _state_dir_for_conversation_id(conversation_id: str) -> Path:
     the bare-digest directory is absent, the legacy one is returned (never
     renamed — files inside may embed their own absolute path).
 
-    :param conversation_id: Omnigent conversation id, bare 32-char hex
+    :param conversation_id: tesseract conversation id, bare 32-char hex
         (a legacy ``conv_``-prefixed form is accepted and normalised).
     :returns: Absolute directory path; not guaranteed to exist.
     """
@@ -91,7 +91,7 @@ def write_launch_state(conversation_id: str, working_directory: str) -> None:
     refused and logged because changing the recorded cwd for an
     existing session would make future resume checks incorrect.
 
-    :param conversation_id: Omnigent conversation id, e.g.
+    :param conversation_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param working_directory: Absolute launch cwd, e.g.
         ``"/home/me/repo"``.
@@ -131,7 +131,7 @@ def read_launch_state(conversation_id: str) -> CodexNativeLaunchState | None:
     Missing, unreadable, or malformed state is treated as absent so
     legacy and cross-machine resumes continue to behave as before.
 
-    :param conversation_id: Omnigent conversation id, e.g.
+    :param conversation_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :returns: Parsed state, or ``None`` if missing / malformed.
     """

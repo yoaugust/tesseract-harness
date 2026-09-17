@@ -504,7 +504,7 @@ class MicrosandboxSandboxLauncher(SandboxLauncher):
             :data:`DEFAULT_IDLE_TIMEOUT_S`, ``0`` disables draining.
         :param network: One of :data:`NETWORK_MODES`; ``None`` uses ``host``.
         :param host_ports: Guest-to-host TCP ports allowed under the ``host``
-            network mode, e.g. the Omnigent server plus an LLM gateway.
+            network mode, e.g. the tesseract server plus an LLM gateway.
         :param server_url: CLI bootstrap target. Its port is added to the host
             allowlist only when it uses ``host.microsandbox.internal``.
         :raises click.ClickException: When *network* is not a recognized mode.

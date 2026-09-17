@@ -181,7 +181,7 @@ class TestSetupHermesHome:
     def test_config_registers_omnigent_mcp_server(self, setup) -> None:
         """config.yaml carries mcp_servers.omnigent (serve-mcp) pointed at the bridge
         dir — the parity gap. Fails on the previous setup, which wrote no mcp_servers
-        key: a headless Hermes agent had zero Omnigent tools."""
+        key: a headless Hermes agent had zero tesseract tools."""
         home, bridge_dir = setup
         omnigent_mcp = json.loads((home / "config.yaml").read_text())["mcp_servers"]["omnigent"]
         assert omnigent_mcp["args"][:4] == [

@@ -58,7 +58,7 @@ async def run() -> None:
         logging.getLogger(name).setLevel(level)
     logger = logging.getLogger(__name__)
     logger.info(
-        "Starting Omnigent Slack bot server=%s database=%s",
+        "Starting tesseract Slack bot server=%s database=%s",
         settings.server_url,
         settings.database_path,
     )
@@ -83,7 +83,7 @@ async def run() -> None:
         token_store = InMemoryTokenStore()
     await token_store.initialize()
 
-    # The bot talks to one operator-configured Omnigent server
+    # The bot talks to one operator-configured tesseract server
     # (settings.server_url) — never a user-supplied URL. The pool holds one
     # client per (server, packed-user) carrying that user's delegated bearer
     # token. Created first so the auth manager can invalidate a cached client
@@ -99,7 +99,7 @@ async def run() -> None:
     # enrollment page it serves as a Databricks App: a Slack user signs in and
     # the bot stores the resulting durable, refreshable token as their bearer.
     # The OAuth client is shared as the AuthManager's rotator so refresh/revoke
-    # hit the workspace, not the Omnigent server. The web server shares the token
+    # hit the workspace, not the tesseract server. The web server shares the token
     # store, so a token it writes is immediately usable by the bot.
     webauth: WebAuthServer | None = None
     enrollment_url = None
@@ -160,7 +160,7 @@ async def run() -> None:
         logger.exception("Could not connect to Slack Socket Mode")
         raise
     finally:
-        logger.info("Shutting down Omnigent Slack bot")
+        logger.info("Shutting down tesseract Slack bot")
         await service.shutdown()
         # Cancel any in-flight login/enrollment poll tasks (and their httpx
         # clients) so they aren't abandoned mid-poll.

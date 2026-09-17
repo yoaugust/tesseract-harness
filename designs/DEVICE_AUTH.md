@@ -47,11 +47,11 @@
 ## Problem
 
 The Slack integration (`integrations/slack/`) is a standalone Socket-Mode
-process that calls each user's Omnigent server over HTTP + SSE
+process that calls each user's tesseract server over HTTP + SSE
 (`OmnigentClient` / `OmnigentClientPool`). Each Slack user's turns must reach
-the Omnigent server **as that user's own authenticated identity** — so the
+the tesseract server **as that user's own authenticated identity** — so the
 server can scope permissions and audit who did what — **without the Slack
-process ever handling the user's Omnigent credentials**. An unauthenticated
+process ever handling the user's tesseract credentials**. An unauthenticated
 client can only reach auth-disabled servers, and would present one shared
 anonymous identity the server can't distinguish per user.
 
@@ -64,8 +64,8 @@ anonymous identity the server can't distinguish per user.
 ```
 
 Slack relays all messages between the user and the socket server, so **no
-Omnigent credential may pass through Slack**. The user authenticates directly
-against the Omnigent server in their own browser, out of band. This is exactly
+tesseract credential may pass through Slack**. The user authenticates directly
+against the tesseract server in their own browser, out of band. This is exactly
 the shape of the **OAuth 2.0 Device Authorization Grant (RFC 8628)**: a device
 that cannot host a browser obtains a code, the user approves out-of-band, and
 the device polls for a token.
@@ -74,8 +74,8 @@ Role mapping:
 
 | RFC 8628 role            | Here                                            |
 |--------------------------|-------------------------------------------------|
-| Authorization Server     | Omnigent server (`/oauth/device/*`, `/oauth/token`) |
-| Resource Server          | Omnigent server (existing `/v1/**` APIs)        |
+| Authorization Server     | tesseract server (`/oauth/device/*`, `/oauth/token`) |
+| Resource Server          | tesseract server (existing `/v1/**` APIs)        |
 | Client / "device"        | Slack socket server                             |
 | Resource Owner           | The Slack user, authenticating in their browser |
 | Out-of-band channel      | Slack (delivers the verification link only)     |
@@ -128,9 +128,9 @@ The device grant builds on existing server primitives:
        accounts-mode server; the modal detects auth is required and starts
        the device flow (there is no separate login command).
 
- 2. Slack server ─ POST /oauth/device/authorize ─────────────▶ Omnigent
+ 2. Slack server ─ POST /oauth/device/authorize ─────────────▶ tesseract
        body: { client_id }        # public app name, e.g. "slack"
-    Omnigent ─────────────────────────────────────────────────▶ Slack server
+    tesseract ─────────────────────────────────────────────────▶ Slack server
        { device_code,            # secret, HELD BY SLACK SERVER ONLY
          user_code,              # short, human-readable
          verification_uri,       # e.g. https://srv/oauth/device
@@ -142,13 +142,13 @@ The device grant builds on existing server primitives:
        plus the user_code so the user can confirm the match. The
        device_code is NOT included — it never leaves the server pair.
 
- 4. User clicks → Omnigent consent page (verification_uri).
+ 4. User clicks → tesseract consent page (verification_uri).
        The page REQUIRES a login started for THIS flow: if the browser's
        session predates the grant (session iat < grant.created_at), it
        bounces through the login page with ?reauth=1 — which forces a fresh
        password entry even for an already-signed-in user — and returns here.
        Once re-authenticated, the page shows: "<client_id> is requesting
-       permission to act as YOU (alice@example.com) on this Omnigent server.
+       permission to act as YOU (alice@example.com) on this tesseract server.
        [Approve] [Deny]" plus a warning to approve only a self-started login.
        The forced re-auth means a grant can't be approved by one reflexive
        click on a link the user didn't personally start (see threat #2).
@@ -157,7 +157,7 @@ The device grant builds on existing server primitives:
        (alice@…). client_id is recorded for display/audit only, never as
        an authorization key.
 
- 6. Slack server polls ─ POST /oauth/token ──────────────────▶ Omnigent
+ 6. Slack server polls ─ POST /oauth/token ──────────────────▶ tesseract
        grant_type=urn:ietf:params:oauth:grant-type:device_code
        { device_code }
     Responses: 400 authorization_pending | 429 slow_down |
@@ -177,7 +177,7 @@ The device grant builds on existing server primitives:
 
 The Slack `(team_id, slack_user_id)` → identity mapping lives entirely on
 the Slack side (step 7). The server-side grant is client-agnostic: it
-knows only the RFC 8628 `client_id` and the Omnigent identity that
+knows only the RFC 8628 `client_id` and the tesseract identity that
 approved it.
 
 ## Server-side changes
@@ -243,7 +243,7 @@ atomic single-use redemption, `purge_expired`. New table `device_grants`:
 | `user_code`          | short code shown/typed by the user                 |
 | `client_id`          | RFC 8628 client id — the requesting application (e.g. `slack`); display + audit |
 | `status`             | `pending` / `approved` / `denied` / `redeemed` / `revoked` |
-| `user_id`            | bound Omnigent identity, set at approval           |
+| `user_id`            | bound tesseract identity, set at approval           |
 | `refresh_token_hash` / `prev_refresh_token_hash` | current + prior digest (rotation + reuse detection) |
 | `created_at` / `expires_at` / `approved_at` / `last_polled_at` | TTL, absolute-lifetime clock, `slow_down` timing |
 
@@ -291,7 +291,7 @@ HS256 shape (so `_check_cookie` accepts them) plus four delegated-only claims:
 | # | Threat | Mitigation |
 |---|--------|-----------|
 | 1 | `device_code` leak → token theft | Never transits Slack or the user — only `verification_uri_complete` (a `user_code`) does. Stored hashed; single-use. |
-| 2 | Link misdelivery / phishing another user | Link shown to the initiator only (in their own setup modal). **Consent requires a login started FOR this flow: the consent page rejects a session whose `iat` predates the grant and bounces through the login page with `reauth=1`, forcing a fresh password entry even for an already-signed-in user.** So an attacker-initiated flow can't be approved by a single reflexive click — the victim must deliberately re-enter their password against a screen naming the exact Omnigent identity and requesting `client_id`. The gate is enforced on both the consent GET and the approve POST. |
+| 2 | Link misdelivery / phishing another user | Link shown to the initiator only (in their own setup modal). **Consent requires a login started FOR this flow: the consent page rejects a session whose `iat` predates the grant and bounces through the login page with `reauth=1`, forcing a fresh password entry even for an already-signed-in user.** So an attacker-initiated flow can't be approved by a single reflexive click — the victim must deliberately re-enter their password against a screen naming the exact tesseract identity and requesting `client_id`. The gate is enforced on both the consent GET and the approve POST. |
 | 3 | Anyone can initiate/poll (public client) | Cheap `pending` state grants nothing until an authenticated user approves. `POST /oauth/device/authorize` is rate-limited per client IP (10/60s → 429 `slow_down`); short (10 min) `device_code` expiry; `slow_down` enforced server-side on aggressive polling; expired grants purged opportunistically. |
 | 4 | Slack SQLite exfiltration → mass impersonation | Tokens **encrypted at rest**; access tokens short-lived (≤ 1 h); refresh tokens revocable. Bounded, centrally killable window. |
 | 5 | Compromised Slack server acts as all users (inherent to delegation) | Reduced scope (no admin), short TTL + refresh rotation, per-grant revocation, **absolute grant lifetime (30 d) enforced on refresh** so even an un-revoked grant dies, and an `act`-claim audit trail. |
@@ -305,7 +305,7 @@ HS256 shape (so `_check_cookie` accepts them) plus four delegated-only claims:
 ### Device-code phishing — accepted risk, mitigated in depth
 
 The canonical RFC 8628 risk: a stranger initiates a flow and tricks a victim
-Omnigent user into approving the verification link, binding the grant to the
+tesseract user into approving the verification link, binding the grant to the
 *victim's* identity while the attacker (holding the `device_code`) polls for the
 token.
 
@@ -347,7 +347,7 @@ absolute lifetime remain the defenses when the secret is left unset.
 
 ### Deliberate deviation from the current model
 
-Ordinary Omnigent session JWTs are stateless and unrevocable today (revocation =
+Ordinary tesseract session JWTs are stateless and unrevocable today (revocation =
 cookie deletion + expiry). Delegated tokens are higher-value — one server acts
 for many users — so this design makes **delegated** tokens revocable (persisted
 grant + per-`grant_id` revocation check) while leaving normal sessions

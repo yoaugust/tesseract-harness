@@ -1,4 +1,4 @@
-"""Executor adapter interface for Omnigent.
+"""Executor adapter interface for tesseract.
 
 An Executor translates between the framework's abstract message/tool model
 and a concrete LLM or agent harness backend.
@@ -25,7 +25,7 @@ from typing import Any, Protocol, TypeAlias, runtime_checkable
 # string; consumers isinstance-narrow per ``role``.
 Message: TypeAlias = dict[str, Any]  # type: ignore[explicit-any]
 
-# Omnigent tool schema passed to the LLM:
+# tesseract tool schema passed to the LLM:
 # ``{"name", "description", "parameters" (JSON-Schema)}``.
 ToolSpec: TypeAlias = dict[str, Any]  # type: ignore[explicit-any]
 
@@ -265,7 +265,7 @@ class CompactionComplete(ExecutorEvent):
 class SubAgentStarted(ExecutorEvent):
     """A sub-agent the harness agent spawned has begun.
 
-    Surfaced so the runner can mint an Omnigent child session (the web
+    Surfaced so the runner can mint an tesseract child session (the web
     "Subagents" panel lists one row per child). ACP has no standardized
     sub-agent signal, so a per-dialect ``AcpSubAgentSource`` normalizes an
     agent's own reporting (e.g. Devin's ``cognition.ai/subagent_*`` ``_meta``)
@@ -652,7 +652,7 @@ class Executor:
 
     async def close_session(self, session_key: str) -> None:  # noqa: ARG002 — default no-op; subclasses with per-session state override
         """
-        Release resources associated with one Omnigent session.
+        Release resources associated with one tesseract session.
 
         Executors that keep per-session state (for example persistent agent
         harness subprocesses or SDK clients) should override this.

@@ -1,8 +1,8 @@
 /**
- * Sole owner of the editor-beside Omnigent `WebviewPanel` AND the resolved
+ * Sole owner of the editor-beside tesseract `WebviewPanel` AND the resolved
  * server target that drives its render.
  *
- * The panel hosts the running LOCAL Omnigent server in a single static <iframe>
+ * The panel hosts the running LOCAL tesseract server in a single static <iframe>
  * (panel/host.ts). There is no in-panel routing or messaging: the framed app
  * owns its own navigation. This is the ONLY `createWebviewPanel` call in the
  * codebase.
@@ -41,7 +41,7 @@ export class EditorPanelController {
     }
     const panel = vscode.window.createWebviewPanel(
       "omnigent",
-      "Omnigent",
+      "tesseract",
       vscode.ViewColumn.Beside,
       {
         enableScripts: true,

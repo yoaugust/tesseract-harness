@@ -42,8 +42,8 @@ audit trail, no way to distinguish it from a human session).
 
 | RFC 6749 role        | Here                                            |
 |----------------------|-------------------------------------------------|
-| Authorization Server | Omnigent server (`POST /oauth/token`)           |
-| Resource Server      | Omnigent server (existing `/v1/**` APIs)        |
+| Authorization Server | tesseract server (`POST /oauth/token`)           |
+| Resource Server      | tesseract server (existing `/v1/**` APIs)        |
 | Client               | The headless process, holding the client secret |
 | Resource Owner       | The client itself — no third party              |
 

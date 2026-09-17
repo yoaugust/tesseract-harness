@@ -10,7 +10,7 @@ export function JoinTeamStep({ onAccept }: { onAccept: () => void }) {
       <div className="flex flex-col items-center gap-1 text-center">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Join your team</h1>
         <p className="text-ui text-muted-foreground">
-          Connect to their Omnigent server to start collaborating.
+          Connect to their tesseract server to start collaborating.
         </p>
       </div>
       <Button className="w-full gap-1 py-5" onClick={onAccept} componentId="register.accept_invite">

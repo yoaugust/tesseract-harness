@@ -19,7 +19,7 @@ Notes that shape this launcher:
 
 - **Templates, not registry images.** Unlike every other launcher, E2B
   cannot boot an arbitrary registry image at create time — it boots from
-  a pre-built E2B *template*. The Omnigent host image must therefore be
+  a pre-built E2B *template*. The tesseract host image must therefore be
   built into an E2B template out-of-band (``e2b template build`` from the
   host Dockerfile; see ``deploy/e2b/README.md``) and the launcher's
   ``template`` field names that template — it is NOT a
@@ -74,7 +74,7 @@ Create one at https://e2b.dev/dashboard."""
 
 TEMPLATE_ENV_VAR: str = "OMNIGENT_E2B_TEMPLATE"
 """Environment variable overriding :data:`DEFAULT_E2B_TEMPLATE` — the
-NAME (or id) of the pre-built E2B template the Omnigent host image was
+NAME (or id) of the pre-built E2B template the tesseract host image was
 built into (``e2b template build``). NOT a registry image reference:
 E2B boots from templates, not arbitrary images."""
 
@@ -199,7 +199,7 @@ def _template_build_hint(template: str, exc: Exception) -> click.ClickException:
     """
     return click.ClickException(
         f"E2B sandbox creation failed: template '{template}' is unavailable or "
-        "incompatible. Build the Omnigent host image into an E2B template first "
+        "incompatible. Build the tesseract host image into an E2B template first "
         "(`e2b template build` — see deploy/e2b/README.md), or set the correct "
         f"template via sandbox.e2b.template / {TEMPLATE_ENV_VAR}. ({exc})"
     )
@@ -377,7 +377,7 @@ class E2BSandboxLauncher(SandboxLauncher):
         :param template: Optional E2B template NAME (or id) to provision
             sandboxes from — the server's managed-host
             ``sandbox.e2b.template`` config. This is an E2B template the
-            Omnigent host image was built into (``e2b template build``),
+            tesseract host image was built into (``e2b template build``),
             NOT a registry image reference. ``None`` resolves
             :data:`TEMPLATE_ENV_VAR` and falls back to
             :data:`DEFAULT_E2B_TEMPLATE`.

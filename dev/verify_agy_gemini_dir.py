@@ -5,7 +5,7 @@ Run this on macOS (or Linux) before and after the #1477 / #1194 fix. It answers
 four questions without a server, a runner, or a real agy launch:
 
 1. Does the CLI launch pass ``--gemini_dir=<per-session dir>``?
-2. Does the Omnigent MCP relay config land in that dir (so agy gets ``sys_*``)?
+2. Does the tesseract MCP relay config land in that dir (so agy gets ``sys_*``)?
 3. Is ``HOME`` left real (so a keyring/Keychain-backed OAuth token still resolves)?
 4. Is the user's real ``~/.gemini`` left byte-for-byte untouched?
 
@@ -147,7 +147,7 @@ def main() -> int:
     else:
         failures.append(
             f"--gemini_dir missing or wrong (got {gemini_dir_flag!r}); agy will read the "
-            "user's real ~/.gemini, so it sees no Omnigent relay and no sys_* tools"
+            "user's real ~/.gemini, so it sees no tesseract relay and no sys_* tools"
         )
 
     # 2. The relay config, in the dir the flag points at.

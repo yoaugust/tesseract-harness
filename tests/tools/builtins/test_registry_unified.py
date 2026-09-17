@@ -188,7 +188,7 @@ def test_async_builtins_override_dispatch_async_or_are_runner_dispatched() -> No
 
     The base ``Tool.dispatch_async`` raises ``NotImplementedError``,
     so any tool that flips ``is_async`` true without an override
-    would crash the in-process Omnigent loop. After the DBOS removal,
+    would crash the in-process tesseract loop. After the DBOS removal,
     a class of async-namespace tools (``sys_call_async``,
     ``sys_read_inbox``, ``sys_cancel_async``) are dispatched by
     the runner via ``omnigent/runner/tool_dispatch.py`` —

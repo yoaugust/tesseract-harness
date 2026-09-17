@@ -285,7 +285,7 @@ def _require_omnigent_cli() -> str:
     ``omnigent`` binary (via the running pytest interpreter's
     venv) over a sibling ``ap`` binary on PATH — the legacy
     ``omnigent`` ``ap`` CLI doesn't understand
-    Omnigent-format fixtures.
+    tesseract-format fixtures.
 
     :returns: Absolute path to an executable.
     """

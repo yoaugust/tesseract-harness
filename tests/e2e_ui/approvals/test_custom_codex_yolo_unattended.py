@@ -50,7 +50,7 @@ What this test asserts (the fix-controlled, deterministic discriminator):
   "ran unattended": it is 0 with the fix and non-zero on the buggy stance.
 
 The reviewer-consultation count is the reliable discriminator in this CI
-harness. The real filesystem side effect is NOT asserted: Omnigent wraps the
+harness. The real filesystem side effect is NOT asserted: tesseract wraps the
 Codex terminal in its default ``linux_bwrap`` sandbox (the spec declares no
 ``os_env.sandbox: none``), which gives the process a private ``/tmp``, so a
 bypassed ``rm`` never touches the host file — and the mock scripts identical
@@ -262,7 +262,7 @@ def test_custom_codex_yolo_top_level_runs_unattended(
     NULL-launch-args stance it launches at ``approval_policy=on-request``,
     escalates, and consults the reviewer — the gate a headless orchestrator can
     never clear. See the module docstring for why the real filesystem deletion
-    is not asserted (Omnigent's default ``linux_bwrap`` sandbox masks it).
+    is not asserted (tesseract's default ``linux_bwrap`` sandbox masks it).
     """
     base_url, session_id = custom_codex_yolo_mock_session
 

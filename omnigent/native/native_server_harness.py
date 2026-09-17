@@ -157,7 +157,7 @@ class NativeServerHarness(Executor):
 
         :param messages: Conversation history; the latest user message is
             delivered.
-        :param tools: Omnigent tool schemas (ignored — native owns tools).
+        :param tools: tesseract tool schemas (ignored — native owns tools).
         :param system_prompt: Gated composed system prompt for this turn.
             Discarded by default (see :meth:`_gate_system_prompt`); every
             ``NativeServerHarness`` subclass except OpenCode discards it —

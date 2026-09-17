@@ -66,7 +66,7 @@ class _DenyHttpxClient:
         """
         Record the outgoing request and return a DENY EvaluationResponse.
 
-        :param url: Target Omnigent URL.
+        :param url: Target tesseract URL.
         :param json: Request body (the EvaluationRequest).
         :returns: A real 200 response carrying a DENY verdict.
         """
@@ -121,14 +121,14 @@ class _RaisesIfCalled:
         """
         Fail loudly — the hook should never reach the network here.
 
-        :param url: Target Omnigent URL (unused).
+        :param url: Target tesseract URL (unused).
         :param json: Request body (unused).
         :returns: Never returns.
         :raises AssertionError: Always.
         """
         del url, json
         raise AssertionError(
-            "evaluate-policy POSTed to Omnigent when it should have short-circuited "
+            "evaluate-policy POSTed to tesseract when it should have short-circuited "
             "(missing bridge state or policy_hook config)."
         )
 
@@ -140,7 +140,7 @@ def bridge_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
     Redirects the bridge root under ``tmp_path`` so the test never
     touches the real ``~/.omnigent`` tree, then writes a valid bridge
-    state whose ``session_id`` the hook reads to build the Omnigent URL.
+    state whose ``session_id`` the hook reads to build the tesseract URL.
 
     :param tmp_path: pytest temp directory.
     :param monkeypatch: pytest monkeypatch fixture.
@@ -382,8 +382,8 @@ def test_missing_policy_config_is_fail_open(
     """
     With bridge state but no policy_hook config, the hook never POSTs.
 
-    The session has state but no Omnigent coordinates were written (e.g. a
-    local run with no Omnigent server), so there is nothing to enforce against.
+    The session has state but no tesseract coordinates were written (e.g. a
+    local run with no tesseract server), so there is nothing to enforce against.
     The hook returns 0 with no output and does not touch the network.
     """
     monkeypatch.setattr(native_policy_hook.httpx, "Client", _RaisesIfCalled)

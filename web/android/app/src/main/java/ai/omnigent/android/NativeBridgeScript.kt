@@ -3,7 +3,7 @@ package ai.omnigent.android
 /**
  * The JavaScript injected into the main frame on every load to expose
  * `window.omnigentNative` with `kind: "android"`, mirroring the iOS shell's
- * bridge (`web/ios/Omnigent/OmnigentWebView.swift`). The web layer consumes
+ * bridge (`web/ios/tesseract/OmnigentWebView.swift`). The web layer consumes
  * this through `web/src/lib/nativeBridge.ts` — same object shape, same
  * `__omnigentNativeEmit*` callback names — so no web change is needed beyond
  * accepting the `"android"` discriminator.

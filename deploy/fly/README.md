@@ -1,6 +1,6 @@
-# Omnigent on Fly.io
+# tesseract on Fly.io
 
-Deploy Omnigent to Fly.io. Fly pulls the prebuilt image, runs it next to a
+Deploy tesseract to Fly.io. Fly pulls the prebuilt image, runs it next to a
 persistent volume, and serves it over HTTPS on `*.fly.dev`.
 
 > **Fly is CLI-first.** There's no embeddable one-click button like Render's;

@@ -33,7 +33,7 @@ Gemini SDK, so the mock-LLM approach used by other harness tests (e.g.
 when the SDK or key is absent.
 
 **Prerequisites (skipped cleanly when absent):**
-- ``google.antigravity`` importable in the Omnigent venv (the ``antigravity``
+- ``google.antigravity`` importable in the tesseract venv (the ``antigravity``
   extra — ``pip install 'omnigent[antigravity]'``).
 - A Gemini / Antigravity API key configured (a stored ``antigravity:`` config
   block resolvable via
@@ -138,7 +138,7 @@ def _antigravity_skip_reason(omnigent_python: Path) -> str | None:
     than a failure — keeping the e2e shards green while the test runs for real
     wherever a key is configured.
 
-    Both prerequisites are probed in the *Omnigent venv* interpreter (the one the
+    Both prerequisites are probed in the *tesseract venv* interpreter (the one the
     subprocess uses), not the current pytest interpreter, because the test shells
     out: the SDK import and the key-config resolution must hold *there*.
 
@@ -167,7 +167,7 @@ def _antigravity_skip_reason(omnigent_python: Path) -> str | None:
         # The probe itself failed to import the onboarding module — treat as a
         # missing/installation-broken prerequisite and skip with the detail.
         return (
-            "antigravity prerequisite probe failed in the Omnigent venv "
+            "antigravity prerequisite probe failed in the tesseract venv "
             f"(exit {probe.returncode}): {probe.stderr.strip()[:400]!r}"
         )
     flags = probe.stdout.strip()
@@ -176,7 +176,7 @@ def _antigravity_skip_reason(omnigent_python: Path) -> str | None:
     if not have_sdk:
         return (
             "antigravity prerequisite missing: the 'google.antigravity' SDK is "
-            "not importable in the Omnigent venv (install the 'antigravity' "
+            "not importable in the tesseract venv (install the 'antigravity' "
             "extra: pip install 'omnigent[antigravity]')."
         )
     if not have_key:
@@ -208,7 +208,7 @@ def _antigravity_env(base_env: dict[str, str], home: Path) -> dict[str, str]:
 
     Starts from the shared ``omnigent_credentials_env`` (so PATH, the onboarding
     suppression knobs, and the worktree ``PYTHONPATH`` propagate) but isolates
-    ``$HOME`` and the Omnigent state/config roots into the test's temp dir, so
+    ``$HOME`` and the tesseract state/config roots into the test's temp dir, so
     the persistent conversation store this test reads (``$HOME/.omnigent/chat.db``)
     is private and the run never threads onto an unrelated prior conversation.
 

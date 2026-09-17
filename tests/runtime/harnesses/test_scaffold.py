@@ -1067,7 +1067,7 @@ async def test_session_events_404s_on_conversation_id_mismatch(
     to the wrong conversation indicates the caller routed to the
     wrong subprocess — fail loud rather than silently start a
     turn under a mismatched id (which would produce a turn that
-    Omnigent could never correlate).
+    tesseract could never correlate).
     """
     conv_id = "conv_session_mismatch"
     client = await manager.get_client(conv_id, _TEST_HARNESS_NAME)
@@ -1371,7 +1371,7 @@ async def test_session_interrupt_event_404s_when_no_turn_in_flight(
 
     The harness has no concept of an idle interrupt — if no turn
     is in flight, there is nothing to cancel. Fail loud rather
-    than silently no-op so a stray interrupt from Omnigent after a turn
+    than silently no-op so a stray interrupt from tesseract after a turn
     already ended surfaces as an obvious operator error.
     """
     conv_id = "conv_session_interrupt_idle"

@@ -188,7 +188,7 @@ class Conversation:
         before it boots) and updated on resume via
         ``PATCH /v1/sessions/{id}`` (last-write-wins). The runner
         reconstructs the terminal launch command from these plus the
-        harness binary; the command and all bridge / Omnigent / auth wiring
+        harness binary; the command and all bridge / tesseract / auth wiring
         stay runner-owned and are never stored here. A flat list (not
         a dict) is deliberate — there is no key for a user to smuggle
         internal wiring through. See
@@ -626,7 +626,7 @@ class RoutingDecisionData(BaseModel):
         picked a model only (no harness dimension).
     :param scope: What the decision governs — ``"session"`` (auto-harness
         session routing), ``"turn"`` (per-turn routing), ``"child_session"``
-        (an Omnigent-spawned sub-agent) or ``"native_subagent"`` (a Task /
+        (an tesseract-spawned sub-agent) or ``"native_subagent"`` (a Task /
         ``spawn_agent`` spawn routed inside the harness). Defaults to
         ``"turn"`` so rows persisted before this field deserialize.
     :param decision_id: Router decision identifier, e.g.

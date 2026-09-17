@@ -434,7 +434,7 @@ async def test_external_session_status_idle_delivers_forwarded_native_output_to_
     """
     Native idle status completes sub-agent work with AP-forwarded output.
 
-    Native harness transcript items are persisted by Omnigent server, so the
+    Native harness transcript items are persisted by tesseract server, so the
     runner's local history can be empty or stale. A forwarded
     ``data.output`` value must be used for the parent inbox instead of
     falling back to the runner-local history.
@@ -761,7 +761,7 @@ async def test_external_status_idle_without_output_omits_stale_history_preview()
     """
     Native child ``idle`` without forwarded output omits stale local text.
 
-    If Omnigent has no authoritative native transcript text to forward, the parent
+    If tesseract has no authoritative native transcript text to forward, the parent
     rail and parent inbox must not fall back to runner-local history: native
     runner history may be stale because the terminal forwarder owns
     persistence. The inbox receives an explicit empty result so the parent can
@@ -2629,7 +2629,7 @@ async def test_events_interrupt_on_native_session_injects_escape_without_marker(
         # own running/idle edges.
         ("claude-native", []),
         # codex-native may use the runner's running edge so the thread
-        # shows work as soon as Omnigent accepts the turn, but must not use the
+        # shows work as soon as tesseract accepts the turn, but must not use the
         # runner's idle edge because the injection task completes before
         # the user-visible Codex turn.
         ("codex-native", ["running"]),
@@ -2656,7 +2656,7 @@ async def test_message_turn_lifecycle_status_suppressed_for_terminal_backed_harn
     represent the user-visible model turn. For claude-native, the runner
     turn is only a pane-injection task, so its ``running`` and ``idle`` edges
     are both suppressed. For codex-native, the runner's ``running`` edge is a
-    useful immediate signal that Omnigent accepted the turn, but its ``idle`` edge
+    useful immediate signal that tesseract accepted the turn, but its ``idle`` edge
     is invalid because the injection task finishes before Codex is done.
 
     Drives the real ``POST /events`` message path and waits for the

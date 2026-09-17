@@ -1,6 +1,6 @@
 """OpenCode readiness + credential reporting for ``omnigent setup``.
 
-Like :mod:`omnigent.onboarding.goose_auth`, Omnigent stores **no** OpenCode
+Like :mod:`omnigent.onboarding.goose_auth`, tesseract stores **no** OpenCode
 credentials: OpenCode owns its own provider auth via ``opencode auth login``
 (stored in ``~/.local/share/opencode/auth.json``) or ambient provider env vars
 (``OPENAI_API_KEY`` / ``ANTHROPIC_API_KEY`` / …). This module is a thin,

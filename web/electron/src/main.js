@@ -1,8 +1,8 @@
-// Omnigent desktop shell — Electron edition.
+// tesseract desktop shell — Electron edition.
 //
 // A deliberately thin Electron wrapper around the existing web UI. It bundles
 // small shell-owned surfaces (setup, About, update notices); the real
-// application UI is the SPA served by the Omnigent server itself. At startup we read a persisted
+// application UI is the SPA served by the tesseract server itself. At startup we read a persisted
 // server URL and, if present, load it directly so the user lands in the same
 // UI they'd see in a browser — now with OS-native notifications and a
 // dock/taskbar badge (wired up on the web side via `src/lib/nativeBridge.ts`,
@@ -991,7 +991,7 @@ function resolvedCliPath() {
  * CLI command for desktop host enrollment on `serverUrl`. Databricks-internal
  * windows use `isaac omni` behind the same effective gate as Arca (MDM flag +
  * Databricks-managed HTTPS server); every other window keeps the configured /
- * auto-detected public Omnigent CLI. Returns null when the selected launcher
+ * auto-detected public tesseract CLI. Returns null when the selected launcher
  * is unavailable.
  *
  * @param {string | null | undefined} serverUrl
@@ -1378,7 +1378,7 @@ function createWindow(targetUrl, opts = {}) {
     // Tall enough that the bundled setup page (logo, Start-locally, divider,
     // URL field, Connect, and a few recents) fits without overflowing.
     minHeight: 600,
-    title: "Omnigent",
+    title: "tesseract",
     backgroundColor: "#0b0b0c",
     // macOS: hide the native title bar but keep the traffic lights, inset
     // into the content. The web layer provides the drag surface + clearance
@@ -1551,9 +1551,9 @@ function createWindow(targetUrl, opts = {}) {
   registerNavigationFallbacks(win);
   registerBrowserViewDetachOnNavigate(win);
 
-  // Databricks workspace-hosted Omnigent renders inside the workspace's
+  // Databricks workspace-hosted tesseract renders inside the workspace's
   // top-nav chrome (the SPA is a workspace page). On a dedicated desktop
-  // window, hide it by overlaying Omnigent's own root — see
+  // window, hide it by overlaying tesseract's own root — see
   // registerWorkspaceChromeHide, which wires the inject-on-did-finish-load.
   registerWorkspaceChromeHide(win.webContents);
 
@@ -1902,7 +1902,7 @@ async function confirmHostEnrollment(win) {
     // Keep the full origin string if it somehow doesn't parse.
   }
   // Brand the OS dialog as the app (title + bundled icon) so it reads as
-  // Omnigent's own prompt rather than an anonymous system alert; in a packaged
+  // tesseract's own prompt rather than an anonymous system alert; in a packaged
   // build macOS already shows the app icon, but `electron .` (dev) shows the
   // generic Electron tile without this.
   const icon = nativeImage.createFromPath(ICON_PNG);
@@ -1918,8 +1918,8 @@ async function confirmHostEnrollment(win) {
   const { response } = await dialog.showMessageBox(win, {
     type: "warning",
     icon: icon.isEmpty() ? undefined : icon,
-    title: "Omnigent",
-    message: `Allow ${host} to manage Omnigent on this machine?`,
+    title: "tesseract",
+    message: `Allow ${host} to manage tesseract on this machine?`,
     detail:
       `${pinned} wants to connect this machine as a runner. While connected, it ` +
       `can execute agent code and commands here on its behalf.\n\n` +
@@ -2118,7 +2118,7 @@ function changeServer() {
 
 function buildMenu() {
   const isMac = process.platform === "darwin";
-  const aboutItem = aboutMenuItem("Omnigent", () => {
+  const aboutItem = aboutMenuItem("tesseract", () => {
     aboutWindow.open(activeWindow());
   });
   const settingsItem = settingsMenuItem(() => {
@@ -2182,7 +2182,7 @@ function buildMenu() {
         if (!updater.installUpdateNow()) {
           await dialog.showMessageBox(activeWindow(), {
             type: "info",
-            title: "Omnigent",
+            title: "tesseract",
             message: "No update is ready to install",
             detail: "Check for updates first, then download the new version.",
             buttons: ["OK"],
@@ -2490,12 +2490,12 @@ function registerIpc() {
     const normalized = managedTarget ?? normalizeUrl(url); // throws → setup page shows error
     const target = await expandDatabricksWorkspaceUrl(normalized);
 
-    // Guard against navigating to (and pinning as trusted) a non-Omnigent site
+    // Guard against navigating to (and pinning as trusted) a non-tesseract site
     // the user typed by mistake. Managed choices are pre-validated; local hosts
     // are the user's own machine — both skip the check. For a remote URL we
-    // probe the well-known manifest; if it doesn't look like an Omnigent server
+    // probe the well-known manifest; if it doesn't look like an tesseract server
     // and the user hasn't confirmed, ask the page to warn before proceeding.
-    // Soft (not a hard block): older Omnigent servers predate the manifest, so
+    // Soft (not a hard block): older tesseract servers predate the manifest, so
     // a second click must still let them through. force skips the re-probe.
     //
     // ONLY when the server selector is active: the classic static setup page
@@ -2591,7 +2591,7 @@ function registerIpc() {
 
   // Setup page → reachability/validity probe for a server the user just added.
   // Advisory only (never gates Join): resolves one of
-  //   "ok"        — responded and looks like an Omnigent server (has the manifest)
+  //   "ok"        — responded and looks like an tesseract server (has the manifest)
   //   "reachable" — responded, but the manifest is absent (old/unknown server)
   //   "unreachable" — no response (network error / timeout / bad URL)
   ipcMain.handle("omnigent:check-server", async (event, url) => {
@@ -2604,7 +2604,7 @@ function registerIpc() {
     } catch {
       return { status: "unreachable" };
     }
-    // Manifest present → definitively an Omnigent server.
+    // Manifest present → definitively an tesseract server.
     const manifest = await fetchServerManifest(origin);
     if (manifest.manifestVersion >= 1) return { status: "ok" };
     // No manifest: distinguish "host answered" from "nothing there" with a
@@ -2917,7 +2917,7 @@ function registerIpc() {
     if (databricksInternalFeaturesEnabled()) return null;
     const win = BrowserWindow.fromWebContents(event.sender) ?? activeWindow();
     const result = await dialog.showOpenDialog(win ?? undefined, {
-      title: "Locate the Omnigent CLI binary",
+      title: "Locate the tesseract CLI binary",
       properties: ["openFile"],
     });
     if (result.canceled || result.filePaths.length === 0) return null;
@@ -3252,10 +3252,10 @@ async function confirmOpenDeepLink(parent, targetOrigin) {
   const { response } = await dialog.showMessageBox(parent, {
     type: "warning",
     icon: icon.isEmpty() ? undefined : icon,
-    title: "Omnigent",
-    message: `Open this Omnigent link?`,
+    title: "tesseract",
+    message: `Open this tesseract link?`,
     detail:
-      `This link will connect Omnigent to ${host} and open a conversation.\n\n` +
+      `This link will connect tesseract to ${host} and open a conversation.\n\n` +
       `Only open links from a server you trust — once connected, it can show ` +
       `notifications and (when you allow it) manage this machine as a runner.`,
     buttons: ["Cancel", "Open"],
@@ -3421,7 +3421,7 @@ async function handleDeepLink(raw) {
 // ---------------------------------------------------------------------------
 
 // Name drives the macOS app menu title and the notification source name.
-app.setName("Omnigent");
+app.setName("tesseract");
 
 // Single-instance: focus the existing window instead of opening a second.
 const gotLock = app.requestSingleInstanceLock();

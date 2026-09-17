@@ -809,7 +809,7 @@ def test_registers_omnigent_tools_and_execute_round_trips(tmp_path: Path) -> Non
     Drives the real JavaScript extension under Node with a config carrying a
     flat tool list (as the runner now writes). Asserts each tool is registered
     via ``pi.registerTool`` with its schema, and that calling a registered
-    tool's ``execute`` POSTs a JSON-RPC ``tools/call`` to the Omnigent server's
+    tool's ``execute`` POSTs a JSON-RPC ``tools/call`` to the tesseract server's
     ``/v1/sessions/{id}/mcp`` proxy and returns the tool output to Pi.
     """
     node = shutil.which("node")
@@ -868,7 +868,7 @@ process.env.OMNIGENT_PI_NATIVE_CONFIG = configPath;
 const fetchCalls = [];
 global.fetch = async (url, request) => {
   fetchCalls.push({ url, request });
-  // Mimic the Omnigent /mcp proxy success envelope.
+  // Mimic the tesseract /mcp proxy success envelope.
   return {
     ok: true,
     async json() {
@@ -951,7 +951,7 @@ require(extensionPath)(pi);
 
 
 def test_bridged_tool_call_skips_hook_policy_eval(tmp_path: Path) -> None:
-    """The tool_call hook must NOT re-evaluate policy for bridged Omnigent tools.
+    """The tool_call hook must NOT re-evaluate policy for bridged tesseract tools.
 
     Bridged tools are policy-evaluated server-side inside the /mcp proxy when
     execute() runs, so the hook-level ``policies/evaluate`` call would
@@ -1190,7 +1190,7 @@ require(extensionPath)(pi);
 
 
 def test_mcp_unreachable_fails_closed_without_throwing(tmp_path: Path) -> None:
-    """An unreachable Omnigent MCP server resolves to an error, never a throw.
+    """An unreachable tesseract MCP server resolves to an error, never a throw.
 
     Boundary discipline at the /mcp call site: a transport failure (connection
     refused) and an HTTP non-2xx must each resolve ``execute`` to a readable
@@ -2988,7 +2988,7 @@ function finish() {
 def test_inbox_model_change_applies_via_set_model(tmp_path: Path) -> None:
     """A web-picked ``model_change`` inbox payload calls Pi's ``setModel``.
 
-    The runner queues the payload after the Omnigent server persisted the
+    The runner queues the payload after the tesseract server persisted the
     override; the extension must resolve the id against ``ctx.modelRegistry``
     and apply it live via ``pi.setModel`` — with no error item posted.
     """
@@ -3051,7 +3051,7 @@ def test_model_select_mirrors_to_external_model_change(tmp_path: Path) -> None:
     """A user ``/model`` pick inside Pi posts ``external_model_change`` (two-way sync).
 
     Pi fires ``model_select`` for both in-TUI switches and startup restores.
-    A ``set`` / ``cycle`` source must mirror back to Omnigent; a ``restore``
+    A ``set`` / ``cycle`` source must mirror back to tesseract; a ``restore``
     (Pi re-applying the saved model at startup) must NOT.
     """
     node = shutil.which("node")

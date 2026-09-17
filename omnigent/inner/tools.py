@@ -1,4 +1,4 @@
-"""Tool type hierarchy for Omnigent."""
+"""Tool type hierarchy for tesseract."""
 
 from __future__ import annotations
 

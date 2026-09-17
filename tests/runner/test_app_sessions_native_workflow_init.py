@@ -53,7 +53,7 @@ async def test_session_labels_for_runner_spawn_timeout_is_quiet(
     Timed-out optional label resolution returns the spawn fallback quietly.
 
     Native harness spawn can recover by using the session id when labels
-    cannot be fetched. A slow Omnigent session lookup therefore must not emit a
+    cannot be fetched. A slow tesseract session lookup therefore must not emit a
     warning with traceback; that was noisy and misleading for a best-effort
     lookup.
 
@@ -1988,7 +1988,7 @@ async def test_sessions_native_path_injects_mcp_schemas() -> None:
 async def test_action_required_marker_round_trips_to_relayed_frame() -> None:
     """The runner stamps ``omnigent_runner_dispatched`` on action_required frames.
 
-    The Omnigent executor's ``_runner_dispatches`` predicate reads this marker
+    The tesseract executor's ``_runner_dispatches`` predicate reads this marker
     to skip server-side dispatch. Without the stamp it'd race the
     runner's dispatch and return "unknown server-side tool."
     """
@@ -2016,7 +2016,7 @@ async def test_action_required_marker_round_trips_to_relayed_frame() -> None:
         f"action_required event must be stamped with the dispatch marker; "
         f"stream text was {stream_text!r}"
     )
-    # Runner dispatched the MCP tool through the Omnigent server proxy (AP mode).
+    # Runner dispatched the MCP tool through the tesseract server proxy (AP mode).
     assert server_client.call_tool_invocations == [("jira_search_issues", {})], (
         f"runner must dispatch the MCP tool via ProxyMcpManager (AP server); "
         f"got {server_client.call_tool_invocations}"
@@ -2176,7 +2176,7 @@ async def test_create_session_envelope_is_single_flight_and_skips_metadata_callb
 async def test_create_session_preserves_existing_event_queue() -> None:
     """Session init must not orphan a stream subscriber's event queue.
 
-    The Omnigent relay's ``GET /stream`` lazily creates the per-session event
+    The tesseract relay's ``GET /stream`` lazily creates the per-session event
     queue when it connects before ``POST /v1/sessions`` runs (the relay
     can race ahead of init). Init used to *unconditionally replace* that
     queue, orphaning the relay on the now-dead object: ``_publish_event``
@@ -2452,7 +2452,7 @@ async def test_session_stream_emits_heartbeat_on_idle() -> None:
         heartbeats = [e for e in collected if e.get("type") == "session.heartbeat"]
         assert len(heartbeats) >= 1, f"Expected at least 1 session.heartbeat, got {collected}"
         assert collected[0] == {"type": "session.heartbeat"}, (
-            "The first stream frame must be the ready heartbeat. Omnigent waits "
+            "The first stream frame must be the ready heartbeat. tesseract waits "
             "for this before forwarding fast no-replay user input."
         )
     finally:

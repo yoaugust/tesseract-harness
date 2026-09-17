@@ -1,6 +1,6 @@
 # Blaxel sandbox provider
 
-Run Omnigent hosts in Blaxel sandboxes from your terminal or let the Omnigent server create one for each managed session.
+Run tesseract hosts in Blaxel sandboxes from your terminal or let the tesseract server create one for each managed session.
 
 - **CLI-launched:** `omnigent sandbox create` ships your local checkout, then `connect` registers the sandbox as a host.
 - **Server-managed:** New Chat or `POST /v1/sessions` creates a sandbox and deletes it with the session.
@@ -16,7 +16,7 @@ brew install blaxel
 bl login your-workspace
 ```
 
-The process that launches the sandbox needs Blaxel control credentials. This is your shell for a CLI launch and the server process for a managed launch. Web users log in to Omnigent, not Blaxel.
+The process that launches the sandbox needs Blaxel control credentials. This is your shell for a CLI launch and the server process for a managed launch. Web users log in to tesseract, not Blaxel.
 
 For a non-interactive server, set the credentials in its environment:
 
@@ -27,7 +27,7 @@ export BL_API_KEY=your-api-key
 
 ## CLI-launched sandboxes
 
-Run `create` from an Omnigent checkout. Use a server URL that the Blaxel sandbox can reach:
+Run `create` from an tesseract checkout. Use a server URL that the Blaxel sandbox can reach:
 
 ```bash
 omnigent sandbox create \
@@ -38,7 +38,7 @@ omnigent sandbox create \
 
 The command builds wheels from your checkout and overlays them on the standard host image. It prints the sandbox ID when the sandbox is ready.
 
-Register that sandbox as an Omnigent host:
+Register that sandbox as an tesseract host:
 
 ```bash
 omnigent sandbox connect \
@@ -50,7 +50,7 @@ omnigent sandbox connect \
 
 `connect` stays open while the host is connected. Press Ctrl-C to stop the connection. Use a unique `--host-name` when you connect more than one sandbox to the same server.
 
-Blaxel does not expose local callback port forwarding. Omnigent therefore skips the in-sandbox browser login automatically. If the host or agent needs environment credentials, list their variable names before `create`:
+Blaxel does not expose local callback port forwarding. tesseract therefore skips the in-sandbox browser login automatically. If the host or agent needs environment credentials, list their variable names before `create`:
 
 ```bash
 export OPENAI_API_KEY=your-openai-key
@@ -89,11 +89,11 @@ curl -X POST https://your-host/v1/sessions \
 
 The server provisions the sandbox in the background and shows launch progress in the Web UI. It gives the host a server-minted token for that launch. The user does not need Blaxel credentials. Deleting the session terminates the sandbox and removes its ephemeral file system.
 
-All managed sandboxes use the Blaxel workspace and credentials of the server process. This integration does not map each Omnigent user to a separate Blaxel workspace.
+All managed sandboxes use the Blaxel workspace and credentials of the server process. This integration does not map each tesseract user to a separate Blaxel workspace.
 
 ## Image and limits
 
-Omnigent uses `blaxel/omnigent-host:latest` by default. This public Blaxel Hub image combines the standard Omnigent host runtime with Blaxel's `sandbox-api`, which provides process, file, streaming, and lifecycle control. Use `sandbox.blaxel.image` or `OMNIGENT_BLAXEL_HOST_IMAGE` to select a fixed published tag.
+tesseract uses `blaxel/omnigent-host:latest` by default. This public Blaxel Hub image combines the standard tesseract host runtime with Blaxel's `sandbox-api`, which provides process, file, streaming, and lifecycle control. Use `sandbox.blaxel.image` or `OMNIGENT_BLAXEL_HOST_IMAGE` to select a fixed published tag.
 
 | Setting | Default | Purpose |
 | --- | --- | --- |
@@ -103,11 +103,11 @@ Omnigent uses `blaxel/omnigent-host:latest` by default. This public Blaxel Hub i
 | `memory_mb` | `4096` | Sandbox memory in MiB |
 | `ttl` | `24h` | Provider-side maximum age |
 
-The host uses Blaxel keep-alive mode until the TTL or managed teardown. Process output through the provider API is limited to 4 MiB per command. Omnigent stops commands that cross this limit.
+The host uses Blaxel keep-alive mode until the TTL or managed teardown. Process output through the provider API is limited to 4 MiB per command. tesseract stops commands that cross this limit.
 
 `ttl` is the single knob that sizes a managed session. It is an age from creation, not an idle timeout, so Blaxel deletes the sandbox at that age even while the session is active. The server mints each launch token for that age plus one hour, so the token never outlives the sandbox by more than the reconnect margin. A managed session that must run longer than 24 hours needs a larger `ttl`, for example `7d`. Durations accept `w`, `d`, `h`, `m`, and `s`, alone or combined as `1h30m`.
 
-The Blaxel SDK can send SDK error events to its vendor Sentry endpoint when tracking is enabled in Blaxel configuration. Tracking is off by default. Set `DO_NOT_TRACK=1` on the Omnigent server to disable Blaxel SDK telemetry.
+The Blaxel SDK can send SDK error events to its vendor Sentry endpoint when tracking is enabled in Blaxel configuration. Tracking is off by default. Set `DO_NOT_TRACK=1` on the tesseract server to disable Blaxel SDK telemetry.
 
 ## Run the live smoke test
 

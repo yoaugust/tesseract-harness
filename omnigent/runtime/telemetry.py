@@ -218,7 +218,7 @@ def set_session_id(session_id: str | None) -> None:
     Best-effort and gated by the master opt-in: a no-op when telemetry is
     off, the id is falsy, or no span is recording.
 
-    :param session_id: The Omnigent session (conversation) id, e.g.
+    :param session_id: The tesseract session (conversation) id, e.g.
         ``"conv_…"``.
     """
     if not session_id or not telemetry_enabled():
@@ -263,7 +263,7 @@ def session_scope(session_id: str | None) -> Iterator[None]:
     of stamping each span by hand. No-op for a falsy id or when telemetry
     is off.
 
-    :param session_id: The Omnigent session (conversation) id, e.g. ``conv_…``.
+    :param session_id: The tesseract session (conversation) id, e.g. ``conv_…``.
     """
     if not session_id or not telemetry_enabled():
         yield
@@ -342,7 +342,7 @@ def _fastapi_session_id_hook(span: Any, scope: Mapping[str, Any]) -> None:
     FastAPI server-request hook: stamp ``session.id`` from the request path.
 
     Runs on every server span ``FastAPIInstrumentor`` creates. When the path
-    is a session-scoped route it tags the span with the Omnigent session
+    is a session-scoped route it tags the span with the tesseract session
     (conversation) id, so server and runner request spans — POST ``/events``,
     the SSE stream, and the tunneled server→runner hops — share the
     ``session.id`` grouping key. This is also what links the *decoupled* JSONL
@@ -923,7 +923,7 @@ def _metrics_exporter_name() -> str:
     Return the configured OpenTelemetry metrics exporter name.
 
     ``OTEL_METRICS_EXPORTER`` is the standard OpenTelemetry knob. If
-    it is unset and an OTLP endpoint is configured, Omnigent uses
+    it is unset and an OTLP endpoint is configured, tesseract uses
     ``"otlp"`` so server performance metrics are exported alongside
     traces.
 
@@ -941,7 +941,7 @@ def _otlp_protocol() -> str:
     """
     Return the configured OTLP transport protocol.
 
-    OpenTelemetry's default OTLP protocol is gRPC; Omnigent follows
+    OpenTelemetry's default OTLP protocol is gRPC; tesseract follows
     that default unless ``OTEL_EXPORTER_OTLP_PROTOCOL`` explicitly
     requests HTTP/protobuf.
 
@@ -1083,7 +1083,7 @@ def _logs_exporter_name() -> str:
     Return the configured OpenTelemetry logs exporter name.
 
     ``OTEL_LOGS_EXPORTER`` is the standard OpenTelemetry knob. If
-    it is unset and an OTLP endpoint is configured, Omnigent uses
+    it is unset and an OTLP endpoint is configured, tesseract uses
     ``"otlp"`` so log records flow alongside traces and metrics.
 
     :returns: Exporter name, e.g. ``"otlp"`` or ``"none"``.

@@ -1,7 +1,7 @@
 """Tests for the RPC read driver (:mod:`omnigent.harnesses.antigravity_native.reader`).
 
 The reader replaces the transcript-tail forwarder's read loop: it polls agy's
-connect-RPC for trajectory steps, maps each new step to Omnigent conversation
+connect-RPC for trajectory steps, maps each new step to tesseract conversation
 items (via the pure Task 4 mapper), POSTs them, emits session-status edges on
 transition, and hands WAITING steps to the Task 8 interaction bridge through an
 ``on_pending_interaction`` callback.
@@ -2680,7 +2680,7 @@ async def test_planner_done_emits_session_usage(
 ) -> None:
     """A PLANNER_RESPONSE DONE with modelUsage emits exactly one external_session_usage.
 
-    The event data must map agy's string-int fields onto the Omnigent shape:
+    The event data must map agy's string-int fields onto the tesseract shape:
     - cumulative_input_tokens = inputTokens (int)
     - cumulative_output_tokens = outputTokens (int)
     - cumulative_cache_read_input_tokens = cacheReadTokens (int)
@@ -3464,7 +3464,7 @@ def test_detect_rotation_subagent_child_is_never_a_rotation_target() -> None:
     agy spawns each subagent as a child conversation that reports the SAME
     ``trajectoryType`` as a real root, and is always more recently active than the
     parent it is working for. Rotating onto it promotes a sub-conversation to a
-    new top-level Omnigent session (and drags the tmux pane with it), which is
+    new top-level tesseract session (and drags the tmux pane with it), which is
     what made a single subagent fan-out explode into a session per agent.
     """
     summaries = {
@@ -4051,7 +4051,7 @@ async def test_run_reader_with_bridge_adopts_first_cascade_in_place(
     The cold-start ``StartCascade`` cascade is a headless placeholder the agy TUI
     never shows; the TUI mints its OWN cascade on the first typed turn. That first
     transition is the conversation STARTING, not a ``/clear`` — so the loop must
-    adopt the new cascade in the SAME Omnigent session (rewrite bridge state, NO
+    adopt the new cascade in the SAME tesseract session (rewrite bridge state, NO
     fork) so the user's current session starts mirroring (#1156/#1158). Modeled by
     a supervise_reader that reports ZERO committed turns on the rotation run.
     """

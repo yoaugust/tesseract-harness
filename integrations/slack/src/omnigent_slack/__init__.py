@@ -1,4 +1,4 @@
-"""Slack bot for Omnigent sessions."""
+"""Slack bot for tesseract sessions."""
 
 __all__ = ["__version__"]
 

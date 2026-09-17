@@ -70,7 +70,7 @@ AGY_APP_DATA_DIR = Path.home() / ".gemini" / "antigravity-cli"
 _AGY_ONBOARDING_MARKER = AGY_APP_DATA_DIR / "cache" / "onboarding.json"
 # The exact keys agy itself writes on a completed consumer (subscription)
 # onboarding — captured ground-truth from a real onboarded profile. Enterprise
-# onboarding is a distinct flow Omnigent does not drive, so it stays ``False``.
+# onboarding is a distinct flow tesseract does not drive, so it stays ``False``.
 _AGY_ONBOARDING_COMPLETE_STATE: dict[str, object] = {
     "consumerOnboardingComplete": True,
     "enterpriseOnboardingComplete": False,
@@ -163,7 +163,7 @@ class AntigravityNativeBridgeState:
     """
     Runtime state shared by the native Antigravity wrapper and harness.
 
-    :param session_id: Omnigent conversation id, e.g.
+    :param session_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param conversation_id: agy's real conversation id, e.g.
         ``"68caaeac-2eaf-4e2c-9b95-721b022f4903"``. Discovered by the forwarder
@@ -223,7 +223,7 @@ def build_antigravity_native_spawn_env(
     """
     Build spawn env for the ``antigravity-native`` harness process.
 
-    :param conversation_id: Omnigent conversation id, e.g.
+    :param conversation_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param bridge_id: Opaque bridge id from
         :data:`ANTIGRAVITY_NATIVE_BRIDGE_ID_LABEL_KEY`, e.g.
@@ -268,11 +268,11 @@ def prune_orphaned_bridge_dirs() -> int:
     return native_bridge_common.prune_orphaned_dirs(bridge_root())
 
 
-# ── Omnigent MCP relay wiring (sys_* tools) ──────────────────────────────────
+# ── tesseract MCP relay wiring (sys_* tools) ──────────────────────────────────
 #
-# agy is otherwise tool-isolated from Omnigent: unlike claude/codex/cursor it
+# agy is otherwise tool-isolated from tesseract: unlike claude/codex/cursor it
 # wires no MCP relay, so the wrapped agy cannot reach any ``sys_*`` tool (spawn
-# sub-agent sessions, drive Omnigent terminals, list agents/models, ``sys_os_*``).
+# sub-agent sessions, drive tesseract terminals, list agents/models, ``sys_os_*``).
 # This section wires the SAME relay cursor #742 uses — the shared
 # ``omnigent.harnesses.claude_native.bridge serve-mcp`` stdio server — into agy.
 #
@@ -314,9 +314,9 @@ _BRIDGE_CONFIG_FILE = "bridge.json"
 _MCP_SERVER_NAME = "omnigent"
 # agy auto-approves a relay tool when it is named in the server's ``enabledTools``
 # allowlist (agy's per-server MCP schema; mirrors cursor's ``autoApprove``).
-# Omnigent's own TOOL_CALL policy + elicitation gate still applies on the server
+# tesseract's own TOOL_CALL policy + elicitation gate still applies on the server
 # side, so auto-approving the agy-side MCP gate only avoids a hidden in-terminal
-# prompt blocking the call before Omnigent ever sees it.
+# prompt blocking the call before tesseract ever sees it.
 _AGY_ENABLED_TOOLS = [
     "list_comments",
     "sys_add_policy",
@@ -412,7 +412,7 @@ def agy_gemini_dir(bridge_dir: Path) -> Path:
 
     :param bridge_dir: Native Antigravity bridge directory.
     :returns: Absolute ``.gemini`` directory that should receive agy's session
-        config/state and the Omnigent MCP config.
+        config/state and the tesseract MCP config.
     """
     return agy_home_dir(bridge_dir) / ".gemini"
 
@@ -422,7 +422,7 @@ def build_mcp_config(
     *,
     python_executable: str | None = None,
 ) -> dict[str, object]:
-    """Build agy's ``mcp_config.json`` payload for the Omnigent relay server.
+    """Build agy's ``mcp_config.json`` payload for the tesseract relay server.
 
     Mirrors cursor #742's :func:`omnigent.harnesses.cursor_native.bridge.build_mcp_config`
     but emits agy's per-server MCP schema (lowercase ``command`` / ``args`` /
@@ -470,7 +470,7 @@ def build_mcp_config(
 
 
 def write_mcp_bridge_config(bridge_dir: Path) -> None:
-    """Write the token config the shared Omnigent MCP relay requires.
+    """Write the token config the shared tesseract MCP relay requires.
 
     The relay's ``serve-mcp`` reads ``<bridge_dir>/bridge.json`` for a token that
     authorizes its localhost control endpoint. Idempotent: an existing token is
@@ -498,7 +498,7 @@ def write_mcp_config(
     """Write the per-session agy MCP config + relay token.
 
     Writes (1) ``bridge.json`` (the relay token) into *bridge_dir* and (2) the
-    ``mcp_config.json`` for the Omnigent relay into the per-session isolated agy
+    ``mcp_config.json`` for the tesseract relay into the per-session isolated agy
     Gemini dir at ``<bridge_dir>/agy-home/.gemini/config/mcp_config.json`` — the
     path agy loads when launched with ``--gemini_dir``. Because the Gemini dir is
     per-session and not the user's real ``~/.gemini``, this never clobbers the
@@ -956,7 +956,7 @@ def update_conversation_id(
     Update the agy conversation id in bridge state.
 
     Used when a native agy action creates a fresh conversation while the
-    Omnigent session stays the same (e.g. the runner cold-start replacing the
+    tesseract session stays the same (e.g. the runner cold-start replacing the
     ``agy_conv_*`` placeholder with agy's real cascade id).
 
     When there is no existing state to update (a missing or invalid state file),
@@ -1723,7 +1723,7 @@ def send_interaction_keys_via_tui(
     attended agy TUI maintains in parallel with the RPC step state: its
     **in-process permission / question prompt**. When agy runs attended (the
     web/mobile path types every turn into the TUI), an approval surfaces in the
-    Omnigent web UI AND as agy's own numbered TUI prompt ("Do you want to
+    tesseract web UI AND as agy's own numbered TUI prompt ("Do you want to
     proceed?", 1.Yes … 4.No). Delivering the verdict over
     :func:`omnigent.harnesses.antigravity_native.rpc.handle_user_interaction` flips the
     backend trajectory step to DONE and the command runs, but the **TUI prompt

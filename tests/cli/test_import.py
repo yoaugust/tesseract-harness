@@ -47,7 +47,7 @@ def _write_claude_transcript(
 
 @respx.mock
 def test_import_command_loads_local_session_and_posts_normalized_items(tmp_path: Path) -> None:
-    """The CLI reads local history and submits only Omnigent item shapes."""
+    """The CLI reads local history and submits only tesseract item shapes."""
     session_id = "a1b2c3d4-1234-5678-9abc-def012345678"
     _write_claude_transcript(tmp_path, session_id, text="inspect TODO.md")
     route = respx.post(f"{_BASE}/v1/imports").mock(
@@ -442,7 +442,7 @@ def test_import_command_continues_batch_after_network_failure(tmp_path: Path) ->
     assert result.exit_code == 1, result.output
     assert "Imported: 1" in result.output
     assert "Failed: 1" in result.output
-    assert "Could not reach the Omnigent server" in result.output
+    assert "Could not reach the tesseract server" in result.output
 
 
 def test_import_command_requires_exactly_one_session_selector() -> None:

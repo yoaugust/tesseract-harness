@@ -131,7 +131,7 @@ _LIFETIME = 30 * 24 * 3600
 
 
 def test_approve_binds_identity(store: DeviceGrantStore) -> None:
-    """Approval binds the Omnigent identity and stamps approved_at."""
+    """Approval binds the tesseract identity and stamps approved_at."""
     g = _new_grant(store)
     ok = store.approve(g.id, user_id="a@x", now_epoch_seconds=1010)
     assert ok is not None and ok.status == "approved" and ok.user_id == "a@x"

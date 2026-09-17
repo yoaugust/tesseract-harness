@@ -1,4 +1,4 @@
-"""Shared helper: spawn a dedicated *accounts-mode* Omnigent server with the
+"""Shared helper: spawn a dedicated *accounts-mode* tesseract server with the
 device-authorization grant enabled.
 
 The suite's shared ``live_server`` runs single-user

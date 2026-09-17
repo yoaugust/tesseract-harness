@@ -733,7 +733,7 @@
                 "type": "null"
               }
             ],
-            "description": "UI-facing sub-agent label. For Omnigent-spawned children this is derived from the prefix of `title` before the first `\":\"`, e.g. `\"researcher\"`. For Codex-native children this is the Codex-assigned `agent_nickname` when available, then `agent_role`, then `\"Codex\"`. Falls back to the raw title for legacy / malformed rows; `None` only when `title` itself is `None` or empty.",
+            "description": "UI-facing sub-agent label. For tesseract-spawned children this is derived from the prefix of `title` before the first `\":\"`, e.g. `\"researcher\"`. For Codex-native children this is the Codex-assigned `agent_nickname` when available, then `agent_role`, then `\"Codex\"`. Falls back to the raw title for legacy / malformed rows; `None` only when `title` itself is `None` or empty.",
             "title": "Tool"
           },
           "updated_at": {
@@ -816,7 +816,7 @@
         "type": "object"
       },
       "CodexGoalObject": {
-        "description": "Current Codex goal state for a Codex-native session.\n\nMirrors Codex app-server's `ThreadGoal` shape using Omnigent's\nsnake-case API convention. `created_at` and `updated_at` are optional\nbecause older app-server documentation examples omit them even though the\ncurrent protocol includes them.",
+        "description": "Current Codex goal state for a Codex-native session.\n\nMirrors Codex app-server's `ThreadGoal` shape using tesseract's\nsnake-case API convention. `created_at` and `updated_at` are optional\nbecause older app-server documentation examples omit them even though the\ncurrent protocol includes them.",
         "properties": {
           "created_at": {
             "anyOf": [
@@ -1514,7 +1514,7 @@
         "type": "object"
       },
       "ElicitationRequestEvent": {
-        "description": "Synchronous request for a decision from upstream.\n\nEmitted by Omnigent (or, under the new contract, by a harness)\nwhen the LLM / a tool / a policy needs a verdict before\nproceeding. The consumer replies via\n`POST /v1/sessions/{session_id}/events` with\n`type == \"approval\"` and\n`omnigent.server.schemas.ElicitationResult` fields in\n`data`. This preserves MCP request/reply correlation by id\nwithout threading elicitations through PATCH.\n\nWire shape matches the existing emit at\n`omnigent/runtime/policies/approval.py:175`.",
+        "description": "Synchronous request for a decision from upstream.\n\nEmitted by tesseract (or, under the new contract, by a harness)\nwhen the LLM / a tool / a policy needs a verdict before\nproceeding. The consumer replies via\n`POST /v1/sessions/{session_id}/events` with\n`type == \"approval\"` and\n`omnigent.server.schemas.ElicitationResult` fields in\n`data`. This preserves MCP request/reply correlation by id\nwithout threading elicitations through PATCH.\n\nWire shape matches the existing emit at\n`omnigent/runtime/policies/approval.py:175`.",
         "properties": {
           "elicitation_id": {
             "description": "Unique correlation id for this request \u2014 appears in the consumer's approval event payload, e.g. `\"elicit_abc123\"`.",
@@ -1602,7 +1602,7 @@
               }
             ],
             "default": null,
-            "description": "Omnigent policy-engine phase the elicitation belongs to, e.g. `\"pre_tool_use\"`.",
+            "description": "tesseract policy-engine phase the elicitation belongs to, e.g. `\"pre_tool_use\"`.",
             "title": "Phase"
           },
           "policy_name": {
@@ -1615,7 +1615,7 @@
               }
             ],
             "default": null,
-            "description": "Omnigent policy that triggered the elicitation, e.g. `\"approve_shell_commands\"`.",
+            "description": "tesseract policy that triggered the elicitation, e.g. `\"approve_shell_commands\"`.",
             "title": "Policy Name"
           },
           "requestedSchema": {
@@ -1666,7 +1666,7 @@
         "type": "object"
       },
       "ElicitationResolvedEvent": {
-        "description": "Signal that a previously-published elicitation is no longer\noutstanding, even though no UI `approval` verdict was\ndelivered through `POST /v1/sessions/{id}/events`.\n\nEmitted by the runner when its own `_pending_approvals`\nFuture is popped without a verdict (the runner's wait timed\nout, the turn was cancelled, the harness exited) so the AP\nserver's `omnigent.runtime.pending_elicitations`\nindex can decrement the sidebar badge in lockstep with the\nunderlying awaiter's lifecycle. Without this signal, the AP\nserver has no way to learn that the prompt is dead and the\nbadge stays stuck.\n\nIdempotent on the consumer side: the Omnigent server's index\ndecrement is a no-op when the id isn't tracked, so the\nrunner can fire-and-forget on every Future cleanup.",
+        "description": "Signal that a previously-published elicitation is no longer\noutstanding, even though no UI `approval` verdict was\ndelivered through `POST /v1/sessions/{id}/events`.\n\nEmitted by the runner when its own `_pending_approvals`\nFuture is popped without a verdict (the runner's wait timed\nout, the turn was cancelled, the harness exited) so the AP\nserver's `omnigent.runtime.pending_elicitations`\nindex can decrement the sidebar badge in lockstep with the\nunderlying awaiter's lifecycle. Without this signal, the AP\nserver has no way to learn that the prompt is dead and the\nbadge stays stuck.\n\nIdempotent on the consumer side: the tesseract server's index\ndecrement is a no-op when the id isn't tracked, so the\nrunner can fire-and-forget on every Future cleanup.",
         "properties": {
           "action": {
             "anyOf": [
@@ -2649,7 +2649,7 @@
         "type": "object"
       },
       "ImportItemInput": {
-        "description": "One normalized existing Omnigent item received from the CLI.",
+        "description": "One normalized existing tesseract item received from the CLI.",
         "properties": {
           "data": {
             "additionalProperties": true,
@@ -3637,7 +3637,7 @@
         "type": "object"
       },
       "PolicyDeniedEvent": {
-        "description": "Signal that a policy DENY was enforced on a native harness turn.\n\nA native harness (Claude Code, Codex, ...) routes each tool call and\nprompt through Omnigent's policy engine via the vendor command-hook\n(`POST /v1/sessions/{id}/policies/evaluate`). The DENY verdict is\nreturned synchronously to that hook, so unlike the SDK/wrap path there is\nno stream-visible signal that a native action was blocked \u2014 only the\n*effect* (the blocked tool never runs). This event surfaces the decision\nitself on the session stream so observers (the web UI, the capability\nbench) can see a native DENY as a positive signal rather than infer it\nfrom an absence.\n\nFire-and-forget and observational: it does not gate the turn (the hook\nresponse already did that) and carries no correlation id.",
+        "description": "Signal that a policy DENY was enforced on a native harness turn.\n\nA native harness (Claude Code, Codex, ...) routes each tool call and\nprompt through tesseract's policy engine via the vendor command-hook\n(`POST /v1/sessions/{id}/policies/evaluate`). The DENY verdict is\nreturned synchronously to that hook, so unlike the SDK/wrap path there is\nno stream-visible signal that a native action was blocked \u2014 only the\n*effect* (the blocked tool never runs). This event surfaces the decision\nitself on the session stream so observers (the web UI, the capability\nbench) can see a native DENY as a positive signal rather than infer it\nfrom an absence.\n\nFire-and-forget and observational: it does not gate the turn (the hook\nresponse already did that) and carries no correlation id.",
         "properties": {
           "conversation_id": {
             "description": "Session/conversation id the DENY applies to, e.g. `\"conv_abc123\"`.",
@@ -4403,7 +4403,7 @@
           },
           "scope": {
             "default": "turn",
-            "description": "What the decision governs \u2014 `\"session\"` (auto-harness session routing), `\"turn\"` (per-turn routing), `\"child_session\"` (an Omnigent-spawned sub-agent) or `\"native_subagent\"` (a Task / `spawn_agent` spawn routed inside the harness). Defaults to `\"turn\"` so rows persisted before this field deserialize.",
+            "description": "What the decision governs \u2014 `\"session\"` (auto-harness session routing), `\"turn\"` (per-turn routing), `\"child_session\"` (an tesseract-spawned sub-agent) or `\"native_subagent\"` (a Task / `spawn_agent` spawn routed inside the harness). Defaults to `\"turn\"` so rows persisted before this field deserialize.",
             "enum": [
               "session",
               "turn",
@@ -5054,7 +5054,7 @@
         "type": "object"
       },
       "SessionCodexApprovalModeEvent": {
-        "description": "Active approval/sandbox-mode update from a codex-native session.\n\nEmitted after the web UI switches the mode, and after the Codex forwarder\nobserves a `thread/settings/updated` notification \u2014 an approval change the\nuser made inside Codex's `/permissions` popup, which Omnigent has no other\nway to see. Lets the composer's approval picker track the thread without a\nreload.",
+        "description": "Active approval/sandbox-mode update from a codex-native session.\n\nEmitted after the web UI switches the mode, and after the Codex forwarder\nobserves a `thread/settings/updated` notification \u2014 an approval change the\nuser made inside Codex's `/permissions` popup, which tesseract has no other\nway to see. Lets the composer's approval picker track the thread without a\nreload.",
         "properties": {
           "approval_mode": {
             "description": "The active mode, one of `\"ask-for-approval\"`, `\"approve-for-me\"`, `\"full-access\"`, `\"read-only\"`. Category: **transient** (SSE-only). The server also writes `omnigent.codex_native.approval_mode` on the conversation labels (and `terminal_launch_args`), so reconnecting clients restore the same state from the session snapshot.",
@@ -5766,7 +5766,7 @@
           },
           "pending_elicitations_count": {
             "default": 0,
-            "description": "Number of approval prompts currently waiting on this session. Powers the sidebar's \"needs attention\" badge so a user with several sessions running can tell which ones are blocked on them without opening each chat. Sourced from the Omnigent server's in-memory `omnigent.runtime.pending_elicitations` index, which mirrors every `response.elicitation_request` event passing through `session_stream` and decrements when a verdict is dispatched. `0` when the session has no outstanding elicitations.",
+            "description": "Number of approval prompts currently waiting on this session. Powers the sidebar's \"needs attention\" badge so a user with several sessions running can tell which ones are blocked on them without opening each chat. Sourced from the tesseract server's in-memory `omnigent.runtime.pending_elicitations` index, which mirrors every `response.elicitation_request` event passing through `session_stream` and decrements when a verdict is dispatched. `0` when the session has no outstanding elicitations.",
             "format": "int64",
             "title": "Pending Elicitations Count",
             "type": "integer"
@@ -6035,7 +6035,7 @@
         "type": "object"
       },
       "SessionPermissionModeEvent": {
-        "description": "Active permission-mode update from a claude-native session.\n\nEmitted after the web UI switches the mode, and after the Claude forwarder\nobserves a different mode in the pane footer \u2014 a shift+tab pressed inside\nthe TUI, which Omnigent has no other way to see. Lets the composer's mode\npicker track the pane without a reload.",
+        "description": "Active permission-mode update from a claude-native session.\n\nEmitted after the web UI switches the mode, and after the Claude forwarder\nobserves a different mode in the pane footer \u2014 a shift+tab pressed inside\nthe TUI, which tesseract has no other way to see. Lets the composer's mode\npicker track the pane without a reload.",
         "properties": {
           "conversation_id": {
             "description": "Session identifier, e.g. `\"conv_abc123\"`.",
@@ -6676,7 +6676,7 @@
             "title": "Parent Session Id"
           },
           "pending_elicitations": {
-            "description": "Outstanding approval prompts on this session at the moment the snapshot was built \u2014 the original `response.elicitation_request` event dicts. Lets the UI render the ApprovalCard on cold load, since the live SSE stream has no replay and a prompt emitted before the user opened the chat would otherwise vanish. Empty list when no prompts are outstanding. Sourced from the Omnigent server's in-memory `omnigent.runtime.pending_elicitations` index.",
+            "description": "Outstanding approval prompts on this session at the moment the snapshot was built \u2014 the original `response.elicitation_request` event dicts. Lets the UI render the ApprovalCard on cold load, since the live SSE stream has no replay and a prompt emitted before the user opened the chat would otherwise vanish. Empty list when no prompts are outstanding. Sourced from the tesseract server's in-memory `omnigent.runtime.pending_elicitations` index.",
             "items": {
               "additionalProperties": true,
               "type": "object"
@@ -6774,7 +6774,7 @@
                 "type": "null"
               }
             ],
-            "description": "Managed-sandbox launch progress while the session's background sandbox launch is in flight or has failed \u2014 see `SandboxStatus`. `None` for sessions without a managed launch and once the launch succeeds. Sourced from the Omnigent server's in-memory `_session_sandbox_status_cache` at snapshot build time, so a client opening the session mid-launch sees the current stage."
+            "description": "Managed-sandbox launch progress while the session's background sandbox launch is in flight or has failed \u2014 see `SandboxStatus`. `None` for sessions without a managed launch and once the launch succeeds. Sourced from the tesseract server's in-memory `_session_sandbox_status_cache` at snapshot build time, so a client opening the session mid-launch sees the current stage."
           },
           "share_workspace_files": {
             "default": false,
@@ -6842,7 +6842,7 @@
           },
           "terminal_pending": {
             "default": false,
-            "description": "`True` while the runner is auto-creating a terminal-first session's terminal (claude-native / codex-native), so the Web UI shows a spinner on the Terminal pill instead of a silent greyed-out button. Cleared to `False` once the terminal lands or auto-create fails; from then on the client relies purely on whether a terminal resource exists. Sourced from the Omnigent server's in-memory `_session_terminal_pending_cache` at snapshot build time, so a client connecting mid-spin-up still sees the spinner.",
+            "description": "`True` while the runner is auto-creating a terminal-first session's terminal (claude-native / codex-native), so the Web UI shows a spinner on the Terminal pill instead of a silent greyed-out button. Cleared to `False` once the terminal lands or auto-create fails; from then on the client relies purely on whether a terminal resource exists. Sourced from the tesseract server's in-memory `_session_terminal_pending_cache` at snapshot build time, so a client connecting mid-spin-up still sees the spinner.",
             "title": "Terminal Pending",
             "type": "boolean"
           },
@@ -6859,7 +6859,7 @@
             "title": "Title"
           },
           "todos": {
-            "description": "Current Claude Code todo list items for `omnigent claude` sessions, as raw dicts from Claude's todo JSON file. Each dict has `content`, `status`, and `activeForm` keys. Empty list for non-claude-native sessions or when no todos have been reported yet. Sourced from the Omnigent server's in-memory `_session_todos_cache`.",
+            "description": "Current Claude Code todo list items for `omnigent claude` sessions, as raw dicts from Claude's todo JSON file. Each dict has `content`, `status`, and `activeForm` keys. Empty list for non-claude-native sessions or when no todos have been reported yet. Sourced from the tesseract server's in-memory `_session_todos_cache`.",
             "items": {
               "additionalProperties": true,
               "type": "object"
@@ -6931,7 +6931,7 @@
         "type": "object"
       },
       "SessionSandboxStatusEvent": {
-        "description": "Managed-sandbox launch progress for a `host_type=\"managed\"` session.\n\nA managed create returns before its sandbox exists; the Omnigent\nserver emits this event as the background launch pipeline advances\nso the Web UI can show live provisioning progress on the session\npage instead of a silent dead chat: sandbox provision \u2192 repository\nclone \u2192 host startup \u2192 runner connect \u2192 ready, or a terminal\nfailure with the reason.",
+        "description": "Managed-sandbox launch progress for a `host_type=\"managed\"` session.\n\nA managed create returns before its sandbox exists; the tesseract\nserver emits this event as the background launch pipeline advances\nso the Web UI can show live provisioning progress on the session\npage instead of a silent dead chat: sandbox provision \u2192 repository\nclone \u2192 host startup \u2192 runner connect \u2192 ready, or a terminal\nfailure with the reason.",
         "properties": {
           "conversation_id": {
             "description": "Session identifier, e.g. `\"conv_abc123\"`.",
@@ -7249,7 +7249,7 @@
         "type": "object"
       },
       "SessionTerminalPendingEvent": {
-        "description": "Terminal spin-up status for a terminal-first session.\n\nTwo sources emit this event:\n\n1. The Omnigent server at `POST /v1/sessions` for host-launched\n   terminal-first sessions \u2014 the earliest possible point, before\n   the runner even starts, so the spinner appears immediately on\n   session create rather than after the runner boots.\n2. The Omnigent relay when the runner's `session.terminal_pending` frame\n   arrives \u2014 covers non-host-launched sessions (e.g. server-dispatched\n   sub-agents) and carries the authoritative `pending=False` clear\n   emitted by the runner's `finally` block.\n\nTogether they allow web to show a spinner on the Terminal pill\nwhile the backend boots the terminal instead of a silent greyed-out\nbutton, and to distinguish \"still starting up\" from \"no terminal\"\n(killed or never created).",
+        "description": "Terminal spin-up status for a terminal-first session.\n\nTwo sources emit this event:\n\n1. The tesseract server at `POST /v1/sessions` for host-launched\n   terminal-first sessions \u2014 the earliest possible point, before\n   the runner even starts, so the spinner appears immediately on\n   session create rather than after the runner boots.\n2. The tesseract relay when the runner's `session.terminal_pending` frame\n   arrives \u2014 covers non-host-launched sessions (e.g. server-dispatched\n   sub-agents) and carries the authoritative `pending=False` clear\n   emitted by the runner's `finally` block.\n\nTogether they allow web to show a spinner on the Terminal pill\nwhile the backend boots the terminal instead of a silent greyed-out\nbutton, and to distinguish \"still starting up\" from \"no terminal\"\n(killed or never created).",
         "properties": {
           "conversation_id": {
             "description": "Session identifier, e.g. `\"conv_abc123\"`.",
@@ -7331,7 +7331,7 @@
         "type": "object"
       },
       "SessionTodosEvent": {
-        "description": "Todo-list update from a Claude Code terminal-backed session.\n\nEmitted after an `external_session_todos` POST from the\n`omnigent claude` transcript forwarder, which captures todo\nupdates via `PostToolUse`/`TodoWrite` hook events from Claude\nCode and forwards them to the Omnigent server. Lets web render a\nlive todo panel in the right column without polling.",
+        "description": "Todo-list update from a Claude Code terminal-backed session.\n\nEmitted after an `external_session_todos` POST from the\n`omnigent claude` transcript forwarder, which captures todo\nupdates via `PostToolUse`/`TodoWrite` hook events from Claude\nCode and forwards them to the tesseract server. Lets web render a\nlive todo panel in the right column without polling.",
         "properties": {
           "conversation_id": {
             "description": "Session identifier, e.g. `\"conv_abc123\"`.",
@@ -8055,7 +8055,7 @@
       },
       "UpdateCodexGoalStatusRequest": {
         "additionalProperties": false,
-        "description": "Request body for `PATCH /v1/sessions/{id}/codex_goal/status`.\n\nCodex app-server represents pause/resume as `thread/goal/set` status\nupdates. Omnigent exposes the two user-driven transitions explicitly:\n`\"paused\"` pauses an active goal, and `\"active\"` resumes a paused,\nblocked, or usage-limited goal.",
+        "description": "Request body for `PATCH /v1/sessions/{id}/codex_goal/status`.\n\nCodex app-server represents pause/resume as `thread/goal/set` status\nupdates. tesseract exposes the two user-driven transitions explicitly:\n`\"paused\"` pauses an active goal, and `\"active\"` resumes a paused,\nblocked, or usage-limited goal.",
         "properties": {
           "status": {
             "description": "Target Codex goal status, either `\"paused\"` or `\"active\"`.",
@@ -8723,8 +8723,8 @@
     }
   },
   "info": {
-    "description": "Omnigent is an open-source meta-harness for building and running AI agents. This is the REST API exposed by the Omnigent server: use it to create and drive **sessions**, manage **agents**, **hosts**, and **runners**, attach **contextual policies**, post **comments**, and work with session **resources** \u2014 files, terminals, and sandboxed environments.\n\n## Base URL\n\nOmnigent is self-hosted. The server binds `http://127.0.0.1:6767` by default (`omnigent server`); point the base URL at your own deployment.\n\n## Authentication\n\nThere is no API-key or bearer-token scheme. Identity is supplied by the deployment's configured auth provider (`OMNIGENT_AUTH_PROVIDER`):\n\n- **Trusted proxy header** (default) \u2014 an upstream proxy injects an identity header (`X-Forwarded-Email`, configurable). Single-user local runtimes fall back to a reserved `local` user.\n- **Session cookie** \u2014 a signed session cookie minted after an interactive OIDC or accounts login. It is named `ap_session` over HTTP (the advertised local default) and `__Host-ap_session` under HTTPS, where the `__Host-` prefix guards against subdomain cookie-tossing.\n\nAuth is configured server-side; clients send the cookie or proxy header according to your deployment.\n\n## Streaming\n\n`GET /v1/sessions/{session_id}/stream` streams Server-Sent Events (`text/event-stream`). Each event conforms to the `ServerStreamEvent` schema documented below.\n",
-    "title": "Omnigent Server",
+    "description": "tesseract is an open-source meta-harness for building and running AI agents. This is the REST API exposed by the tesseract server: use it to create and drive **sessions**, manage **agents**, **hosts**, and **runners**, attach **contextual policies**, post **comments**, and work with session **resources** \u2014 files, terminals, and sandboxed environments.\n\n## Base URL\n\nOmnigent is self-hosted. The server binds `http://127.0.0.1:6767` by default (`omnigent server`); point the base URL at your own deployment.\n\n## Authentication\n\nThere is no API-key or bearer-token scheme. Identity is supplied by the deployment's configured auth provider (`OMNIGENT_AUTH_PROVIDER`):\n\n- **Trusted proxy header** (default) \u2014 an upstream proxy injects an identity header (`X-Forwarded-Email`, configurable). Single-user local runtimes fall back to a reserved `local` user.\n- **Session cookie** \u2014 a signed session cookie minted after an interactive OIDC or accounts login. It is named `ap_session` over HTTP (the advertised local default) and `__Host-ap_session` under HTTPS, where the `__Host-` prefix guards against subdomain cookie-tossing.\n\nAuth is configured server-side; clients send the cookie or proxy header according to your deployment.\n\n## Streaming\n\n`GET /v1/sessions/{session_id}/stream` streams Server-Sent Events (`text/event-stream`). Each event conforms to the `ServerStreamEvent` schema documented below.\n",
+    "title": "tesseract Server",
     "version": "0.1.0"
   },
   "openapi": "3.2.0",
@@ -8739,7 +8739,7 @@
               "application/json": {
                 "schema": {
                   "additionalProperties": true,
-                  "title": "Response Well Known Manifest  Well Known Omnigent Json Get",
+                  "title": "Response Well Known Manifest  Well Known tesseract Json Get",
                   "type": "object"
                 }
               }
@@ -11839,7 +11839,7 @@
     },
     "/v1/sessions/{session_id}/codex_goal/status": {
       "patch": {
-        "description": "Pause or resume the current Codex app-server goal.\n\nCodex exposes this through `thread/goal/set` with only a status\nfield. The Omnigent API keeps that distinct from objective/budget\nedits so callers can implement Pause/Resume controls without\nresending the goal text.\n\n**Parameters**\n\n- `body` \u2014 Target status. `\"paused\"` pauses the goal and `\"active\"` resumes it.\n\n**Returns:** Current Codex goal state after the status update.\n\n**Raises**\n\n- `OmnigentError` \u2014 400 for non-Codex sessions, 404 for missing sessions, or 503 when no live Codex runner can update the goal.",
+        "description": "Pause or resume the current Codex app-server goal.\n\nCodex exposes this through `thread/goal/set` with only a status\nfield. The tesseract API keeps that distinct from objective/budget\nedits so callers can implement Pause/Resume controls without\nresending the goal text.\n\n**Parameters**\n\n- `body` \u2014 Target status. `\"paused\"` pauses the goal and `\"active\"` resumes it.\n\n**Returns:** Current Codex goal state after the status update.\n\n**Raises**\n\n- `OmnigentError` \u2014 400 for non-Codex sessions, 404 for missing sessions, or 503 when no live Codex runner can update the goal.",
         "operationId": "update_codex_goal_status_v1_sessions__session_id__codex_goal_status_patch",
         "parameters": [
           {
@@ -12707,7 +12707,7 @@
         "operationId": "evaluate_policy_v1_sessions__session_id__policies_evaluate_post",
         "parameters": [
           {
-            "description": "Omnigent conversation id from the URL path.",
+            "description": "tesseract conversation id from the URL path.",
             "in": "path",
             "name": "session_id",
             "required": true,
@@ -14932,7 +14932,7 @@
   },
   "servers": [
     {
-      "description": "Self-hosted Omnigent server (default local port).",
+      "description": "Self-hosted tesseract server (default local port).",
       "url": "http://127.0.0.1:6767"
     }
   ],

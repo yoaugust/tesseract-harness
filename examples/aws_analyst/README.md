@@ -1,8 +1,8 @@
 # AWS Analyst
 
-An example Omnigent agent that answers questions over **governed AWS data** through
+An example tesseract agent that answers questions over **governed AWS data** through
 the official [AWS Labs MCP servers](https://github.com/awslabs/mcp) — no custom
-connector code required. It shows how any AWS Labs MCP server plugs into Omnigent as
+connector code required. It shows how any AWS Labs MCP server plugs into tesseract as
 a `type: mcp` tool.
 
 Wired connectors (both **read-only** by default):

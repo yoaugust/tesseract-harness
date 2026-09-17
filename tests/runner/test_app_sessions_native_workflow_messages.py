@@ -1340,9 +1340,9 @@ async def test_session_creation_does_not_replay_trailing_user_for_codex_native(
     Codex-native startup must not replay a trailing user item as recovery.
 
     Native transcripts are mirrored from Codex. If a Codex turn errors before
-    producing an assistant item, Omnigent history can end with the user prompt even
+    producing an assistant item, tesseract history can end with the user prompt even
     though Codex already consumed it. Generic crash recovery would treat that
-    as an unanswered Omnigent turn and resend the same prompt when ``omnigent
+    as an unanswered tesseract turn and resend the same prompt when ``omnigent
     codex`` reattaches.
 
     :param monkeypatch: Pytest monkeypatch fixture used to bypass real
@@ -1479,7 +1479,7 @@ async def test_catch_up_scan_skips_codex_native_history_entries(
         runner_app_mod._session_histories_ref.update(saved_histories)
 
     assert server_client.get_calls == [], (
-        "Catch-up scan must skip Codex-native sessions before fetching Omnigent "
+        "Catch-up scan must skip Codex-native sessions before fetching tesseract "
         "items. A GET here means reconnect recovery can observe mirrored "
         "native transcript items and replay them."
     )

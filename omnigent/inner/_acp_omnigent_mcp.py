@@ -1,13 +1,13 @@
-"""Expose Omnigent's builtin tools to an ACP agent via ``session/new.mcpServers``.
+"""Expose tesseract's builtin tools to an ACP agent via ``session/new.mcpServers``.
 
 Shared by the ACP executors (``acp`` generic, ``goose``, ``qwen``). Reuses the
 *same* stdio ``serve-mcp`` relay the native harnesses use
 (:mod:`omnigent.harnesses.claude_native.bridge`): the ACP agent spawns
 ``python -Im omnigent.harnesses.claude_native.bridge serve-mcp --bridge-dir <dir>`` as an
-MCP server, which proxies each Omnigent tool call back through ``tool_executor``
-(→ :meth:`TurnContext.dispatch_tool` → the Omnigent server, where TOOL_CALL /
+MCP server, which proxies each tesseract tool call back through ``tool_executor``
+(→ :meth:`TurnContext.dispatch_tool` → the tesseract server, where TOOL_CALL /
 TOOL_RESULT policy is enforced). The agent keeps its own filesystem/shell tools;
-this only *adds* Omnigent's builtin tools (``sys_session_*``, ``sys_agent_*``,
+this only *adds* tesseract's builtin tools (``sys_session_*``, ``sys_agent_*``,
 ``load_skill``, ``web_fetch``, policy tools, …).
 
 The relay is a localhost HTTP server started inside the harness subprocess and
@@ -17,7 +17,7 @@ lives for the session (the agent connects to ``serve-mcp`` once at
 
 Never fatal: any setup failure (missing bridge helper, no tool executor, the
 ``OMNIGENT_ACP_MCP=0`` kill switch) yields an empty ``mcpServers`` — the agent
-just runs without Omnigent tools, exactly as before this feature.
+just runs without tesseract tools, exactly as before this feature.
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ def _to_acp_mcp_servers(config: _JsonObject) -> list[_JsonObject]:
 
 
 class OmnigentAcpMcp:
-    """Lazily-started Omnigent-tool relay + its ACP ``mcpServers`` entry.
+    """Lazily-started tesseract-tool relay + its ACP ``mcpServers`` entry.
 
     One instance per ACP executor. Call :meth:`session_new_servers` when building
     ``session/new`` params, and :meth:`close` on executor teardown.
@@ -102,7 +102,7 @@ class OmnigentAcpMcp:
         ``tools``), so a later turn can retry; caches ``[]`` when disabled or on
         failure so it isn't retried every turn.
 
-        :param tools: Omnigent tool schemas to advertise (each ``{"name", …}``).
+        :param tools: tesseract tool schemas to advertise (each ``{"name", …}``).
         :param tool_executor: The adapter-injected ``_tool_executor`` bridge, or
             ``None`` (standalone / unit tests) → no relay.
         :param loop: The running event loop (owns ``tool_executor``).
@@ -134,14 +134,14 @@ class OmnigentAcpMcp:
             )
             self._acp_servers = _to_acp_mcp_servers(build_mcp_config(self._bridge_dir))
             logger.info(
-                "acp[%s] Omnigent MCP relay ready (%d builtin tools bridged)",
+                "acp[%s] tesseract MCP relay ready (%d builtin tools bridged)",
                 self._label,
                 len(tools),
             )
             return self._acp_servers
         except Exception as exc:  # noqa: BLE001 — MCP is additive; never break a turn
             logger.warning(
-                "acp[%s] Omnigent MCP bridge setup failed; agent runs without Omnigent tools: %s",
+                "acp[%s] tesseract MCP bridge setup failed; agent runs without tesseract tools: %s",
                 self._label,
                 exc,
             )

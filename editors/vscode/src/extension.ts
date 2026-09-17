@@ -1,10 +1,10 @@
 /**
- * Omnigent VS Code extension entry point (minimal iframe-only build).
+ * tesseract VS Code extension entry point (minimal iframe-only build).
  *
  * activate() wires:
  *  - Config / local-server discovery
  *  - A minimal Sessions/home tree view (so the activity-bar icon renders) whose
- *    welcome content offers an "Open Omnigent" button
+ *    welcome content offers an "Open tesseract" button
  *  - EditorPanelController: the single editor-beside iframe surface
  *  - The omnigent.open command
  */
@@ -24,7 +24,7 @@ let controller: EditorPanelController | undefined;
 /**
  * A no-op tree provider. A `viewsContainer` only renders its activity-bar icon
  * when it has at least one registered view; this provides that view. The actual
- * call-to-action is the `viewsWelcome` "Open Omnigent" button in package.json.
+ * call-to-action is the `viewsWelcome` "Open tesseract" button in package.json.
  */
 class HomeTreeProvider implements vscode.TreeDataProvider<never> {
   getTreeItem(element: never): vscode.TreeItem {
@@ -36,7 +36,7 @@ class HomeTreeProvider implements vscode.TreeDataProvider<never> {
 }
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-  output = vscode.window.createOutputChannel("Omnigent");
+  output = vscode.window.createOutputChannel("tesseract");
   context.subscriptions.push(output);
   output.appendLine("[omnigent] activating");
 

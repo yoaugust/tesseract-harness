@@ -1,4 +1,4 @@
-"""Static terminal mascot art for Omnigent startup banners."""
+"""Static terminal mascot art for tesseract startup banners."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ MASCOT_ART_LINES: tuple[str, ...] = (
 MASCOT_ART_COL_WIDTH = max(len(line) for line in MASCOT_ART_LINES)
 
 # Truecolor hex: must stay in sync with the interactive welcome ``Panel`` border in
-# ``omnigent.cli``. Otto's starfish magenta-pink — the Omnigent brand accent.
+# ``omnigent.cli``. Otto's starfish magenta-pink — the tesseract brand accent.
 MASCOT_ART_COLOR = "#F43BA6"
 
 
@@ -44,7 +44,7 @@ def random_mascot_color() -> str:
     """
     Return the brand color used for mascot glyphs.
 
-    :returns: Hex color string for the Omnigent accent,
+    :returns: Hex color string for the tesseract accent,
         e.g. ``"#F43BA6"``.
     """
 
@@ -56,7 +56,7 @@ def random_mascot_lines() -> list[str]:
     Return the startup mascot ASCII art.
 
     The function name is kept for compatibility with the old procedural
-    mascot API, but the TUI now uses the single static Omnigent mascot.
+    mascot API, but the TUI now uses the single static tesseract mascot.
 
     :returns: The multi-row Otto-the-starfish mascot art.
     """

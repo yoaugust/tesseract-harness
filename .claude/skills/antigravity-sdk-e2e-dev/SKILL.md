@@ -1,13 +1,13 @@
 ---
 name: antigravity-sdk-e2e-dev
-description: Spin up a live local Omnigent server and exercise the Antigravity (Gemini) SDK harness end-to-end — build antigravity agents, run real turns, smoke-test, and bug-bash. Load when developing, testing, or debugging the antigravity harness (omnigent/inner/antigravity_executor.py, antigravity_harness.py, omnigent/onboarding/antigravity_auth.py) or its auth / model / tool-bridge behavior.
+description: Spin up a live local tesseract server and exercise the Antigravity (Gemini) SDK harness end-to-end — build antigravity agents, run real turns, smoke-test, and bug-bash. Load when developing, testing, or debugging the antigravity harness (omnigent/inner/antigravity_executor.py, antigravity_harness.py, omnigent/onboarding/antigravity_auth.py) or its auth / model / tool-bridge behavior.
 ---
 
 # Antigravity SDK harness: end-to-end dev & testing
 
 The `antigravity` harness drives Google's **Antigravity Python SDK**
 (`google-antigravity`, an in-process `Agent`/`Conversation`) and bridges
-Omnigent's `sys_*` tools into the SDK as `custom_tools`. It is **Gemini-native**:
+tesseract's `sys_*` tools into the SDK as `custom_tools`. It is **Gemini-native**:
 it authenticates with a Gemini / Antigravity API key (or Vertex AI) and has **no
 OpenAI-compatible gateway / Databricks path**. This skill is the proven recipe
 for running it **for real** against a live local server — not just the unit

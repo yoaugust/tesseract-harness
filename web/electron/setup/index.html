@@ -211,7 +211,7 @@
       #start-local:hover:not(:disabled) {
         background: color-mix(in srgb, var(--primary) 90%, transparent);
       }
-      /* Settings gear (top-right) — opens the Omnigent CLI modal. no-drag so it's
+      /* Settings gear (top-right) — opens the tesseract CLI modal. no-drag so it's
          clickable over the drag strip. */
       .gear-btn {
         position: fixed;
@@ -368,8 +368,8 @@
       type="button"
       id="cli-gear"
       class="gear-btn"
-      aria-label="Configure the Omnigent CLI"
-      title="Configure the Omnigent CLI"
+      aria-label="Configure the tesseract CLI"
+      title="Configure the tesseract CLI"
       hidden
     >
       <svg
@@ -391,14 +391,12 @@
       </svg>
     </button>
     <div class="card">
-      <picture>
-        <source
-          srcset="../../platform-assets/logos/omnigents-logo-reverse.svg"
-          media="(prefers-color-scheme: dark)"
-        />
-        <img class="logo" src="../../platform-assets/logos/omnigents-logo.svg" alt="Omnigents" />
-      </picture>
-      <p class="sub">Run an Omnigent server on this machine, or connect to an existing one.</p>
+      <img
+        class="logo"
+        src="../../platform-assets/logos/tesseract-logo.png"
+        alt="tesseract"
+      />
+      <p class="sub">Run an tesseract server on this machine, or connect to an existing one.</p>
       <div id="local-section">
         <!-- Always enabled: when the CLI is missing this opens the settings
              modal (install / set path) instead of failing to start. -->
@@ -428,10 +426,10 @@
       </div>
     </div>
 
-    <!-- Omnigent CLI settings, opened from the gear. Hidden by default. -->
+    <!-- tesseract CLI settings, opened from the gear. Hidden by default. -->
     <div class="modal-overlay" id="cli-modal" hidden>
-      <div class="modal" role="dialog" aria-modal="true" aria-label="Omnigent CLI settings">
-        <p class="modal-title">Omnigent CLI</p>
+      <div class="modal" role="dialog" aria-modal="true" aria-label="tesseract CLI settings">
+        <p class="modal-title">tesseract CLI</p>
         <p class="cli-note" id="cli-status"></p>
         <p class="cli-note" id="cli-managed" hidden>
           Managed by your organization. Host enrollment uses <code>isaac omni</code>.
@@ -442,13 +440,13 @@
               href="https://omnigent.ai/quickstart/install#install-omnigent"
               target="_blank"
               rel="noreferrer"
-              >Install the Omnigent CLI ↗</a
+              >Install the tesseract CLI ↗</a
             >
           </p>
           <p>Already installed it? Re-detect, or set the path below.</p>
           <button type="button" id="cli-redetect">Re-detect</button>
         </div>
-        <p id="cli-path-label">Path to the Omnigent CLI</p>
+        <p id="cli-path-label">Path to the tesseract CLI</p>
         <div class="path-row" id="cli-path-row">
           <input
             id="cli-path"
@@ -673,8 +671,8 @@
         cliStatus.textContent = installed
           ? status.version
             ? `Found: ${status.version}`
-            : "Omnigent CLI found."
-          : "Omnigent CLI not found.";
+            : "tesseract CLI found."
+          : "tesseract CLI not found.";
         cliPathInput.placeholder = status.path || "/path/to/omni";
         // Draw the eye to the (otherwise quiet) gear when the CLI is missing,
         // unless policy disabled the gear entirely.
@@ -699,7 +697,7 @@
         if (result && result.accepted) {
           cliPathNote.textContent = result.version
             ? `Found: ${result.version}`
-            : "Found the Omnigent CLI.";
+            : "Found the tesseract CLI.";
           // Clear the value so the field reverts to showing the (now-updated)
           // resolved path as its placeholder.
           cliPathInput.value = "";
@@ -707,7 +705,7 @@
           return true;
         }
         cliPathNote.className = "cli-note bad";
-        cliPathNote.textContent = "That path is not a runnable Omnigent CLI.";
+        cliPathNote.textContent = "That path is not a runnable tesseract CLI.";
         return false;
       }
 
@@ -783,7 +781,7 @@
           if (!cliInstalled) {
             if (cliCustomizationDisabled) {
               err.textContent =
-                "The Omnigent CLI was not found. CLI customization is disabled by your organization.";
+                "The tesseract CLI was not found. CLI customization is disabled by your organization.";
             } else {
               openCliModal();
             }

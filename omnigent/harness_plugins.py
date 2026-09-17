@@ -1,6 +1,6 @@
 """Dynamic harness contribution registry.
 
-Core Omnigent contributes the built-in harnesses directly. Optional community
+Core tesseract contributes the built-in harnesses directly. Optional community
 packages contribute additional harnesses through the
 ``omnigent.community.harness`` entry point group.
 """

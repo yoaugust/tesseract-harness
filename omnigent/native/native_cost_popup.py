@@ -4,7 +4,7 @@ Interactive cost-budget approval prompt for a native terminal.
 Runs *inside* a ``tmux display-popup`` overlaid on a native harness's
 TUI pane (claude-native / codex-native). It renders a cost-budget
 checkpoint to the user, reads an approve/decline answer, and POSTs the
-verdict to the Omnigent server's elicitation-resolve endpoint — the **same**
+verdict to the tesseract server's elicitation-resolve endpoint — the **same**
 endpoint the web ``ApprovalCard`` uses, so the two surfaces resolve one
 shared elicitation Future (whichever answers first wins; the other
 clears).
@@ -127,7 +127,7 @@ def _tmux_window_activity_at(socket_path: str, tmux_target: str) -> float | None
 
     tmux stamps ``window_activity`` on every byte a pane emits, making it
     direct evidence that the terminal's program is producing output —
-    independent of any Omnigent-side status pipeline. Harness-agnostic.
+    independent of any tesseract-side status pipeline. Harness-agnostic.
 
     :param socket_path: Absolute path to the tmux socket, e.g.
         ``"/tmp/.../tmux.sock"``.
@@ -196,7 +196,7 @@ def launch_cost_popup(
         ``ap_server_url`` + ``ap_auth_headers`` — the runner mints a fresh
         ``cost_popup.json`` snapshot per launch so the verdict POST carries a
         live bearer rather than the stale launch token.
-    :param session_id: Omnigent session id that owns the elicitation, e.g.
+    :param session_id: tesseract session id that owns the elicitation, e.g.
         ``"conv_abc123"``. Used in the resolve URL the popup POSTs to.
     :param elicitation_id: Outstanding elicitation correlation id, e.g.
         ``"elicit_deadbeef"``.
@@ -333,7 +333,7 @@ def launch_blocked_notice(
 
 def _read_omnigent_routing(config_file: Path) -> dict[str, object]:
     """
-    Read Omnigent base URL + auth headers from a harness routing-config file.
+    Read tesseract base URL + auth headers from a harness routing-config file.
 
     :param config_file: Path to the harness's AP-routing config, e.g.
         ``<bridge_dir>/permission_hook.json``. Expected to contain
@@ -343,18 +343,18 @@ def _read_omnigent_routing(config_file: Path) -> dict[str, object]:
         "ap_auth_headers": {"Authorization": "Bearer ..."}}``.
     :raises SystemExit: If the file is missing, unreadable, not JSON, or
         is missing a usable ``ap_server_url`` — there is no safe default
-        for "where is the Omnigent server", so this fails loud (the popup just
+        for "where is the tesseract server", so this fails loud (the popup just
         closes and the web card remains the answerable surface).
     """
     try:
         raw = json.loads(config_file.read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError, OSError) as exc:
         raise SystemExit(
-            f"cost-approval popup: cannot read Omnigent config {config_file}: {exc}"
+            f"cost-approval popup: cannot read tesseract config {config_file}: {exc}"
         ) from exc
     if not isinstance(raw, dict) or not isinstance(raw.get("ap_server_url"), str):
         raise SystemExit(
-            f"cost-approval popup: Omnigent config {config_file} has no 'ap_server_url' string"
+            f"cost-approval popup: tesseract config {config_file} has no 'ap_server_url' string"
         )
     return raw
 
@@ -428,7 +428,7 @@ def _post_verdict(
     action: str,
 ) -> None:
     """
-    POST the verdict to the Omnigent elicitation-resolve endpoint.
+    POST the verdict to the tesseract elicitation-resolve endpoint.
 
     Hits ``POST /v1/sessions/{id}/elicitations/{eid}/resolve`` with an
     MCP :class:`~omnigent.server.schemas.ElicitationResult` body — the
@@ -437,12 +437,12 @@ def _post_verdict(
     which surface answered. Resolving an already-resolved id is a
     server-side no-op, so a race with the web card is harmless.
 
-    :param ap_server_url: Omnigent server base URL, e.g.
+    :param ap_server_url: tesseract server base URL, e.g.
         ``"http://127.0.0.1:8787"``.
     :param auth_headers: Outbound auth headers for the session's owner,
         e.g. ``{"Authorization": "Bearer ..."}``. May be empty in
         single-user / local setups.
-    :param session_id: Omnigent session id that owns the elicitation, e.g.
+    :param session_id: tesseract session id that owns the elicitation, e.g.
         ``"conv_abc123"``.
     :param elicitation_id: Correlation id of the outstanding
         elicitation, e.g. ``"elicit_deadbeef"``.
@@ -486,10 +486,10 @@ def _start_resolution_watcher(
     longer in ``pending_elicitations`` it force-exits the process, which
     closes the ``tmux display-popup`` (launched with ``-E``).
 
-    :param ap_server_url: Omnigent server base URL, e.g.
+    :param ap_server_url: tesseract server base URL, e.g.
         ``"http://127.0.0.1:8787"``.
     :param auth_headers: Outbound auth headers for the session's owner.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param elicitation_id: Elicitation id to watch, e.g. ``"elicit_x"``.
     :returns: None.
     """
@@ -520,7 +520,7 @@ def main(argv: list[str] | None = None) -> int:
     """
     Entry point: prompt for a verdict and resolve the elicitation.
 
-    Reads Omnigent routing up front (so a missing/invalid config fails loud
+    Reads tesseract routing up front (so a missing/invalid config fails loud
     before prompting), starts a watcher that closes this popup if the
     approval is answered elsewhere, then prompts and POSTs the verdict.
 

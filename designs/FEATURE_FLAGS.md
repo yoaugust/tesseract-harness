@@ -1,6 +1,6 @@
 # Release feature flags
 
-Omnigent release features are deployment-wide, temporary rollout switches. They
+tesseract release features are deployment-wide, temporary rollout switches. They
 are not authorization controls or user preferences.
 
 ## Configuration

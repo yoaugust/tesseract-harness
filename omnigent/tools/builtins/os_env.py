@@ -8,7 +8,7 @@ inner :mod:`omnigent.inner.session` when the agent's
 :class:`omnigent.inner.os_env.OSEnvironment` instance so the
 same shell + cwd + sandbox is used across calls.
 
-The Omnigent path can't reuse those Session tool registrations
+The tesseract path can't reuse those Session tool registrations
 directly: its
 the harness HTTP executor
 talks to the harness subprocess via the new HTTP contract,

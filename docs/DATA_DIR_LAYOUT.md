@@ -1,6 +1,6 @@
 # Runtime data directory layout
 
-Omnigent keeps all machine-local state in a single **runtime data directory**,
+tesseract keeps all machine-local state in a single **runtime data directory**,
 `~/.omnigent` by default. This is where the runtime database, logs,
 credentials, per-harness session state, and process registries live.
 

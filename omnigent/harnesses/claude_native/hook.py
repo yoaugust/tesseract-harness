@@ -1,4 +1,4 @@
-"""Claude Code hook recorder for the native Omnigent wrapper."""
+"""Claude Code hook recorder for the native tesseract wrapper."""
 
 from __future__ import annotations
 
@@ -159,7 +159,7 @@ _PERMISSION_HELD_POLL_FLOOR_S = max(0.0, _env_float("OMNIGENT_HOOK_HELD_POLL_FLO
 # rotations that run inside the SessionStart hook to gate Claude's
 # welcome banner. Unlike the permission long-poll these are quick
 # request/reply calls, so they must NOT inherit the day-long permission
-# budget — an unresponsive Omnigent server would otherwise hang the banner.
+# budget — an unresponsive tesseract server would otherwise hang the banner.
 # On timeout the rotation returns ``None`` and the background forwarder
 # performs it from the recorded hook event instead.
 _SESSION_ROTATION_TIMEOUT_S = 70.0
@@ -233,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
     conversation_url = _conversation_url_for_active_session(bridge_dir, args.conversation_url)
     if conversation_url and payload.get("hook_event_name") == "SessionStart":
         print(
-            json.dumps({"systemMessage": (f"Open this session in Omnigent: {conversation_url}")})
+            json.dumps({"systemMessage": (f"Open this session in tesseract: {conversation_url}")})
         )
     return 0
 
@@ -280,7 +280,7 @@ def _is_claude_branch_session_start(payload: dict[str, object]) -> bool:
 
     :param payload: Hook payload read from Claude Code stdin, e.g.
         ``{"hook_event_name": "SessionStart", "source": "resume"}``.
-    :returns: ``True`` when the event should fork the active Omnigent session.
+    :returns: ``True`` when the event should fork the active tesseract session.
     """
     if payload.get("hook_event_name") != "SessionStart" or payload.get("source") != "resume":
         return False
@@ -354,15 +354,15 @@ def _payload_transcript_has_recent_branch_command(
 
 def _rotate_session_on_clear(bridge_dir: Path) -> str | None:
     """
-    Rotate Omnigent sessions synchronously for a Claude ``/clear`` SessionStart.
+    Rotate tesseract sessions synchronously for a Claude ``/clear`` SessionStart.
 
     The SessionStart hook output is what Claude renders as the welcome
-    banner. Rotating here lets the banner point at the new Omnigent session
+    banner. Rotating here lets the banner point at the new tesseract session
     before Claude prints it. Failures return ``None`` so the background
     forwarder can still perform the rotation from the recorded hook event.
 
     :param bridge_dir: Native Claude bridge directory.
-    :returns: New Omnigent session id, e.g. ``"conv_new"``, or ``None`` when
+    :returns: New tesseract session id, e.g. ``"conv_new"``, or ``None`` when
         rotation could not be completed from the hook.
     """
     old_session_id = read_active_session_id(bridge_dir)
@@ -401,7 +401,7 @@ def _rotate_session_on_clear(bridge_dir: Path) -> str | None:
                 bridge_dir,
             )
     except httpx.HTTPError as exc:
-        print(f"omnigent claude clear hook: Omnigent rotation failed: {exc}", file=sys.stderr)
+        print(f"omnigent claude clear hook: tesseract rotation failed: {exc}", file=sys.stderr)
         return None
     except RuntimeError as exc:
         print(f"omnigent claude clear hook: rotation failed: {exc}", file=sys.stderr)
@@ -411,16 +411,16 @@ def _rotate_session_on_clear(bridge_dir: Path) -> str | None:
 
 def _rotate_session_on_fork(bridge_dir: Path) -> str | None:
     """
-    Fork Omnigent sessions synchronously for a Claude ``/fork``/``/branch``.
+    Fork tesseract sessions synchronously for a Claude ``/fork``/``/branch``.
 
     Claude renders ``SessionStart`` hook output as the welcome banner
     for the new branch. Forking here lets that banner point at the
-    forked Omnigent session before Claude prints it. Failures return
+    forked tesseract session before Claude prints it. Failures return
     ``None`` so the background forwarder can perform the fork from the
     annotated hook record.
 
     :param bridge_dir: Native Claude bridge directory.
-    :returns: New Omnigent session id, e.g. ``"conv_fork"``, or ``None``
+    :returns: New tesseract session id, e.g. ``"conv_fork"``, or ``None``
         when rotation could not be completed from the hook.
     """
     old_session_id = read_active_session_id(bridge_dir)
@@ -459,7 +459,7 @@ def _rotate_session_on_fork(bridge_dir: Path) -> str | None:
                 bridge_dir,
             )
     except httpx.HTTPError as exc:
-        print(f"omnigent claude fork hook: Omnigent fork failed: {exc}", file=sys.stderr)
+        print(f"omnigent claude fork hook: tesseract fork failed: {exc}", file=sys.stderr)
         return None
     except RuntimeError as exc:
         print(f"omnigent claude fork hook: fork failed: {exc}", file=sys.stderr)
@@ -474,18 +474,18 @@ def _create_clear_replacement_session(
     bridge_dir: Path,
 ) -> str:
     """
-    Create and activate the fresh Omnigent session for ``/clear``.
+    Create and activate the fresh tesseract session for ``/clear``.
 
-    :param client: Sync Omnigent HTTP client.
-    :param ap_server_url: Omnigent server base URL without a trailing slash,
+    :param client: Sync tesseract HTTP client.
+    :param ap_server_url: tesseract server base URL without a trailing slash,
         e.g. ``"http://127.0.0.1:8787"``.
     :param old_session_id: Session being rotated away from, e.g.
         ``"conv_old"``.
     :param bridge_dir: Native Claude bridge directory.
-    :returns: New Omnigent session id, e.g. ``"conv_new"``.
-    :raises httpx.HTTPError: If Omnigent rejects session creation,
+    :returns: New tesseract session id, e.g. ``"conv_new"``.
+    :raises httpx.HTTPError: If tesseract rejects session creation,
         new-session binding, or terminal transfer.
-    :raises RuntimeError: If Omnigent returns malformed session data.
+    :raises RuntimeError: If tesseract returns malformed session data.
     """
     old_resp = client.get(f"{ap_server_url}/v1/sessions/{url_component(old_session_id)}")
     old_resp.raise_for_status()
@@ -569,18 +569,18 @@ def _create_fork_replacement_session(
     bridge_dir: Path,
 ) -> str:
     """
-    Create and activate the forked Omnigent session for Claude ``/fork``.
+    Create and activate the forked tesseract session for Claude ``/fork``.
 
-    :param client: Sync Omnigent HTTP client.
-    :param ap_server_url: Omnigent server base URL without a trailing slash,
+    :param client: Sync tesseract HTTP client.
+    :param ap_server_url: tesseract server base URL without a trailing slash,
         e.g. ``"http://127.0.0.1:8787"``.
     :param old_session_id: Session being forked away from, e.g.
         ``"conv_old"``.
     :param bridge_dir: Native Claude bridge directory.
-    :returns: New Omnigent session id, e.g. ``"conv_fork"``.
-    :raises httpx.HTTPError: If Omnigent rejects session fetch, fork,
+    :returns: New tesseract session id, e.g. ``"conv_fork"``.
+    :raises httpx.HTTPError: If tesseract rejects session fetch, fork,
         new-session binding, or terminal transfer.
-    :raises RuntimeError: If Omnigent returns malformed session data.
+    :raises RuntimeError: If tesseract returns malformed session data.
     """
     old_resp = client.get(f"{ap_server_url}/v1/sessions/{url_component(old_session_id)}")
     old_resp.raise_for_status()
@@ -641,7 +641,7 @@ def _conversation_url_for_active_session(
     fallback_url: str | None,
 ) -> str | None:
     """
-    Build the web URL for the bridge's current active Omnigent session.
+    Build the web URL for the bridge's current active tesseract session.
 
     :param bridge_dir: Native Claude bridge directory.
     :param fallback_url: Legacy URL supplied by old hook settings, e.g.
@@ -734,7 +734,7 @@ def _post_hook_with_reattach(
 
     :param url: Absolute hook endpoint URL, e.g.
         ``"http://127.0.0.1:8787/v1/sessions/conv_x/hooks/permission-request"``.
-    :param headers: Outbound auth headers for the Omnigent server.
+    :param headers: Outbound auth headers for the tesseract server.
     :param payload: Hook payload to POST. Not mutated; the re-attach id
         rides on a copy.
     :param hook_label: Diagnostic prefix for stderr lines, e.g.
@@ -795,7 +795,7 @@ def _post_hook_with_reattach(
                             headers = refreshed
                             reauthed = True
                             print(
-                                f"omnigent {hook_label} hook: Omnigent auth expired "
+                                f"omnigent {hook_label} hook: tesseract auth expired "
                                 "(login redirect/401); re-minted token and retrying",
                                 file=sys.stderr,
                             )
@@ -805,7 +805,7 @@ def _post_hook_with_reattach(
             except httpx.HTTPStatusError as exc:
                 if exc.response.status_code < 500:
                     print(
-                        f"omnigent {hook_label} hook: Omnigent request rejected: {exc}",
+                        f"omnigent {hook_label} hook: tesseract request rejected: {exc}",
                         file=sys.stderr,
                     )
                     return None
@@ -816,7 +816,7 @@ def _post_hook_with_reattach(
                 is_hard_failure = held_s < _PERMISSION_HELD_POLL_FLOOR_S
                 kind = "sick" if is_hard_failure else "held-poll severed by gateway"
                 print(
-                    f"omnigent {hook_label} hook: Omnigent request failed "
+                    f"omnigent {hook_label} hook: tesseract request failed "
                     f"({kind}); retrying: {exc}",
                     file=sys.stderr,
                 )
@@ -835,7 +835,7 @@ def _post_hook_with_reattach(
                     else ("flapping" if is_hard_failure else "held-poll severed")
                 )
                 print(
-                    f"omnigent {hook_label} hook: Omnigent request failed "
+                    f"omnigent {hook_label} hook: tesseract request failed "
                     f"({kind}); retrying: {exc}",
                     file=sys.stderr,
                 )
@@ -874,7 +874,7 @@ def _post_hook_with_reattach(
 
 def _main_permission_request(argv: list[str]) -> int:
     """
-    Forward one Claude ``PermissionRequest`` hook to the active Omnigent session.
+    Forward one Claude ``PermissionRequest`` hook to the active tesseract session.
 
     :param argv: CLI argv after the ``permission-request`` subcommand,
         e.g. ``["--bridge-dir", "/tmp/x", "--omnigent-server-url",
@@ -902,7 +902,7 @@ def _main_permission_request(argv: list[str]) -> int:
     config = read_permission_hook_config(bridge_dir)
     ap_server_url = args.omnigent_server_url or config.get("ap_server_url")
     if not isinstance(ap_server_url, str) or not ap_server_url:
-        print("omnigent claude permission hook: Omnigent server URL missing", file=sys.stderr)
+        print("omnigent claude permission hook: tesseract server URL missing", file=sys.stderr)
         return 0
     headers = _parse_headers(args.omnigent_auth_headers_json)
     if not headers:
@@ -938,7 +938,7 @@ def _main_permission_request(argv: list[str]) -> int:
 def _main_evaluate_policy(argv: list[str]) -> int:
     """
     Evaluate a Claude Code ``PreToolUse`` / ``PostToolUse`` /
-    ``UserPromptSubmit`` hook against Omnigent policies.
+    ``UserPromptSubmit`` hook against tesseract policies.
 
     Reads the hook JSON payload from stdin, converts it into the
     proto-compatible ``EvaluationRequest`` schema (``PHASE_TOOL_CALL``
@@ -978,7 +978,7 @@ def _main_evaluate_policy(argv: list[str]) -> int:
     conditions that mean the session simply is not governed — no active
     session, no ``ap_server_url``, an unparseable hook payload, or an
     ``mcp__omnigent__*`` tool already gated on the relay path — still
-    return exit 0 with no output ("no opinion") so non-Omnigent tool
+    return exit 0 with no output ("no opinion") so non-tesseract tool
     calls are never blocked.
 
     :param argv: CLI argv after the ``evaluate-policy`` subcommand,
@@ -1070,13 +1070,13 @@ def _main_evaluate_policy(argv: list[str]) -> int:
     if resp is None:
         return _fail_closed(api_error or (reauth.failure_reason if reauth else None))
     if not resp.content:
-        print("omnigent evaluate-policy hook: empty Omnigent response", file=sys.stderr)
+        print("omnigent evaluate-policy hook: empty tesseract response", file=sys.stderr)
         return _fail_closed()
 
     try:
         eval_response = resp.json()
     except json.JSONDecodeError:
-        print("omnigent evaluate-policy hook: malformed Omnigent response", file=sys.stderr)
+        print("omnigent evaluate-policy hook: malformed tesseract response", file=sys.stderr)
         return _fail_closed()
 
     hook_output = evaluation_response_to_hook_output(hook_event, eval_response)
@@ -1131,7 +1131,7 @@ def _parse_permission_args(argv: list[str]) -> argparse.Namespace:
 
 def _parse_headers(raw: str | None) -> dict[str, str]:
     """
-    Parse serialized Omnigent auth headers for the permission hook.
+    Parse serialized tesseract auth headers for the permission hook.
 
     :param raw: JSON object string, e.g.
         ``"{\"Authorization\": \"Bearer token\"}"``. ``None`` means no

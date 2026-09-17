@@ -27,7 +27,7 @@ import re
 # ``safety.py`` (which maps the same seven for ``ask_on_os_tools``).
 SHELL_TOOLS: frozenset[str] = frozenset(
     {
-        "sys_os_shell",  # Omnigent built-in (SDK harnesses)
+        "sys_os_shell",  # tesseract built-in (SDK harnesses)
         "Bash",  # Claude Code / Codex native
         "bash",  # pi / opencode native
         "Shell",  # Cursor

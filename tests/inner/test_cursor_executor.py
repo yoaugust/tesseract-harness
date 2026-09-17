@@ -522,7 +522,7 @@ async def test_custom_tools_built_from_tool_specs(monkeypatch: pytest.MonkeyPatc
 
 async def test_custom_tool_execute_bridges_to_tool_executor() -> None:
     """The SDK callback (a sync ``execute`` on a worker thread) must hop back to
-    the main loop and resolve Omnigent's async ``_tool_executor``."""
+    the main loop and resolve tesseract's async ``_tool_executor``."""
     executor = CursorExecutor(api_key="crsr_x")
     seen: dict[str, Any] = {}
 

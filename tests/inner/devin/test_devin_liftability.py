@@ -21,7 +21,7 @@ _OMNIGENT_ROOT = pathlib.Path(omnigent.__file__).parent
 _DEVIN_PKG = _OMNIGENT_ROOT / "inner" / "devin"
 
 # What a lifted ``omnigent-devin`` package could still import from core. The ACP
-# executor/wrap entries are the deliberate coupling: reusing Omnigent's ACP
+# executor/wrap entries are the deliberate coupling: reusing tesseract's ACP
 # client is why this package is ~150 lines instead of the ~750 a from-scratch
 # community ACP harness carries (cf. ``omnigent-rovo``). Everything else here is
 # the plugin contract's own public surface.

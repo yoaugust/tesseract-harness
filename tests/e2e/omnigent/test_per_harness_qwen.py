@@ -3,12 +3,12 @@
 Runs ``omnigent run hello_world.yaml --harness qwen --model
 <model> -p "..."`` as a real subprocess and snapshots structural
 observations (exit code, stderr cleanliness, assistant text
-length). Captured against current Omnigent; re-run unchanged
+length). Captured against current tesseract; re-run unchanged
 in later phases to prove the integration preserves behavior for
 the qwen harness.
 
 **What breaks if this fails:**
-- Omnigent' ``QwenExecutor`` regresses (the ``qwen --acp``
+- tesseract' ``QwenExecutor`` regresses (the ``qwen --acp``
   subprocess lifecycle, the ACP JSON-RPC 2.0 event protocol).
 - The ``qwen`` CLI binary disappears from PATH or changes its
   ``--acp`` startup contract.

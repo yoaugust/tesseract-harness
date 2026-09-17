@@ -194,7 +194,7 @@ def test_executor_factory_decodes_os_env_json(
 ) -> None:
     """``HARNESS_CLAUDE_SDK_OS_ENV`` decodes into the inner OSEnvSpec.
 
-    Omnigent serializes ``spec.executor.config["os_env"]`` via
+    tesseract serializes ``spec.executor.config["os_env"]`` via
     :func:`dataclasses.asdict` and JSON-encodes the result; the
     wrap must reconstruct an :class:`OSEnvSpec` (with nested
     sandbox spec) so :class:`ClaudeSDKExecutor` sees the same
@@ -364,7 +364,7 @@ def test_skills_filter_env_var_decodes(
     """``HARNESS_CLAUDE_SDK_SKILLS_FILTER`` decodes JSON into ``str``
     or ``list[str]``.
 
-    The env-var bridge between the Omnigent runtime and the
+    The env-var bridge between the tesseract runtime and the
     claude-sdk harness subprocess is the load-bearing surface
     for ``skills:`` plumbing — without it the harness wrap
     falls back to the constructor's ``"all"`` default and

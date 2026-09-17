@@ -10,7 +10,7 @@ injects web-UI messages into the running ``hermes`` TUI (launched by
 ``omnigent hermes`` in the session terminal) via tmux. The bridge dir is read from
 :data:`~omnigent.harnesses.hermes_native.bridge.BRIDGE_DIR_ENV_VAR` in the spawn env.
 
-Tool policies: Omnigent policies are enforced via a per-session ``HERMES_HOME``
+Tool policies: tesseract policies are enforced via a per-session ``HERMES_HOME``
 that registers a ``pre_tool_call`` shell hook (the same hook the headless
 ``hermes`` harness uses). The runner writes this before launching the TUI (see
 :func:`omnigent.harnesses.hermes_native.bridge.write_policy_hook_config`). Hermes' own

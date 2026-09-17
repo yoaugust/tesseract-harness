@@ -2,9 +2,9 @@
 
 The launcher uses the optional :mod:`blaxel` Python SDK. Blaxel sandboxes
 execute commands through their built-in sandbox API, so the provider follows
-Omnigent's exec-model host contract.
+tesseract's exec-model host contract.
 
-The standard ``blaxel/omnigent-host`` image combines the Omnigent host runtime
+The standard ``blaxel/omnigent-host`` image combines the tesseract host runtime
 with Blaxel's ``sandbox-api`` binary. Deployments can override that default with
 a fixed Blaxel image tag, like other managed sandbox providers.
 """
@@ -44,10 +44,10 @@ if TYPE_CHECKING:
 
 
 DEFAULT_BLAXEL_HOST_IMAGE: str = "blaxel/omnigent-host:latest"
-"""Public Blaxel Hub image containing the Omnigent host runtime."""
+"""Public Blaxel Hub image containing the tesseract host runtime."""
 
 HOST_IMAGE_ENV_VAR: str = "OMNIGENT_BLAXEL_HOST_IMAGE"
-"""Optional override for the Blaxel-compatible Omnigent host image."""
+"""Optional override for the Blaxel-compatible tesseract host image."""
 
 SANDBOX_ENV_PASSTHROUGH_ENV_VAR: str = "OMNIGENT_BLAXEL_SANDBOX_ENV"
 """Comma-separated server environment variable names to inject."""
@@ -656,7 +656,7 @@ class _BlaxelRemoteProcess(RemoteProcess):
 
 
 class BlaxelSandboxLauncher(ExecModelHostLauncher):
-    """Run Omnigent hosts in Blaxel sandboxes."""
+    """Run tesseract hosts in Blaxel sandboxes."""
 
     provider: ClassVar[str] = "blaxel"
 
@@ -714,7 +714,7 @@ class BlaxelSandboxLauncher(ExecModelHostLauncher):
             if name in _CONTROL_CREDENTIAL_ENV_VARS:
                 raise click.ClickException(
                     f"sandbox env passthrough must not inject Blaxel control credential {name}; "
-                    "keep provider credentials in the Omnigent server process only."
+                    "keep provider credentials in the tesseract server process only."
                 )
             value = os.environ.get(name)
             if value is None:
@@ -866,7 +866,7 @@ class BlaxelSandboxLauncher(ExecModelHostLauncher):
     def keep_alive(self, sandbox_id: str) -> None:
         """Explain that the host process owns Blaxel keep-alive."""
         del sandbox_id
-        click.echo("  → the Omnigent host process keeps the Blaxel sandbox active")
+        click.echo("  → the tesseract host process keeps the Blaxel sandbox active")
 
     @staticmethod
     def _process_identifier(process: object, fallback_name: str) -> str:
@@ -1077,7 +1077,7 @@ class BlaxelSandboxLauncher(ExecModelHostLauncher):
         status = _status_value(getattr(process, "status", ""))
         if status in _TERMINAL_PROCESS_STATUSES:
             raise click.ClickException(
-                f"Omnigent host process failed to start on Blaxel sandbox '{sandbox_id}'."
+                f"tesseract host process failed to start on Blaxel sandbox '{sandbox_id}'."
             )
         return RemoteCommandResult(returncode=0, stdout="launched\n", stderr="")
 
@@ -1150,7 +1150,7 @@ class BlaxelSandboxLauncher(ExecModelHostLauncher):
         )
 
     def wheel_install_command(self, remote_tgz_path: str) -> str:
-        """Overlay local wheels onto the prebuilt Omnigent host image."""
+        """Overlay local wheels onto the prebuilt tesseract host image."""
         return host_image_wheel_install_command(remote_tgz_path)
 
     def terminate(self, sandbox_id: str) -> None:

@@ -259,7 +259,7 @@ async def test_callable_returns_foreign_policy_result_shape() -> None:
     class _ForeignAction(enum.Enum):
         """
         Mimics ``omnigent.policies.PolicyAction`` — wire
-        values match Omnigent', but the enum class is
+        values match tesseract', but the enum class is
         distinct so ``isinstance(x, PolicyAction)`` fails.
         """
 

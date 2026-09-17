@@ -1,12 +1,12 @@
-# Omnigent on Modal
+# tesseract on Modal
 
-[Modal](https://modal.com) plays two distinct roles for Omnigent:
+[Modal](https://modal.com) plays two distinct roles for tesseract:
 
 1. **[Server deploy target](#deploying-the-server)** — run the
-   Omnigent server itself on Modal as a single always-on web server
+   tesseract server itself on Modal as a single always-on web server
    (`modal_app.py` in this directory).
 2. **[Sandbox provider](#sandboxes-for-runner-hosts)** — disposable
-   cloud machines for running Omnigent *hosts*, so sessions execute in
+   cloud machines for running tesseract *hosts*, so sessions execute in
    the cloud instead of on your laptop.
 
 The two are independent: you can deploy the server anywhere and still
@@ -14,7 +14,7 @@ use Modal sandboxes for hosts, or vice versa.
 
 ## Deploying the server
 
-Run the Omnigent server on Modal as a single always-on web server.
+Run the tesseract server on Modal as a single always-on web server.
 `modal_app.py` pulls the standard server image and launches the same
 Docker entrypoint every other platform uses; Modal provides the HTTPS
 URL, log streaming, and a persistent Volume for the artifact store —
@@ -134,7 +134,7 @@ a lightly loaded server. Rates: [modal.com/pricing](https://modal.com/pricing).
 ## Sandboxes for runner hosts
 
 Modal sandboxes give you disposable cloud machines for running
-Omnigent hosts — no laptop tethered to a session, no VM to babysit.
+tesseract hosts — no laptop tethered to a session, no VM to babysit.
 There are two ways to use them:
 
 1. **CLI-launched sandboxes** — you provision a sandbox from your
@@ -156,7 +156,7 @@ pip install 'omnigent[modal]'   # installs the modal SDK extra
 modal token new                  # one-time browser auth with Modal
 ```
 
-`modal token new` writes `~/.modal.toml`. Anywhere Omnigent needs to
+`modal token new` writes `~/.modal.toml`. Anywhere tesseract needs to
 talk to Modal (your laptop for the CLI flow, the server for the managed
 flow), Modal credentials must be available — either that file or the
 `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET` environment variables.
@@ -165,7 +165,7 @@ flow), Modal credentials must be available — either that file or the
 
 Sandboxes boot from `ghcr.io/omnigent-ai/omnigent-host:latest`, an image
 published by CI from the `host` target of
-[`deploy/docker/Dockerfile`](../docker/Dockerfile) with Omnigent
+[`deploy/docker/Dockerfile`](../docker/Dockerfile) with tesseract
 and its dependencies preinstalled — including the coding-harness CLIs
 (`claude`, `codex`, `pi`, `kiro-cli`), so agents on any harness run without an
 in-sandbox install.
@@ -179,7 +179,7 @@ docker build -f deploy/docker/Dockerfile --target host \
 docker push docker.io/<you>/omnigent-host:latest
 ```
 
-Then point Omnigent at it — `OMNIGENT_MODAL_HOST_IMAGE` for the CLI
+Then point tesseract at it — `OMNIGENT_MODAL_HOST_IMAGE` for the CLI
 flow, or `sandbox.modal.image` in the server config for the managed
 flow (see below). For private registries, set
 `OMNIGENT_MODAL_REGISTRY_SECRET` to the name of a
@@ -355,7 +355,7 @@ like [OpenRouter](https://openrouter.ai) and
 Common setups:
 
 - **Claude with an API key** — put `OMNIGENT_ANTHROPIC_API_KEY` in the secret.
-  Omnigent resolves it into Claude Code's `apiKeyHelper`; do not also set
+  tesseract resolves it into Claude Code's `apiKeyHelper`; do not also set
   `ANTHROPIC_API_KEY` unless you are okay with Claude Code detecting the raw
   custom key env var.
 - **Claude with a subscription** — run `claude setup-token` on your own

@@ -42,7 +42,7 @@ def conversation_store(db_uri: str) -> SqlAlchemyConversationStore:
 def split_db_conversation_store(tmp_path: Path) -> SqlAlchemyConversationStore:
     """
     :returns: A SqlAlchemyConversationStore with two separate SQLite databases
-        (Omnigent DB + AP/conversations DB) to exercise split-DB routing.
+        (tesseract DB + AP/conversations DB) to exercise split-DB routing.
     """
     omnigent_uri = f"sqlite:///{tmp_path}/omnigent.db"
     conv_uri = f"sqlite:///{tmp_path}/conversations.db"

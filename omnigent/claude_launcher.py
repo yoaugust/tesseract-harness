@@ -31,13 +31,13 @@ interface and registers it as a setuptools entry point in the
             return "isaac", ["claude", "--", *args]
 
 Any caller attaches a plugin by ``pip install``-ing such a package into the
-environment the runner runs in -- no Omnigent code change, no in-tree import
+environment the runner runs in -- no tesseract code change, no in-tree import
 path. At launch time, the ``OMNIGENT_CLAUDE_LAUNCHER`` environment variable
 selects *which* registered launcher to use, by entry-point name (e.g.
 ``OMNIGENT_CLAUDE_LAUNCHER=isaac``). Unset -> default launch. The selected
 launcher receives the fully-augmented argv (MCP config, hook settings and skill
 flags injected by :func:`augment_claude_args`), so a launcher that merely wraps
-the command preserves the Omnigent bridge unchanged.
+the command preserves the tesseract bridge unchanged.
 
 Selection is per-process via the environment so the runner (which spawns the
 terminal on managed hosts) and the local CLI each opt in independently; the
@@ -66,7 +66,7 @@ class ClaudeLauncher(abc.ABC):
 
     A plugin subclasses this and registers the subclass as an entry point in the
     :data:`CLAUDE_LAUNCHER_ENTRY_POINT_GROUP` group (see the module docstring).
-    Omnigent instantiates the subclass (no-arg constructor) and calls
+    tesseract instantiates the subclass (no-arg constructor) and calls
     :meth:`launch` to decide the final spawn command.
     """
 
@@ -75,13 +75,13 @@ class ClaudeLauncher(abc.ABC):
         """
         Return the ``(command, args)`` to actually spawn for this Claude launch.
 
-        :param command: Default terminal command Omnigent would otherwise spawn,
+        :param command: Default terminal command tesseract would otherwise spawn,
             e.g. ``"claude"``.
         :param args: Fully-augmented Claude CLI args (MCP config, hook settings
             and skill flags already injected by :func:`augment_claude_args`).
             Forward these unchanged (e.g. after a ``--`` separator) to preserve
-            the Omnigent bridge.
-        :returns: The ``(command, args)`` Omnigent should spawn instead.
+            the tesseract bridge.
+        :returns: The ``(command, args)`` tesseract should spawn instead.
         """
         raise NotImplementedError
 

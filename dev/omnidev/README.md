@@ -1,6 +1,6 @@
 # omnidev
 
-Dev tooling for Omnigent, in one binary with three surfaces:
+Dev tooling for tesseract, in one binary with three surfaces:
 
 1. A per-repo dev **pod supervisor** (bare `omnidev`) — the default.
 2. **Install management** (`omnidev install`/`update`/`check`) — install
@@ -66,11 +66,11 @@ continues and the combined log tells you to open that URL manually.
 
 ## Isolation
 
-Only Omnigent's own state is isolated per pod — enough that concurrent pods
+Only tesseract's own state is isolated per pod — enough that concurrent pods
 never share a database, server pidfile, or `config.yaml` — via
 `OMNIGENT_DATA_DIR`, `OMNIGENT_DATABASE_URI`, `OMNIGENT_URL`, and
 `OMNIGENT_CONFIG_HOME`. Everything else (your real `HOME`, credentials, and
-uv/pnpm caches) is inherited, because the agents Omnigent runs need it. This is
+uv/pnpm caches) is inherited, because the agents tesseract runs need it. This is
 deliberately lighter than the hermetic `scripts/backend-smoke.sh` sandbox,
 which repoints `HOME`/`XDG_*` to touch nothing real.
 
@@ -236,7 +236,7 @@ to silence omnigent's own separate notice.
 
 # External process profiles
 
-Integrations that embed the Omnigent server in another repository can reuse
+Integrations that embed the tesseract server in another repository can reuse
 the supervisor without copying it:
 
 ```bash

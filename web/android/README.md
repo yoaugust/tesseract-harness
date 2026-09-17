@@ -1,6 +1,6 @@
-# Omnigent Android
+# tesseract Android
 
-Thin Kotlin/`WebView` shell for Omnigent. Like the Electron app and the iOS
+Thin Kotlin/`WebView` shell for tesseract. Like the Electron app and the iOS
 shell (`web/ios`), this target loads the server-served web UI instead of
 shipping a duplicate copy of the SPA. It is a native _shell_, not a rewrite.
 
@@ -58,7 +58,7 @@ when the bridge methods are absent, so the Android shell omits them for now:
 ## Databricks workspaces
 
 A Databricks workspace serves its own landing page at the root and mounts the
-Omnigent SPA at `/omnigent`, so the shell rewrites a **bare** workspace root to
+tesseract SPA at `/omnigent`, so the shell rewrites a **bare** workspace root to
 that mount (`Origins.databricksWorkspaceUiUrl`):
 
 - `https://dbc-a5d4177a-49dc.cloud.databricks.com` →
@@ -128,7 +128,7 @@ adb install -r TestDPC_<ver>.apk      # github.com/googlesamples/android-testdpc
 adb shell dpm set-device-owner com.afwsamples.testdpc/.DeviceAdminReceiver
 ```
 
-Then Test DPC → _Managed configurations_ → pick Omnigent → **Load manifest
+Then Test DPC → _Managed configurations_ → pick tesseract → **Load manifest
 restrictions** (this renders our schema, confirming the manifest wiring) → set
 `serverUrls` → **Save**. Verify the policy actually landed with:
 

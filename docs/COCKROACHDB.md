@@ -1,13 +1,13 @@
 # CockroachDB
 
-Omnigent supports CockroachDB through its SQLAlchemy dialect. Install the
+tesseract supports CockroachDB through its SQLAlchemy dialect. Install the
 optional dependencies before configuring a CRDB connection:
 
 ```bash
 pip install 'omnigent[cockroachdb]'
 ```
 
-Use either URI form. Omnigent normalizes the short form to psycopg 3:
+Use either URI form. tesseract normalizes the short form to psycopg 3:
 
 ```text
 cockroachdb://user:password@host:26257/database
@@ -16,40 +16,40 @@ cockroachdb+psycopg://user:password@host:26257/database
 
 ## Compatibility
 
-Omnigent requires CockroachDB v23.2.28 or newer. CI tests the minimum
+tesseract requires CockroachDB v23.2.28 or newer. CI tests the minimum
 supported version (v23.2.28); the full matrix — v23.2.28, v24.3.20,
 v25.2.10, and v25.4.5 — runs via the local compatibility suite
 (`just crdb-test`, see [Persistent local matrix](#persistent-local-matrix)).
 
 CockroachDB v23.2 provides `READ COMMITTED` as an opt-in preview. Enable it
-before starting Omnigent:
+before starting tesseract:
 
 ```sql
 SET CLUSTER SETTING sql.txn.read_committed_isolation.enabled = true;
 ```
 
-Omnigent checks the effective isolation level at startup and fails with an
+tesseract checks the effective isolation level at startup and fails with an
 actionable error instead of silently running v23.2 transactions as
 `SERIALIZABLE`.
 
-The engine uses `READ COMMITTED`. Omnigent preserves explicit row locks and
+The engine uses `READ COMMITTED`. tesseract preserves explicit row locks and
 can replay database-only transaction callbacks after SQLSTATE `40001` errors.
 It never retries constraint failures or external side effects. Operations
-that span the conversation database and the Omnigent metadata database run as
+that span the conversation database and the tesseract metadata database run as
 two independent transactions (as on every backend), so each database stays
 internally consistent but a retry exhaustion between the two phases can leave
 the first commit in place without the second.
 
-An empty CRDB database is required for the first startup. Omnigent creates the
+An empty CRDB database is required for the first startup. tesseract creates the
 current schema directly and stamps the current Alembic revision. It does not
 run the historical PostgreSQL migration chain. A database left at a partial
 revision by an earlier migration attempt is unsupported and must be replaced
 with a new empty database. A first bootstrap interrupted mid-run is repaired
-automatically when the same Omnigent version restarts; if Omnigent is upgraded
+automatically when the same tesseract version restarts; if tesseract is upgraded
 before that repair completes, startup fails and the database must be replaced
 with a new empty one.
 
-Existing CRDB databases created by a supported Omnigent release use normal
+Existing CRDB databases created by a supported tesseract release use normal
 Alembic upgrades for subsequent migrations.
 
 ## Connection pool

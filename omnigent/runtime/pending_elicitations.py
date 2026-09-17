@@ -1,11 +1,11 @@
 """In-process index of currently outstanding elicitation requests.
 
-Lets the Omnigent server answer "which sessions have a pending approval
+Lets the tesseract server answer "which sessions have a pending approval
 prompt?" without scanning per-session state or persisting elicitation
 rows. The index is the *sidebar's* view of pending state — it lives
 alongside the underlying parked awaiter (a runner-side Future or a
 server-side ``_harness_elicitation_registry`` Future) and shares its
-lifecycle: when the Omnigent process dies, both the index and every parked
+lifecycle: when the tesseract process dies, both the index and every parked
 awaiter die together, so the index cannot diverge from the underlying
 state into "phantom" pending rows.
 
@@ -28,11 +28,11 @@ otherwise render as nothing.
 
 Limitations:
 
-* In-memory only; multi-replica Omnigent deploys would each see their own
+* In-memory only; multi-replica tesseract deploys would each see their own
   slice. This matches the existing ``_harness_elicitation_registry``
   constraint — when a shared backplane is added for the registry,
   this index should be wired through the same backplane.
-* Events emitted before the Omnigent server starts (e.g. between turns,
+* Events emitted before the tesseract server starts (e.g. between turns,
   with the session_stream having dropped them) are not tracked,
   same as every other AP-server-side in-memory state.
 """
@@ -121,7 +121,7 @@ def record_publish(conversation_id: str, event: dict[str, Any]) -> None:
       its own ``_pending_approvals`` Future timed out or was
       cancelled without a UI verdict; same effect as
       :func:`resolve` but routed through the SSE chokepoint so the
-      Omnigent server picks it up via ``_relay_runner_stream`` without
+      tesseract server picks it up via ``_relay_runner_stream`` without
       a separate out-of-band signal.
 
     Idempotent on both event types — adds use a dict assignment

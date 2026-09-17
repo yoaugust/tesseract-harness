@@ -171,7 +171,7 @@ async def conv_store(tmp_path: Path) -> AsyncIterator[SqlAlchemyConversationStor
     Per-test SQLite-backed conversation store.
 
     A real store is used (not a mock) so the notifier exercises the
-    same ``get_conversation`` path the Omnigent server uses; a test-only
+    same ``get_conversation`` path the tesseract server uses; a test-only
     in-memory shim could mask a regression in the parent-walk lookup.
 
     :param tmp_path: Pytest-provided unique temp directory.

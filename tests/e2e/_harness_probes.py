@@ -114,7 +114,7 @@ HARNESS_PROBES: list[HarnessProbe] = [
         # natural fit per CLAUDE.md (``databricks-gpt-5-4-mini``
         # is the OpenAI-style Databricks model). Registry key is
         # ``openai-agents`` (not ``-sdk``) to match the
-        # Omnigent YAML ``executor.harness`` spelling.
+        # tesseract YAML ``executor.harness`` spelling.
         model=resolve_model("databricks-gpt-5-4-mini", key="probe:openai-agents"),
         env_prefix="HARNESS_OPENAI_AGENTS_",
         marker="OPENAI_AGENTS_E2E_OK",

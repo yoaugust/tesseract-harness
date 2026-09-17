@@ -12,7 +12,7 @@ Platform constraints that shape this launcher:
 - **24-hour lifetime.** Modal caps sandbox lifetime at 24 hours;
   :meth:`ModalSandboxLauncher.provision` requests that maximum and
   :meth:`ModalSandboxLauncher.keep_alive` can only restate the cap — a
-  Modal-hosted Omnigent host must be re-created daily.
+  Modal-hosted tesseract host must be re-created daily.
 - **No inbound port forwarding.** Modal tunnels expose sandbox ports to
   the public internet but provide no local→sandbox path, so the
   in-sandbox App OAuth flow (which forwards the browser's callback port)
@@ -87,7 +87,7 @@ the WORKLOAD's environment. The server's managed-host config
 (``sandbox.modal.secrets``) takes precedence when set."""
 
 # Resources for the sandbox. Modal's defaults (0.125 CPU cores) starve
-# the Omnigent host's runner + harness processes; 2 vCPU / 4 GiB is
+# the tesseract host's runner + harness processes; 2 vCPU / 4 GiB is
 # enough for a host running one interactive session.
 _SANDBOX_CPU: float = 2.0
 _SANDBOX_MEMORY_MIB: int = 4096
@@ -158,7 +158,7 @@ def _build_sandbox_image(image_ref: str | None = None) -> modal.Image:
     """
     Resolve the sandbox image definition.
 
-    Pulls the prebaked Omnigent host image — the full omnigent
+    Pulls the prebaked tesseract host image — the full omnigent
     install plus the tools a host needs at runtime: ``git``
     (workspaces), ``tmux`` (terminal sessions spawned by native
     harnesses), ``curl`` + CA certificates. Booting from a prebaked
@@ -359,7 +359,7 @@ class ModalSandboxLauncher(SandboxLauncher):
 
     def provision(self, name: str) -> str:
         """
-        Create a new Modal sandbox under the shared Omnigent App.
+        Create a new Modal sandbox under the shared tesseract App.
 
         The sandbox is created at Modal's maximum lifetime (24 hours)
         with a ``sleep infinity`` entrypoint so it stays up for the full

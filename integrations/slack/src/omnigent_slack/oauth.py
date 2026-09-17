@@ -1,6 +1,6 @@
-"""Client side of the Omnigent browserless-login flows.
+"""Client side of the tesseract browserless-login flows.
 
-A Slack user authorizes this bot to act as their own Omnigent identity
+A Slack user authorizes this bot to act as their own tesseract identity
 without any credential passing through Slack. The bot relays a login
 link into the setup modal and polls in the background until the user
 finishes in their browser. Two server auth modes are supported, detected
@@ -49,7 +49,7 @@ def _secret_headers(client_secret: str | None) -> dict[str, str]:
 
 
 class AuthMode(enum.Enum):
-    """The Omnigent server's auth posture, as probed from ``/v1/me``."""
+    """The tesseract server's auth posture, as probed from ``/v1/me``."""
 
     ACCOUNTS = "accounts"
     OIDC = "oidc"
@@ -151,7 +151,7 @@ async def probe_auth_mode(server_url: str, http_timeout: float = 10.0) -> AuthMo
     accounts, ``401`` with ``login_url == "/auth/login"`` (or anything
     else) → oidc. A transport failure raises :class:`OAuthError`.
 
-    :param server_url: Base URL of the Omnigent server.
+    :param server_url: Base URL of the tesseract server.
     :returns: The detected :class:`AuthMode`.
     """
     async with httpx.AsyncClient(
@@ -357,7 +357,7 @@ async def _poll_cli_ticket(
 
 
 class DeviceFlowClient:
-    """Talks to a single Omnigent server's ``/oauth/*`` endpoints.
+    """Talks to a single tesseract server's ``/oauth/*`` endpoints.
 
     Used for token refresh and revocation of device-grant tokens (the
     login start/poll now lives in :func:`start_login`). Sends the optional

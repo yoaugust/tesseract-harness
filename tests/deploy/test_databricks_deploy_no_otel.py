@@ -1,6 +1,6 @@
 """``--no-otel`` must resolve to a genuinely uninstrumented deploy target.
 
-A workspace with no OTel collector and no UC OTel tables cannot deploy Omnigent
+A workspace with no OTel collector and no UC OTel tables cannot deploy tesseract
 to Databricks Apps cleanly: the app runs under ``opentelemetry-instrument`` with
 ``OTEL_TRACES_SAMPLER=always_on``, so every span export fails
 ``DEADLINE_EXCEEDED`` against ``localhost:4317``, and the platform export block

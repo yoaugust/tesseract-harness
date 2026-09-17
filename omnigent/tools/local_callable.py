@@ -6,7 +6,7 @@ tools as :class:`omnigent.spec.types.LocalToolInfo` entries
 with ``language == "omnigent-python-callable"`` and ``path``
 holding a dotted-import string (e.g.
 ``"examples._shared.tool_functions.calculate"``). These are
-distinct from native Omnigent local tools, which live as
+distinct from native tesseract local tools, which live as
 ``tools/python/*.py`` files in the agent bundle and execute via
 :class:`omnigent.tools.local.LocalPythonTool` in a subprocess.
 
@@ -242,7 +242,7 @@ def load_local_callable_tools(
         the agent spec.
     :returns: One :class:`LocalCallableTool` per omnigent-style
         entry. Empty list when none are present (which is the
-        case for native Omnigent specs).
+        case for native tesseract specs).
     """
     result: list[LocalCallableTool] = []
     for info in local_tools:

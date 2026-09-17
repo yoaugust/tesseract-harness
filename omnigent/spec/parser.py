@@ -252,7 +252,7 @@ def parse(root: Path, *, expand_env: bool = True) -> AgentSpec:
     # builtins (``sys_call_async``, ``sys_read_inbox``,
     # ``sys_cancel_async``). Defaults to True to match
     # ``omnigent/inner/datamodel.py::AgentDef.async_enabled`` — the
-    # same YAML must produce the same tool surface under Omnigent mode and
+    # same YAML must produce the same tool surface under tesseract mode and
     # the legacy inner stack. Agents that want to suppress the surface
     # declare ``async: false`` explicitly. ``bool()`` accepts YAML
     # truthy/falsy values (``true`` / ``True`` / ``yes`` /
@@ -784,7 +784,7 @@ def _parse_os_env(
     """
     Parse the top-level ``os_env:`` block into an :class:`OSEnvSpec`.
 
-    Native Omnigent YAML mirrors the omnigent YAML shape so users
+    Native tesseract YAML mirrors the omnigent YAML shape so users
     moving from one to the other don't have to relearn the
     config surface — a top-level ``os_env:`` mapping with
     ``type``, ``cwd``, ``sandbox: {...}``, ``fork``, and
@@ -846,7 +846,7 @@ def _parse_terminals(
     Parse the top-level ``terminals:`` block into a map of
     :class:`TerminalEnvSpec`.
 
-    Native Omnigent YAML mirrors the omnigent-compat ``terminals:`` shape — a
+    Native tesseract YAML mirrors the omnigent-compat ``terminals:`` shape — a
     mapping of ``terminal_name`` → ``{command, args, env, os_env,
     allow_cwd_override, allow_sandbox_override, scrollback, ...}`` — so a
     bundle agent registers the ``sys_terminal_*`` toolkit exactly like a

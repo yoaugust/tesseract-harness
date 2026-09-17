@@ -10,7 +10,7 @@ broker bearer in ``JCODE_DBX_TOKEN``.
 
 Writing a session-private config (rather than a shared, same-user-writable
 ``~/.jcode/config.toml`` that jcode re-reads at daemon start) keeps the bearer's
-destination under Omnigent's control — a co-resident process can't repoint a
+destination under tesseract's control — a co-resident process can't repoint a
 well-known config to exfiltrate the token. Mirrors opencode-native's session-private
 config. A complete no-op off the managed-connect path (no broker sidecar), so laptops
 and non-connected sandboxes are untouched.
@@ -93,7 +93,7 @@ def _session_jcode_home(session_id: str | None) -> Path:
 def _write_session_config(jcode_home: Path, *, base_url: str, model: str) -> None:
     """Write the session-private ``config.toml`` pinning jcode's ``dbx`` provider.
 
-    Omnigent owns this file (0600, under the private ``JCODE_HOME``), so the bearer's
+    tesseract owns this file (0600, under the private ``JCODE_HOME``), so the bearer's
     destination — ``base_url`` — is set here by construction (the pinned workspace's
     openai gateway) rather than read from a shared, same-user-writable file at daemon
     start. The bearer itself is never written; only the env-var *name*
@@ -135,7 +135,7 @@ def connect_jcode_gateway_env(*, session_id: str | None = None) -> dict[str, str
     its ``JCODE_RUNTIME_DIR`` (per-session daemon socket), and a freshly-minted
     ``JCODE_DBX_TOKEN`` bearer.
 
-    **Origin safety:** Omnigent writes the session-private config, so ``base_url`` is
+    **Origin safety:** tesseract writes the session-private config, so ``base_url`` is
     the pinned workspace by construction — no shared mutable file decides where the
     bearer goes. **Reconnect guard:** withholds when the broker's workspace no longer
     matches the sidecar pin.

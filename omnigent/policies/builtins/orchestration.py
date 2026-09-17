@@ -581,10 +581,10 @@ def worktree_guard(
     :returns: An evaluator ``fn(event, config)`` returning a V0 decision.
     """
 
-    # Match Omnigent built-in OS write/edit, every Claude/Codex native write
+    # Match tesseract built-in OS write/edit, every Claude/Codex native write
     # tool (surfaced via the PreToolUse hook), and Pi's native lowercase
     # write/edit (surfaced via the pi ``tool_call`` hook). Pi uses the same
-    # ``path`` argument key as the Omnigent tools, so no Pi-specific arg
+    # ``path`` argument key as the tesseract tools, so no Pi-specific arg
     # branch is needed below.
     _write_tools = NATIVE_WRITE_TOOLS | {"sys_os_write", "sys_os_edit", "write", "edit"}
 
@@ -600,7 +600,7 @@ def worktree_guard(
         args = _tool_call(event, _write_tools)
         if args is None:
             return _ALLOW
-        # Omnigent tools use ``path``; Claude native tools use ``file_path``,
+        # tesseract tools use ``path``; Claude native tools use ``file_path``,
         # except NotebookEdit which uses ``notebook_path``. Check EVERY
         # path-like argument present, not the first truthy one: a decoy
         # in-tree ``path`` alongside an escaping ``notebook_path`` (or
@@ -665,7 +665,7 @@ def read_only_os(
         write/edit tool call, ALLOW otherwise.
     """
 
-    # Match Omnigent built-in OS write/edit, every Claude/Codex native write
+    # Match tesseract built-in OS write/edit, every Claude/Codex native write
     # tool, and Pi's native lowercase write/edit — the same tool set
     # worktree_guard gates, so the two write policies stay in lockstep.
     write_tools = NATIVE_WRITE_TOOLS | {"sys_os_write", "sys_os_edit", "write", "edit"}
@@ -694,7 +694,7 @@ POLICY_REGISTRY: list[dict[str, object]] = [
         "name": "Block Dangerous Shell Commands",
         "description": "Allows safe shell commands, applies a configurable ASK or DENY action "
         "to recoverable risky commands, and always denies catastrophic commands such as "
-        "force-push or rm -rf /. Supports Omnigent, Claude/Codex, Cursor, Pi, Hermes, and Goose.",
+        "force-push or rm -rf /. Supports tesseract, Claude/Codex, Cursor, Pi, Hermes, and Goose.",
         "params_schema": {
             "type": "object",
             "properties": {

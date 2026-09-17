@@ -1,4 +1,4 @@
-"""OpenTelemetry tracing integration for Omnigent.
+"""OpenTelemetry tracing integration for tesseract.
 
 Emits structured traces for every agent turn, tool call, sub-agent
 invocation, and policy evaluation so the full execution tree is visible
@@ -86,7 +86,7 @@ _tracing_enabled: bool = False
 
 
 def enable_tracing() -> None:
-    """Enable OTel tracing globally for all Omnigent sessions."""
+    """Enable OTel tracing globally for all tesseract sessions."""
     global _tracing_enabled
     _tracing_enabled = True
 
@@ -132,7 +132,7 @@ class TracingContext:
         # parent span from parent context (for sub-agents)
         self._inherited_parent: Span | None = None
         self.enabled: bool = True
-        # Omnigent session (conversation) id, stamped as ``session.id`` on
+        # tesseract session (conversation) id, stamped as ``session.id`` on
         # every span this context creates. An agent turn can root its own
         # trace (the response-id-seeded root, decoupled from the request
         # trace), so this attribute is what keeps those spans groupable by

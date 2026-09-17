@@ -56,7 +56,7 @@ class _PendingPermission:
 
 
 def kiro_permission_elicitation_id(session_id: str, request_id: str) -> str:
-    """Return the deterministic Omnigent elicitation id for a Kiro request."""
+    """Return the deterministic tesseract elicitation id for a Kiro request."""
     digest = hashlib.sha256(request_id.encode("utf-8")).hexdigest()[:16]
     return f"elicit_kiro_{session_id}_{digest}"
 

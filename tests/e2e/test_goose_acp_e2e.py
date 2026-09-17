@@ -4,7 +4,7 @@ The chat-first sibling of ``test_goose_native_cli_e2e``. The ``goose`` harness
 runs Block's Goose over the Agent Client Protocol (``goose acp``):
 :class:`omnigent.inner.goose_executor.GooseExecutor` spawns the subprocess,
 streams ``agent_message_chunk`` updates as chat text, and routes Goose's mid-turn
-``session/request_permission`` through Omnigent's TOOL_CALL policy + human-consent
+``session/request_permission`` through tesseract's TOOL_CALL policy + human-consent
 elicitation (the same bridges the runner's ExecutorAdapter installs). This test
 drives the executor directly against a *real* ``goose acp`` process and asserts
 the full round-trip: streaming text, a tool-call permission surfaced to the

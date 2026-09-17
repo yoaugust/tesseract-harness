@@ -1,6 +1,6 @@
 name: Issue Triage
 
-# AI-powered triage for new issues via Omnigent.
+# AI-powered triage for new issues via tesseract.
 # Implements Stage 2 of the issue triage proposal (designs/issue-triage-proposal.md).
 #
 # Architecture (prompt injection resistant):
@@ -264,7 +264,7 @@ jobs:
           "
           echo "DATABRICKS_BEARER=${LLM_API_KEY}" >> "$GITHUB_ENV"
 
-      - name: Write Omnigent provider config
+      - name: Write tesseract provider config
         if: steps.creds.outputs.available == 'true'
         env:
           GATEWAY_BASE_URL: ${{ secrets.GATEWAY_BASE_URL }}

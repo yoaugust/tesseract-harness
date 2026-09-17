@@ -54,8 +54,8 @@ OMNIGENT_INTERNAL_WS_ORIGIN = "omnigent://internal"
 RUNNER_ISOLATE_SESSION_ENV_VAR = "OMNIGENT_RUNNER_ISOLATE_SESSION"
 
 # Marker env var stamped into every agent-facing environment so any
-# process launched inside an Omnigent agent session can detect it is
-# running under Omnigent. This is the analog of Claude Code's
+# process launched inside an tesseract agent session can detect it is
+# running under tesseract. This is the analog of Claude Code's
 # ``CLAUDE_CODE`` / ``CLAUDECODE`` and Codex's ``CODEX``. It is set once
 # on the runner process (see :mod:`omnigent.runner._entry`) and inherited
 # by harness workers, terminals, and the in-process SDK harnesses. The

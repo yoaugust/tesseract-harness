@@ -1,4 +1,4 @@
-"""Unit tests for the Omnigent load test's pure helpers.
+"""Unit tests for the tesseract load test's pure helpers.
 
 Deterministic, no stack boot / no network — the fast regression net for the
 ``dev/loadtest/`` tooling. A full boot-a-stack e2e (server + mock LLM + real

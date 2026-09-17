@@ -1,4 +1,4 @@
-"""Omnigent user-journey benchmark runner.
+"""tesseract user-journey benchmark runner.
 
 Boots a real ``omnigent server`` against a SQLite DB (no runner, no LLM),
 drives the selected HTTP journeys under load, prints per-journey latency /

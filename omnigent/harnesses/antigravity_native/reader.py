@@ -4,7 +4,7 @@ This is the read-path driver that replaced the retired transcript-tail forwarder
 (``omnigent.antigravity_native_forwarder``, deleted in the Task 12 cutover).
 Instead of tailing agy's plaintext JSONL transcript, it polls agy's connect-RPC
 ``GetCascadeTrajectorySteps`` surface for trajectory steps, maps each new step to
-Omnigent conversation items, POSTs them, emits ``external_session_status`` edges
+tesseract conversation items, POSTs them, emits ``external_session_status`` edges
 on turn transitions, and hands ``WAITING`` steps (questions / permission asks) to
 the Task 8 interaction bridge through an injected callback.
 
@@ -262,7 +262,7 @@ _AGY_ELICITATION_CONNECT_TIMEOUT_SECONDS = 30.0
 _AGY_ELICITATION_RETRY_INITIAL_BACKOFF_SECONDS = 1.0
 _AGY_ELICITATION_RETRY_MAX_BACKOFF_SECONDS = 30.0
 
-# Omnigent client timeout for the reader's event-POST + telemetry traffic (NOT the
+# tesseract client timeout for the reader's event-POST + telemetry traffic (NOT the
 # elicitation long-poll, which sets its own per-request timeout above).
 _READER_CLIENT_TIMEOUT_SECONDS = 30.0
 
@@ -729,8 +729,8 @@ async def _post_event(
     """
     POST one mapped event with the shared bounded-retry delivery loop.
 
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param event: The mapped event to deliver.
     :returns: None. Delivery failures are logged inside the retry loop; an
         ambiguous conversation-item failure is intentionally not retried (a
@@ -857,7 +857,7 @@ async def _watch_for_rotation(
     reader body down, rotates the session, and starts a fresh detector on rebind).
 
     ``skip_cascade_ids`` are cascades a PRIOR rotation attempt already failed to
-    bind (e.g. the Omnigent session-create errored); ignoring them here is what
+    bind (e.g. the tesseract session-create errored); ignoring them here is what
     prevents a hot re-detect/re-fail loop when rotation cannot complete — the
     reader then keeps serving the old binding without this detector flapping.
 
@@ -952,7 +952,7 @@ async def supervise_reader(
     committed_steps_out: list[int] | None = None,
 ) -> str | None:
     """
-    Poll agy's RPC for trajectory steps and mirror them into the Omnigent session.
+    Poll agy's RPC for trajectory steps and mirror them into the tesseract session.
 
     The read-path driver: it discovers the cascade id + connect-RPC port (polling
     until ready), then on each poll reads the full trajectory step snapshot, and
@@ -988,16 +988,16 @@ async def supervise_reader(
     goes idle and the stream blocks inside a deadline-less ``aiter_bytes`` read,
     where the cooperative ``stop`` checkpoint is never reached; cancellation
     interrupts that wedged read. This function then RETURNS the new cascade id so
-    :func:`run_reader_with_bridge` can rotate the Omnigent session and rebind. When
+    :func:`run_reader_with_bridge` can rotate the tesseract session and rebind. When
     the body ends on its own (the ``stop`` predicate fired, or the stream+poll both
     exited) it returns ``None``; an EXTERNAL cancellation of this coroutine (no
     rotation recorded) propagates rather than being mistaken for a rotation.
 
     :param bridge_dir: Native Antigravity bridge directory (identifies the
         session whose agy conversation to mirror).
-    :param session_id: Omnigent conversation id to mirror into, e.g.
+    :param session_id: tesseract conversation id to mirror into, e.g.
         ``"conv_abc123"``.
-    :param client: HTTP client for Omnigent event posts.
+    :param client: HTTP client for tesseract event posts.
     :param on_pending_interaction: Async callback handed each distinct WAITING
         interaction (the Task 8 interaction bridge), as
         ``(cascade_id, port, pending)`` — the SAME cascade id + connect-RPC port
@@ -1066,14 +1066,14 @@ async def supervise_reader(
     async def _close_turn_if_stranded() -> None:
         # Turn-close BACKSTOP. The step-based close (``_is_turn_close_step``) is the
         # fast path; this fires only when agy itself has reported the cascade idle
-        # and Omnigent still believes a turn is open — i.e. the close was missed.
+        # and tesseract still believes a turn is open — i.e. the close was missed.
         # Reconciliation rather than edge detection, so a missed/unknown/reordered
         # step costs one detector interval instead of stranding the session.
         if not state.turn_active:
             return
         state.turn_active = False
         _logger.info(
-            "agy reader closing a turn agy reports finished but Omnigent still had "
+            "agy reader closing a turn agy reports finished but tesseract still had "
             "open (step-based close was missed): session=%s cascade=%s",
             session_id,
             cascade_id,
@@ -1274,7 +1274,7 @@ class _ReaderState:
         done-callback to surface a WAITING gate deferred while the bridge ran.
         Held as strong refs so they are not GC'd mid-run; cancelled on teardown.
     :param subagent_mirrors: agy child cascade id → the task mirroring that
-        cascade into its own Omnigent child session. One per sub-agent, started
+        cascade into its own tesseract child session. One per sub-agent, started
         when the parent's ``INVOKE_SUBAGENT`` step first names the child and
         held as a strong ref so it is not GC'd mid-run; cancelled on teardown.
         Doubles as the start-once guard — a re-sent step re-enters the handler
@@ -1324,8 +1324,8 @@ async def _poll_loop(
 
     :param port: Validated connect-RPC port.
     :param cascade_id: agy cascade id (equal to the conversation id).
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id to mirror into.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id to mirror into.
     :param on_pending_interaction: Async callback for a distinct WAITING
         interaction.
     :param state: Per-run shared trackers (de-dup, turn, interactions).
@@ -1413,8 +1413,8 @@ async def _stream_loop(
 
     :param port: Validated connect-RPC port.
     :param cascade_id: agy cascade id (equal to the conversation id).
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id to mirror into.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id to mirror into.
     :param on_pending_interaction: Async callback for a distinct WAITING
         interaction.
     :param state: Per-run shared trackers (de-dup, turn, interactions, prefixes).
@@ -1433,7 +1433,7 @@ async def _stream_loop(
             # BAND by :func:`_watch_for_rotation` (via ``GetAllCascadeTrajectories``,
             # which lists every live root cascade); on detection ``supervise_reader``
             # flips this loop's ``stop`` and returns the new cascade id so
-            # :func:`run_reader_with_bridge` rotates the Omnigent session + rebinds.
+            # :func:`run_reader_with_bridge` rotates the tesseract session + rebinds.
             for step in _frame_steps(frame):
                 await _process_stream_step(
                     step,
@@ -1501,8 +1501,8 @@ async def _process_committed_step(
     interaction is still handed off via its own ``interacted`` dedup meanwhile.
 
     :param step: One RPC step dict.
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id to mirror into.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id to mirror into.
     :param cascade_id: agy cascade id (namespaces ids).
     :param state: Per-run shared trackers.
     :param on_pending_interaction: Async callback for a distinct interaction.
@@ -1620,8 +1620,8 @@ async def _register_subagent_child(
     """
     Register one agy sub-agent with the server and return its child session id.
 
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: PARENT Omnigent conversation id.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: PARENT tesseract conversation id.
     :param spec: One ``invokeSubagent.subagents[]`` entry.
     :param child_cascade_id: The child's agy conversation id.
     :param tool_call_id: The INVOKE_SUBAGENT step's mirrored call id, so the
@@ -1701,7 +1701,7 @@ async def _mirror_subagent_cascade(
     child_session_id: str,
 ) -> None:
     """
-    Mirror one sub-agent cascade into its Omnigent child session until it ends.
+    Mirror one sub-agent cascade into its tesseract child session until it ends.
 
     A sub-agent cascade is an ordinary cascade on the SAME agy RPC port, so this
     is the committed-only poll path pointed at the child — the same mapper, the
@@ -1734,8 +1734,8 @@ async def _mirror_subagent_cascade(
 
     :param port: agy connect-RPC port (shared with the parent).
     :param child_cascade_id: The sub-agent's agy conversation id.
-    :param client: HTTP client for Omnigent event posts.
-    :param child_session_id: The Omnigent child conversation to mirror into.
+    :param client: HTTP client for tesseract event posts.
+    :param child_session_id: The tesseract child conversation to mirror into.
     :returns: None.
     """
 
@@ -1848,8 +1848,8 @@ async def _maybe_mirror_subagents(
     finished.
 
     :param step: One RPC step dict, of any type.
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: PARENT Omnigent conversation id.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: PARENT tesseract conversation id.
     :param cascade_id: PARENT agy cascade id.
     :param state: Per-run trackers holding the mirror tasks.
     :returns: None.
@@ -1938,8 +1938,8 @@ async def _process_stream_step(
       prefix trackers.
 
     :param step: One RPC step dict from a stream frame.
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id to mirror into.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id to mirror into.
     :param cascade_id: agy cascade id (namespaces ids + message ids).
     :param state: Per-run shared trackers (incl. the per-step prefix trackers).
     :param on_pending_interaction: Async callback for a distinct interaction.
@@ -2031,8 +2031,8 @@ async def _close_planner_delta_stream(
     delta, because ``final`` is what marks it retirable.
 
     :param step: The committed step being processed.
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id to mirror into.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id to mirror into.
     :param cascade_id: agy cascade id (namespaces the message id).
     :param prefixes: Per-step forwarded-text trackers.
     :param delta_chunks: Per-step emitted-chunk counters (see
@@ -2160,8 +2160,8 @@ async def _emit_partial_delta(
     concatenate to the full text.
 
     :param step: A GENERATING PLANNER_RESPONSE step dict.
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id to mirror into.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id to mirror into.
     :param cascade_id: agy cascade id (namespaces the stable message id).
     :param prefixes: Per-``step_index`` forwarded-prefix tracker (mutated here).
     :param delta_chunks: Per-``step_index`` emitted-chunk counter (mutated here;
@@ -2225,8 +2225,8 @@ async def _emit_partial_reasoning_delta(
     is — see :func:`output_reasoning_delta_event`.)
 
     :param step: A GENERATING PLANNER_RESPONSE step dict.
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id to mirror into.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id to mirror into.
     :param reasoning_prefixes: Per-``step_index`` forwarded-prefix tracker
         (mutated here); a step's first emitted delta also records its membership.
     :returns: None.
@@ -2279,8 +2279,8 @@ async def _emit_step(
     transition, deduped via the ``turn_active`` flag threaded through the loop.
 
     :param step: One new (not-yet-seen) RPC step dict.
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id to mirror into.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id to mirror into.
     :param cascade_id: agy cascade id (namespaces response/call ids).
     :param turn_active: Whether a turn is currently considered open on entry.
     :returns: The updated ``turn_active`` flag after this step.
@@ -2525,8 +2525,8 @@ async def _maybe_withdraw_interaction(
 
     :param step: One RPC step dict (any status).
     :param key: The step's identity key (already computed by the caller).
-    :param client: HTTP client for the Omnigent event POST.
-    :param session_id: Omnigent conversation id whose card to withdraw.
+    :param client: HTTP client for the tesseract event POST.
+    :param session_id: tesseract conversation id whose card to withdraw.
     :param state: Per-run reader state — ``surfaced_elicitations`` is read/mutated.
     :returns: None.
     """
@@ -2556,8 +2556,8 @@ async def _post_external_elicitation_resolved(
     not crash the reader loop (the next signal, or agy's own timeout, recovers).
     Mirrors cursor-native's ``_post_external_elicitation_resolved``.
 
-    :param client: HTTP client for Omnigent event posts (the reader's client).
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client for tesseract event posts (the reader's client).
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param elicitation_id: The deterministic agy elicitation id to withdraw.
     :returns: None.
     """
@@ -2624,8 +2624,8 @@ async def _maybe_emit_session_usage(
     a replay of the same DONE step (already in ``seen``) never reaches here.
 
     :param step: One RPC step dict (must be a PLANNER_RESPONSE DONE).
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id.
     :param state: Per-run trackers (accumulators + port + model_catalog).
     :returns: None.
     """
@@ -2694,8 +2694,8 @@ async def _maybe_emit_model_change(
     The enum-vs-posted_enum comparison further deduplicates same-model turns.
 
     :param step: One RPC step dict (must be a USER_INPUT).
-    :param client: HTTP client for Omnigent event posts.
-    :param session_id: Omnigent conversation id.
+    :param client: HTTP client for tesseract event posts.
+    :param session_id: tesseract conversation id.
     :param state: Per-run trackers (posted_model_enum + model_catalog + port).
     :returns: None.
     """
@@ -2748,7 +2748,7 @@ async def _ensure_catalog(state: _ReaderState) -> dict[str, object]:
 # ── Shared reader wiring (elicitation bridge + supervise_reader spawn) ────────
 #
 # The runner's host-spawned web path and the CLI's ``omnigent antigravity``
-# attach fallback both run the SAME thing once agy is live: an Omnigent HTTP
+# attach fallback both run the SAME thing once agy is live: an tesseract HTTP
 # client, a ``supervise_reader`` loop, and an ``on_pending_interaction`` callback
 # wired to the Task 8 interaction bridge (real-time elicitation over the Task 9
 # hook + RPC step reads + the default deliver). This wiring lives here so the two
@@ -2780,7 +2780,7 @@ async def _post_agy_elicitation_request(
     params: ElicitationRequestParams,
 ) -> httpx.Response | None:
     """
-    POST one agy elicitation to the Omnigent hook, re-POSTing across severed
+    POST one agy elicitation to the tesseract hook, re-POSTing across severed
     long-polls.
 
     Mirrors :func:`omnigent.harnesses.codex_native.forwarder._post_codex_elicitation_request`:
@@ -2793,8 +2793,8 @@ async def _post_agy_elicitation_request(
     attempts. Transport errors and 5xx responses are retried within the
     ``_AGY_ELICITATION_REQUEST_TIMEOUT_SECONDS`` budget; 2xx and 4xx are final.
 
-    :param client: HTTP client for Omnigent hook posts (the reader's client).
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client for tesseract hook posts (the reader's client).
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param elicitation_id: Deterministic agy elicitation id, e.g.
         ``"elicit_agy_<digest>"``.
     :param params: The web-renderable elicitation params.
@@ -2865,8 +2865,8 @@ async def _request_agy_elicitation(
     * a 4xx, an exhausted-retry ``None`` response, or a non-JSON / non-object
       body → ``None`` (logged; no verdict delivered).
 
-    :param client: HTTP client for Omnigent hook posts (the reader's client).
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client for tesseract hook posts (the reader's client).
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param elicitation_id: Deterministic agy elicitation id.
     :param params: The web-renderable elicitation params.
     :returns: The parsed :class:`ElicitationResult`, or ``None`` on
@@ -2912,7 +2912,7 @@ async def _request_agy_elicitation(
 #
 # A TUI ``/clear`` mints a NEW agy root cascade ON THE SAME live agy process and
 # leaves the bound one idle. The reader detects it via ``GetAllCascadeTrajectories``
-# (see :func:`_detect_rotated_cascade`) and then must move Omnigent ownership onto a
+# (see :func:`_detect_rotated_cascade`) and then must move tesseract ownership onto a
 # fresh conversation bound to the NEW cascade — otherwise web turns keep targeting
 # the old (now-dead) conversation and streaming appears to end. This mirrors the
 # claude forwarder's ``_create_clear_replacement_session`` session-rotation
@@ -2947,17 +2947,17 @@ _AGY_TERMINAL_RESOURCE_ID = terminal_resource_id("antigravity", "main")
 
 async def _fetch_session_snapshot(client: httpx.AsyncClient, session_id: str) -> dict[str, object]:
     """
-    Fetch an Omnigent session snapshot for agy ``/clear`` rotation.
+    Fetch an tesseract session snapshot for agy ``/clear`` rotation.
 
     Mirrors :func:`omnigent.harnesses.codex_native.forwarder._fetch_session_snapshot`: the
     rotation needs the old session's ``agent_id`` (required to create the
     replacement), ``runner_id`` (to re-bind it to the same runner), and ``labels``
     (to inherit the bridge-id so the new session resolves to the same bridge_dir).
 
-    :param client: Omnigent HTTP client (the reader's client).
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param client: tesseract HTTP client (the reader's client).
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :returns: Decoded JSON session snapshot.
-    :raises httpx.HTTPStatusError: If Omnigent rejects the request.
+    :raises httpx.HTTPStatusError: If tesseract rejects the request.
     :raises RuntimeError: If the response body is not a JSON object.
     """
     resp = await client.get(f"/v1/sessions/{url_component(session_id)}")
@@ -2978,7 +2978,7 @@ def _adopt_cascade_in_place(bridge_dir: Path, session_id: str, new_cascade_id: s
     :meth:`omnigent.inner.antigravity_native_executor.AntigravityNativeExecutor._deliver`).
     The first transition off a never-used bound cascade is therefore the
     conversation STARTING, not a ``/clear`` — so adopt the new cascade in the
-    SAME Omnigent session by rewriting bridge state's conversation id (the reader
+    SAME tesseract session by rewriting bridge state's conversation id (the reader
     rebinds to it on the next :func:`supervise_reader` loop). No new session, no
     terminal transfer — the user's current session simply starts mirroring the
     turn they sent, instead of being stranded empty while a forked session fills.
@@ -2987,7 +2987,7 @@ def _adopt_cascade_in_place(bridge_dir: Path, session_id: str, new_cascade_id: s
     replacement session via :func:`_rotate_session_for_cascade`.
 
     :param bridge_dir: The agy bridge directory the reader is using.
-    :param session_id: The Omnigent session to keep mirroring into.
+    :param session_id: The tesseract session to keep mirroring into.
     :param new_cascade_id: agy's freshly TUI-minted cascade/conversation id.
     """
     write_bridge_state(
@@ -3022,8 +3022,8 @@ async def _record_external_session_id(
     attempt (e.g. a second adoption) returns 400 and is logged, not raised — the
     chat mirror does not depend on it.
 
-    :param client: The reader's Omnigent HTTP client.
-    :param session_id: Omnigent conversation id to record onto.
+    :param client: The reader's tesseract HTTP client.
+    :param session_id: tesseract conversation id to record onto.
     :param cascade_id: agy's adopted (TUI-minted) cascade/conversation id.
     """
     try:
@@ -3058,10 +3058,10 @@ async def _rotate_session_for_cascade(
     bridge_dir: Path,
 ) -> str | None:
     """
-    Create + activate a replacement Omnigent session bound to a new agy cascade.
+    Create + activate a replacement tesseract session bound to a new agy cascade.
 
     The Task T-G rotation effect: after a TUI ``/clear`` mints ``new_cascade_id`` on
-    the SAME live agy process, this moves Omnigent ownership onto a fresh
+    the SAME live agy process, this moves tesseract ownership onto a fresh
     conversation bound to that cascade, MIRRORING claude's
     ``_create_clear_replacement_session`` (verified against
     ``omnigent/claude_native_forwarder.py``). agy — like claude — is ONE long-lived
@@ -3099,12 +3099,12 @@ async def _rotate_session_for_cascade(
     guard still sees the OLD session owning the terminal while the new session binds
     (see :func:`omnigent.runner.app._antigravity_native_terminal_arrives_via_transfer`).
 
-    :param client: Omnigent HTTP client (the reader's client).
-    :param old_session_id: The Omnigent session being rotated away from.
+    :param client: tesseract HTTP client (the reader's client).
+    :param old_session_id: The tesseract session being rotated away from.
     :param new_cascade_id: agy's freshly ``/clear``-minted cascade/conversation id.
     :param bridge_dir: The agy bridge directory the reader is using (rewritten in
         place so the new session shares it).
-    :returns: The new Omnigent session id on success, or ``None`` on any failure
+    :returns: The new tesseract session id on success, or ``None`` on any failure
         (the caller then stays on the old binding).
     """
     try:
@@ -3197,7 +3197,7 @@ async def _rotate_session_for_cascade(
         )
 
     _logger.info(
-        "agy reader rotated Omnigent session after /clear: old_session=%s new_session=%s "
+        "agy reader rotated tesseract session after /clear: old_session=%s new_session=%s "
         "new_cascade=%s",
         old_session_id,
         new_session_id,
@@ -3218,7 +3218,7 @@ async def run_reader_with_bridge(
     Run the agy RPC streaming reader + interaction bridge for one session.
 
     The single, shared read-path entry point used by BOTH host-spawned (runner)
-    and CLI-fallback launches. It owns the long-lived Omnigent HTTP client (the
+    and CLI-fallback launches. It owns the long-lived tesseract HTTP client (the
     reader takes a client but does NOT own its lifecycle) and runs
     :func:`supervise_reader`, wiring its ``on_pending_interaction`` callback to the
     Task 8 interaction bridge:
@@ -3236,7 +3236,7 @@ async def run_reader_with_bridge(
 
     Task T-G ``/clear`` rotation: this LOOPS. :func:`supervise_reader` returns the
     new cascade id when it detects a TUI ``/clear`` (via
-    :func:`_watch_for_rotation`); this then rotates the Omnigent session onto a
+    :func:`_watch_for_rotation`); this then rotates the tesseract session onto a
     fresh conversation bound to the new cascade (:func:`_rotate_session_for_cascade`,
     which rewrites bridge state in ``bridge_dir``) and re-enters
     :func:`supervise_reader` — which rediscovers the new cascade from the same
@@ -3247,13 +3247,13 @@ async def run_reader_with_bridge(
     The loop ends only when ``supervise_reader`` returns ``None`` (the reader was
     cancelled / its bounded ``stop`` fired).
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:6767"``.
-    :param headers: Auth headers for the Omnigent client (best-effort static
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:6767"``.
+    :param headers: Auth headers for the tesseract client (best-effort static
         bearer; ``auth`` carries any refresh-capable flow).
     :param auth: Refresh-capable httpx auth flow, or ``None`` when unauthenticated
         (the local-server runner path and the CLI attach fallback, which have no
         token to refresh — the bearer in ``headers``, if any, is used as-is).
-    :param session_id: Omnigent conversation id to mirror into, e.g.
+    :param session_id: tesseract conversation id to mirror into, e.g.
         ``"conv_abc123"``.
     :param bridge_dir: Native Antigravity bridge directory for this session.
     :returns: None. Runs until cancelled.
@@ -3328,7 +3328,7 @@ async def run_reader_with_bridge(
                 # FIRST-CASCADE ADOPTION (not a /clear): the bound cascade was the
                 # cold-start StartCascade phantom (or any binding that never
                 # committed a turn), and the agy TUI minted its OWN cascade on the
-                # first typed turn. Adopt that cascade in the SAME Omnigent session
+                # first typed turn. Adopt that cascade in the SAME tesseract session
                 # so the user's current session starts mirroring — forking here
                 # would strand the current session empty while the turn filled a
                 # new one (the web/mobile UI watches the current session). The agy
@@ -3344,7 +3344,7 @@ async def run_reader_with_bridge(
                 # longer records the phantom, so this first adoption sets it.
                 await _record_external_session_id(client, current["session_id"], new_cascade_id)
                 continue
-            # GENUINE /clear (the bound cascade HAD turns): move Omnigent ownership
+            # GENUINE /clear (the bound cascade HAD turns): move tesseract ownership
             # onto a fresh conversation bound to the new cascade, then rebind by
             # re-entering supervise_reader (which rediscovers from bridge state).
             new_session_id = await _rotate_session_for_cascade(

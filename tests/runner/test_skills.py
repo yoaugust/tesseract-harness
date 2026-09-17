@@ -1,7 +1,7 @@
 """
 Runner-owned skill discovery + resolution endpoints.
 
-Skills are resolved on the runner, not the Omnigent server, because the
+Skills are resolved on the runner, not the tesseract server, because the
 runner is where the harness executes and may read a skill's local
 resource files. These tests exercise the two runner endpoints the AP
 server delegates to:
@@ -89,7 +89,7 @@ class _SpecStub:
 
 class _ServerClient:
     """
-    Fake Omnigent server client whose session snapshot carries an agent_id and
+    Fake tesseract server client whose session snapshot carries an agent_id and
     (optionally) the session's workspace.
 
     The runner reads ``agent_id`` from ``GET /v1/sessions/{id}`` to drive
@@ -343,7 +343,7 @@ async def test_resolve_session_skill_returns_runner_side_meta_text(tmp_path: Pat
 async def test_resolve_session_skill_unknown_returns_404_with_available(tmp_path: Path) -> None:
     """
     Resolving a skill the session does not expose returns 404 plus the
-    sorted list of available skill names (the error the Omnigent server
+    sorted list of available skill names (the error the tesseract server
     surfaces to the user).
     """
     bundle = tmp_path / "bundle"

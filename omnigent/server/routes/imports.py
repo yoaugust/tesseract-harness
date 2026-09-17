@@ -62,7 +62,7 @@ def _record_local_import_failure() -> tuple[str, str]:
 
 
 class ImportItemInput(BaseModel):
-    """One normalized existing Omnigent item received from the CLI."""
+    """One normalized existing tesseract item received from the CLI."""
 
     type: str
     response_id: str = Field(min_length=1, max_length=64)

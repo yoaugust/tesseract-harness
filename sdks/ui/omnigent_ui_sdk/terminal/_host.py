@@ -852,7 +852,7 @@ class TerminalHost:
         Defaults to ``"~/.omnigent_history"`` to match the
         legacy ``omnigent run`` CLI's location
         (``omnigent/inner/cli.py:_cli_history_file_path``) so
-        users who flip between legacy and Omnigent mode see the same
+        users who flip between legacy and tesseract mode see the same
         ↑ / Ctrl+R recall in both. SDK consumers outside
         omnigent can override.
     :param model_name: Shown in the bottom toolbar.
@@ -1499,7 +1499,7 @@ class TerminalHost:
         (``omnigent/inner/cli.py:2717-2723``) swallows the same
         way for the same reason; mirroring keeps behavior
         identical so a session that boots green on legacy boots
-        green on Omnigent mode regardless of terminal quirks.
+        green on tesseract mode regardless of terminal quirks.
         """
         if self._window_title is None:
             return
@@ -2040,7 +2040,7 @@ class TerminalHost:
             hammer the server. Matches omnigent' overview polling
             strategy (see ``omnigent/cli.py::_refresh_loop``),
             with the interval bumped from 50 ms → 500 ms because
-            Omnigent' builder crosses a real HTTP boundary
+            tesseract' builder crosses a real HTTP boundary
             while omnigent' builder just reads in-process state.
             """
             try:

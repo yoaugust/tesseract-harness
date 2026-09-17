@@ -10,7 +10,7 @@ which injects web-UI messages into the running ``kimi`` TUI (launched by
 ``omnigent kimi`` in the session terminal) via tmux. The bridge dir is read
 from :data:`~omnigent.harnesses.kimi_native.bridge.BRIDGE_DIR_ENV_VAR` in the spawn env.
 
-Tool policies: kimi-native enforces Omnigent's tool deny-policy via a
+Tool policies: kimi-native enforces tesseract's tool deny-policy via a
 ``PreToolUse`` hook (registered in the per-session ``config.toml`` built by
 :mod:`omnigent.harnesses.kimi_native.credentials`, dispatched to
 :mod:`omnigent.harnesses.kimi_native.hook`). A ``POLICY_ACTION_DENY`` verdict blocks the
@@ -18,9 +18,9 @@ tool with the policy reason; everything else is "no opinion", so ``kimi``'s own
 in-TUI approval prompt still runs — the deployment's deny-gate and the user's
 own consent are kept as two independent gates. A companion ``PermissionRequest``
 hook surfaces the pending approval in the web UI read-only (the yes/no is
-answered in the TUI, which Omnigent cannot intercept). Connector/tool ASK
+answered in the TUI, which tesseract cannot intercept). Connector/tool ASK
 policies are not enforced (kimi owns the ask); treat the kimi TUI as the
-approval surface, with Omnigent able to hard-deny.
+approval surface, with tesseract able to hard-deny.
 """
 
 from __future__ import annotations

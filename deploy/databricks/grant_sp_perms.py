@@ -3,7 +3,7 @@ Grant a Databricks App service principal Lakebase schema privileges.
 
 Run this after ``wc.apps.create`` creates the app service principal and
 before ``wc.apps.deploy`` starts the app. The app needs these grants so
-Alembic can create and migrate Omnigent tables on first boot.
+Alembic can create and migrate tesseract tables on first boot.
 """
 
 from __future__ import annotations
@@ -171,7 +171,7 @@ def main() -> int:
     with psycopg.connect(autocommit=True, **params) as conn, conn.cursor() as cur:
         cur.execute(_grant_sql(sp_uuid))
 
-    print("Done. The app can create and migrate Omnigent tables on first boot.")
+    print("Done. The app can create and migrate tesseract tables on first boot.")
     return 0
 
 

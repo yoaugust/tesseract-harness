@@ -134,7 +134,7 @@ _PiModelEntry: TypeAlias = PiModelEntry
 
 
 def _split_pi_native_model_selection(selection: str | None) -> tuple[str, str] | None:
-    """Split an Omnigent-managed ``provider/model`` picker value."""
+    """Split an tesseract-managed ``provider/model`` picker value."""
     if not selection:
         return None
     provider_id, separator, model_id = selection.partition("/")
@@ -767,7 +767,7 @@ def _clamp_entries_to_output_caps(
 ) -> None:
     """Lower each entry's ``maxTokens`` to the serving endpoint's real cap.
 
-    Omnigent's catalog reports a model's native output ceiling, but a Databricks
+    tesseract's catalog reports a model's native output ceiling, but a Databricks
     serving endpoint may enforce a lower per-request cap; Pi would then send the
     native value and every call fails with 400. The cap is a model property, so
     a single probe on the MLflow chat surface yields it regardless of which

@@ -10,7 +10,7 @@ Application Default Credentials selectors. A user who runs
     GOOGLE_CLOUD_PROJECT / GOOGLE_CLOUD_QUOTA_PROJECT
     CLOUDSDK_CONFIG / CLOUDSDK_ACTIVE_CONFIG_NAME (non-default gcloud config)
 
--- and then starts Omnigent in the background finds every one of them missing
+-- and then starts tesseract in the background finds every one of them missing
 from the detached daemon, and therefore missing from every runner the daemon
 spawns. ``_build_host_daemon_env`` (omnigent/cli.py) filters ``os.environ``
 through ``_RUNNER_ENV_ALLOWLIST`` + ``_LOCAL_DAEMON_ENV_ALLOWLIST`` + their

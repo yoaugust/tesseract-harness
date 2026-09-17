@@ -1,6 +1,6 @@
 """
 End-to-end proof that policies declared in an omnigent YAML
-are enforced by the omnigent workflow under Omnigent mode.
+are enforced by the omnigent workflow under tesseract mode.
 
 The adapter in :mod:`omnigent.spec.omnigent` lifts the
 YAML's ``policies:`` block into
@@ -14,12 +14,12 @@ call and asserts the policy actually fires.
 sweep**: the stock ``examples/*.yaml`` policy fixtures rely on
 the legacy omnigent ``(content, phase)`` callable signature
 (``examples.tool_functions.block_long_sleep`` et al.), which
-Omnigent' :class:`FunctionPolicy` dispatcher can't invoke
+tesseract' :class:`FunctionPolicy` dispatcher can't invoke
 (it passes ``(ctx, context)`` where ``ctx`` is an
 :class:`EvaluationContext` dataclass, not a dict). This test
 uses the omnigent-shaped
 ``omnigent._e2e_policy_callables.block_on_sentinel``
-callable — an arity-1 callable matching Omnigent'
+callable — an arity-1 callable matching tesseract'
 convention — so the test proves the translator + engine
 integration works and isn't muddied by a separate callable-
 portability gap. That gap is tracked in ``TODO_omnigent_coverage.md``.

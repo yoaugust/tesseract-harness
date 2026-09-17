@@ -47,7 +47,7 @@ from omnigent.util.json_types import JsonObject as _JsonObject
 #: Env var carrying the bridge dir into the harness executor process.
 BRIDGE_DIR_ENV_VAR = "HARNESS_QWEN_NATIVE_BRIDGE_DIR"
 
-#: Fixed namespace for deriving a stable qwen ``--session-id`` from an Omnigent
+#: Fixed namespace for deriving a stable qwen ``--session-id`` from an tesseract
 #: conversation id (UUIDv5). Never change it — it would orphan every existing
 #: qwen recording (resume would mint a new id and lose history).
 _QWEN_SESSION_NAMESPACE = uuid.UUID("6b6f3d2e-9a1c-5e84-bf0a-1d7c5a2e9f43")
@@ -62,10 +62,10 @@ _TMUX_READY_TIMEOUT_S = 30.0
 _TMUX_SEND_TIMEOUT_S = 10.0
 _POLL_INTERVAL_S = 0.2
 
-#: Token config the shared Omnigent MCP relay (``serve-mcp``) reads from the
+#: Token config the shared tesseract MCP relay (``serve-mcp``) reads from the
 #: bridge dir. Mirrors cursor-/claude-native (``cursor_native_bridge.py``).
 _BRIDGE_CONFIG_FILE = "bridge.json"
-#: Name qwen lists the Omnigent MCP server under (shows in ``/mcp``).
+#: Name qwen lists the tesseract MCP server under (shows in ``/mcp``).
 _MCP_SERVER_NAME = "omnigent"
 #: Per-session MCP config passed to qwen via ``--mcp-config <path>``. Lives in
 #: the bridge dir (NOT the workspace), so we never drop a file in the user's repo
@@ -94,14 +94,14 @@ def bridge_root() -> Path:
 
 
 def qwen_session_id_for_conversation(conversation_id: str) -> str:
-    """Return the deterministic qwen ``--session-id`` for an Omnigent conversation.
+    """Return the deterministic qwen ``--session-id`` for an tesseract conversation.
 
     UUIDv5 of the conversation id: stable across resumes (recomputable, never
     stored) and a valid UUID (qwen requires one). The runner launches a fresh
     session with ``--session-id <this>`` and later restores it with
     ``--resume <this>`` so the qwen TUI shows the prior conversation on resume.
 
-    :param conversation_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param conversation_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :returns: A stable UUID string usable as qwen's session id.
     """
     return str(uuid.uuid5(_QWEN_SESSION_NAMESPACE, conversation_id))
@@ -182,9 +182,9 @@ def _qwen_synth_uuid(qwen_session_id: str, index: int) -> str:
 
 
 def _qwen_text_from_api_content(content: object, api_type: str) -> str:
-    """Concatenate the text of an Omnigent content array's blocks of *api_type*.
+    """Concatenate the text of an tesseract content array's blocks of *api_type*.
 
-    :param content: Omnigent content array, e.g. ``[{"type":"input_text","text":"hi"}]``.
+    :param content: tesseract content array, e.g. ``[{"type":"input_text","text":"hi"}]``.
     :param api_type: Block type to include, ``"input_text"`` or ``"output_text"``.
     :returns: The joined text, or ``""`` when there is none.
     """
@@ -207,7 +207,7 @@ def qwen_session_records_from_session_items(
     model: str = "",
     timestamp: str | None = None,
 ) -> list[_JsonObject]:
-    """Convert Omnigent session items into qwen chat-recording JSONL records.
+    """Convert tesseract session items into qwen chat-recording JSONL records.
 
     qwen's recording is a linked list chained by ``uuid`` / ``parentUuid``. We
     emit only the ``user`` / ``assistant`` message records qwen reconstructs
@@ -215,7 +215,7 @@ def qwen_session_records_from_session_items(
     and not required for ``--resume`` (verified on v0.18.2). Tool calls are
     dropped — text turns carry the context a cross-harness fork needs.
 
-    Omnigent items map as:
+    tesseract items map as:
 
     - user ``message`` → ``{"type":"user","message":{"role":"user","parts":[{"text"}]}}``
     - assistant ``message`` → ``{"type":"assistant","message":{"role":"model",...}}``
@@ -225,7 +225,7 @@ def qwen_session_records_from_session_items(
     the turn), and a trailing unanswered user prompt is dropped (covers a
     qwen-native source, whose per-event ``response_id`` doesn't group a turn).
 
-    :param items: Flat Omnigent item dicts in chronological order.
+    :param items: Flat tesseract item dicts in chronological order.
     :param qwen_session_id: qwen session id stamped on every record.
     :param cwd: Working directory stamped on records (realpath'd to match the
         project slug qwen records under).
@@ -454,7 +454,7 @@ def build_qwen_native_spawn_env(session_id: str) -> dict[str, str]:
     to). qwen's model / auth / dual-output flags are set by the runner when it
     launches the TUI (``_auto_create_qwen_terminal``), not here.
 
-    :param session_id: The Omnigent session id (keys the bridge dir).
+    :param session_id: The tesseract session id (keys the bridge dir).
     :returns: Env-var overrides for the harness spawn.
     """
     bridge_dir = bridge_dir_for_session_id(session_id)
@@ -463,7 +463,7 @@ def build_qwen_native_spawn_env(session_id: str) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Omnigent MCP server config — expose Omnigent's builtin tools (sys_*,
+# tesseract MCP server config — expose tesseract's builtin tools (sys_*,
 # load_skill, web_fetch, …) to the qwen TUI so it can call them and ``/mcp``
 # lists them. Reuses the shared stdio relay implemented in
 # ``omnigent.harnesses.claude_native.bridge serve-mcp`` (same server cursor-/claude-/
@@ -472,7 +472,7 @@ def build_qwen_native_spawn_env(session_id: str) -> dict[str, str]:
 
 
 def write_mcp_bridge_config(bridge_dir: Path) -> None:
-    """Write the token config the shared Omnigent MCP relay reads at startup.
+    """Write the token config the shared tesseract MCP relay reads at startup.
 
     The ``serve-mcp`` relay (spawned by qwen) reads ``bridge.json`` for a bearer
     token and exits if it's missing, so this must exist *before* qwen launches.
@@ -500,10 +500,10 @@ def build_mcp_server_entry(
     *,
     python_executable: str | None = None,
 ) -> _JsonObject:
-    """Build qwen's ``mcpServers.omnigent`` entry for the Omnigent relay.
+    """Build qwen's ``mcpServers.omnigent`` entry for the tesseract relay.
 
     ``trust: true`` auto-approves the qwen-side MCP tool gate so the TUI doesn't
-    add a second in-terminal prompt: Omnigent already gates these calls through
+    add a second in-terminal prompt: tesseract already gates these calls through
     its own policy/elicitation engine (surfaced as web cards by the approval
     mirror), so qwen's prompt would only be a hidden duplicate. Same rationale
     as cursor's ``autoApprove`` (see ``cursor_native_bridge.build_mcp_config``).
@@ -537,7 +537,7 @@ def write_mcp_config(
     *,
     python_executable: str | None = None,
 ) -> Path:
-    """Write the per-session Omnigent MCP config for qwen's ``--mcp-config`` flag.
+    """Write the per-session tesseract MCP config for qwen's ``--mcp-config`` flag.
 
     Writes ``{"mcpServers": {"omnigent": ...}}`` to a file *inside the bridge dir*
     (never the workspace) and the relay token (:func:`write_mcp_bridge_config`).

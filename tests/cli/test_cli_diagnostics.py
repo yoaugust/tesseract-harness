@@ -255,7 +255,7 @@ def test_log_cli_error_hint_uses_original_stderr_when_redirected(
 def test_stale_host_hint_recommends_generic_stop_command(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Tunnel rejection recovery should stop stale Omnigent processes."""
+    """Tunnel rejection recovery should stop stale tesseract processes."""
     terminal_stderr = io.StringIO()
     monkeypatch.setattr(sys, "stderr", terminal_stderr)
 
@@ -265,7 +265,7 @@ def test_stale_host_hint_recommends_generic_stop_command(
     assert "runner tunnel rejection (HTTP 401)" in hint
     assert "stale host processes" in hint
     assert "`omnigent stop`" in hint
-    assert "existing Omnigent host instances" in hint
+    assert "existing tesseract host instances" in hint
     assert "omnigent setup" not in hint
 
 
@@ -632,7 +632,7 @@ def test_daemon_exit_error_carries_server_log_tail(
         cli._discover_local_server_url(timeout=1.0)
 
     message = str(excinfo.value)
-    assert "daemon exited before its Omnigent server became ready" in message
+    assert "daemon exited before its tesseract server became ready" in message
     assert "Server log" in message
     assert "omnigent[postgres]" in message  # the actionable cause, inline
 
@@ -664,7 +664,7 @@ def test_daemon_exit_error_omits_tail_without_attributable_record(
         cli._discover_local_server_url(timeout=1.0)
 
     message = str(excinfo.value)
-    assert "daemon exited before its Omnigent server became ready" in message
+    assert "daemon exited before its tesseract server became ready" in message
     assert "unrelated humming server" not in message
     assert "Last 50 lines" not in message
 
@@ -728,7 +728,7 @@ def test_main_surfaces_install_command_on_stderr_without_recovery_hint(
 
     def _boom(*_args: object, **_kwargs: object) -> None:
         raise LocalServerStartupError(
-            "The local daemon exited before its Omnigent server became ready.\n"
+            "The local daemon exited before its tesseract server became ready.\n"
             "  Last 50 lines:\n"
             "  ModuleNotFoundError: ... pip install 'omnigent[postgres]' ..."
         )

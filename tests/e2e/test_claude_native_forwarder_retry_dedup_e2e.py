@@ -93,13 +93,13 @@ def _build_minimal_agent_bundle() -> bytes:
 
 
 # ---------------------------------------------------------------------------
-# Fixture: minimal Omnigent server subprocess
+# Fixture: minimal tesseract server subprocess
 # ---------------------------------------------------------------------------
 
 
 @pytest.fixture(scope="module")
 def forwarder_dedup_server() -> Iterator[str]:
-    """Start a minimal Omnigent server subprocess; yield its base URL.
+    """Start a minimal tesseract server subprocess; yield its base URL.
 
     Self-contained: does not use the session-scoped ``live_server`` fixture
     (which needs ``--llm-api-key``).  Uses the same ``omnigent.cli server``
@@ -178,7 +178,7 @@ def forwarder_dedup_server() -> Iterator[str]:
             log_handle.close()
             log_text = log_path.read_text(errors="replace")
             raise RuntimeError(
-                f"Omnigent server failed to start within 30 s. Log tail:\n{log_text[-2000:]}"
+                f"tesseract server failed to start within 30 s. Log tail:\n{log_text[-2000:]}"
             )
         yield base_url
     finally:

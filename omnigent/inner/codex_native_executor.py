@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent messages into a native Codex TUI thread."""
+"""Executor that bridges tesseract messages into a native Codex TUI thread."""
 
 from __future__ import annotations
 
@@ -349,7 +349,7 @@ class CodexNativeExecutor(Executor):
         try:
             if pending:
                 # Startup interrupt first and best-effort: the local
-                # cancel above already updated what Omnigent shows, and a
+                # cancel above already updated what tesseract shows, and a
                 # failure here must not block the active-turn interrupt.
                 try:
                     await client.request(
@@ -395,12 +395,12 @@ class CodexNativeExecutor(Executor):
 
         :param messages: Conversation history in executor message
             shape. The latest user message is delivered to Codex.
-        :param tools: Tool schemas from Omnigent. Ignored here;
+        :param tools: Tool schemas from tesseract. Ignored here;
             native Codex owns its own tool surface.
         :param system_prompt: System prompt from the agent spec. Native
             startup instructions are configured before the app-server launches.
         :param config: Per-turn executor config. Its ``model`` and
-            ``extra["reasoning_effort"]`` (carrying the Omnigent web
+            ``extra["reasoning_effort"]`` (carrying the tesseract web
             ``/model`` pick) are applied via a ``thread/settings/update``
             request ahead of ``turn/start``; everything else is ignored
             by this bridge.
@@ -507,7 +507,7 @@ def _model_effort_overrides(config: ExecutorConfig | None) -> dict[str, object]:
     """
     Build Codex ``thread/settings/update`` model / reasoning-effort overrides.
 
-    A model or reasoning-effort change selected in the Omnigent web UI is
+    A model or reasoning-effort change selected in the tesseract web UI is
     applied to the running native thread via a ``thread/settings/update``
     request (whose ``ThreadSettingsUpdateParams`` carries ``model`` and
     ``effort``); the change persists to this and later turns. ``turn/start``
@@ -565,9 +565,9 @@ def _bridge_dir_from_env() -> Path:
 
 def _request_session_id_from_env() -> str | None:
     """
-    Resolve the Omnigent session id that requested this harness process.
+    Resolve the tesseract session id that requested this harness process.
 
-    :returns: Omnigent session id, e.g. ``"conv_abc123"``, or ``None``.
+    :returns: tesseract session id, e.g. ``"conv_abc123"``, or ``None``.
     """
     raw = os.environ.get(CODEX_NATIVE_REQUEST_SESSION_ID_ENV_VAR, "").strip()
     return raw or None

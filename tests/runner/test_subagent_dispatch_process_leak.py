@@ -5,7 +5,7 @@ reaper is never reached on either path, so orphaned harness / tmux /
 
 Both tests drive the REAL runner dispatch entry point
 (:func:`omnigent.runner.tool_dispatch.execute_tool`) against an
-``httpx.MockTransport`` standing in for the Omnigent server, exactly as the
+``httpx.MockTransport`` standing in for the tesseract server, exactly as the
 sibling ``tests/runner/test_runner_dispatch.py`` cases do. The mock injects
 the report's fault (a create-time ``ReadTimeout`` after the server commits
 child creation) and records every ``DELETE`` (the reaper) so the tests can

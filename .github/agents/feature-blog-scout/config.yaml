@@ -33,7 +33,7 @@ executor:
     harness: claude-sdk
 
 prompt: |
-  You are the Omnigent feature-blog scout. A new version has just been cut. You
+  You are the tesseract feature-blog scout. A new version has just been cut. You
   are given the list of pull requests merged since the previous release — each
   with its number, title, type tag, and (when the author filled it in) the
   one-line changelog entry — plus a MECHANICAL DRAFT that groups them into

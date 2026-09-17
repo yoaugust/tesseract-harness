@@ -650,7 +650,7 @@ def test_next_web_message_starts_new_codex_turn_after_forwarder_marks_idle(
     A later web message starts a fresh turn after Codex reports idle.
 
     The forwarder clears ``active_turn_id`` from bridge state on
-    ``turn/completed``. Once that happens, the next Omnigent dispatch must
+    ``turn/completed``. Once that happens, the next tesseract dispatch must
     call ``turn/start`` rather than steering a completed turn.
     """
     _FakeCodexNativeClient.requests = []
@@ -1061,7 +1061,7 @@ def test_web_model_pick_applied_via_thread_settings_update(
     """
     A web-picker model + reasoning effort apply via ``thread/settings/update``.
 
-    A model/effort change made in the Omnigent web UI reaches the runner
+    A model/effort change made in the tesseract web UI reaches the runner
     as ``ExecutorConfig.model`` / ``extra["reasoning_effort"]``. Codex's
     ``turn/start`` takes no model/effort (input/context only), so the
     override must ride a ``thread/settings/update`` request — whose
@@ -1116,7 +1116,7 @@ def test_model_settings_update_mirrors_model_into_config_toml(
     ``config.toml`` — the file the forwarder's model mirror and the
     cost-gate hook treat as source of truth. Without the mirror write, the
     next ``turn/started`` re-reads the stale launch model and posts an
-    ``external_model_change`` back to Omnigent, silently reverting a routed
+    ``external_model_change`` back to tesseract, silently reverting a routed
     or web-picked model to the spawn default.
     """
     _FakeCodexNativeClient.requests = []
@@ -1171,7 +1171,7 @@ def test_effort_settings_update_mirrors_effort_into_config_toml(
     not ``config.toml`` — the file the forwarder's effort mirror treats as
     source of truth. Without the mirror write, a fresh forwarder state
     (thread resume / reconnect) re-reads the stale launch effort and posts an
-    ``external_reasoning_effort_change`` back to Omnigent, silently reverting
+    ``external_reasoning_effort_change`` back to tesseract, silently reverting
     a web-composer effort pick to the spawn default.
     """
     _FakeCodexNativeClient.requests = []

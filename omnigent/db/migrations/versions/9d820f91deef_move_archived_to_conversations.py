@@ -6,7 +6,7 @@ Create Date: 2026-07-14 00:00:00.000000
 
 The conversations split (``aa1b2c3d4e5f``) moved ``archived`` onto
 ``omnigent_conversation_metadata``. That forced ``list_conversations`` to
-pre-fetch every non-archived conversation id from the Omnigent DB and filter
+pre-fetch every non-archived conversation id from the tesseract DB and filter
 the AP query with a giant ``IN (...)``, because the sort keys
 (``created_at``/``updated_at``) stayed on ``conversations`` while the filter
 moved to the other logical DB.

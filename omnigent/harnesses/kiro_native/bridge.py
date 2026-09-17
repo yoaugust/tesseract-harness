@@ -35,7 +35,7 @@ _BRIDGE_ROOT = Path(tempfile.gettempdir()) / f"omnigent-{stable_user_id()}" / "k
 _TMUX_FILE = "tmux.json"
 _FORWARDER_READY_FILE = "kiro_session_forwarder_ready.json"
 _ACP_RECORD_FILE = "kiro_acp_record.jsonl"
-# Shared Omnigent MCP relay (serve-mcp) registration for kiro.
+# Shared tesseract MCP relay (serve-mcp) registration for kiro.
 _MCP_SERVER_NAME = "omnigent"
 _MCP_BRIDGE_CONFIG_FILE = "bridge.json"
 # kiro reads workspace-scoped MCP servers from ``<workspace>/.kiro/settings/mcp.json``
@@ -137,7 +137,7 @@ def acp_record_path(bridge_dir: Path) -> Path:
 
 
 def write_mcp_bridge_config(bridge_dir: Path) -> None:
-    """Write the token config the shared Omnigent MCP bridge requires at boot.
+    """Write the token config the shared tesseract MCP bridge requires at boot.
 
     ``serve-mcp`` (``omnigent.harnesses.claude_native.bridge``) reads ``bridge.json`` and
     refuses to start without a ``token``. Mirrors cursor-native's writer;
@@ -156,12 +156,12 @@ def write_mcp_bridge_config(bridge_dir: Path) -> None:
 def build_kiro_mcp_config(
     bridge_dir: Path, *, python_executable: str | None = None
 ) -> _KiroMcpConfig:
-    """Build the kiro ``mcpServers`` entry for the Omnigent relay MCP server.
+    """Build the kiro ``mcpServers`` entry for the tesseract relay MCP server.
 
     Reuses the shared stdio ``serve-mcp`` server (the same one cursor/claude use)
     pointed at this session's bridge dir. kiro's mcp.json schema is
     ``{"mcpServers": {name: {command, args, env}}}`` (kiro-cli 2.10.0); it has no
-    per-server auto-approve field, so Omnigent MCP tool calls surface through
+    per-server auto-approve field, so tesseract MCP tool calls surface through
     kiro's approval prompt (mirrored to the web as elicitation cards) rather than
     being auto-trusted here.
     """
@@ -190,11 +190,11 @@ def write_kiro_workspace_mcp_config(
     *,
     python_executable: str | None = None,
 ) -> Path:
-    """Write the workspace-scoped kiro MCP config declaring the Omnigent server.
+    """Write the workspace-scoped kiro MCP config declaring the tesseract server.
 
     kiro-cli has no launch-time mcp-config flag, so the server is declared in the
     workspace's ``.kiro/settings/mcp.json`` (mirrors cursor-native's
-    ``.cursor/mcp.json``). The Omnigent entry is *merged* into any existing
+    ``.cursor/mcp.json``). The tesseract entry is *merged* into any existing
     workspace config so a user's own workspace MCP servers are preserved. Also
     writes the bridge ``token`` ``serve-mcp`` needs. Returns the config path.
     """

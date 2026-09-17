@@ -1,6 +1,6 @@
-# Omnigent on Render
+# tesseract on Render
 
-Deploy Omnigent to Render in one click. Render provisions the app and a
+Deploy tesseract to Render in one click. Render provisions the app and a
 managed Postgres database, assigns an HTTPS URL on `*.onrender.com`, and
 handles SSL automatically. No local tooling required.
 

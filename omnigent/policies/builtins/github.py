@@ -1,7 +1,7 @@
 """Built-in GitHub access policy (MCP- and shell-agnostic).
 
 A single factory, :func:`github_policy`, gating GitHub access across two
-surfaces an Omnigent agent can reach GitHub through:
+surfaces an tesseract agent can reach GitHub through:
 
 - **MCP tool calls** — both the official per-operation GitHub MCP server
   (``get_file_contents`` / ``create_or_update_file`` / ``push_files`` /
@@ -985,7 +985,7 @@ def github_policy(
     :param shell_tools: Names of the shell / terminal tools whose ``command``
         argument is parsed for ``git`` / ``gh`` invocations. ``None`` uses every
         harness's shell tool (:data:`~omnigent.policies.builtins._shell.SHELL_TOOLS`
-        — Omnigent, Claude/Codex, Cursor, Pi, Hermes, Goose). Override this only
+        — tesseract, Claude/Codex, Cursor, Pi, Hermes, Goose). Override this only
         if the agent exposes shell access through a differently-named tool (e.g.
         a custom terminal); list every such tool, since git/gh run through any
         tool not listed here are not inspected by this policy.
@@ -1254,7 +1254,7 @@ POLICY_REGISTRY: list[dict[str, Any]] = [  # type: ignore[explicit-any]
         "description": (
             "Controls GitHub access across MCP tools (official per-operation server and the "
             "github_read_api_call / github_write_api_call HTTP-proxy wrapper) and git/gh shell "
-            "commands. Supports Omnigent, Claude/Codex, Cursor, Pi, Hermes, and Goose shell "
+            "commands. Supports tesseract, Claude/Codex, Cursor, Pi, Hermes, and Goose shell "
             "tools. Restricts reads to read_repos (unless read_all), and "
             "writes to write_repos plus optional write_branches. Shell commands whose target repo "
             "or branch cannot be determined return ASK for human approval."

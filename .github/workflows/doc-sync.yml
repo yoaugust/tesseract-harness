@@ -264,7 +264,7 @@ jobs:
           node node_modules/@anthropic-ai/claude-code/install.cjs
           echo "$CC_CLI_DIR/node_modules/.bin" >> "$GITHUB_PATH"
 
-      - name: Write Omnigent provider config
+      - name: Write tesseract provider config
         if: steps.plan.outputs.proceed == 'true' && steps.creds.outputs.available == 'true'
         env:
           GATEWAY_BASE_URL: ${{ secrets.GATEWAY_BASE_URL }}

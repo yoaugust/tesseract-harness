@@ -1,7 +1,7 @@
-"""Native Claude Code terminal wrapper for the Omnigent CLI.
+"""Native Claude Code terminal wrapper for the tesseract CLI.
 
 The wrapper deliberately treats Claude Code as a terminal-first
-program. It creates or binds an Omnigent session, launches ``claude``
+program. It creates or binds an tesseract session, launches ``claude``
 through the existing runner terminal resource API, then attaches the
 local TTY to the existing terminal WebSocket protocol.
 """
@@ -226,7 +226,7 @@ _CLAUDE_CODE_CUSTOM_HEADERS_ENV = "ANTHROPIC_CUSTOM_HEADERS"
 _DATABRICKS_CODING_AGENT_HEADER = "x-databricks-use-coding-agent-mode: true"
 # Claude Code's agent view (the session list opened by `claude agents`, the
 # left-arrow shortcut on an empty prompt, or /background) lets the user hop to
-# other sessions inside the TUI.  Omnigent owns session switching in its own
+# other sessions inside the TUI.  tesseract owns session switching in its own
 # UI, so a wrapped terminal must stay pinned to the one session the UI thinks
 # it is showing.
 _CLAUDE_CODE_DISABLE_AGENT_VIEW_ENV = "CLAUDE_CODE_DISABLE_AGENT_VIEW"
@@ -349,7 +349,7 @@ class PreparedClaudeTerminal:
     """
     Prepared native Claude terminal attachment details.
 
-    :param session_id: Omnigent session/conversation id.
+    :param session_id: tesseract session/conversation id.
     :param terminal_id: Terminal resource id to attach.
     :param bridge_dir: Filesystem bridge directory shared with
         Claude hooks/MCP helpers.
@@ -359,7 +359,7 @@ class PreparedClaudeTerminal:
         the terminal on exit, because the launcher that originally
         created it owns its lifecycle.
     :param cold_resumed: ``True`` when we launched a fresh terminal
-        against an existing Omnigent session (i.e. ``--resume <conv>`` with
+        against an existing tesseract session (i.e. ``--resume <conv>`` with
         no live terminal). The forwarder must seek to the current
         transcript end in this case — when ``--resume <claude_sid>``
         is injected into the launch args, Claude reopens the prior
@@ -597,10 +597,10 @@ def resolve_claude_native_model_selection(
     model: str | None,
     claude_config: ClaudeNativeUcodeConfig | None,
 ) -> str | None:
-    """Resolve an Omnigent picker id to a model identifier Claude accepts.
+    """Resolve an tesseract picker id to a model identifier Claude accepts.
 
     Claude Code understands its built-in family aliases directly, but the
-    extra Sonnet 5 row uses Omnigent's ``sonnet_5`` id because it occupies
+    extra Sonnet 5 row uses tesseract's ``sonnet_5`` id because it occupies
     Claude Code's provider-configured custom model slot. Resolve that id to
     the exact custom option, preserving provider suffixes such as ``[1m]``.
     Direct Claude logins have no provider config, so the pick degrades to
@@ -1386,7 +1386,7 @@ def build_native_claude_terminal_env(
 
     Forces MCP Tool Search on so Claude defers MCP tool schemas and
     loads them on demand, disables Claude Code's agent view so the
-    terminal stays pinned to the session the Omnigent UI is showing, and
+    terminal stays pinned to the session the tesseract UI is showing, and
     disables the in-TUI feedback surveys, which a web-driven session
     cannot see or answer (see
     :data:`_CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY_ENV`).
@@ -1460,16 +1460,16 @@ def run_claude_native(
     startup_profiler: StartupProfiler | None = None,
 ) -> None:
     """
-    Launch Claude Code in an Omnigent terminal and attach locally.
+    Launch Claude Code in an tesseract terminal and attach locally.
 
-    :param server: Optional remote Omnigent server URL. ``None`` starts a
-        local Omnigent server using the existing chat server machinery.
+    :param server: Optional remote tesseract server URL. ``None`` starts a
+        local tesseract server using the existing chat server machinery.
     :param session_id: Optional existing session to bind and reuse,
         e.g. ``"conv_abc123"``. ``None`` creates a new bundled
         session.
     :param claude_args: Args after ``claude``, e.g.
         ``("--dangerously-skip-permissions",)``. Stray ``--resume`` /
-        ``-r`` is stripped defensively (Omnigent owns resume).
+        ``-r`` is stripped defensively (tesseract owns resume).
     :param resume_picker: ``True`` runs the claude-native picker
         once the server is reachable; ``False`` keeps the existing
         ``session_id``-or-fresh-session behavior.
@@ -1571,7 +1571,7 @@ def _resolve_session_id_for_resume(
 
     The picker is scoped to claude-native conversations.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers; ``{}`` for local server.
     :param session_id: Explicit ``--resume <id>``; wins over the picker
         and is never host-filtered (diagnostics / migration workflows).
@@ -1670,9 +1670,9 @@ def _align_working_directory_with_session(
       ``move`` when the Claude transcript can still be found;
       otherwise fail loud with a :class:`click.ClickException`.
 
-    :param session_id: Resolved Omnigent conversation id, e.g.
+    :param session_id: Resolved tesseract conversation id, e.g.
         ``"conv_abc123"``.
-    :param base_url: Omnigent server base URL used to look up Claude's
+    :param base_url: tesseract server base URL used to look up Claude's
         external session id for redirect, e.g. ``"http://127.0.0.1:6767"``.
         ``None`` means redirect is unavailable.
     :param headers: HTTP auth headers for *base_url*, e.g.
@@ -2216,9 +2216,9 @@ def _fetch_external_session_id_for_redirect(
     regular switch / leave behavior available; the later cold resume
     path still performs the authoritative server validation.
 
-    :param base_url: Omnigent server base URL, or ``None`` when unavailable.
-    :param headers: HTTP headers for the Omnigent request.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param base_url: tesseract server base URL, or ``None`` when unavailable.
+    :param headers: HTTP headers for the tesseract request.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :returns: Claude session id, e.g.
         ``"02857840-6362-408f-b41f-309e396ed7c6"``, or ``None``.
     """
@@ -2276,7 +2276,7 @@ def _redirect_claude_transcript_to_current_project(
     new file is safely in place; a Claude session id has exactly one
     local project owner.
 
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param external_session_id: Claude session id / transcript stem,
         e.g. ``"02857840-6362-408f-b41f-309e396ed7c6"``.
     :param current: Current cwd, already resolved.
@@ -2608,7 +2608,7 @@ def _record_launch_for_fresh_session(session_id: str) -> None:
     missing record is just "no chdir prompt on resume", which is
     the same as a legacy session.
 
-    :param session_id: Newly created Omnigent conversation id, e.g.
+    :param session_id: Newly created tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :returns: None.
     """
@@ -3453,7 +3453,7 @@ def _run_with_local_server(
     startup_profiler: StartupProfiler | None = None,
 ) -> None:
     """
-    Start a local Omnigent server, launch Claude, and attach to it.
+    Start a local tesseract server, launch Claude, and attach to it.
 
     :param spec_path: Generated Claude wrapper agent spec.
     :param session_id: Optional existing session id.
@@ -3613,7 +3613,7 @@ class _AttachOutcome(Enum):
 
     :cvar EXITED: The user quit (stdin EOF / Ctrl-D), the terminal is
         gone, or the WS closed for a reason that ends the session. The
-        launcher tears down the runner and Omnigent terminal resource.
+        launcher tears down the runner and tesseract terminal resource.
     :cvar DETACHED: The user detached from tmux (close code 4405). The
         tmux session — and therefore Claude — is still running; the
         launcher adopts the runner so it outlives the local CLI and the
@@ -3661,9 +3661,9 @@ async def _attach_direct_tmux(
     server round-trip — the local TTY drives the runner's private tmux
     server over its Unix socket. ``TMUX`` is dropped from the child
     environment so a user who runs ``omnigent claude`` from inside
-    their own tmux can still attach to Omnigent' server. After the
+    their own tmux can still attach to tesseract' server. After the
     ``tmux attach`` child exits, a ``has-session`` probe distinguishes a
-    user *detach* (session still alive → keep the Omnigent terminal resource
+    user *detach* (session still alive → keep the tesseract terminal resource
     live) from Claude *exiting* (session gone → caller closes the
     resource), matching the WebSocket path's 4405-vs-4404 semantics.
 
@@ -3758,8 +3758,8 @@ async def _attach_with_transcript_forwarder(
     AP-side terminal resource is best-effort marked stopped (skipped
     on reattach — the launcher owns teardown).
 
-    :param base_url: Omnigent server base URL.
-    :param headers: Static HTTP auth headers for Omnigent requests. For
+    :param base_url: tesseract server base URL.
+    :param headers: Static HTTP auth headers for tesseract requests. For
         long-lived remote sessions, ``auth`` (not ``headers``) is the
         authoritative source of the bearer token so OAuth tokens
         refresh transparently per request.
@@ -3772,7 +3772,7 @@ async def _attach_with_transcript_forwarder(
         attempts. ``None`` disables reconnect (local-server flow).
     :param auth: Optional httpx Auth that mints a fresh bearer token
         per request, e.g. ``_server_auth(profile)``. Forwarded to the
-        transcript forwarder's HTTP client so Omnigent posts continue to
+        transcript forwarder's HTTP client so tesseract posts continue to
         authenticate after Databricks OAuth token expiry (~1h).
     :param run_transcript_forwarder: Whether this attach process owns
         Claude transcript forwarding. ``False`` for daemon/runner-owned
@@ -3788,7 +3788,7 @@ async def _attach_with_transcript_forwarder(
     # ``start_at_end`` covers both reattach (terminal still live,
     # transcript JSONL still growing) and cold resume (new terminal
     # but ``claude --resume <sid>`` reopens the prior transcript so
-    # offset 0 contains turns Omnigent already has from the previous run).
+    # offset 0 contains turns tesseract already has from the previous run).
     # See ``PreparedClaudeTerminal.cold_resumed`` for the duplicate-
     # broadcast hazard this avoids.
     skip_existing_transcript = prepared.reattached or prepared.cold_resumed
@@ -3855,7 +3855,7 @@ async def _attach_with_transcript_forwarder(
             except Exception:  # noqa: BLE001
                 # The forwarder is best-effort mirroring. A bug there
                 # (corrupt transcript JSONL, file-system error, anything
-                # uncaught in the parser) must not skip the Omnigent terminal
+                # uncaught in the parser) must not skip the tesseract terminal
                 # stop call below — otherwise the web UI shows a phantom
                 # live terminal after the wrapper exits.
                 _logger.warning(
@@ -3863,7 +3863,7 @@ async def _attach_with_transcript_forwarder(
                     exc_info=True,
                 )
         # On detach the tmux session — and Claude — is still running, so
-        # the Omnigent terminal resource must stay live (the web UI keeps
+        # the tesseract terminal resource must stay live (the web UI keeps
         # rendering it). Only mark it stopped on a real exit.
         if not prepared.reattached and outcome is not _AttachOutcome.DETACHED:
             active_session_id = read_active_session_id(prepared.bridge_dir) or prepared.session_id
@@ -3915,7 +3915,7 @@ async def _attach_with_reconnect(
         are logged and the loop still retries.
     :param session_name: User-facing native session name used in reconnect
         messages, e.g. ``"Claude"`` or ``"Codex"``.
-    :param base_url: Omnigent server URL for the post-close terminal probe;
+    :param base_url: tesseract server URL for the post-close terminal probe;
         ``None`` disables the probe.
     :param session_id: Session/conversation id for the probe path.
     :param terminal_id: Terminal resource id for the probe path.
@@ -3923,7 +3923,7 @@ async def _attach_with_reconnect(
         each reconnect reads the active session id so attaches follow
         ``/clear`` terminal transfers.
     :param active_session_id_reader: Optional callback that returns
-        the latest active Omnigent session id, e.g. ``"conv_new"``. This is
+        the latest active tesseract session id, e.g. ``"conv_new"``. This is
         used by other terminal-first wrappers that share the reconnect
         loop but store active session state outside Claude's bridge.
     :param close_attach_on_terminal_gone: When ``True``, pass a
@@ -3974,7 +3974,7 @@ async def _attach_with_reconnect(
 
                     :param probe_session_id: Session id captured for
                         this attach attempt, e.g. ``"conv_abc123"``.
-                    :returns: ``True`` when the Omnigent terminal resource
+                    :returns: ``True`` when the tesseract terminal resource
                         is definitively stopped.
                     """
                     return await _is_terminal_resource_gone(
@@ -4072,8 +4072,8 @@ async def _is_terminal_resource_gone(
     remains the authoritative kill signal handled in
     :func:`_attach_with_reconnect`.
 
-    :param base_url: Omnigent server base URL.
-    :param headers: HTTP auth headers for the Omnigent server. Mutated in
+    :param base_url: tesseract server base URL.
+    :param headers: HTTP auth headers for the tesseract server. Mutated in
         place by the recover callback in remote mode; passing the
         same dict reference picks up the current bearer.
     :param session_id: Session/conversation id, e.g. ``"conv_abc123"``.
@@ -4227,7 +4227,7 @@ async def _newest_session_error_item(
     the user's TTY. Best-effort: any transport failure, non-200, or
     unexpected payload yields ``None``.
 
-    :param client: HTTP client pointed at the Omnigent server.
+    :param client: HTTP client pointed at the tesseract server.
     :param session_id: Session id, e.g. ``"conv_abc123"``.
     :returns: The newest error item's ``(id, message)``, or ``None``
         when the session has none (or the read failed).
@@ -4280,7 +4280,7 @@ async def _wait_for_claude_terminal_ready(
     fast with that real cause, instead of burning the full timeout and
     reporting only a generic message.
 
-    :param client: HTTP client pointed at the Omnigent server.
+    :param client: HTTP client pointed at the tesseract server.
     :param session_id: Session id, e.g. ``"conv_abc123"``.
     :param timeout_s: Max seconds to wait, e.g. ``60.0``.
     :returns: The terminal resource id, e.g. ``"terminal_claude_main"``.
@@ -4341,7 +4341,7 @@ async def _ensure_claude_terminal_on_runner(
     :func:`_wait_for_claude_terminal_ready` poll surfaces the clear error
     if the terminal still never appears.
 
-    :param client: HTTP client pointed at the Omnigent server.
+    :param client: HTTP client pointed at the tesseract server.
     :param session_id: Session id, e.g. ``"conv_abc123"``.
     :returns: None.
     """
@@ -4382,8 +4382,8 @@ async def _prepare_claude_terminal_via_daemon(
     runner's auto-create convention. See
     designs/NATIVE_RUNNER_SERVER_LAUNCH.md.
 
-    :param base_url: Omnigent server base URL.
-    :param headers: Static HTTP auth headers for Omnigent requests.
+    :param base_url: tesseract server base URL.
+    :param headers: Static HTTP auth headers for tesseract requests.
     :param session_id: Existing session id to resume, or ``None`` to
         create a fresh session from *session_bundle*.
     :param session_bundle: Gzipped agent bundle, required when
@@ -4605,7 +4605,7 @@ def _run_with_remote_server(
     startup_profiler: StartupProfiler | None = None,
 ) -> None:
     """
-    Launch Claude on a remote Omnigent server via the connect daemon.
+    Launch Claude on a remote tesseract server via the connect daemon.
 
     Ensures the connect daemon is running for *base_url*, then routes
     the runner launch through it (HOST_BY_DEFAULT): the daemon — not
@@ -4617,7 +4617,7 @@ def _run_with_remote_server(
     attaches (directly to the runner's tmux when it is local, else over
     the WebSocket terminal bridge). See designs/NATIVE_RUNNER_SERVER_LAUNCH.md.
 
-    :param base_url: Remote Omnigent server base URL without a trailing
+    :param base_url: Remote tesseract server base URL without a trailing
         slash, e.g. ``"https://example.databricks.com"``.
     :param spec_path: Generated Claude wrapper agent spec.
     :param session_id: Optional existing session id.
@@ -4736,7 +4736,7 @@ def _run_with_remote_server(
                 )
             except httpx.ConnectError as exc:
                 # The first server contact (session create) could not open a
-                # TCP connection — the Omnigent server at this URL isn't reachable.
+                # TCP connection — the tesseract server at this URL isn't reachable.
                 # Fail loud with the URL instead of a raw httpx traceback.
                 raise click.ClickException(
                     f"Could not reach the omnigent server at {base_url}. "
@@ -4832,8 +4832,8 @@ async def _prepare_claude_terminal(
     """
     Create/bind a session and launch its Claude terminal resource.
 
-    :param base_url: Omnigent server base URL.
-    :param headers: Static HTTP auth headers for the Omnigent server.
+    :param base_url: tesseract server base URL.
+    :param headers: Static HTTP auth headers for the tesseract server.
     :param session_id: Optional existing session id.
     :param runner_id: Runner id to bind to the session.
     :param session_bundle: Gzipped agent bundle for new sessions.
@@ -4862,10 +4862,10 @@ async def _prepare_claude_terminal(
         # Cold resume = session existed but no live terminal. Even when
         # ``_resolve_cold_resume_args`` returns ``()`` (no captured
         # external_session_id, so Claude starts a fresh transcript),
-        # Omnigent already holds the prior conversation history from the
+        # tesseract already holds the prior conversation history from the
         # earlier run. The forwarder must not re-read whatever the new
         # transcript file contains at startup and republish it as new
-        # Omnigent events. Both subcases — injected ``--resume <claude_sid>``
+        # tesseract events. Both subcases — injected ``--resume <claude_sid>``
         # and the warn-and-fallback path — share this hazard, so a
         # single ``cold_resumed`` flag covers both.
         cold_resumed = False
@@ -5021,10 +5021,10 @@ async def _fetch_claude_session_labels(
     session_id: str,
 ) -> dict[str, str]:
     """
-    Fetch labels for an existing Claude-native Omnigent session.
+    Fetch labels for an existing Claude-native tesseract session.
 
-    :param client: HTTP client for the Omnigent server.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client for the tesseract server.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :returns: Session labels as a string dictionary. Empty when the
         session has no labels.
     :raises click.ClickException: If the session lookup fails.
@@ -5067,8 +5067,8 @@ async def _resolve_cold_resume_args(
     local transcript yields no resumable records (an empty transcript
     would make ``claude --resume`` exit instead of start).
 
-    :param client: HTTP client for the Omnigent server.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client for the tesseract server.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :returns: ``("--resume", "<claude_sid>")`` or ``()`` when no id is
         mapped or there is no resumable history.
     :raises click.ClickException: Conversation missing or not claude-native.
@@ -5100,7 +5100,7 @@ async def _resolve_cold_resume_args(
         )
     external_session_id = payload.get("external_session_id")
     if not isinstance(external_session_id, str) or not external_session_id:
-        # Omnigent conv survives; claude side starts fresh. Warn on
+        # tesseract conv survives; claude side starts fresh. Warn on
         # both channels: ``click.echo`` for the foreground user,
         # ``_logger.warning`` for log aggregation (Sentry).
         message = (
@@ -5119,7 +5119,7 @@ async def _resolve_cold_resume_args(
     if transcript is None:
         # No resumable records: ``claude --resume`` against an empty (or
         # absent) transcript exits with "No conversation found" instead of
-        # starting. Launch fresh — the Omnigent conv survives.
+        # starting. Launch fresh — the tesseract conv survives.
         message = (
             f"no resumable claude history for {session_id!r}; "
             f"resuming with no prior claude context."
@@ -5140,16 +5140,16 @@ async def _ensure_local_claude_resume_transcript(
     """
     Refresh Claude Code's local JSONL transcript for cold resume.
 
-    Cross-machine resume has the Omnigent conversation and Claude external
+    Cross-machine resume has the tesseract conversation and Claude external
     session id on the server, but not Claude Code's local
     ``~/.claude/projects/<cwd>/<sid>.jsonl`` file. Claude's
     ``--resume <sid>`` consults that local project transcript. The
-    wrapper always rewrites it from committed Omnigent items before launch so
-    Omnigent remains the source of truth when a previous local Claude JSONL
+    wrapper always rewrites it from committed tesseract items before launch so
+    tesseract remains the source of truth when a previous local Claude JSONL
     has diverged.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent conversation id, e.g.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param external_session_id: Claude-native session id, e.g.
         ``"02857840-6362-408f-b41f-309e396ed7c6"``.
@@ -5165,7 +5165,7 @@ async def _ensure_local_claude_resume_transcript(
         history yields no resumable records (an empty transcript would make
         ``claude --resume`` exit instead of start, so the caller must launch
         fresh).
-    :raises click.ClickException: If Omnigent history cannot be fetched or
+    :raises click.ClickException: If tesseract history cannot be fetched or
         the transcript cannot be written.
     """
     if not _CLAUDE_SESSION_ID_RE.fullmatch(external_session_id):
@@ -5276,8 +5276,8 @@ async def _fetch_all_session_items_for_claude_resume(
     """
     Fetch committed session items in chronological order.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent conversation id, e.g.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :returns: Flat API item dicts from
         ``GET /v1/sessions/{id}/items``.
@@ -5380,8 +5380,8 @@ async def _resolve_session_item_file_references(
     current-message fallback performs. A failed fetch is non-fatal: the
     block stays unresolved and the converter surfaces a visible marker.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param items: Flat API item dicts from ``GET /v1/sessions/{id}/items``.
     :returns: The same items with resolvable attachment blocks rewritten
         to carry ``image_url`` / ``file_data`` data URIs.
@@ -5419,11 +5419,11 @@ def _claude_transcript_records_from_session_items(
     bridge_dir: Path,
 ) -> list[_JsonObject]:
     """
-    Convert Omnigent session items into Claude Code transcript records.
+    Convert tesseract session items into Claude Code transcript records.
 
-    :param items: Flat Omnigent item dicts in chronological order, e.g.
+    :param items: Flat tesseract item dicts in chronological order, e.g.
         ``{"type": "message", "role": "user", "content": [...]}``.
-    :param session_id: Omnigent conversation id, e.g.
+    :param session_id: tesseract conversation id, e.g.
         ``"conv_abc123"``. Used as part of deterministic synthetic
         UUID generation.
     :param external_session_id: Claude-native session id, e.g.
@@ -5547,16 +5547,16 @@ def _claude_transcript_record_from_session_item(
     allow_native_message_content: bool = False,
 ) -> _JsonObject | None:
     """
-    Convert one Omnigent item into one Claude transcript record.
+    Convert one tesseract item into one Claude transcript record.
 
     No ``message.model`` is emitted. An item's wire ``model`` is the
-    Omnigent *agent* name (``MessageData.agent`` serializes under that
+    tesseract *agent* name (``MessageData.agent`` serializes under that
     alias), e.g. ``"claude-native-ui"`` — not a Claude model id. Copying
     it through made ``--resume`` report "Session model … could not be
     restored" and silently fall back to another model; omitting it lets
     Claude keep its configured one.
 
-    :param item: Flat Omnigent item dict, e.g.
+    :param item: Flat tesseract item dict, e.g.
         ``{"type": "function_call", "name": "Read", ...}``.
     :param session_id: Claude-native session id for the transcript,
         e.g. ``"02857840-6362-408f-b41f-309e396ed7c6"``.
@@ -5571,7 +5571,7 @@ def _claude_transcript_record_from_session_item(
     :param allow_native_message_content: Accept Claude-native string and
         content-block shapes when API-block conversion finds no content.
     :returns: Claude transcript record, or ``None`` for unsupported or
-        empty Omnigent items.
+        empty tesseract items.
     """
     item_type = item.get("type")
     message: _JsonObject | None = None
@@ -5737,11 +5737,11 @@ def _synthetic_claude_transcript_uuid(
     """
     Build a stable UUID for one synthesized transcript record.
 
-    :param session_id: Omnigent conversation id, e.g.
+    :param session_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param external_session_id: Claude-native session id, e.g.
         ``"02857840-6362-408f-b41f-309e396ed7c6"``.
-    :param item: Omnigent item dict. ``id`` is used when present.
+    :param item: tesseract item dict. ``id`` is used when present.
     :param index: Zero-based fallback index.
     :returns: UUID string, e.g.
         ``"d4ffea8e-87dc-5c7b-8f86-3dece5760a22"``.
@@ -5761,7 +5761,7 @@ def _claude_user_content_from_api_blocks(
     bridge_dir: Path,
 ) -> str | list[_JsonObject] | None:
     """
-    Convert Omnigent user message blocks into Claude message content.
+    Convert tesseract user message blocks into Claude message content.
 
     Attachment blocks (``input_image`` / ``input_file``) cannot ride the
     transcript as bytes; resolved ones are re-materialized under the
@@ -5769,7 +5769,7 @@ def _claude_user_content_from_api_blocks(
     unresolved ones surface as a visible could-not-load marker — never a
     silent drop.
 
-    :param content: Omnigent ``content`` value, e.g.
+    :param content: tesseract ``content`` value, e.g.
         ``[{"type": "input_text", "text": "hello"}]``.
     :param bridge_dir: Session bridge directory for re-materializing
         attachment blocks.
@@ -5799,7 +5799,7 @@ def _claude_attachment_text_blocks_from_api_content(
     block whose bytes never arrived yields the could-not-load placeholder
     instead of vanishing from the rebuilt transcript.
 
-    :param content: Omnigent content array, e.g.
+    :param content: tesseract content array, e.g.
         ``[{"type": "input_image", "image_url": "data:image/png;..."}]``.
     :param bridge_dir: Session bridge directory to write files under.
     :returns: Claude ``{"type": "text", "text": ...}`` blocks.
@@ -5821,9 +5821,9 @@ def _claude_assistant_content_from_api_blocks(
     content: object,
 ) -> list[_JsonObject] | None:
     """
-    Convert Omnigent assistant message blocks into Claude text blocks.
+    Convert tesseract assistant message blocks into Claude text blocks.
 
-    :param content: Omnigent ``content`` value, e.g.
+    :param content: tesseract ``content`` value, e.g.
         ``[{"type": "output_text", "text": "hello"}]``.
     :returns: Claude ``text`` content blocks, or ``None`` when no
         assistant text exists.
@@ -5838,11 +5838,11 @@ def _claude_text_blocks_from_api_content(
     api_type: str,
 ) -> list[_JsonObject]:
     """
-    Extract text blocks from an Omnigent content array.
+    Extract text blocks from an tesseract content array.
 
-    :param content: Omnigent content array, e.g.
+    :param content: tesseract content array, e.g.
         ``[{"type": "input_text", "text": "hello"}]``.
-    :param api_type: Omnigent block type to include, e.g.
+    :param api_type: tesseract block type to include, e.g.
         ``"input_text"`` or ``"output_text"``.
     :returns: Claude ``{"type": "text", "text": ...}`` blocks.
     """
@@ -5875,7 +5875,7 @@ def _json_object_from_string(value: object) -> _JsonObject:
     """
     Parse a JSON object string, returning ``{}`` on non-object input.
 
-    :param value: JSON string from an Omnigent function-call item, e.g.
+    :param value: JSON string from an tesseract function-call item, e.g.
         ``"{\"file_path\":\"README.md\"}"``.
     :returns: Parsed object suitable for a Claude ``tool_use.input``
         field.
@@ -5995,7 +5995,7 @@ def _preflight_local_tools(command: str) -> None:
     if resolved_command is None:
         raise click.ClickException(
             f"Claude Code CLI command {command!r} was not found on local PATH. "
-            "--server selects the Omnigent server only; Claude still runs locally."
+            "--server selects the tesseract server only; Claude still runs locally."
         )
     try:
         validate_claude_hook_interpreter_compatibility(resolved_command)
@@ -6025,7 +6025,7 @@ async def _create_claude_session(
     ``omnigent.wrapper = claude-code-native-ui`` label until the
     real title lands, so no server-side placeholder is needed.
 
-    :param client: HTTP client pointed at the Omnigent server.
+    :param client: HTTP client pointed at the tesseract server.
     :param bundle: Gzipped Claude wrapper agent bundle.
     :param bridge_id: Opaque bridge id to write on the session labels,
         e.g. ``"bridge_abc123"``. ``None`` omits the label so every
@@ -6083,9 +6083,9 @@ async def _launch_claude_terminal(
     """
     Launch the server-backed Claude terminal resource.
 
-    :param client: HTTP client pointed at the Omnigent server. Its
+    :param client: HTTP client pointed at the tesseract server. Its
         ``base_url`` and ``headers`` are reused as the
-        ``PermissionRequest`` command hook's Omnigent URL and auth. The hook
+        ``PermissionRequest`` command hook's tesseract URL and auth. The hook
         subprocess posts back to the same server with the same auth the
         wrapper already negotiated.
     :param session_id: Session/conversation id.
@@ -6142,7 +6142,7 @@ async def _find_running_claude_terminal(
     callers deterministically bind the current local runner and launch
     a fresh terminal.
 
-    :param client: HTTP client pointed at the Omnigent server.
+    :param client: HTTP client pointed at the tesseract server.
     :param session_id: Session/conversation id, e.g.
         ``"conv_abc123"``.
     :returns: The deterministic Claude terminal id, or ``None`` when
@@ -6207,7 +6207,7 @@ async def _read_claude_terminal_tmux(
     missing metadata yields ``(None, None)``, which callers treat as
     "not locally attachable" and fall back to the WebSocket path.
 
-    :param client: HTTP client pointed at the Omnigent server.
+    :param client: HTTP client pointed at the tesseract server.
     :param session_id: Session/conversation id, e.g. ``"conv_abc123"``.
     :returns: The tmux coordinates, or ``_ClaudeTerminalTmux(None,
         None)`` when unavailable.
@@ -6251,10 +6251,10 @@ def _claude_terminal_request(
     :param command: Executable to run in the terminal resource.
     :param bridge_dir: Bridge directory shared with Claude's MCP
         server and the web-chat harness.
-    :param ap_server_url: Omnigent server base URL passed through to
+    :param ap_server_url: tesseract server base URL passed through to
         :func:`augment_claude_args` so Claude's
         ``PermissionRequest`` command hook is registered against the
-        live Omnigent server.
+        live tesseract server.
     :param ap_auth_headers: Auth headers for the
         ``PermissionRequest`` command hook.
     :param claude_config: Optional ucode-derived Claude Code config.
@@ -6358,7 +6358,7 @@ async def attach_local_terminal(
     terminal_gone_watch_interval_s: float = _CLAUDE_TERMINAL_GONE_WATCH_INTERVAL_S,
 ) -> bool:
     """
-    Attach the local TTY to an Omnigent terminal WebSocket.
+    Attach the local TTY to an tesseract terminal WebSocket.
 
     :param attach_url: Fully-qualified ``ws://`` or ``wss://`` attach
         URL.
@@ -6369,7 +6369,7 @@ async def attach_local_terminal(
     :param stdout_fd: File descriptor to write terminal output to.
         ``None`` uses ``sys.stdout``.
     :param terminal_gone_probe: Optional async callback returning
-        ``True`` once the Omnigent terminal resource is stopped. When set,
+        ``True`` once the tesseract terminal resource is stopped. When set,
         the client closes its WebSocket locally instead of waiting for
         the server close frame to propagate.
     :param terminal_gone_watch_interval_s: Poll interval for
@@ -6434,7 +6434,7 @@ async def _close_ws_when_terminal_gone(
     poll_interval_s: float,
 ) -> None:
     """
-    Close the client WebSocket when the Omnigent terminal resource stops.
+    Close the client WebSocket when the tesseract terminal resource stops.
 
     This is a client-side fast-exit path for native Claude shutdown:
     the runner can mark the terminal stopped before the attach

@@ -1,1 +1,1 @@
-"""Reference Omnigent browser extension."""
+"""Reference tesseract browser extension."""

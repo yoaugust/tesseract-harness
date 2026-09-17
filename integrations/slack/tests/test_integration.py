@@ -1,6 +1,6 @@
-"""Vertical integration tests: omnigent-slack ↔ Omnigent HTTP server.
+"""Vertical integration tests: omnigent-slack ↔ tesseract HTTP server.
 
-These drive the REAL ``OmnigentClient`` (real ``httpx``) against a fake Omnigent
+These drive the REAL ``OmnigentClient`` (real ``httpx``) against a fake tesseract
 server (:class:`FakeOmnigentServer`, a ``respx`` router that owns the API
 contract), and assert BOTH sides of the seam:
 

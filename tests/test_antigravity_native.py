@@ -628,7 +628,7 @@ async def test_launch_and_record_isolates_gemini_dir_and_wires_relay(
 
     agy loads MCP servers and settings only from the dir its ``--gemini_dir``
     points at. Without the flag this path read the user's real ``~/.gemini``: agy
-    saw no Omnigent relay (so no ``sys_*`` tools, #1194) and the survey/trust
+    saw no tesseract relay (so no ``sys_*`` tools, #1194) and the survey/trust
     seeds rewrote the user's own ``settings.json``. Asserts the relay config lands
     in the isolated dir, the flag points at it, and ``HOME`` stays real so
     keyring-backed auth (macOS Keychain) still resolves (#1477).

@@ -135,7 +135,7 @@ _ANTIGRAVITY_MIN_VERSION = "1.1.13"
 OPENCODE_KEY = "opencode"
 
 # Goose authenticates against its own config (``goose configure`` → keyring /
-# ``~/.config/goose/config.yaml``) with no Omnigent-managed credential, and ships
+# ``~/.config/goose/config.yaml``) with no tesseract-managed credential, and ships
 # via Homebrew / a curl installer rather than npm — so it carries an
 # ``install_hint``, not a ``package``.
 GOOSE_KEY = "goose"
@@ -149,7 +149,7 @@ COPILOT_KEY = "copilot"
 
 # Hermes Agent is installed via a curl installer from Nous Research and
 # authenticates through its own ``hermes model`` interactive flow (no
-# Omnigent-managed credentials). The ``hermes`` binary must be on PATH.
+# tesseract-managed credentials). The ``hermes`` binary must be on PATH.
 HERMES_KEY = "hermes"
 
 _HERMES_INSTALL_HINT = "curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash"
@@ -181,7 +181,7 @@ _HARNESS_INSTALL: dict[str, HarnessInstallSpec] = {
         login_status_key="loggedIn",
         install_hint=_CLAUDE_INSTALL_HINT,
         install_command=("bash", "-c", _CLAUDE_INSTALL_HINT),
-        # The native bridge injects Omnigent's MCP relay via `--mcp-config`;
+        # The native bridge injects tesseract's MCP relay via `--mcp-config`;
         # that flag first shipped in Claude Code 0.2.75.
         min_version=_CLAUDE_MIN_VERSION,
     ),

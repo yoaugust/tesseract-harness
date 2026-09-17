@@ -2,7 +2,7 @@
 
 ``_cursor_native_resume_args`` builds the ``["--resume", chat_id]`` suffix
 that ``_auto_create_cursor_terminal`` appends to cursor-agent's launch args
-when the Omnigent session already has an ``external_session_id`` (set by the
+when the tesseract session already has an ``external_session_id`` (set by the
 forwarder the first time it discovers the cursor chat store). A missing or
 empty id means a brand-new session — no ``--resume`` is injected. A malformed
 id (not a UUID-shaped hex+dash string) is rejected defensively.

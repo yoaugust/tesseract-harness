@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent web-chat turns into the native Goose TUI.
+"""Executor that bridges tesseract web-chat turns into the native Goose TUI.
 
 It does not launch ``goose`` — the ``omnigent goose`` wrapper already launched
 the interactive ``goose session`` TUI in the session terminal. Each web-UI turn

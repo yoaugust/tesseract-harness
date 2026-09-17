@@ -51,7 +51,7 @@ Then use `.venv/bin/python` / `.venv/bin/omni` below.
 
 ## Part A — the deterministic mock loop (`polly_cuj.py`)
 
-The driver boots a throwaway local Omnigent server (which carries
+The driver boots a throwaway local tesseract server (which carries
 `omnigent.inner.nessie.policies` — the module polly's guardrails resolve) plus
 the repo's mock-LLM server, rewrites the polly bundle to the `openai-agents`
 harness wired to the mock, then runs `omnigent run` turns where the brain is

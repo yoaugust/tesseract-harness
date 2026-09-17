@@ -61,7 +61,7 @@ def run_resume(
 
     :param target: Optional conversation id, e.g. ``"conv_abc123"``.
         ``None`` selects the picker form.
-    :param server: Optional remote Omnigent server URL. Required in the
+    :param server: Optional remote tesseract server URL. Required in the
         picker form (no agent is supplied so we can't bootstrap a
         local server). For the direct-id form, ``None`` reads the
         persistent local session store and dispatches to the matching
@@ -106,7 +106,7 @@ def _pick_conversation_for_resume(
     empty-list both surface as ``None`` — the caller treats both as
     "no resume requested" and exits cleanly.
 
-    :param server: Remote Omnigent server URL, e.g.
+    :param server: Remote tesseract server URL, e.g.
         ``"https://example.databricksapps.com"``.
     :returns: Selected conversation id, or ``None`` on cancel.
     """
@@ -213,7 +213,7 @@ def _dispatch_by_runtime(
     this PR's scope.
 
     :param target: Conversation id, e.g. ``"conv_abc123"``.
-    :param server: Optional remote Omnigent server URL. ``None`` when
+    :param server: Optional remote tesseract server URL. ``None`` when
         the lookup should hit a freshly-started local server (the
         claude-native wrapper owns its own local server lifecycle).
     :raises click.ClickException: When *target* is not a valid
@@ -277,9 +277,9 @@ def _dispatch_wrapper(
     Dispatch a terminal-native wrapper session.
 
     :param wrapper: Value from ``labels.omnigent.wrapper``.
-    :param server: Omnigent server base URL without trailing slash, or
+    :param server: tesseract server base URL without trailing slash, or
         ``None`` for the local persistent server path.
-    :param session_id: Omnigent conversation id.
+    :param session_id: tesseract conversation id.
     :returns: ``True`` when a wrapper handled the session.
     """
     native_agent = native_coding_agent_for_wrapper_label(wrapper)
@@ -296,7 +296,7 @@ def _read_wrapper_label_local(*, conv_id: str) -> str | None:
     """
     Read a conversation's wrapper label from the local persistent store.
 
-    :param conv_id: Local Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param conv_id: Local tesseract conversation id, e.g. ``"conv_abc123"``.
     :returns: Value of ``labels.omnigent.wrapper``, or ``None`` when
         no wrapper label is present.
     :raises click.ClickException: If the conversation id is not found
@@ -313,7 +313,7 @@ def _read_wrapper_label_local(*, conv_id: str) -> str | None:
     if conversation is None:
         raise click.ClickException(
             f"Conversation {conv_id!r} not found in the local persistent store. "
-            "Pass --server if the conversation lives on a remote Omnigent server.",
+            "Pass --server if the conversation lives on a remote tesseract server.",
         )
     labels = conversation.labels
     return labels.get(_WRAPPER_LABEL_KEY) if isinstance(labels, dict) else None
@@ -333,8 +333,8 @@ def _read_wrapper_label_remote(
     clear error on mismatch), so duplicating it here would mean two
     GETs for the same resolution.
 
-    :param server: Remote Omnigent server URL.
-    :param conv_id: Omnigent conversation id.
+    :param server: Remote tesseract server URL.
+    :param conv_id: tesseract conversation id.
     :returns: Wrapper label string, or ``None`` when no
         ``omnigent.wrapper`` label is present on the row.
     :raises click.ClickException: On 404 (conv not found), other

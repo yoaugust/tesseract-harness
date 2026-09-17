@@ -65,14 +65,14 @@ async def test_events_effort_change_on_native_session_skips_inject_for_unsupport
     """
     Unsupported / null effort values 204 without typing into tmux.
 
-    Omnigent server is harness-agnostic — it always forwards the new
+    tesseract server is harness-agnostic — it always forwards the new
     persisted effort to ``/events``. The runner's native handler
     owns the level-validation, skipping injection when the value
     isn't in Claude's accepted set. Persistence already happened on
-    the Omnigent side; the next spawn picks up the value via ``--effort``.
+    the tesseract side; the next spawn picks up the value via ``--effort``.
 
     Pins that the validation lives in the runner (where the
-    harness-specific knowledge belongs), not in the Omnigent server.
+    harness-specific knowledge belongs), not in the tesseract server.
     """
     from omnigent.spec.types import ExecutorSpec
 
@@ -146,7 +146,7 @@ async def test_events_effort_change_on_native_session_returns_503_when_bridge_no
     Sister to the happy-path test. Pins that the failure mode of the
     native effort dispatch (tmux pane gone / bridge dir not yet
     advertised) returns 503 with the same error code shape the
-    legacy route returns. Omnigent server's PATCH swallows this 503 and
+    legacy route returns. tesseract server's PATCH swallows this 503 and
     still returns 200 with the persisted value — the next spawn
     will apply the new effort via ``--effort``.
     """
@@ -221,7 +221,7 @@ async def test_events_effort_change_on_non_native_session_is_204_noop(
     In-process harnesses (default / claude-sdk / openai-agents / codex / pi)
     get the new effort on their next turn, from the ``reasoning`` block the
     runner threads onto the forwarded body — so the event needs no injection
-    and no immediate forward. The Omnigent server POSTs ``effort_change`` to
+    and no immediate forward. The tesseract server POSTs ``effort_change`` to
     ``/events`` for every PATCH (it's harness-agnostic), so the runner must
     accept the event and 204 — never reach the slash-command injector, never
     forward to the harness scaffold.
@@ -297,7 +297,7 @@ async def test_events_permission_mode_change_on_native_session_switches_and_echo
 
     Claude Code's ``--permission-mode`` is launch-only, so the runner drives
     the TUI's shift+tab cycle via the bridge. The 200 body echoes the mode the
-    pane actually landed on — the Omnigent server persists that value, so a
+    pane actually landed on — the tesseract server persists that value, so a
     regression returning 204 (or dropping the body) would leave the web UI
     showing a mode the session isn't in.
     """
@@ -359,7 +359,7 @@ async def test_events_permission_mode_change_returns_503_when_mode_unreachable(
     A failed switch surfaces 503 so the label is never persisted.
 
     ``auto`` is only in the shift+tab cycle for accounts that have the mode.
-    The Omnigent server treats a non-2xx as "the pane did not move" and skips
+    The tesseract server treats a non-2xx as "the pane did not move" and skips
     persisting the label, so this must not report success.
     """
     from omnigent.spec.types import ExecutorSpec
@@ -481,12 +481,12 @@ async def test_events_compact_on_native_session_types_slash_command(
 
     Explicit compaction on a claude-native session must run inside
     Claude Code (it owns its own context window in the terminal); the
-    Omnigent server's own compaction would only summarise the transcript
+    tesseract server's own compaction would only summarise the transcript
     mirror. The runner's ``/events`` dispatch recognises the native
     harness and routes to ``_handle_claude_native_compact``, which
     types the slash command into the pane.
 
-    The 200 (not 204) is load-bearing: the Omnigent server reads it to know
+    The 200 (not 204) is load-bearing: the tesseract server reads it to know
     the control was handled in the terminal. A regression returning 204 here
     would make the server return a 400 "not available for this session type"
     error instead of the native compact succeeding.
@@ -671,7 +671,7 @@ async def test_events_compact_on_codex_native_types_settles_then_submits(
     compaction must run inside Codex — the same rationale as the
     claude-native path.  The pane coordinates come from the resource
     registry (not a ``tmux.json`` sidecar).  The 200 return is
-    load-bearing: the Omnigent server reads it to skip its own
+    load-bearing: the tesseract server reads it to skip its own
     AP-side compaction.
 
     The settle between typing and Enter is load-bearing too: typing
@@ -843,7 +843,7 @@ async def test_events_compact_on_codex_native_returns_503_on_tmux_failure(
     """
     Codex-native compact returns 503 when the tmux send-keys call fails.
 
-    The 503 tells the Omnigent server the control was NOT handled, so it
+    The 503 tells the tesseract server the control was NOT handled, so it
     can surface an error rather than silently running its own (wrong)
     compaction.
     """
@@ -915,7 +915,7 @@ async def test_events_compact_on_cursor_native_pastes_summarize_and_raises_spinn
     cursor-agent manages its own context window in the TUI, so explicit
     compaction must run there (its built-in ``/summarize`` command) rather
     than as AP-side compaction — the same rationale as the claude-native
-    path. The 200 (not 204) is load-bearing: the Omnigent server reads it to
+    path. The 200 (not 204) is load-bearing: the tesseract server reads it to
     know the control was handled in the terminal.
 
     Two properties are pinned here:
@@ -986,7 +986,7 @@ async def test_events_compact_on_cursor_native_pastes_summarize_and_raises_spinn
 
     # 200 = cursor-native dispatch routed to the compact handler and the paste
     # succeeded. 204 would mean the dispatch fell through to the in-process
-    # no-op branch (the original gap) → Omnigent runs its own compaction and 400s.
+    # no-op branch (the original gap) → tesseract runs its own compaction and 400s.
     assert resp.status_code == 200, (
         f"Cursor-native compact must return 200 from /events; got {resp.status_code}: {resp.text}"
     )
@@ -1133,7 +1133,7 @@ async def test_events_compact_on_pi_native_enqueues_compact_payload(
     queues a ``compact`` payload to the Pi extension inbox and returns 200.
 
     Pi owns its context window inside the resident Pi TUI process, so explicit
-    compaction must run there (the Omnigent server's AP-side compaction would
+    compaction must run there (the tesseract server's AP-side compaction would
     only summarise the transcript mirror and desync the two, and 400s on the
     LLM-less pi-native pseudo-agent). The runner's ``compact`` dispatch routes
     to ``_handle_pi_native_compact``, which drops a ``compact`` payload into the
@@ -1144,7 +1144,7 @@ async def test_events_compact_on_pi_native_enqueues_compact_payload(
     cursor-native, so pi-native fell through to the 204 no-op.
 
     Pins:
-    1. 200 returned (not 204) so the Omnigent server skips its own AP-side
+    1. 200 returned (not 204) so the tesseract server skips its own AP-side
        compaction.
     2. A ``compact_*`` payload is written to the session's bridge inbox.
     3. /compact is a control signal and publishes no ``session.status`` events.
@@ -1234,7 +1234,7 @@ async def test_events_compact_on_pi_native_returns_503_when_inbox_unwritable(
     Sister to the happy-path test. If the inbox enqueue raises OSError (e.g. a
     filesystem fault), the handler surfaces 503 with the
     ``pi_native_compact_failed`` code rather than silently swallowing the
-    request; the Omnigent server then treats it as not-handled.
+    request; the tesseract server then treats it as not-handled.
     """
     import omnigent.harnesses.pi_native.bridge as pi_native_bridge
     from omnigent.spec.types import ExecutorSpec
@@ -1674,7 +1674,7 @@ def test_resolve_opencode_compact_model_returns_none_when_unresolvable() -> None
     """
     Nothing resolvable → ``(None, None)`` so the handler 204s to AP-side.
 
-    Covers the live Omnigent flow: the session is created without a model and
+    Covers the live tesseract flow: the session is created without a model and
     has no assistant turn yet, and no override is set.
     """
     from omnigent.harnesses.opencode_native.client import OpenCodeSession
@@ -1696,8 +1696,8 @@ async def test_events_compact_on_opencode_native_summarizes_from_assistant_messa
     opencode-native compact resolves the live model and calls ``/summarize``.
 
     The model comes from the latest assistant message (``providerID`` +
-    ``modelID``) because Omnigent creates the session without a model. A 200
-    return is load-bearing: the Omnigent server reads it to skip its AP-side
+    ``modelID``) because tesseract creates the session without a model. A 200
+    return is load-bearing: the tesseract server reads it to skip its AP-side
     compaction (the native ``/summarize`` path was previously dead, always
     204ing because ``session.raw["model"]`` is empty).
     """
@@ -1821,7 +1821,7 @@ async def test_events_compact_on_opencode_native_503_when_summarize_raises(
     """
     A failing ``/summarize`` surfaces 503 with the opencode error code.
 
-    The Omnigent server must see the failure (rather than a silent fallback)
+    The tesseract server must see the failure (rather than a silent fallback)
     so it does not run a duplicate compaction.
     """
     from omnigent.harnesses.opencode_native.client import OpenCodeClientError
@@ -1860,7 +1860,7 @@ async def test_events_compact_on_non_native_session_is_204_noop(
     """
     Non-native sessions accept compact and 204 without side effects.
 
-    The Omnigent server forwards ``compact`` to ``/events`` for every harness,
+    The tesseract server forwards ``compact`` to ``/events`` for every harness,
     so the runner must accept the event and 204 — never reach the
     slash-command injector. The server then returns a 400 to the client
     (SDK harnesses control their own context; AP-side compaction is not available).
@@ -2592,7 +2592,7 @@ async def test_events_model_change_on_native_session_skips_inject_for_empty_or_n
     Null / empty / whitespace-only model values 204 without typing.
 
     Pins that the empty-value validation lives in the runner native
-    handler, not in the Omnigent server.
+    handler, not in the tesseract server.
     """
     from omnigent.spec.types import ExecutorSpec
 
@@ -2662,7 +2662,7 @@ async def test_events_model_change_on_native_session_returns_503_when_bridge_not
     Sister to the happy-path test. Pins that the failure mode of the
     native model dispatch (tmux pane gone / bridge dir not yet
     advertised) returns 503 with the same error code shape the
-    legacy ``/claude-native-model`` route used. Omnigent server's PATCH
+    legacy ``/claude-native-model`` route used. tesseract server's PATCH
     swallows this 503 and still returns 200 with the persisted
     value — the next spawn applies the new model via ``--model``.
     """
@@ -2733,7 +2733,7 @@ async def test_events_model_change_on_non_native_session_is_204_noop(
     Non-native sessions accept model_change and 204 without side effects.
 
     In-process harnesses re-read the persisted ``model_override`` on
-    each turn (or via the per-event override). Omnigent server is harness-
+    each turn (or via the per-event override). tesseract server is harness-
     agnostic and POSTs model_change for every PATCH, so the runner
     must accept the event with a 204 — never reach the slash-command
     injector.
@@ -2939,7 +2939,7 @@ async def test_events_model_change_on_cursor_native_session_returns_503_when_not
 
     Cursor analog of the claude-native 503 test: a missing tmux target
     (pane not attached yet) returns 503 with the cursor-specific error
-    code; Omnigent server swallows it and the next spawn applies ``--model``.
+    code; tesseract server swallows it and the next spawn applies ``--model``.
     """
     from omnigent.spec.types import ExecutorSpec
 
@@ -3089,7 +3089,7 @@ async def test_events_compact_on_claude_sdk_session_dispatches_compact_turn() ->
     turns the compact control into a resumed ``/compact`` turn and forwards it
     to the harness like any user message.
 
-    The 200 (not 204) is load-bearing: the Omnigent server reads it to know
+    The 200 (not 204) is load-bearing: the tesseract server reads it to know
     the harness handled the control and skips its own (transcript-only,
     ineffective for SDK) compaction. A regression returning 204 would make
     the server surface a 400 "not available for this session type" error.

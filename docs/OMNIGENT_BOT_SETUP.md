@@ -1,4 +1,4 @@
-# Omnigent bot identities & attribution setup
+# tesseract bot identities & attribution setup
 
 This doc explains how commits and automated PR reviews in the
 `omnigent-ai/omnigent` repo are attributed, and how the supporting GitHub App

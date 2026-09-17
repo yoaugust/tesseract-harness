@@ -2,15 +2,15 @@
 
 The runner launches the ``hermes`` TUI in a private tmux pane and records that
 pane's socket + target here via :func:`write_tmux_target`. The harness executor
-then delivers Omnigent web-UI messages into the *same* pane via
+then delivers tesseract web-UI messages into the *same* pane via
 :func:`inject_user_message` (tmux bracketed paste + a single Enter) — the Hermes
 analog of the goose-native tmux bridge. This is what wires the web-UI chat box to
 the running Hermes TUI (and, since the web UI embeds that pane, the message shows
 in both surfaces).
 
-When Omnigent policies are configured the runner writes a per-session
+When tesseract policies are configured the runner writes a per-session
 ``HERMES_HOME`` with a ``pre_tool_call`` hook (via :func:`write_policy_hook_config`)
-that evaluates tool calls against the Omnigent policy engine — the same hook used
+that evaluates tool calls against the tesseract policy engine — the same hook used
 by the headless ``hermes`` harness (:mod:`omnigent.inner.hermes_executor`). The
 ``HERMES_HOME`` env var in :func:`build_hermes_native_spawn_env` points the TUI at
 this per-session dir so the hook fires alongside Hermes' own approval prompt.
@@ -65,7 +65,7 @@ _PASTE_COMMIT_TIMEOUT_S = 5.0
 # This many stable polls in a row marks the input box ready.
 _SETTLE_STABLE_POLLS = 3
 # On a NEW session, Hermes blocks its prompt_toolkit input loop while it cold-
-# starts the Omnigent MCP server (a heavyweight ``python -m`` subprocess). A
+# starts the tesseract MCP server (a heavyweight ``python -m`` subprocess). A
 # paste delivered during that window is silently dropped — the pane can look
 # "settled" (a static banner) even though no widget is capturing keys yet. A
 # dropped first message is doubly bad: it not only loses the turn, it permanently
@@ -213,7 +213,7 @@ def clone_hermes_session(
         conn.execute("DELETE FROM messages WHERE session_id != ?", (target_session_id,))
 
         # Record the high-water message id so the forwarder skips cloned
-        # messages (Omnigent already has them from the fork item copy).
+        # messages (tesseract already has them from the fork item copy).
         max_id_row = conn.execute(
             "SELECT MAX(id) FROM messages WHERE session_id = ?",
             (target_session_id,),
@@ -254,7 +254,7 @@ def build_hermes_native_spawn_env(session_id: str) -> dict[str, str]:
     was written by :func:`write_policy_hook_config`, the env includes
     ``HERMES_HOME`` so the TUI picks up the policy hook.
 
-    :param session_id: The Omnigent session id (keys the bridge dir).
+    :param session_id: The tesseract session id (keys the bridge dir).
     :returns: Env-var overrides for the harness executor spawn.
     """
     bridge_dir = bridge_dir_for_session_id(session_id)
@@ -304,14 +304,14 @@ def write_policy_hook_config(
     session_id: str,
     hermes_home: Path | None = None,
 ) -> Path:
-    """Write per-session ``HERMES_HOME`` with Omnigent policy hook and MCP server.
+    """Write per-session ``HERMES_HOME`` with tesseract policy hook and MCP server.
 
     Creates a ``config.yaml`` registering:
 
     1. A ``pre_tool_call`` shell hook that evaluates tool calls against the
-       Omnigent policy engine (same hook the headless ``hermes`` harness uses).
-    2. An ``mcp_servers.omnigent`` entry that launches the Omnigent MCP stdio
-       server (``serve-mcp --bridge-dir <bridge_dir>``), exposing Omnigent
+       tesseract policy engine (same hook the headless ``hermes`` harness uses).
+    2. An ``mcp_servers.omnigent`` entry that launches the tesseract MCP stdio
+       server (``serve-mcp --bridge-dir <bridge_dir>``), exposing tesseract
        builtin tools (``sys_session_*``, ``sys_agent_*``, ``load_skill``,
        ``web_fetch``, etc.) to the Hermes model.
 
@@ -325,8 +325,8 @@ def write_policy_hook_config(
     predictable path. Defaults to ``bridge_dir/hermes_home`` when unset.
 
     :param bridge_dir: Per-session bridge dir (runner<->serve-mcp rendezvous).
-    :param server_url: Omnigent server base URL.
-    :param session_id: Omnigent session / conversation ID.
+    :param server_url: tesseract server base URL.
+    :param session_id: tesseract session / conversation ID.
     :param hermes_home: Where to write the credential-bearing home. ``None``
         places it under ``bridge_dir``.
     :returns: The HERMES_HOME path.
@@ -370,8 +370,8 @@ def write_policy_hook_config(
         ],
     }
 
-    # Register the Omnigent MCP stdio server so Hermes can call
-    # Omnigent builtin tools (sys_session_*, sys_agent_*, load_skill, etc.).
+    # Register the tesseract MCP stdio server so Hermes can call
+    # tesseract builtin tools (sys_session_*, sys_agent_*, load_skill, etc.).
     existing_mcp_servers = config.get("mcp_servers")
     if not isinstance(existing_mcp_servers, dict):
         existing_mcp_servers = {}

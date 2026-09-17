@@ -2,7 +2,7 @@
 
 The runner launches the ``cursor-agent`` TUI in a private tmux pane and records
 that pane's socket + target here via :func:`write_tmux_target`. The harness
-executor then delivers Omnigent web-UI messages into the *same* pane via
+executor then delivers tesseract web-UI messages into the *same* pane via
 :func:`inject_user_message` (tmux bracketed paste + Enter) — the cursor analog
 of claude-native's tmux send-keys bridge. This is what wires the web-UI chat box
 to the running Cursor TUI (and, since the web UI embeds that pane, the message
@@ -40,7 +40,7 @@ _TMUX_FILE = "tmux.json"
 _BRIDGE_CONFIG_FILE = "bridge.json"
 _MCP_CONFIG_FILE = "mcp.json"
 _HOOKS_CONFIG_FILE = "hooks.json"
-#: Module invoked by Omnigent's usage ``stop`` hook; marks entries we own.
+#: Module invoked by tesseract's usage ``stop`` hook; marks entries we own.
 _USAGE_HOOK_MODULE = "omnigent.harnesses.cursor_native.usage"
 _MCP_SERVER_NAME = "omnigent"
 _CURSOR_AUTO_APPROVE_TOOLS = [
@@ -157,7 +157,7 @@ def _ensure_secure_bridge_dir(bridge_dir: Path) -> None:
 _FORK_PREAMBLE_FILE = "fork_preamble.txt"
 #: Sentinel framing the replayed history inside the first injected message. The
 #: cursor agent reads the wrapped context, but the forwarder strips this block
-#: when mirroring the user turn back to Omnigent so the copied history isn't
+#: when mirroring the user turn back to tesseract so the copied history isn't
 #: duplicated in the timeline (see cursor_native_forwarder._unwrap_user_query).
 FORK_HISTORY_OPEN_TAG = "<omnigent_fork_history>"
 FORK_HISTORY_CLOSE_TAG = "</omnigent_fork_history>"
@@ -242,7 +242,7 @@ def wrap_fork_preamble(preamble: str, user_text: str) -> str:
     server-backed), so this is the closest single-message analog: the agent
     reads the framed transcript as context, and the forwarder strips the whole
     sentinel block from the mirrored user turn so the copied history isn't
-    duplicated in the Omnigent timeline.
+    duplicated in the tesseract timeline.
 
     Any literal sentinel tags inside *preamble* are defanged
     (:func:`_neutralize_fork_sentinels`) so the framed block holds exactly one
@@ -279,14 +279,14 @@ def build_mcp_config(
     *,
     python_executable: str | None = None,
 ) -> _JsonObject:
-    """Build Cursor's ``.cursor/mcp.json`` for the Omnigent relay server.
+    """Build Cursor's ``.cursor/mcp.json`` for the tesseract relay server.
 
     Cursor prompts for MCP tool approval before it sends ``tools/call`` to the
-    server. Omnigent tools already route through the Omnigent ``/mcp`` proxy,
+    server. tesseract tools already route through the tesseract ``/mcp`` proxy,
     where TOOL_CALL policies publish ``response.elicitation_request`` events
     that the web UI can render. Auto-approving the Cursor-side MCP gate avoids a
-    hidden in-terminal approval prompt blocking the call before Omnigent ever
-    sees it, while preserving Omnigent's own policy/elicitation gate.
+    hidden in-terminal approval prompt blocking the call before tesseract ever
+    sees it, while preserving tesseract's own policy/elicitation gate.
     """
     python = python_executable or sys.executable
     return {
@@ -311,7 +311,7 @@ def build_mcp_config(
 
 
 def write_mcp_bridge_config(bridge_dir: Path) -> None:
-    """Write the token config required by the shared Omnigent MCP bridge.
+    """Write the token config required by the shared tesseract MCP bridge.
 
     :raises RuntimeError: If the bridge dir fails owner-only validation
         (:func:`_ensure_secure_bridge_dir`) — the token is not written.
@@ -332,9 +332,9 @@ def write_mcp_config(
     *,
     python_executable: str | None = None,
 ) -> Path:
-    """Write the workspace-scoped Cursor MCP config for Omnigent tools.
+    """Write the workspace-scoped Cursor MCP config for tesseract tools.
 
-    Merges the Omnigent bridge server into an existing ``mcp.json`` so that
+    Merges the tesseract bridge server into an existing ``mcp.json`` so that
     user-configured MCP servers are preserved.
     """
     write_mcp_bridge_config(bridge_dir)
@@ -354,7 +354,7 @@ def write_mcp_config(
     omnigent_entry = build_mcp_config(bridge_dir, python_executable=python_executable)
     omnigent_servers = omnigent_entry["mcpServers"]
     if not isinstance(omnigent_servers, dict):  # pragma: no cover - build_mcp_config invariant
-        raise ValueError("Omnigent MCP config is missing mcpServers")
+        raise ValueError("tesseract MCP config is missing mcpServers")
     servers[_MCP_SERVER_NAME] = omnigent_servers[_MCP_SERVER_NAME]
 
     tmp = path.with_suffix(path.suffix + ".tmp")
@@ -411,7 +411,7 @@ def _load_json_config(path: Path) -> object:
 
 
 def _is_omnigent_usage_hook(entry: object) -> bool:
-    """Whether a hooks.json entry is Omnigent's own usage-recorder hook.
+    """Whether a hooks.json entry is tesseract's own usage-recorder hook.
 
     The recorder command bakes a session-specific bridge dir, so entries from
     earlier sessions are stale and must be replaced rather than accumulated.
@@ -427,12 +427,12 @@ def write_hooks_config(
     *,
     python_executable: str | None = None,
 ) -> Path:
-    """Merge Omnigent's usage ``stop`` hook into the workspace's ``hooks.json``.
+    """Merge tesseract's usage ``stop`` hook into the workspace's ``hooks.json``.
 
     Sibling of :func:`write_mcp_config`: project-scoped Cursor config the TUI
     loads on launch in a trusted workspace. Preserves the workspace's existing
     hooks (e.g. a project ``preToolUse`` policy hook) and replaces only stale
-    Omnigent usage hooks from earlier sessions. Returns the written path.
+    tesseract usage hooks from earlier sessions. Returns the written path.
     """
     cursor_dir = workspace / ".cursor"
     cursor_dir.mkdir(parents=True, exist_ok=True)
@@ -451,7 +451,7 @@ def write_hooks_config(
     payload = build_hooks_config(bridge_dir, python_executable=python_executable)
     omnigent_hooks = payload["hooks"]
     if not isinstance(omnigent_hooks, dict):  # pragma: no cover - build_hooks_config invariant
-        raise ValueError("Omnigent hooks config is missing its hooks mapping")
+        raise ValueError("tesseract hooks config is missing its hooks mapping")
     for event, entries in omnigent_hooks.items():
         current = hooks.get(event)
         if not isinstance(current, list):
@@ -466,7 +466,7 @@ def write_hooks_config(
 
 
 def approve_mcp_server_for_workspace(workspace: Path) -> None:
-    """Approve the workspace-scoped Omnigent MCP server in Cursor's state.
+    """Approve the workspace-scoped tesseract MCP server in Cursor's state.
 
     Cursor stores per-workspace MCP approvals using a private hash of the
     concrete server config. Rather than duplicate that implementation here,
@@ -498,7 +498,7 @@ def cursor_project_key(workspace: Path) -> str:
 
 
 def enable_mcp_for_workspace(workspace: Path) -> None:
-    """Ensure Cursor does not keep the Omnigent MCP disabled for this workspace."""
+    """Ensure Cursor does not keep the tesseract MCP disabled for this workspace."""
     disabled_path = (
         Path.home() / ".cursor" / "projects" / cursor_project_key(workspace) / "mcp-disabled.json"
     )
@@ -515,7 +515,7 @@ def enable_mcp_for_workspace(workspace: Path) -> None:
 
 
 def allow_mcp_tools_in_cli_config() -> None:
-    """Allow Omnigent MCP tool calls in Cursor's CLI permission config."""
+    """Allow tesseract MCP tool calls in Cursor's CLI permission config."""
     path = Path.home() / ".cursor" / "cli-config.json"
     try:
         config = json.loads(path.read_text(encoding="utf-8"))

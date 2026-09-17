@@ -1,8 +1,10 @@
 import type { Branding } from "./capabilities";
 import { useServerInfo } from "./CapabilitiesContext";
 
-export const DEFAULT_APP_NAME = "Omnigent";
-export const DEFAULT_HEADING = "What should we build?";
+export const DEFAULT_APP_NAME = "tesseract";
+export const DEFAULT_HEADING = "Welcome home, boss.";
+/** Browser tab title for the default landing page. */
+export const DEFAULT_BROWSER_TITLE = "tesseract.computer";
 
 const EMPTY_BRANDING: Branding = {
   app_name: null,
@@ -33,7 +35,7 @@ export function useLogoUrl(variant: "main" | "loading"): string | null {
   return variant === "loading" ? (logos.loading ?? logos.main) : logos.main;
 }
 
-/** Show "Powered by Omnigent" only when custom branding is set and not disabled. */
+/** Show the tesseract product credit only when custom branding is set and not disabled. */
 export function usePoweredBy(): boolean {
   const info = useServerInfo();
   const branding = info !== "loading" ? info.branding : null;

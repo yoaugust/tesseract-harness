@@ -611,7 +611,7 @@ async def test_silent_patch_skips_claude_native_forward(
     would render a leading "Command model X" slash-command item
     before the user has sent anything — the bug a user reported.
 
-    Updated for the unified-events refactor: Omnigent server no longer
+    Updated for the unified-events refactor: tesseract server no longer
     calls a dedicated ``_forward_claude_native_model`` helper. It
     POSTs ``{"type": "model_change", "model": <override>}`` to the
     runner's ``/v1/sessions/{id}/events``. The silent-skip semantic
@@ -707,7 +707,7 @@ async def test_silent_patch_skips_claude_native_forward(
     )
 
     # No POST to the legacy ``/claude-native-model`` route should
-    # happen anymore — its callsite is gone from Omnigent server.
+    # happen anymore — its callsite is gone from tesseract server.
     legacy_forwards = [url for url, _ in captured if "/claude-native-model" in url]
     assert legacy_forwards == [], (
         f"Legacy /claude-native-model POSTs must not happen anymore; "

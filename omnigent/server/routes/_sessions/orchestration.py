@@ -435,7 +435,7 @@ async def _publish_and_wait_for_harness_elicitation(
 
     :param request: FastAPI request object so upstream disconnect can
         be detected.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param params: Elicitation params to publish.
     :param timeout_s: Maximum wait in seconds, e.g. ``300.0``.
     :param conversation_store: Optional store used to mirror
@@ -1462,7 +1462,7 @@ def _persist_native_cumulative_usage(
     """
     Persist cumulative cost / token usage reported by a native harness.
 
-    Unlike the Omnigent relay path (:func:`_accumulate_session_usage`), which adds
+    Unlike the tesseract relay path (:func:`_accumulate_session_usage`), which adds
     per-response *deltas*, native harnesses (claude-native / codex-native)
     report *cumulative* session usage — so the flat session fields are written
     with SET semantics. The per-model ``by_model`` buckets are the exception:
@@ -1703,7 +1703,7 @@ async def _persist_external_session_usage(
         )
 
     # Native harnesses report cumulative cost / tokens (SET semantics) — distinct
-    # from the Omnigent relay's per-response accumulation. Persist this session's
+    # from the tesseract relay's per-response accumulation. Persist this session's
     # own cumulative usage (its priced own-cost return is unused — the badge shows
     # the subtree total computed below, not own cost).
     await asyncio.to_thread(
@@ -2049,7 +2049,7 @@ def _spawn_native_approval_popup_forward(
     answers first releases the gate. Non-native harnesses 204 no-op on the
     runner.
 
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param elicitation_id: The parked elicitation's id, e.g. ``"elicit_x"``.
     :param message: The approval reason shown in the popup.
     :param policy_name: Name of the deciding policy, rendered as the
@@ -2093,7 +2093,7 @@ def _spawn_native_blocked_notice_forward(
     harness-gated (only ``opencode-native`` pops — claude/codex already show a
     clean ``UserPromptSubmit`` block, so they no-op).
 
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param message: The block reason shown in the popup.
     :param policy_name: Deciding policy, rendered as the popup header. ``None``
         falls back to a generic header on the runner.
@@ -2163,7 +2163,7 @@ async def _hold_native_ask_gate_impl(
 
     :param request: FastAPI request, for upstream-disconnect detection
         inside the parking helper.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param phase: Enforcement phase being gated, e.g.
         :attr:`Phase.TOOL_CALL` or :attr:`Phase.REQUEST`.
     :param data: The proto event ``data`` — for a tool call,
@@ -2360,7 +2360,7 @@ async def _persist_external_conversation_item(
 
     This is the transcript bridge path for native Claude. It appends
     user messages, assistant messages, tool calls, and tool results
-    without starting or steering the placeholder Omnigent agent.
+    without starting or steering the placeholder tesseract agent.
 
     :param session_id: Session/conversation identifier,
         e.g. ``"conv_abc123"``.
@@ -2756,7 +2756,7 @@ def _drive_terminal_resolved_elicitation(session_id: str, persisted: Conversatio
     matching parked prompt now instead of waiting for the hook timeout.
     Other item types are ignored.
 
-    :param session_id: Omnigent conversation id the item was mirrored for,
+    :param session_id: tesseract conversation id the item was mirrored for,
         e.g. ``"conv_abc123"``.
     :param persisted: The stored conversation item the forwarder just
         mirrored via ``external_conversation_item``.
@@ -4511,7 +4511,7 @@ async def _forward_native_terminal_message(
     model_override: str | None = None,
 ) -> None:
     """
-    Forward one Omnigent web-chat message to the native terminal harness.
+    Forward one tesseract web-chat message to the native terminal harness.
 
     The message is intentionally not persisted here. Claude Code
     and Codex record the accepted prompt in their terminal/app-server
@@ -5862,7 +5862,7 @@ async def _dispatch_session_event_to_runner_impl(
 
     * **transcript-forwarded native + ``type == "message"``**: web-chat user
       messages on these sessions must NOT be persisted by the AP
-      server. The Omnigent would otherwise persist an AP-side copy AND
+      server. The tesseract would otherwise persist an AP-side copy AND
       let the transcript forwarder mirror the same message back
       (with its own store-assigned item id), so every web-typed
       prompt would land as two items in the chat panel. We forward
@@ -6476,7 +6476,7 @@ async def _relay_runner_stream_once(
                     # happens inside _publish_status itself.
                     # Runner-emitted keepalive — consumed to reset the
                     # read timeout; not forwarded to the session stream
-                    # (the Omnigent subscriber generates its own heartbeats).
+                    # (the tesseract subscriber generates its own heartbeats).
                     if evt_type == "session.heartbeat":
                         if ready is not None:
                             ready.set()
@@ -7129,9 +7129,9 @@ async def _ensure_runner_relay_ready_impl(
     """
     Start the runner SSE relay and wait for its subscription ack.
 
-    The runner stream has no replay buffer. For item events, Omnigent must
+    The runner stream has no replay buffer. For item events, tesseract must
     subscribe to runner output before it forwards the input event; a
-    fast harness can otherwise complete before Omnigent is listening, leaving
+    fast harness can otherwise complete before tesseract is listening, leaving
     the user with an apparently successful empty response.
 
     :param session_id: Session/conversation identifier,
@@ -8752,10 +8752,10 @@ async def _create_session_from_existing_agent(
     #  - bind (existing_worktree): workspace already IS the worktree;
     #    record its branch only, create nothing.
     git_branch: str | None = None
-    # Set to the created worktree path ONLY when Omnigent creates one.
+    # Set to the created worktree path ONLY when tesseract creates one.
     # Gates create-rollback: an existing worktree bound via
     # existing_worktree must never be force-removed on failure — it is
-    # the user's, not an Omnigent orphan.
+    # the user's, not an tesseract orphan.
     created_worktree_path: str | None = None
     if body.git is not None:
         if body.git.existing_worktree:
@@ -8911,7 +8911,7 @@ async def _create_session_from_existing_agent(
         # (integrity error, name clash, ...) must trigger orphan-worktree
         # cleanup before the error propagates. We re-raise unchanged
         # below, so nothing is swallowed. Gate on created_worktree_path,
-        # NOT git_branch: only a worktree Omnigent created here may be
+        # NOT git_branch: only a worktree tesseract created here may be
         # force-removed. An existing worktree bound via workspace_branch
         # also sets git_branch but is the user's — never destroy it.
         if (
@@ -9654,7 +9654,7 @@ async def _handle_mcp_tools_call(
     # ── Execute on the runner via WS tunnel ──────────────────────────
     # The runner owns stdio subprocess spawning (correct machine, cwd,
     # and env). We call its /mcp/execute endpoint through the same WS
-    # tunnel the runner already opened to the Omnigent server at startup.
+    # tunnel the runner already opened to the tesseract server at startup.
     runner_client = await _get_runner_client(session_id, runner_router)
     if runner_client is None:
         from omnigent.runtime import get_runner_client
@@ -9924,7 +9924,7 @@ async def _fetch_model_options(
     if wrapper == _PI_NATIVE_WRAPPER_LABEL_VALUE:
         # pi-native's catalog is PUSHED by its extension (its live
         # ``ctx.modelRegistry``), not fetched: that reflects the models pi
-        # actually loaded regardless of auth path (Omnigent provider OR pi's
+        # actually loaded regardless of auth path (tesseract provider OR pi's
         # own ``/login``), so the picker populates even when no ``models.json``
         # is written into the bridge dir. Empty until the extension posts
         # ``external_model_options`` on session start.

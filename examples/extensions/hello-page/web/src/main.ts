@@ -9,7 +9,7 @@ function render(context: ExtensionContext, visits: number): void {
   root.innerHTML = `
     <main class="page">
       <section class="card">
-        <span class="eyebrow">Omnigent extension</span>
+        <span class="eyebrow">tesseract extension</span>
         <h1>Hello from an isolated page</h1>
         <p>This UI runs in an opaque-origin iframe and uses only the permission-checked host API.</p>
         <p class="visits">Opened <strong>${visits}</strong> time${visits === 1 ? "" : "s"} in this browser.</p>

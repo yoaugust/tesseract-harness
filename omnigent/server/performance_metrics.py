@@ -208,7 +208,7 @@ def _sanitize_access_log_value(value: str) -> str:
 
 class RequestDurationAccessFormatter(AccessFormatter):
     """
-    Uvicorn access formatter that appends Omnigent request duration.
+    Uvicorn access formatter that appends tesseract request duration.
 
     Uvicorn owns the actual access log emission. The application
     middleware records request duration in a context variable, and
@@ -220,7 +220,7 @@ class RequestDurationAccessFormatter(AccessFormatter):
     _MAX_USER_AGENT_LENGTH = 80
 
     def format(self, record: logging.LogRecord) -> str:
-        """Apply Omnigent's standard source and level display fields."""
+        """Apply tesseract's standard source and level display fields."""
         fmt = getattr(self._style, "_fmt", "")
         with log_record_display_fields(
             record,
@@ -807,12 +807,12 @@ def _create_request_otel_instruments(meter: MeterLike) -> _RequestOtelInstrument
         started=meter.create_counter(
             "omnigent.server.http.requests.started",
             unit="{request}",
-            description="HTTP requests started by the Omnigent server.",
+            description="HTTP requests started by the tesseract server.",
         ),
         completed=meter.create_counter(
             "omnigent.server.http.requests.completed",
             unit="{request}",
-            description="HTTP requests completed by the Omnigent server.",
+            description="HTTP requests completed by the tesseract server.",
         ),
         failed=meter.create_counter(
             "omnigent.server.http.requests.failed",

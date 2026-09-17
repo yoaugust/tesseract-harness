@@ -1,11 +1,11 @@
-# Omnigent on microsandbox
+# tesseract on microsandbox
 
 [microsandbox](https://github.com/superradcompany/microsandbox) is an embedded microVM runtime that boots standard OCI images directly as hardware-isolated VMs (libkrun).
-Each Omnigent host runs inside its own VM with its own kernel - no shared host kernel, unlike Docker/Podman containers - and boots in well under a second once the image is cached.
+Each tesseract host runs inside its own VM with its own kernel - no shared host kernel, unlike Docker/Podman containers - and boots in well under a second once the image is cached.
 
-The microsandbox provider is fully local and self-hosted: the SDK embeds the runtime in the Omnigent server (or CLI) process.
+The microsandbox provider is fully local and self-hosted: the SDK embeds the runtime in the tesseract server (or CLI) process.
 **No daemon, no server component, no cloud account, no API key.**
-Sandbox state lives under `~/.microsandbox` on the machine running Omnigent.
+Sandbox state lives under `~/.microsandbox` on the machine running tesseract.
 
 Both integration surfaces are supported:
 
@@ -20,7 +20,7 @@ Idle VMs drain themselves (default: after 24h), keeping their writable layer, an
 pip install 'omnigent[microsandbox]'   # installs the microsandbox SDK extra (runtime bundled)
 ```
 
-Hardware virtualization on the machine running the Omnigent server (or CLI):
+Hardware virtualization on the machine running the tesseract server (or CLI):
 
 - **macOS:** Apple Silicon (Intel Macs are not supported).
 - **Linux:** KVM enabled and accessible - `/dev/kvm` must exist and the user must be in the `kvm` group (glibc distros only).
@@ -44,7 +44,7 @@ sandbox:
 `provider` + `server_url` is a complete config: the image defaults to the official prebaked host image and VMs run locally.
 
 **`server_url` for a local server:** the in-VM host dials back to the server, and `localhost` inside the VM is the VM itself.
-When the Omnigent server runs on the same machine as the VMs (the usual local setup), point `server_url` at `host.microsandbox.internal` (the guest's stable name for its host machine) with the server's port.
+When the tesseract server runs on the same machine as the VMs (the usual local setup), point `server_url` at `host.microsandbox.internal` (the guest's stable name for its host machine) with the server's port.
 A genuinely public `https://...` URL works as-is.
 
 All knobs:
@@ -102,7 +102,7 @@ The OAuth callback binds on the local host and bridges into the guest over the S
    Detached VMs survive server restarts; any process reconnects by name.
 2. The network policy allows public egress plus guest-to-host traffic (the `host` mode above), so the in-VM host can reach `server_url` even when the server is on the same machine.
 3. The server runs `omnigent host` inside the VM with a one-time launch token in its environment; the host dials back over a WebSocket tunnel and registers.
-   From there the session rides the same host/runner machinery every Omnigent host uses - the agent's runner, tools, and shell all execute inside the VM.
+   From there the session rides the same host/runner machinery every tesseract host uses - the agent's runner, tools, and shell all execute inside the VM.
 4. After `idle_timeout_s` of inactivity the VM drains: compute and memory are released, the writable layer (workspace, installed tools) is kept.
    The server's wake path resumes it in place (`can_resume`); resume takes about 100ms.
 5. On VM death (a crash, or you `msb rm` it), the durable host identity survives and the next message relaunches a fresh VM generation.
@@ -122,7 +122,7 @@ Pass `--image ghcr.io/omnigent-ai/omnigent-host:latest` to smoke the real host i
 ## Limitations
 
 - **Same-machine only.**
-  VMs run where the Omnigent server (or CLI) runs; there is no remote pool mode (unlike boxlite's `cloud:`).
+  VMs run where the tesseract server (or CLI) runs; there is no remote pool mode (unlike boxlite's `cloud:`).
 - **Platform floor.** Apple Silicon macOS or KVM glibc Linux; no Intel Macs, no musl/Alpine hosts, Windows support in microsandbox is preview and untested here.
 - **`/tmp` is tmpfs.**
   Guest `/tmp` does not survive a drain/resume cycle; the writable layer (everything else, including `$HOME`) does.

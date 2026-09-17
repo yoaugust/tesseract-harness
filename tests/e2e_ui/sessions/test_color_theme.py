@@ -2,10 +2,10 @@
 
 Alongside the light/dark **mode** tiles, ``AppearanceSection``
 (``pages/SettingsPage.tsx``) renders a "Color theme" dropdown (a shadcn
-``Select``) — one option per palette (Omnigent, Dracula, GitHub, Catppuccin,
+``Select``) — one option per palette (tesseract, Dracula, GitHub, Catppuccin,
 Gruvbox, Solarized, Nord). Choosing one calls ``applyThemePalette``
 (``lib/themePalette.ts``), which sets ``data-theme`` on ``<html>`` and persists the id to
-``localStorage["omnigent:ui-theme-palette"]``. The default "Omnigent" palette
+``localStorage["omnigent:ui-theme-palette"]``. The default "tesseract" palette
 carries no override, so choosing it removes the attribute and clears the key.
 
 The palette axis is orthogonal to the light/dark class next-themes toggles, so
@@ -242,17 +242,17 @@ def test_color_palette_applies_persists_and_resets(
 ) -> None:
     """Selecting a palette skins ``<html>`` + persists; the default clears it.
 
-    Fresh load is the default "Omnigent" (its name shown, nothing stored, no
+    Fresh load is the default "tesseract" (its name shown, nothing stored, no
     ``data-theme``). Picking GitHub sets ``data-theme="github"`` and persists it —
-    and survives a reload (re-applied at boot). Returning to Omnigent removes the
+    and survives a reload (re-applied at boot). Returning to tesseract removes the
     attribute and clears the stored key.
     """
     base_url, _session_id = seeded_session
     _open_appearance(page, base_url)
 
-    # Fresh context → default "Omnigent": the trigger shows it, no override, and
+    # Fresh context → default "tesseract": the trigger shows it, no override, and
     # nothing persisted.
-    expect(_color_theme_select(page)).to_contain_text("Omnigent")
+    expect(_color_theme_select(page)).to_contain_text("tesseract")
     assert _data_theme(page) is None, "expected no data-theme override on a fresh load"
     assert _stored_palette(page) is None, "expected no persisted palette on a fresh load"
 
@@ -269,11 +269,11 @@ def test_color_palette_applies_persists_and_resets(
     assert _data_theme(page) == "github", "saved palette not re-applied after reload"
     expect(_color_theme_select(page)).to_contain_text("GitHub")
 
-    # → back to Omnigent (the default): the override is removed and the stored
+    # → back to tesseract (the default): the override is removed and the stored
     # key cleared, since the default reverts to the base brand tokens.
-    _pick_palette(page, "Omnigent")
-    expect(_color_theme_select(page)).to_contain_text("Omnigent")
-    assert _data_theme(page) is None, "<html> kept data-theme after returning to Omnigent"
+    _pick_palette(page, "tesseract")
+    expect(_color_theme_select(page)).to_contain_text("tesseract")
+    assert _data_theme(page) is None, "<html> kept data-theme after returning to tesseract"
     assert _stored_palette(page) is None, "the palette key was not cleared for the default"
 
 
@@ -481,7 +481,7 @@ def test_omnigent_selection_keeps_the_brand_tint(
 ) -> None:
     """Selected chat text on the default palette is the translucent brand pink.
 
-    Omnigent's selection is the sidebar's active-item tint, not an opaque
+    tesseract's selection is the sidebar's active-item tint, not an opaque
     primary-colour block: ``rgba(240, 1, 150, 0.1)`` with plum text in light
     mode and ``rgba(240, 1, 150, 0.15)`` with pink text in dark mode.
     """
@@ -492,7 +492,7 @@ def test_omnigent_selection_keeps_the_brand_tint(
         "Dark": ["rgba(240, 1, 150, 0.15)", "rgb(249, 168, 212)"],
     }
     _open_appearance(page, base_url)
-    _pick_palette(page, "Omnigent")
+    _pick_palette(page, "tesseract")
     for mode, colors in expected.items():
         _open_appearance(page, base_url)
         _theme_radiogroup(page).get_by_role("radio", name=mode).click()

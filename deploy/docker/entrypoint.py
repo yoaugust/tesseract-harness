@@ -1,4 +1,4 @@
-"""OSS Docker entrypoint for the Omnigent server.
+"""OSS Docker entrypoint for the tesseract server.
 
 Mirrors ``deploy/databricks/src/app.py`` (the Databricks Apps entrypoint) but
 configured for a plain Postgres database and a local-filesystem

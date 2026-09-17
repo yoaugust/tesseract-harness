@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Omnigent"
+rootProject.name = "tesseract"
 include(":app")

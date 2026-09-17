@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent web-chat turns into the native qwen TUI.
+"""Executor that bridges tesseract web-chat turns into the native qwen TUI.
 
 It does not launch ``qwen`` — the ``omnigent qwen`` wrapper already launched the
 interactive ``qwen`` TUI in the session terminal (with ``--input-file`` /

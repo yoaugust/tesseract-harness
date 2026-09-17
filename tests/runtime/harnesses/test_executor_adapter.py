@@ -499,10 +499,10 @@ def test_build_error_detail_uses_omnigent_error_code() -> None:
     )
     detail = adapter._build_error_detail(error)
 
-    # Code preserved verbatim — the Omnigent allowlist matches this and
+    # Code preserved verbatim — the tesseract allowlist matches this and
     # marks the failure retryable. Class-name fallback (which the
     # base HarnessApp implementation would have used) gives
-    # ``"RetryableLLMError"`` instead, which Omnigent would NOT match.
+    # ``"RetryableLLMError"`` instead, which tesseract would NOT match.
     assert detail.code == "rate_limit_exceeded"
     assert "rate-limited by gateway" in detail.message
     # Sanity: the base class fallback would NOT have produced this
@@ -913,7 +913,7 @@ def test_translate_input_to_messages_string_input_fallback() -> None:
     Plain-string ``input`` → single user message.
 
     Backwards-compat fallback for any caller that still sends
-    the original shape (a bare string is the Omnigent API's shorthand
+    the original shape (a bare string is the tesseract API's shorthand
     for a single ``input_text`` block from the user). One
     user-role :class:`Message` so the inner executor's
     single-turn path keeps working.
@@ -931,7 +931,7 @@ def test_translate_input_to_messages_legacy_content_blocks_fallback() -> None:
     """
     Bare content-block list (no role wrappers) → single user message.
 
-    The pre-history-fix wire format. Omnigent clients that haven't
+    The pre-history-fix wire format. tesseract clients that haven't
     been migrated still send this, and the harness must keep
     handling it the same way (concat all ``text`` fields into
     a single user message). This test pins the fallback so a
@@ -1058,13 +1058,13 @@ def test_translate_event_mcp_tool_call_request_emits_observed_with_bare_name() -
 
     What this proves: the user sees ``⏵ sys_terminal_launch`` in
     the REPL, not ``⏵ mcp__omnigent__sys_terminal_launch`` — the
-    Omnigent wire shape and persisted store items carry the bare name
+    tesseract wire shape and persisted store items carry the bare name
     (per ``omnigent/runtime/workflow.py``'s
     ``_observed_tool_call_sse_dicts``); a regression that
     surfaced the MCP-prefixed name in the SSE event would
     cause the REPL's `⏵` line to display the noisy prefix.
     Pinning the bare-name contract here keeps the adapter's
-    emission consistent with the rest of the Omnigent wire path.
+    emission consistent with the rest of the tesseract wire path.
     """
     from omnigent.inner.executor import ToolCallRequest
     from omnigent.runtime.harnesses._executor_adapter import ExecutorAdapter
@@ -1329,7 +1329,7 @@ def test_translate_event_non_mcp_request_queues_tool_use_id() -> None:
     wrapped harness whose tools round-trip through
     :meth:`_stable_tool_executor` needs the same correlation
     so the dispatch's action_required event reuses the
-    observed event's call_id and the Omnigent REPL can dedupe.
+    observed event's call_id and the tesseract REPL can dedupe.
 
     Originally, the queue gated on the MCP prefix
     because only claude-sdk-via-MCP went through dispatch.
@@ -1337,7 +1337,7 @@ def test_translate_event_non_mcp_request_queues_tool_use_id() -> None:
     on_invoke_tool callback ALSO routes through
     :meth:`_stable_tool_executor` (no MCP prefix). With the
     old gate, openai-agents tools fell through to a fresh
-    uuid in :func:`_bridge_one_dispatch`, the Omnigent client saw
+    uuid in :func:`_bridge_one_dispatch`, the tesseract client saw
     two function_call events with different call_ids, and
     the REPL rendered ``⏵ tool_name`` twice plus an empty
     result panel for the orphan call (the 2026-04-29
@@ -1367,7 +1367,7 @@ def test_translate_event_non_mcp_request_queues_tool_use_id() -> None:
         f"tool_use_id so the dispatch's action_required emit "
         f"reuses the same call_id as the inline observed emit. "
         f"Got {list(adapter._pending_mcp_call_ids)!r} — without "
-        f"this, the Omnigent client receives two function_call events "
+        f"this, the tesseract client receives two function_call events "
         f"with different call_ids and the REPL double-renders "
         f"the ⏵ line."
     )
@@ -1598,13 +1598,13 @@ async def test_observed_and_dispatched_call_ids_match_for_openai_agents() -> Non
     - Dispatch fires with call_id = B (fresh uuid because
       ``_pending_mcp_call_ids`` was empty — the pre-fix gate
       restricted pushes to MCP-prefixed names)
-    - Omnigent client sees A != B → no dedup → REPL renders ⏵ twice
+    - tesseract client sees A != B → no dedup → REPL renders ⏵ twice
       and orphan-flushes A with empty result at response.completed
       (the empty result panel)
 
     With the gate removed, the queue gets the tool_use_id at
     ToolCallRequest time, ``_stable_tool_executor`` pops it, and
-    the dispatch reuses A → Omnigent client dedupes → single ⏵ render.
+    the dispatch reuses A → tesseract client dedupes → single ⏵ render.
 
     Failure mode this catches: anyone who reintroduces the
     MCP-prefix gate on the queue push will fail this test
@@ -1688,7 +1688,7 @@ async def test_observed_and_dispatched_call_ids_match_for_openai_agents() -> Non
     # Step 3 — the dispatched call_id MUST match the observed one.
     assert captured_dispatched_call_ids == [sdk_call_id], (
         f"Dispatch must reuse the observed event's call_id so "
-        f"the Omnigent client can dedupe. Observed call_id was "
+        f"the tesseract client can dedupe. Observed call_id was "
         f"{observed_call_id!r}; dispatched call_ids were "
         f"{captured_dispatched_call_ids!r}. A mismatch here is "
         f"the exact 2026-04-29 user-reported regression — the "

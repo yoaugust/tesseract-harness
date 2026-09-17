@@ -4,11 +4,11 @@ HermesExecutor: run agent turns through the Hermes Agent CLI.
 Spawns ``hermes chat -q`` as a subprocess for each turn.  Hermes manages its
 own session state via a persistent session store (SQLite under
 ``~/.hermes/``), so the executor uses ``--resume <session_id>`` on subsequent
-turns to maintain conversational context across the Omnigent session without
+turns to maintain conversational context across the tesseract session without
 re-serialising the full history.
 
 Each turn yields text output as ``TextChunk`` / ``TurnComplete`` events.
-Omnigent policies are enforced on Hermes' native tool calls via Hermes'
+tesseract policies are enforced on Hermes' native tool calls via Hermes'
 ``pre_tool_call`` shell hook mechanism: a per-session ``HERMES_HOME``
 directory is created with a ``config.yaml`` that registers a policy hook
 script, matching how Codex uses a per-session ``CODEX_HOME``.
@@ -135,7 +135,7 @@ def _parse_session_id(output: str) -> str | None:
 def _extract_last_user_message(messages: list[Message]) -> str:
     """
     Extract the text of the most recent user message from the
-    Omnigent message list.
+    tesseract message list.
 
     :param messages: The conversation message list passed to
         ``run_turn``.
@@ -218,7 +218,7 @@ class HermesExecutor(Executor):
     Hermes manages its own session persistence (SQLite).  The executor
     captures the ``session_id`` from the first turn and passes
     ``--resume <session_id>`` on subsequent turns so conversational
-    history is maintained without Omnigent re-serializing the full
+    history is maintained without tesseract re-serializing the full
     message list.
 
     Each turn runs ``hermes chat -q "<message>" -Q --source tool`` as an
@@ -226,7 +226,7 @@ class HermesExecutor(Executor):
     and yields ``TextChunk`` / ``TurnComplete`` events.
 
     A per-session ``HERMES_HOME`` directory is created with a
-    ``config.yaml`` that registers an Omnigent policy hook as a
+    ``config.yaml`` that registers an tesseract policy hook as a
     Hermes ``pre_tool_call`` shell hook, enforcing ``PHASE_TOOL_CALL``
     policies on all native Hermes tool calls.
     """
@@ -277,10 +277,10 @@ class HermesExecutor(Executor):
     def _setup_hermes_home(self) -> None:
         """Create a per-session ``HERMES_HOME`` with policy hooks and MCP config.
 
-        When the Omnigent server URL and conversation ID are available,
-        writes a ``config.yaml`` that registers the Omnigent policy hook as a
+        When the tesseract server URL and conversation ID are available,
+        writes a ``config.yaml`` that registers the tesseract policy hook as a
         Hermes ``pre_tool_call`` shell hook and an ``mcp_servers.omnigent``
-        entry (``serve-mcp``) exposing Omnigent builtin tools to the model.
+        entry (``serve-mcp``) exposing tesseract builtin tools to the model.
         The ``HERMES_HOME`` env var is passed to the subprocess so Hermes
         reads this config instead of the user's ``~/.hermes/``.
 
@@ -313,7 +313,7 @@ class HermesExecutor(Executor):
         _logger.debug("Hermes per-session home: %s", self._hermes_home)
 
     def _hermes_session_id(self, session_key: str) -> str | None:
-        """Return the stored Hermes session ID for an Omnigent session key."""
+        """Return the stored Hermes session ID for an tesseract session key."""
         return self._session_map.get(session_key)
 
     def supports_streaming(self) -> bool:
@@ -325,9 +325,9 @@ class HermesExecutor(Executor):
 
         The Hermes Agent CLI manages its own tool-calling loop internally.
         Tool-call requests/results are handled by Hermes, not bridged
-        through Omnigent's tool dispatch.  Omnigent policies are enforced
+        through tesseract's tool dispatch.  tesseract policies are enforced
         via Hermes' native ``pre_tool_call`` shell hook that evaluates
-        ``PHASE_TOOL_CALL`` against the Omnigent server before each tool
+        ``PHASE_TOOL_CALL`` against the tesseract server before each tool
         execution.
         """
         return True
@@ -342,7 +342,7 @@ class HermesExecutor(Executor):
         """
         Run one agent turn by spawning ``hermes chat -q``.
 
-        :param messages: Conversation history from Omnigent.
+        :param messages: Conversation history from tesseract.
         :param tools: Tool schemas (Hermes uses its own tools internally).
         :param system_prompt: Composed instructions; prepended to the first
             user turn of a fresh session.
@@ -502,7 +502,7 @@ class HermesExecutor(Executor):
 
     def _session_key(self, messages: list[Message]) -> str:
         """
-        Derive a stable Omnigent session key from the message list.
+        Derive a stable tesseract session key from the message list.
 
         Uses the ``session_id`` stamped on the first message if available,
         otherwise falls back to a hash of the conversation content.
@@ -522,7 +522,7 @@ class HermesExecutor(Executor):
 
         Removes the Hermes session mapping — the Hermes session
         persists in its own SQLite store and can be resumed later
-        via `hermes --resume` outside Omnigent.
+        via `hermes --resume` outside tesseract.
         """
         self._session_map.pop(session_key, None)
         await super().close_session(session_key)

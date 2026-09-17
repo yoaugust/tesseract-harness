@@ -105,7 +105,7 @@ def test_public_agent_name_hides_native_ui_wrapper_names() -> None:
 def test_public_agent_name_passes_through_regular_names() -> None:
     """Non-wrapper names (and ``None``) are returned unchanged.
 
-    Regular Omnigent agents have user-meaningful names that are safe to expose,
+    Regular tesseract agents have user-meaningful names that are safe to expose,
     so only the native-UI wrappers are rewritten.
     """
     assert public_agent_name("researcher") == "researcher"

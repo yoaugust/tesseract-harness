@@ -257,8 +257,8 @@ class RunnerMcpManager:
         :param stdio_cwd: Working directory for spawned stdio MCP
             subprocesses.
         :param server_client: ``httpx.AsyncClient`` pointed at the
-            Omnigent server. When provided, inline MCP elicitations are
-            surfaced to the user via the Omnigent server's session events
+            tesseract server. When provided, inline MCP elicitations are
+            surfaced to the user via the tesseract server's session events
             API. When ``None``, inline elicitations are declined.
         """
         self._specs: dict[str, _SpecEntry] = {}
@@ -278,10 +278,10 @@ class RunnerMcpManager:
         Build an inline elicitation callback for MCP connections.
 
         When ``server_client`` is available, surfaces the
-        elicitation to the user via the Omnigent server's session events
+        elicitation to the user via the tesseract server's session events
         API (approval card in web UI, y/a/n prompt in REPL) and
         parks until the user responds. Falls back to decline
-        when no Omnigent server is available.
+        when no tesseract server is available.
 
         :returns: Async callback ``(session_id, params) →
             ElicitResult``.
@@ -296,18 +296,18 @@ class RunnerMcpManager:
             Handle an inline ``elicitation/create`` from the MCP
             server.
 
-            When an Omnigent server client is available, POSTs a
+            When an tesseract server client is available, POSTs a
             ``mcp_elicitation`` event to surface the approval
             prompt and parks on ``pending_approvals``. Otherwise
             declines.
 
-            :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+            :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
             :param params: MCP elicitation params from the gateway.
             :returns: User verdict as an :class:`ElicitResult`.
             """
             if server_client is None:
                 _logger.warning(
-                    "MCP elicitation callback: no Omnigent server client available — declining",
+                    "MCP elicitation callback: no tesseract server client available — declining",
                     extra={"session_id": session_id},
                 )
                 return ElicitResult(action="decline")
@@ -335,7 +335,7 @@ class RunnerMcpManager:
                     data: object = resp.json()
                 except Exception as exc:  # noqa: BLE001
                     _logger.warning(
-                        "MCP elicitation callback: Omnigent server POST failed (%s) — declining",
+                        "MCP elicitation callback: tesseract server POST failed (%s) — declining",
                         exc,
                         extra={"session_id": session_id},
                     )
@@ -344,7 +344,7 @@ class RunnerMcpManager:
                 elicitation_id = data.get("elicitation_id") if isinstance(data, dict) else None
                 if not isinstance(elicitation_id, str) or not elicitation_id:
                     _logger.warning(
-                        "MCP elicitation callback: Omnigent server returned no "
+                        "MCP elicitation callback: tesseract server returned no "
                         "elicitation_id — declining",
                         extra={"session_id": session_id},
                     )
@@ -479,7 +479,7 @@ class RunnerMcpManager:
         :param tool_name: Namespaced tool name, e.g.
             ``"github__list_issues"``.
         :param arguments: Decoded tool argument dict.
-        :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+        :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
             Forwarded to the connection for inline elicitation
             context. ``None`` when no session is available.
         :returns: Tool result string.

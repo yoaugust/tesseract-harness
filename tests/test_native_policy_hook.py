@@ -68,10 +68,10 @@ def test_post_tool_use_maps_to_phase_tool_result() -> None:
 @pytest.mark.parametrize("hook_event", ["PreToolUse", "PostToolUse"])
 def test_omnigent_mcp_tools_are_skipped(hook_event: str) -> None:
     """
-    Omnigent MCP tools return None and are never sent to /policies/evaluate.
+    tesseract MCP tools return None and are never sent to /policies/evaluate.
 
-    Omnigent MCP tool calls are already policy-checked by the relay path
-    (ProxyMcpManager → Omnigent /mcp endpoint → _evaluate_tool_call_policy).
+    tesseract MCP tool calls are already policy-checked by the relay path
+    (ProxyMcpManager → tesseract /mcp endpoint → _evaluate_tool_call_policy).
     If this guard regressed, every MCP tool call would be evaluated
     twice — once via the relay, once via this hook.
     """
@@ -92,7 +92,7 @@ def test_connector_native_mcp_tools_are_evaluated(hook_event: str, expected_type
     Connector-native MCP tools must not be skipped by the native pre-call hook.
 
     Tools such as ``mcp__github__*`` are injected by the connector layer and
-    do not round-trip through Omnigent's MCP proxy, so this hook is their
+    do not round-trip through tesseract's MCP proxy, so this hook is their
     TOOL_CALL/TOOL_RESULT policy enforcement site.
     """
     result = hook_payload_to_evaluation_request(

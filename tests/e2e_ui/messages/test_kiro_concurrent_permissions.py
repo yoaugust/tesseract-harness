@@ -5,14 +5,14 @@ ACP ``session/request_permission`` requests before the first one resolves,
 ``supervise_kiro_permission_mirror`` mirrors only the first request into a web
 approval card. The later requests are skipped while ``pending`` is non-empty,
 but the recorder offset is committed past them, so they can never be surfaced
-on a later poll: after the user approves the one visible card, Omnigent
+on a later poll: after the user approves the one visible card, tesseract
 reports zero pending elicitations while the Kiro terminal stays blocked on the
 next native ``requires approval`` prompt.
 
 User journey covered (all through the real product path — web SPA → server →
 runner → kiro-native bridge → tmux TUI → ACP recorder → permission mirror):
 
-1. start a Kiro-native session through Omnigent;
+1. start a Kiro-native session through tesseract;
 2. send a task that makes Kiro request permission for three independent shell
    operations together (three distinct request ids in one recorder batch);
 3. one approval card appears in chat — approve it;
@@ -27,7 +27,7 @@ in CI, so the fixture points ``OMNIGENT_KIRO_PATH`` (the bridge's supported
 binary override) at a minimal fake TUI that speaks the same contracts the
 bridge drives: the ``────`` input separator + "ask a question or describe a
 task" ready marker, bracketed paste, the native approval picker markers, and
-the ``KIRO_ACP_RECORD_PATH`` ACP recorder. Everything Omnigent-side — terminal
+the ``KIRO_ACP_RECORD_PATH`` ACP recorder. Everything tesseract-side — terminal
 autocreate, tmux injection, the ACP recorder tailing, the permission mirror,
 the native-permission hook, the approval card, and verdict delivery back into
 the pane — is the real production path.

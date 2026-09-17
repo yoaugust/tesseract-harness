@@ -284,10 +284,10 @@ def test_prepare_bridge_dir_preserves_permission_hook_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """
-    Re-preparing a bridge keeps the permission command hook's Omnigent URL.
+    Re-preparing a bridge keeps the permission command hook's tesseract URL.
 
     The claude-native ``PermissionRequest`` command hook reads
-    ``permission_hook.json`` at hook time to learn which Omnigent server to
+    ``permission_hook.json`` at hook time to learn which tesseract server to
     POST to (the URL is not baked into Claude's launch args). A
     rebind/reattach that re-runs ``prepare_bridge_dir`` must NOT wipe
     that file — if it does, the permission subprocess bails with "AP
@@ -758,7 +758,7 @@ def test_read_assistant_text_since_parses_claude_jsonl(tmp_path: Path) -> None:
     Transcript parsing returns only assistant text after the cursor.
 
     The parser must not echo channel/user records back into the
-    Omnigent assistant stream.
+    tesseract assistant stream.
     """
     transcript_path = tmp_path / "session.jsonl"
     transcript_path.write_text(
@@ -1869,7 +1869,7 @@ def test_read_transcript_line_cursor_migration_preserves_legacy_source_ids(
 
 def test_read_transcript_items_since_ignores_observed_status_records(tmp_path: Path) -> None:
     """
-    Non-conversation Claude JSONL records do not become Omnigent items.
+    Non-conversation Claude JSONL records do not become tesseract items.
 
     The local transcript audit found status/UI records such as
     ``queue-operation``, ``branch-update``, ``progress``,
@@ -3043,7 +3043,7 @@ def test_read_transcript_items_from_offset_surfaces_skill_as_slash_command(
 
 def test_augment_claude_args_injects_mcp_and_hooks(tmp_path: Path) -> None:
     """
-    Claude receives the Omnigent MCP server and hook settings in one launch.
+    Claude receives the tesseract MCP server and hook settings in one launch.
 
     This fails if the terminal starts Claude without the bridge pieces
     needed for tool dispatch / transcript discovery. Also asserts the
@@ -3149,7 +3149,7 @@ def test_augment_claude_args_mirrors_launch_overrides_into_settings(
     while rebuilding argv without ``--model`` / ``--effort`` /
     ``--permission-mode``. Mirroring the same effective values into the
     sidecar prevents a restarted wrapped CLI from falling back to the user's
-    global ``~/.claude/settings.json`` and diverging from the Omnigent
+    global ``~/.claude/settings.json`` and diverging from the tesseract
     session pill.
     """
     args = augment_claude_args(
@@ -3391,10 +3391,10 @@ def test_augment_claude_args_omits_permission_hook_without_omnigent_server(
 ) -> None:
     """
     No ``PermissionRequest`` hook is registered when the wrapper has
-    no Omnigent server URL to point Claude at.
+    no tesseract server URL to point Claude at.
 
     This guards the default path: a call site that forgets to plumb
-    the Omnigent server URL must NOT silently fall through to Claude's TUI
+    the tesseract server URL must NOT silently fall through to Claude's TUI
     prompt for every tool — but it also must not register an HTTP hook
     against an undefined URL. The expected behaviour is "no hook at
     all", which means Claude uses its built-in permission flow.
@@ -3414,7 +3414,7 @@ def test_augment_claude_args_registers_permission_command_hook(
     """
     Passing ``ap_server_url`` registers Claude's
     ``PermissionRequest`` hook as a command hook that resolves the
-    active Omnigent session at hook time.
+    active tesseract session at hook time.
 
     If this regresses, Claude Code's built-in TUI permission prompt
     appears every time the user is supposed to approve from the web
@@ -3496,7 +3496,7 @@ def test_augment_claude_args_omits_user_prompt_submit_policy_hook_without_server
     """
     Without ``ap_server_url`` the UserPromptSubmit policy hook is not wired.
 
-    Policy hooks only make sense when an Omnigent server is configured to
+    Policy hooks only make sense when an tesseract server is configured to
     evaluate against; the forwarder's status hook still registers, but no
     evaluate-policy command should appear (mirrors PreToolUse/PostToolUse,
     which are also gated behind ``ap_server_url``).
@@ -4096,7 +4096,7 @@ def test_inject_user_message_raises_when_tmux_target_never_published(
     """
     The injection helper fails loud when the runner has not written tmux.json.
 
-    Failing silently would let the Omnigent turn complete with no user
+    Failing silently would let the tesseract turn complete with no user
     message ever reaching Claude — the executor needs the
     RuntimeError so it can surface an ExecutorError.
     """
@@ -4402,7 +4402,7 @@ def test_inject_user_message_raises_when_draft_never_submits(
     Injection fails loud when the draft never leaves the input box.
 
     If every submit Enter is swallowed (e.g. the pane is wedged in a
-    dialog), returning success would complete the Omnigent turn with
+    dialog), returning success would complete the tesseract turn with
     the message still sitting unsent in Claude's input box. The
     RuntimeError surfaces as an ExecutorError instead.
     """
@@ -4455,7 +4455,7 @@ def test_inject_interrupt_sends_escape_keystroke(
 
     Without the ``-l`` flag, tmux interprets ``Escape`` as the key
     name (the single ASCII byte 0x1b). If the flag leaks in or the
-    keyword changes, Claude won't see a cancel and the Omnigent stop
+    keyword changes, Claude won't see a cancel and the tesseract stop
     button silently degrades back to a no-op.
     """
     bridge_dir = tmp_path / "bridge"
@@ -4510,7 +4510,7 @@ def test_inject_interrupt_raises_when_tmux_target_never_published(
     inject_interrupt fails loud if tmux.json hasn't been written.
 
     The runner route catches RuntimeError and returns 503 so the
-    Omnigent server falls back to the DBOS cancel path. Swallowing this
+    tesseract server falls back to the DBOS cancel path. Swallowing this
     silently would make the stop button appear to work while
     actually doing nothing.
     """
@@ -5303,7 +5303,7 @@ async def test_channel_server_relays_active_omnigent_tools(
     Active turn tools are advertised to Claude and dispatched through AP.
 
     This fails if Claude Code can receive web-channel inputs but cannot
-    call the Omnigent tools made available to the server-side agent.
+    call the tesseract tools made available to the server-side agent.
     """
     monkeypatch.setattr(
         "omnigent.harnesses.claude_native.bridge._TRUSTED_PARENT",
@@ -5357,7 +5357,7 @@ async def test_channel_server_relays_active_omnigent_tools(
             tools=[
                 {
                     "name": "sys_custom",
-                    "description": "Test-only active Omnigent tool.",
+                    "description": "Test-only active tesseract tool.",
                     "parameters": {
                         "type": "object",
                         "properties": {"value": {"type": "string"}},
@@ -5381,7 +5381,7 @@ async def test_channel_server_relays_active_omnigent_tools(
         assert custom_tools == [
             {
                 "name": "sys_custom",
-                "description": "Test-only active Omnigent tool.",
+                "description": "Test-only active tesseract tool.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {"value": {"type": "string"}},
@@ -5492,7 +5492,7 @@ def test_call_relay_tool_returns_mcp_error_on_read_timeout(
     # The result is a well-formed MCP error result, NOT a raised exception.
     assert result["isError"] is True
     error_text = json.loads(result["content"][0]["text"])["error"]
-    assert "failed to call Omnigent tool relay" in error_text
+    assert "failed to call tesseract tool relay" in error_text
 
 
 @pytest.mark.asyncio
@@ -5913,7 +5913,7 @@ async def test_start_tool_relay_accepts_pi_native_bridge_root(
             tools=[
                 {
                     "name": "sys_session_list",
-                    "description": "List Omnigent sessions.",
+                    "description": "List tesseract sessions.",
                     "parameters": {"type": "object", "properties": {}},
                 }
             ],
@@ -6037,7 +6037,7 @@ async def test_start_tool_relay_accepts_antigravity_native_bridge_root(
             tools=[
                 {
                     "name": "sys_session_create",
-                    "description": "Spawn an Omnigent sub-agent session.",
+                    "description": "Spawn an tesseract sub-agent session.",
                     "parameters": {"type": "object", "properties": {}},
                 }
             ],
@@ -6094,7 +6094,7 @@ async def test_start_tool_relay_accepts_opencode_native_bridge_root(
             tools=[
                 {
                     "name": "sys_session_list",
-                    "description": "List Omnigent sessions.",
+                    "description": "List tesseract sessions.",
                     "parameters": {"type": "object", "properties": {}},
                 }
             ],
@@ -6566,7 +6566,7 @@ def test_read_transcript_items_ignores_ai_title_and_blank_custom_title(
     """
     Claude's own ``aiTitle`` and a blank ``customTitle`` are both ignored.
 
-    Omnigent runs its own background titler, so forwarding Claude's
+    tesseract runs its own background titler, so forwarding Claude's
     generated title would put two auto-titlers in a fight over one field;
     only an explicit ``/rename`` propagates.
     """
@@ -7327,7 +7327,7 @@ def test_display_cost_approval_popup_builds_detached_tmux_command(
     Proves the modal targets the right tmux socket + pane + attached
     client (``-c``), launches :mod:`omnigent.native.native_cost_popup`, and
     forwards the session/elicitation/message plus THIS bridge's
-    ``permission_hook.json`` (where the popup reads the Omnigent url/token). A
+    ``permission_hook.json`` (where the popup reads the tesseract url/token). A
     failure means native approval would render at the wrong pane/client,
     run the wrong program, or omit an input the resolve POST needs — i.e.
     it silently wouldn't work.
@@ -8492,7 +8492,7 @@ def test_hook_record_non_stop_event_has_no_background_task_detail() -> None:
 
 # ── /model switching + pane readiness ───────────────────────────────────
 
-#: Claude Code's interactive ``/model`` picker. Omnigent never drives it —
+#: Claude Code's interactive ``/model`` picker. tesseract never drives it —
 #: it types ``/model <id>`` — but a picker the person opened by hand covers
 #: the input box, so the readiness gate has to recognise it.
 _MODEL_PICKER_PANE = """\

@@ -279,7 +279,7 @@ describe(
           // real app window (the one on an http(s) URL).
           const window = await shellWindow(electronApp);
           await window
-            .getByText("What should we build?")
+            .getByText("let's work, boss")
             .waitFor({ state: "visible", timeout: 90_000 });
           await window.waitForFunction(
             () =>
@@ -334,7 +334,7 @@ describe(
           gate.setExpired(false);
           await window.locator("#signin").click();
           await window
-            .getByText("What should we build?")
+            .getByText("let's work, boss")
             .waitFor({ state: "visible", timeout: 30_000 });
           await window.waitForTimeout(2_500); // hold the signed-in state on film
           attachedAfterSignIn = await attachedChildViewCount(electronApp);

@@ -651,7 +651,7 @@ _RUNNER_ENV_ALLOWLIST: frozenset[str] = frozenset(
     | set(WINDOWS_ENV_PASSTHROUGH)
 )
 # Allowed by prefix: locale family (``LC_*``), MLflow, and OpenTelemetry config —
-# both the standard ``OTEL_*`` vars and Omnigent's ``OMNIGENT_OTEL_*`` knobs
+# both the standard ``OTEL_*`` vars and tesseract's ``OMNIGENT_OTEL_*`` knobs
 # (capture-content, FastAPI toggle) so they reach the runner/harness too.
 # No ``CLOUDSDK_`` prefix on purpose: it would also pass gcloud's
 # ``CLOUDSDK_AUTH_*`` bearer/refresh tokens; the two config selectors are
@@ -778,7 +778,7 @@ def _build_runner_env(
 
     :param base_env: Host process environment to filter, e.g.
         ``os.environ``.
-    :param server_url: Omnigent server URL the runner connects back to, e.g.
+    :param server_url: tesseract server URL the runner connects back to, e.g.
         ``"https://example.databricks.com"``.
     :param runner_id: Token-bound runner id, e.g. ``"runner_abc123"``.
     :param binding_token: One-time tunnel binding token.
@@ -975,7 +975,7 @@ class HostProcess:
     tracks spawned runner subprocesses.
 
     :param identity: Host identity (id + name) from ``config.yaml``.
-    :param server_url: Omnigent server URL, e.g.
+    :param server_url: tesseract server URL, e.g.
         ``"https://omnigent-app.databricksapps.com"``.
     """
 
@@ -1397,17 +1397,17 @@ class HostProcess:
         The host tunnel's bearer is resolved from a stored ``omnigent
         login`` record first, then ambient Databricks credentials (see
         :func:`omnigent.runner._entry._make_auth_token_factory`). When
-        the server runs Omnigent accounts or OIDC auth, a Databricks
+        the server runs tesseract accounts or OIDC auth, a Databricks
         workspace token can authenticate at the proxy yet still be rejected
         by the server itself — so the actionable fix is to log in to the
         server directly, which stores the session token the tunnel needs.
 
         :returns: A one-sentence remedy naming the exact command, e.g.
-            ``"If this server uses Omnigent accounts or OIDC login, run
+            ``"If this server uses tesseract accounts or OIDC login, run
             `omnigent login http://localhost:6767` to authenticate."``.
         """
         return (
-            "If this server uses Omnigent accounts or OIDC login, run "
+            "If this server uses tesseract accounts or OIDC login, run "
             f"`{cli_invocation()} login {self._login_hint_url()}` to authenticate."
         )
 

@@ -80,7 +80,7 @@ OMNIGENT_EXECUTOR_TYPE = "omnigent"
 OMNIGENT_TOOL_LANGUAGE = "omnigent-python-callable"
 
 # Version stamped on AgentSpecs synthesized from omnigent YAMLs.
-# Omnigent YAMLs do not declare ``spec_version`` (it's an
+# tesseract YAMLs do not declare ``spec_version`` (it's an
 # omnigent concept), so the adapter writes ``1`` — the currently
 # valid omnigent schema version (see omnigent/spec/validator.py).
 _SYNTHETIC_SPEC_VERSION = 1
@@ -96,7 +96,7 @@ _SYNTHETIC_SPEC_VERSION = 1
 # exists at runtime to walk.
 _OS_ENV_INHERIT_SENTINEL = "inherit"
 
-# Omnigent loader policy-type discriminators. Used to dispatch
+# tesseract loader policy-type discriminators. Used to dispatch
 # per-policy-type translation from the raw YAML dict.
 _POLICY_TYPE_FUNCTION = "function"
 _POLICY_TYPE_PROMPT = "prompt"
@@ -146,7 +146,7 @@ def agent_spec_to_agent_def(spec: AgentSpec) -> AgentDef:
             code=ErrorCode.INVALID_INPUT,
         )
 
-    # For native Omnigent v1 specs ``executor.config`` is empty; infer the
+    # For native tesseract v1 specs ``executor.config`` is empty; infer the
     # harness from the model prefix so Claude/GPT models get the right
     # executor instead of falling back to DatabricksExecutor.
     _raw_harness: str | None = spec.executor.config.get("harness")
@@ -221,7 +221,7 @@ def _reject_unsupported_concepts(spec: AgentSpec) -> None:
             code=ErrorCode.INVALID_INPUT,
         )
 
-    # ``cancellable_function`` is an omnigent concept — Omnigent'
+    # ``cancellable_function`` is an omnigent concept — tesseract'
     # LocalToolInfo has no cancellation flag, so this branch currently
     # only triggers when a caller constructs an AgentSpec with a tool
     # path that we later discover is a cancellable-function runner.
@@ -264,7 +264,7 @@ def _is_cancellable_function_path(path: str) -> bool:
 
 def _translate_tools_to_omnigent(spec: AgentSpec) -> dict[str, Tool]:
     """
-    Build the ``AgentDef.tools`` dict from Omnigent' tool model.
+    Build the ``AgentDef.tools`` dict from tesseract' tool model.
 
     Function-type local tools only: each :class:`LocalToolInfo`
     whose ``path`` is a dotted Python module path (e.g.
@@ -429,7 +429,7 @@ def _sub_spec_to_agent_tool(sub: AgentSpec) -> AgentTool:
     :returns: A populated :class:`omnigent.tools.AgentTool`.
     """
     # Infer harness from model prefix when executor.config is empty
-    # (native Omnigent v1 specs). Also forward os_env so sub-sessions get
+    # (native tesseract v1 specs). Also forward os_env so sub-sessions get
     # the filesystem tools the spec declared.
     model = sub.llm.model if sub.llm is not None else None
     harness: str | None = sub.executor.config.get("harness")
@@ -574,7 +574,7 @@ def _translate_guardrails_yaml(
     Translate the guardrails-related top-level fields of an
     omnigent YAML into an omnigent :class:`GuardrailsSpec`.
 
-    Omnigent declares labels/policies at the top level
+    tesseract declares labels/policies at the top level
     (``labels:``, ``label_schema:``, ``policies:``,
     ``ask_timeout:``); omnigent groups them under a single
     ``guardrails:`` block. This helper transforms the omnigent
@@ -589,21 +589,21 @@ def _translate_guardrails_yaml(
     ``guardrails=None`` and the runtime builds a no-op
     :class:`PolicyEngine` (per POLICIES.md §10 zero-policy case).
 
-    :param raw_policies: Omnigent YAML ``policies:`` mapping,
+    :param raw_policies: tesseract YAML ``policies:`` mapping,
         keyed by policy name, e.g.
         ``{"block_long_sleep": {"type": "function",
         "on": ["tool_call"],
         "handler": "examples.tool_functions.block_long_sleep"}}``.
         ``None`` or empty means no policies.
-    :param raw_labels: Omnigent YAML top-level ``labels:`` map
+    :param raw_labels: tesseract YAML top-level ``labels:`` map
         of ``{label_key: initial_value}``. ``None`` or empty means
         no labels — a schema-only label (``label_schema`` entry
         without a ``labels`` entry) is still allowed and gets
         ``initial: None``.
-    :param raw_label_schema: Omnigent YAML top-level
+    :param raw_label_schema: tesseract YAML top-level
         ``label_schema:`` map of
         ``{label_key: {values: [...], monotonic: "max"|"min"|"none"}}``.
-    :param raw_ask_timeout: Omnigent YAML top-level
+    :param raw_ask_timeout: tesseract YAML top-level
         ``ask_timeout:`` (seconds), e.g. ``30``. Passed through
         to ``guardrails.ask_timeout``. ``None`` means use the
         omnigent default (see
@@ -655,7 +655,7 @@ def _translate_labels_yaml(
 ) -> dict[str, dict[str, Any]]:
     """
     Merge omnigent' separate ``labels:`` (initial values) and
-    ``label_schema:`` (schemas) into Omnigent' unified
+    ``label_schema:`` (schemas) into tesseract' unified
     ``guardrails.labels:`` shape.
 
     Agent-plane's :class:`LabelDef` bundles ``initial`` and
@@ -811,7 +811,7 @@ def _translate_function_policy_yaml(
     # Route every omnigent-sourced function policy through the
     # legacy-compat shim so author callables written with the
     # omnigent ``(content, phase)`` / ``(content, phase, context)``
-    # convention keep working under Omnigent'
+    # convention keep working under tesseract'
     # ``(ctx, context)`` convention. For omnigent-native
     # callables the shim is a pass-through (detected by parameter
     # names at policy-build time; see _omnigent_legacy_shim).
@@ -833,7 +833,7 @@ def _resolve_profile_to_connection(profile: str) -> dict[str, str] | None:
     ``{base_url, api_key}`` dict by reading ``~/.databrickscfg``.
 
     Used at spec-translation time to make omnigent LLMConfig
-    self-contained — Omnigent' LLM adapters take credentials
+    self-contained — tesseract' LLM adapters take credentials
     via explicit ``connection:`` fields (per the "spec
     self-containment" design principle) and do not read env vars.
     Meanwhile omnigent declares Databricks creds via the
@@ -952,7 +952,7 @@ def agent_def_to_agent_spec(
         fields (``condition``, ``match_tools``, ``action``,
         ``reason``, ``set_labels``) and to translate top-level
         ``labels:`` / ``label_schema:`` / ``ask_timeout:`` into
-        Omnigent' ``guardrails:`` block — the omnigent
+        tesseract' ``guardrails:`` block — the omnigent
         loader compiles these into synthetic FunctionPolicy
         callables and drops the YAML-level fields, so we can't
         recover them from the parsed ``AgentDef`` alone. When
@@ -965,7 +965,7 @@ def agent_def_to_agent_spec(
         agent_def_to_agent_spec(d)) == d`` must hold for every
         representative fixture.
     :raises OmnigentError: When *agent_def* uses an omnigent
-        concept Omnigent' :class:`AgentSpec` cannot currently
+        concept tesseract' :class:`AgentSpec` cannot currently
         represent. Each such case names the specific field.
         Current unsupported concepts: MCP-type tools.
     """
@@ -1040,7 +1040,7 @@ def agent_def_to_agent_spec(
     # Same deal for the OS environment. Inline AgentTool sub-agents
     # that declare ``os_env: inherit`` need to see the parent's
     # concrete :class:`OSEnvSpec` baked into their own sub-spec at
-    # translation time — the Omnigent path spawns each child as an
+    # translation time — the tesseract path spawns each child as an
     # independent task so there's no live parent session to resolve
     # ``inherit`` from at runtime. ``None`` is fine: the sub-spec's
     # own os_env (or lack thereof) wins.
@@ -1056,7 +1056,7 @@ def agent_def_to_agent_spec(
     #   MCPTool (stdio / subprocess)
     #       → AgentSpec.mcp_servers (one native stdio-transport
     #         MCPServerConfig each; subprocess is spawned by
-    #         Omnigent' ToolManager, srt-wrapped when
+    #         tesseract' ToolManager, srt-wrapped when
     #         available — see omnigent/tools/mcp.py).
     #   MCPTool (HTTP) → same, but transport='http'.
     local_tools: list[LocalToolInfo] = []
@@ -1101,7 +1101,7 @@ def agent_def_to_agent_spec(
 
     # Translate the guardrails block if the caller handed us the
     # raw YAML. Policies/labels are lifted from the omnigent
-    # top-level YAML fields into Omnigent' ``guardrails:``
+    # top-level YAML fields into tesseract' ``guardrails:``
     # block; enforcement then happens in the omnigent workflow
     # (outside the omnigent harness) via the standard
     # :class:`PolicyEngine`. When ``raw_yaml`` is ``None`` we
@@ -1116,7 +1116,7 @@ def agent_def_to_agent_spec(
             raw_labels=raw_yaml.get("labels"),
             raw_label_schema=raw_yaml.get("label_schema"),
             raw_ask_timeout=raw_yaml.get("ask_timeout"),
-            # Baked-in at translation time so Omnigent'
+            # Baked-in at translation time so tesseract'
             # classifier LLM calls honor Databricks routing
             # (omnigent adapters don't read env vars per the
             # spec-self-containment design principle).
@@ -1240,7 +1240,7 @@ def _self_agent_tool_to_sub_spec(
     sub-agent's tool name, and re-runs
     :func:`agent_def_to_agent_spec` to produce a fully-translated
     :class:`AgentSpec`. The result is a self-contained nested spec
-    the Omnigent runtime spawns when the parent's LLM dispatches
+    the tesseract runtime spawns when the parent's LLM dispatches
     ``sys_session_send(tool=tool_name, ...)``.
 
     The clone inherits everything: model, system prompt /
@@ -1325,7 +1325,7 @@ def _agent_tool_to_sub_spec(
         spec here. Empty string means "no parent profile known";
         the sub-spec then falls through the same way its own
         empty field does.
-    :param parent_harness: Omnigent harness carried on the
+    :param parent_harness: tesseract harness carried on the
         parent agent's executor. Used as the sub-spec's harness
         when the inline AgentTool's ``executor:`` block is
         absent. Same pattern as *parent_profile* — YAMLs like
@@ -1434,7 +1434,7 @@ def _resolve_inline_agent_tool_os_env(
     Resolve the ``os_env`` field on an inline :class:`AgentTool`
     declaration against the parent's concrete os_env.
 
-    Omnigent' :class:`AgentTool.os_env` is
+    tesseract' :class:`AgentTool.os_env` is
     ``OSEnvSpec | str | None`` with ``"inherit"`` as the sentinel
     string. Agent-plane spawns each inline child as an
     independent task at runtime, so we can't defer the
@@ -1466,7 +1466,7 @@ def _resolve_inline_agent_tool_os_env(
 def _fail_on_unsupported_concepts_def(agent_def: AgentDef) -> None:
     """
     Raise :class:`OmnigentError` for every omnigent concept
-    Omnigent' :class:`AgentSpec` cannot currently represent.
+    tesseract' :class:`AgentSpec` cannot currently represent.
 
     Each unsupported concept gets its own clear error message
     naming the specific field.
@@ -1513,7 +1513,7 @@ def _fail_on_unsupported_tool(
         # MCPTool is translated into ``AgentSpec.mcp_servers`` by
         # :func:`_translate_mcp_tool_from_def` — except for the
         # ``databricks_server=<name>`` shape, which references a
-        # Databricks-managed MCP endpoint that Omnigent'
+        # Databricks-managed MCP endpoint that tesseract'
         # runtime has no resolver for yet. Reject that shape loud;
         # HTTP + stdio MCPTools fall through and translate below.
         if tool.databricks_server is not None:
@@ -1521,7 +1521,7 @@ def _fail_on_unsupported_tool(
                 f"omnigent agent {agent_name!r} declares tool "
                 f"{tool_name!r} of type `mcp` with "
                 f"``databricks_server={tool.databricks_server!r}`` — "
-                f"Omnigent' MCPServerConfig doesn't understand the "
+                f"tesseract' MCPServerConfig doesn't understand the "
                 f"named-Databricks-server shape. Translate to an "
                 f"explicit HTTP ``url`` or stdio ``command``+``args`` "
                 f"MCP first.",
@@ -1642,7 +1642,7 @@ def _translate_executor_from_def(
     3. :func:`_infer_harness_from_model` on the resolved model
        string — mirrors pure omnigent' CLI auto-pick
        (``databricks-claude-*`` → ``claude-sdk``, etc.) so YAMLs
-       that declare only a model continue to work under Omnigent mode.
+       that declare only a model continue to work under tesseract mode.
     4. Error — when all of the above yield an empty string and a
        model is declared, the spec is invalid (no harness can be
        inferred for the model).
@@ -1680,7 +1680,7 @@ def _translate_executor_from_def(
     :raises OmnigentError: When a model is declared but no
         harness can be inferred from it.
     """
-    # Omnigent' :class:`ExecutorSpec.{harness,profile,model}`
+    # tesseract' :class:`ExecutorSpec.{harness,profile,model}`
     # fields are ``str | None`` on the dataclass (post-graduation
     # from the old empty-string-as-absent convention). The rest of
     # this function and its downstream callers treat ``""`` as

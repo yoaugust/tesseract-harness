@@ -108,7 +108,7 @@ LLM should judge issues by contents and give grades. Grades can be:
     - **S3**: Not sure if it is real or not.
 
   - Feature Requests:
-    - **S0**: Blocking (potentially) a lot of users from onboarding Omnigent,
+    - **S0**: Blocking (potentially) a lot of users from onboarding tesseract,
     - **S1**: Must have soon / on our roadmap / will unblock a certain set of users,
     - **S2**: Nice to have, but won't matter in terms of functionality,
     - **S3**: Unclear if it's good or not or a very nit papercut.
@@ -479,7 +479,7 @@ ranking takes.
 | 15 | 84 | high | P2 | P1 ⚑ | +169 | [#3070](https://github.com/omnigent-ai/omnigent/issues/3070) No progress signal on a stuck or interactive harness install |
 | 16 | 84 | high | P1 | P1 | +37 | [#3000](https://github.com/omnigent-ai/omnigent/issues/3000) claude-native transcript forwarder polls at 4 Hz per session with no i |
 | 17 | 84 | high | P1 | P1 | +38 | [#2967](https://github.com/omnigent-ai/omnigent/issues/2967) [Bug] A full context window bricks a session with "Prompt is too long" |
-| 18 | 84 | high | P1 | P1 | +38 | [#2920](https://github.com/omnigent-ai/omnigent/issues/2920) Omnigent server fails to start on native Windows: os.getuid() at impor |
+| 18 | 84 | high | P1 | P1 | +38 | [#2920](https://github.com/omnigent-ai/omnigent/issues/2920) tesseract server fails to start on native Windows: os.getuid() at impor |
 | 19 | 84 | high | P1 | P1 | +38 | [#2919](https://github.com/omnigent-ai/omnigent/issues/2919) omni setup crashes on Windows: ModuleNotFoundError: No module named 't |
 | 20 | 84 | high | P1 | P1 | +42 | [#2748](https://github.com/omnigent-ai/omnigent/issues/2748) Runner idle-shutdown deadlocks forever: codex-forwarder close()/flush( |
 | 21 | 84 | high | P2 | P1 ⚑ | +187 | [#2714](https://github.com/omnigent-ai/omnigent/issues/2714) Upgrade openai-agents and remove the temporary openai<2.45 cap |

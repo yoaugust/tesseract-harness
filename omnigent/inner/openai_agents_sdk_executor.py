@@ -1,12 +1,12 @@
 """OpenAIAgentsSDKExecutor: run agents using the OpenAI Agents SDK.
 
 This executor uses the OpenAI Agents SDK as the agent runtime while keeping
-Omnigent as the system of record for tools, policies, and session history.
-Omnigent tools are exposed as SDK FunctionTools whose callbacks route back
+tesseract as the system of record for tools, policies, and session history.
+tesseract tools are exposed as SDK FunctionTools whose callbacks route back
 through the Session's tool registry.
 
-Conversation state is delegated to the SDK's session layer. Each Omnigent
-Session gets its own SDK SQLiteSession keyed by the Omnigent session id.
+Conversation state is delegated to the SDK's session layer. Each tesseract
+Session gets its own SDK SQLiteSession keyed by the tesseract session id.
 """
 
 from __future__ import annotations
@@ -109,7 +109,7 @@ SDKTool: TypeAlias = Any  # type: ignore[explicit-any]
 ToolResult: TypeAlias = Any  # type: ignore[explicit-any]
 
 # Parsed tool arguments / tool-call-output dict. JSON-shaped bag handed
-# to the Omnigent tool executor.
+# to the tesseract tool executor.
 ToolArgs: TypeAlias = dict[str, Any]  # type: ignore[explicit-any]
 
 
@@ -152,14 +152,14 @@ def _normalize_content_blocks_for_chat(
 
     Converts ``input_file`` blocks whose ``file_data`` is a ``data:`` URI into
     ``input_text`` blocks by decoding the base64 payload.  Also strips
-    Omnigent-only metadata (for example ``filename``) from known Responses
+    tesseract-only metadata (for example ``filename``) from known Responses
     content block types before the OpenAI Agents SDK serializes them to the
     provider API.
 
     Background: :mod:`omnigent.runtime.content_resolver` resolves uploaded
     file IDs to inline ``data:<mime>;base64,<data>`` URIs stored in
     ``file_data`` / ``image_url`` while preserving UI/history metadata such as
-    ``filename``.  That metadata is useful in Omnigent, but the OpenAI API
+    ``filename``.  That metadata is useful in tesseract, but the OpenAI API
     rejects unknown content-part fields (for example
     ``input[0].content[0].filename``).  The openai-agents SDK's
     ``chatcmpl_converter`` also passes raw ``file_data`` strings to the Chat
@@ -206,7 +206,7 @@ def _normalize_content_blocks_for_chat(
             changed = changed or sanitized != block
             result.append(sanitized)
         elif block_type == "input_image":
-            # Preserve inline images; strip Omnigent-only metadata.
+            # Preserve inline images; strip tesseract-only metadata.
             sanitized = _copy_known_keys(block, ("type", "image_url", "file_id", "detail"))
             changed = changed or sanitized != block
             result.append(sanitized)
@@ -220,7 +220,7 @@ def _normalize_content_blocks_for_chat(
 def _copy_known_keys(block: _JsonObject, keys: tuple[str, ...]) -> _JsonObject:
     """Return *block* with only keys accepted by provider content schemas.
 
-    Omnigent content blocks can carry UI/history metadata such as
+    tesseract content blocks can carry UI/history metadata such as
     ``filename``.  Known OpenAI/Responses block types are strict at the API
     boundary, so those metadata fields must be removed from the payload handed
     to the OpenAI Agents SDK while leaving persisted conversation state intact.
@@ -1062,7 +1062,7 @@ class OpenAIAgentsSDKExecutor(Executor):
         :param base_url_override: Override the OpenAI-compatible base URL
             instead of deriving it from the Databricks profile host.  Set
             from ``HARNESS_OPENAI_AGENTS_GATEWAY_BASE_URL`` (written by
-            the Omnigent workflow layer). Required whenever ``gateway_host`` is set.
+            the tesseract workflow layer). Required whenever ``gateway_host`` is set.
         :param gateway_host: Gateway workspace host origin, e.g.
             ``"https://example.databricks.com"``.  Set from
             ``HARNESS_OPENAI_AGENTS_GATEWAY_HOST`` (written by the AP
@@ -1415,7 +1415,7 @@ class OpenAIAgentsSDKExecutor(Executor):
             return state.agent
 
         state.agent = agents_sdk.Agent(
-            name="Omnigent",
+            name="tesseract",
             instructions=system_prompt or None,
             model=model,
             model_settings=agents_sdk.ModelSettings(
@@ -1549,7 +1549,7 @@ class OpenAIAgentsSDKExecutor(Executor):
 
         # ── LLM_REQUEST policy evaluation ────────────────────────
         # If the executor adapter installed a ``_policy_evaluator``
-        # callback, call it with the request data so the Omnigent server
+        # callback, call it with the request data so the tesseract server
         # can evaluate LLM_REQUEST policies before the LLM call.
         # This mirrors the identical block in ``OpenResponsesExecutor``
         # and ``ClaudeSDKExecutor``.

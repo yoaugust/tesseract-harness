@@ -62,7 +62,7 @@ class AcpExtension:
 
     @property
     def surfaces_subagents(self) -> bool:
-        """Whether this vendor's sub-agents become Omnigent child sessions.
+        """Whether this vendor's sub-agents become tesseract child sessions.
 
         The source of truth for the harness's declared ``subagents`` capability,
         so the capability matrix cannot drift from what the code actually does.

@@ -1,6 +1,6 @@
-# Omnigent iOS
+# tesseract iOS
 
-Thin SwiftUI/WKWebView shell for Omnigent on iPhone and iPad. Like the Electron
+Thin SwiftUI/WKWebView shell for tesseract on iPhone and iPad. Like the Electron
 app, this target loads the server-served web UI instead of shipping a duplicate
 copy of the SPA.
 

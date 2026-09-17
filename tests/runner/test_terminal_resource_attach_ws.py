@@ -299,7 +299,7 @@ def test_runner_resource_attach_recreates_dead_repl_terminal(
         :param session_id: Session being recreated, e.g. ``"conv_abc"``.
         :param rr: The runner's resource registry (unused by the stub).
         :param publish_event: Per-session SSE emitter (unused).
-        :param server_client: Omnigent server client (unused).
+        :param server_client: tesseract server client (unused).
         :param agent_spec: Resolved session agent spec threaded by the
             recreate path so the REPL terminal inherits the agent sandbox
             (unused by the stub).
@@ -420,7 +420,7 @@ def test_runner_resource_attach_recreates_dead_qwen_terminal(
         :param session_id: Session being recreated, e.g. ``"conv_abc"``.
         :param rr: The runner's resource registry (unused by the stub).
         :param publish_event: Per-session SSE emitter (unused).
-        :param server_client: Omnigent server client (unused).
+        :param server_client: tesseract server client (unused).
         :param ensure_comment_relay: Comment relay hook threaded by the
             recreate path (unused by the stub).
         :returns: Terminal resource view for the fresh pane.

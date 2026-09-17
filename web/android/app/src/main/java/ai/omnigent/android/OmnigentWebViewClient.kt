@@ -113,9 +113,9 @@ class OmnigentWebViewClient(
         // An app page loaded, so the mount works: re-arm the bounce budget for
         // the next time the user lands back on the workspace root.
         if (onPinnedOrigin && databricksWorkspaceUiUrl(url) == null) rootBounces = 0
-        // Databricks workspace-hosted Omnigent renders inside the workspace's
+        // Databricks workspace-hosted tesseract renders inside the workspace's
         // top-nav chrome (the SPA is a workspace page). Hide it by overlaying
-        // Omnigent's own root — see [WorkspaceChromeScript], which also explains why
+        // tesseract's own root — see [WorkspaceChromeScript], which also explains why
         // this is keyed on the pinned origin and never on the URL's path. Re-applied
         // on every full load (a server switch is a fresh document); the SPA's
         // client-side routing keeps the same document, so the injected stylesheet

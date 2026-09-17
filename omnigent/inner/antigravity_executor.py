@@ -4,7 +4,7 @@ Wraps the ``google-antigravity`` SDK as the agent runtime, the SDK-wrap
 counterpart to :class:`~omnigent.inner.openai_agents_sdk_executor.OpenAIAgentsSDKExecutor`
 and :class:`~omnigent.inner.claude_sdk_executor.ClaudeSDKExecutor`: a direct
 in-process Executor with ``handles_tools_internally() -> True``, per-session
-agent reuse, and a streaming :meth:`run_turn` mapping SDK events onto Omnigent
+agent reuse, and a streaming :meth:`run_turn` mapping SDK events onto tesseract
 :class:`~omnigent.inner.executor.ExecutorEvent` instances.
 
 .. note::
@@ -107,7 +107,7 @@ _ToolCallable: TypeAlias = Callable[..., Awaitable[ToolResult]]  # type: ignore[
 
 # Tool-execution callback the harness ExecutorAdapter wires in (assigns
 # ``executor._tool_executor`` when unset). Routes a tool call ``(name, args)``
-# back through the Session registry, so the in-SDK agent reaches Omnigent's
+# back through the Session registry, so the in-SDK agent reaches tesseract's
 # sys / sub-agent / MCP tools under policy.
 ToolExecutor: TypeAlias = Callable[  # type: ignore[explicit-any]
     [str, dict[str, Any]], Awaitable[dict[str, Any]]
@@ -143,7 +143,7 @@ def _latest_user_text(messages: list[Message]) -> str:
     needs the latest user input. Concatenates the text parts of the last
     ``user`` message; falls back to the last message of any role.
 
-    :param messages: The Omnigent turn message list (role / content dicts),
+    :param messages: The tesseract turn message list (role / content dicts),
         e.g. ``[{"role": "user", "content": "review this PR"}]``.
     :returns: The user input text for this turn, or ``""`` when none.
     """
@@ -200,7 +200,7 @@ def _render_prior_history(prior: list[Message]) -> str:
        documented limitation of the no-history-API fallback.
 
     :param prior: The conversation messages preceding the latest user turn
-        (``messages[:-1]``), as Omnigent role/content dicts.
+        (``messages[:-1]``), as tesseract role/content dicts.
     :returns: A transcript prefix like ``"Conversation so far:\\nuser: …\\n
         assistant: …"``, or ``""`` when no prior user/assistant text exists.
     """
@@ -355,7 +355,7 @@ class AntigravityExecutor(Executor):
         self._retry_policy = retry_policy if retry_policy is not None else RetryPolicy()
         self._session_states: dict[str, _AntigravitySessionState] = {}
         # Set by the harness ExecutorAdapter when unset; the SDK tools route
-        # invocations through this to reach Omnigent's tools under policy.
+        # invocations through this to reach tesseract's tools under policy.
         self._tool_executor: ToolExecutor | None = None
 
     def supports_streaming(self) -> bool:
@@ -380,7 +380,7 @@ class AntigravityExecutor(Executor):
     def _session_key(self, messages: list[Message]) -> str:
         """Resolve the per-session key from the turn's trailing message.
 
-        :param messages: The Omnigent turn message list; the last entry's
+        :param messages: The tesseract turn message list; the last entry's
             ``session_id`` (top-level or under ``metadata``) is the key.
         :returns: The session id string, or ``"default"`` when none is set.
         """
@@ -397,7 +397,7 @@ class AntigravityExecutor(Executor):
     def _tool_signature(tools: list[ToolSpec]) -> str:
         """Stable cache key for a tool set (names only — enough to detect change).
 
-        :param tools: Omnigent tool specs for the turn.
+        :param tools: tesseract tool specs for the turn.
         :returns: Deterministic JSON string of the sorted tool names.
         """
         names = sorted(str(tool.get("name", "")) for tool in tools)
@@ -406,7 +406,7 @@ class AntigravityExecutor(Executor):
     async def close_session(self, session_key: str) -> None:
         """Close and drop the SDK agent for *session_key*, if any.
 
-        :param session_key: The Omnigent session id whose agent to release.
+        :param session_key: The tesseract session id whose agent to release.
         """
         state = self._session_states.pop(session_key, None)
         if state is not None and state.agent is not None:
@@ -446,7 +446,7 @@ class AntigravityExecutor(Executor):
         so we only invalidate the signature here and defer the rebuild (and
         close) to the next turn.
 
-        :param session_key: The Omnigent session id to interrupt.
+        :param session_key: The tesseract session id to interrupt.
         :returns: ``True`` if a live conversation was asked to cancel,
             ``False`` when the session has no open conversation.
         """
@@ -477,7 +477,7 @@ class AntigravityExecutor(Executor):
         failure.
 
         :param messages: The conversation messages for this turn.
-        :param tools: Omnigent tool specs exposed to the agent as callables.
+        :param tools: tesseract tool specs exposed to the agent as callables.
         :param system_prompt: The agent's system instructions.
         :param config: Per-turn config; ``config.model`` (e.g. from the REPL
             ``/model`` command) wins over the constructor default.
@@ -779,11 +779,11 @@ class AntigravityExecutor(Executor):
         is preserved across rebuilds so the agent's ``PostToolCallHook`` (which
         closes over it) stays valid.
 
-        :param session_key: The Omnigent session id.
+        :param session_key: The tesseract session id.
         :param model: The resolved model id to pin, or ``None`` to use the SDK
             default.
         :param system_prompt: The agent's system instructions.
-        :param tools: Omnigent tool specs to expose to the agent.
+        :param tools: tesseract tool specs to expose to the agent.
         :returns: ``(state, created)`` — the session's
             :class:`_AntigravitySessionState` (with ``agent`` /
             ``conversation`` populated) and ``created``, which is ``True``
@@ -845,7 +845,7 @@ class AntigravityExecutor(Executor):
 
         Isolated SDK touchpoint. Builds a ``LocalAgentConfig`` from the
         resolved model / prompt / credentials / tools / hooks and enters the
-        agent's async context. Omnigent's tools are exposed as callables
+        agent's async context. tesseract's tools are exposed as callables
         (``LocalAgentConfig.tools``) routing through :attr:`_tool_executor`, so
         the agent runs them under policy. A ``PostToolCallHook`` surfaces a
         :class:`ToolCallComplete` for every tool the agent runs.
@@ -854,7 +854,7 @@ class AntigravityExecutor(Executor):
         :param model: The resolved model id to pin, or ``None`` to use the SDK
             default.
         :param system_prompt: The agent's system instructions.
-        :param tools: Omnigent tool specs to expose as callables.
+        :param tools: tesseract tool specs to expose as callables.
         :returns: The opened SDK ``Agent``.
         """
         antigravity = _ensure_antigravity_sdk()
@@ -927,15 +927,15 @@ class AntigravityExecutor(Executor):
         return _OmnigentToolCompleteHook()
 
     def _build_sdk_tools(self, tools: list[ToolSpec]) -> list[SDKTool]:
-        """Build SDK tools (plain callables) from Omnigent tool specs.
+        """Build SDK tools (plain callables) from tesseract tool specs.
 
         The SDK introspects each callable's ``__name__`` / ``__doc__`` for its
         function declaration. Each routes through :attr:`_tool_executor`, so
-        the agent reaches Omnigent's tool registry under policy. Returns ``[]``
+        the agent reaches tesseract's tool registry under policy. Returns ``[]``
         when there are no tools or no executor bridge yet (the agent then runs
         with its native + MCP tools only).
 
-        :param tools: Omnigent tool specs (``name`` / ``description`` /
+        :param tools: tesseract tool specs (``name`` / ``description`` /
             ``parameters``).
         :returns: A list of named async callables, or ``[]``.
         """
@@ -959,7 +959,7 @@ class AntigravityExecutor(Executor):
         are set so the SDK's function-declaration introspection picks up the
         name and description.
 
-        :param tool_name: The Omnigent tool name, e.g. ``"sys_shell"``.
+        :param tool_name: The tesseract tool name, e.g. ``"sys_shell"``.
         :param description: Human-readable tool description for the model.
         :returns: An async callable bound to *tool_name*.
         """
@@ -1046,7 +1046,7 @@ class AntigravityExecutor(Executor):
 
     @staticmethod
     def _extract_usage(meta: SDKUsage) -> _StrAnyDict | None:
-        """Map an SDK ``UsageMetadata`` to Omnigent's usage dict shape.
+        """Map an SDK ``UsageMetadata`` to tesseract's usage dict shape.
 
         :param meta: The most recent ``UsageMetadata`` from the turn's steps,
             or ``None`` when the SDK reported no usage.

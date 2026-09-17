@@ -173,12 +173,12 @@ class Uuid16(TypeDecorator[str]):
 
 
 class OmnigentBase(DeclarativeBase):
-    """Declarative base for the Omnigent operational tables.
+    """Declarative base for the tesseract operational tables.
 
     Covers agents, files, users, tokens, session permissions,
     conversation metadata, comments, policies, hosts, and daily costs.
     Grouped under their own ``metadata`` so schema creation and Alembic
-    autogenerate can target the Omnigent side independently of the
+    autogenerate can target the tesseract side independently of the
     conversation tables.
     """
 
@@ -191,7 +191,7 @@ class ConversationBase(DeclarativeBase):
     (the Agent-Platform-side tables). Kept under their own ``metadata``
     so they can be created and, when ``conversation_storage_location``
     is configured, hosted on a separate physical database from the
-    Omnigent tables.
+    tesseract tables.
     """
 
 
@@ -540,7 +540,7 @@ class SqlDeviceGrant(OmnigentBase):
         every grant that application initiates. Shown on the consent page
         and recorded in the issued token's ``act`` claim for audit.
         Display/audit only — not a security-decision key.
-    :param user_id: The Omnigent identity that approved the grant, set at
+    :param user_id: The tesseract identity that approved the grant, set at
         consent time. ``NULL`` while pending. The delegated token's ``sub``.
     :param refresh_token_hash: HMAC-SHA256 hex digest of the current
         refresh token. Rotated on every refresh; a presented token that no
@@ -658,7 +658,7 @@ class SqlConversationMetadata(OmnigentBase):
     """
     SQLAlchemy model for the ``omnigent_conversation_metadata`` table.
 
-    Omnigent-side operational state for a conversation: runner/host
+    tesseract-side operational state for a conversation: runner/host
     bindings, native-session linkage, policy accumulators, and launch
     arguments. Paired 1-to-1 with :class:`SqlConversation` by
     ``(workspace_id, id)``; rows are created and deleted together.
@@ -805,7 +805,7 @@ class SqlConversation(ConversationBase):
 
     Agent Platform (AP) fields for a conversation: identity, timestamps,
     title, hierarchy, the next_position allocator, and the agent binding
-    (``agent_id`` + the ``session_overrides`` JSON blob). Omnigent
+    (``agent_id`` + the ``session_overrides`` JSON blob). tesseract
     operational state lives in :class:`SqlConversationMetadata`.
 
     :param id: Unique conversation identifier, e.g.
@@ -868,7 +868,7 @@ class SqlConversation(ConversationBase):
     # Whether the session is archived (hidden from the default sidebar). Lives
     # here on the AP table so list_conversations can filter it inline alongside
     # the created_at/updated_at sort keys, instead of pre-fetching ids from the
-    # Omnigent metadata DB.
+    # tesseract metadata DB.
     archived: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default=false()
     )

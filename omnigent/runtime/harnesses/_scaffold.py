@@ -77,7 +77,7 @@ from omnigent.server.schemas import (
 _logger = logging.getLogger(__name__)
 
 # Cadence for ``response.heartbeat`` SSE events while a turn is
-# streaming. Matches the existing Omnigent cadence at
+# streaming. Matches the existing tesseract cadence at
 # ``omnigent/runtime/workflow.py:3732`` — 15 seconds is short
 # enough that ~3 missed intervals (45s) is a reasonable
 # dead-detection threshold for AP, long enough that the
@@ -93,7 +93,7 @@ _HEARTBEAT_INTERVAL_S = 15.0
 _SHUTDOWN_GRACE_S = 4.5
 
 # Timeout for the policy evaluation round-trip (harness → runner →
-# Omnigent server → runner → harness). Held at one day (86400s) — matching
+# tesseract server → runner → harness). Held at one day (86400s) — matching
 # the deciding policy's default ``ask_timeout``: a TOOL_CALL/REQUEST ASK parks
 # server-side until a human answers, and this gate must block until the
 # verdict arrives rather than auto-resolve on a short cut (the cost-policy
@@ -149,7 +149,7 @@ class PolicyVerdictPayload:
     Result of a policy evaluation round-trip.
 
     Returned by :meth:`TurnContext.evaluate_policy` after the runner
-    evaluates the policy on the Omnigent server and sends the verdict back
+    evaluates the policy on the tesseract server and sends the verdict back
     as a ``policy_verdict`` inbound event.
 
     :param action: Proto-style verdict string, e.g.
@@ -398,9 +398,9 @@ class TurnContext:
 
     :param response_id: Server-allocated id for this turn,
         e.g. ``"resp_abc123"``. Surfaced on the SSE
-        ``response.created`` envelope so Omnigent can correlate
+        ``response.created`` envelope so tesseract can correlate
         replays / heartbeat-event-seq tracking.
-    :param session_id: Omnigent session validated by the API path, independent of telemetry.
+    :param session_id: tesseract session validated by the API path, independent of telemetry.
     :param event_queue: The :class:`asyncio.Queue` the SSE
         streaming response reads from. ``ctx.emit`` puts
         events onto this queue; the streaming response
@@ -509,12 +509,12 @@ class TurnContext:
         Surfaces a ``response.output_item.done`` carrying a
         ``function_call`` item with ``status: "action_required"``;
         the scaffold's ``tool_result`` /events handler resolves
-        the parked Future when Omnigent delivers an event carrying the
-        matching ``call_id``. See §How Omnigent resolves action_required
+        the parked Future when tesseract delivers an event carrying the
+        matching ``call_id``. See §How tesseract resolves action_required
         tool calls in the design doc.
 
         :param call_id: Unique identifier for this tool call,
-            e.g. ``"call_abc123"``. Omnigent echoes it back in the
+            e.g. ``"call_abc123"``. tesseract echoes it back in the
             ``tool_result`` event so the scaffold can route the
             result.
         :param name: Tool name the LLM called, e.g.
@@ -686,7 +686,7 @@ class TurnContext:
             ``"PHASE_LLM_REQUEST"`` or ``"PHASE_LLM_RESPONSE"``.
         :param data: Event data dict for the policy engine, e.g.
             ``{"model": "gpt-4o", "messages_count": 42}``.
-        :returns: The verdict payload from the Omnigent server.
+        :returns: The verdict payload from the tesseract server.
         :raises asyncio.CancelledError: If the turn is cancelled.
         """
         future: asyncio.Future[PolicyVerdictPayload] = asyncio.get_running_loop().create_future()
@@ -1093,7 +1093,7 @@ class HarnessApp:
         ``omnigent/runtime/harnesses/_runner.py``). Any
         session-keyed request whose path does not match is
         addressed at the wrong subprocess; failing with 404 is the
-        same shape the Omnigent side uses for unknown conversations
+        same shape the tesseract side uses for unknown conversations
         (per ``omnigent/server/routes/sessions.py``).
 
         Boot ordering: ``app.state.conversation_id`` is set in

@@ -26,7 +26,7 @@ inactivity timeout:
   agent-sandbox controller tears the Pod down.
 
 So an idle sandbox reclaims itself within one window, a busy one lives as long
-as work keeps arriving, and the controller (not the Omnigent server) does the
+as work keeps arriving, and the controller (not the tesseract server) does the
 reaping. Nothing here has to enumerate or babysit live Pods.
 
 **Expiry is a suspend, not a delete.** ``shutdownPolicy: Retain`` keeps the

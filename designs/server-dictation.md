@@ -8,7 +8,7 @@ official Chrome/Safari builds (Google/Apple cloud speech); it is unavailable
 in Electron, Firefox, Chromium, and most self-hosted contexts. Today the
 button renders nothing (or "Dictation unavailable") in those environments —
 `web/electron/README.md` documents the gap and prescribes the fix: capture
-audio in the client and transcribe it on the Omnigent server.
+audio in the client and transcribe it on the tesseract server.
 
 This design adds that path: a streaming speech-to-text WebSocket on the
 server, backed by a local [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx)

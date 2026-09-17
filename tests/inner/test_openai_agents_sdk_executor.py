@@ -2117,7 +2117,7 @@ def test_normalize_content_blocks_non_file_blocks_pass_through_unchanged() -> No
 
 
 def test_normalize_content_blocks_strips_filename_from_input_image() -> None:
-    """``filename`` is Omnigent metadata and must not reach OpenAI."""
+    """``filename`` is tesseract metadata and must not reach OpenAI."""
     blocks = [
         {
             "type": "input_image",

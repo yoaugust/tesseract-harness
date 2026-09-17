@@ -2,12 +2,12 @@
 
 The example pins ``executor.type: claude_sdk`` and exposes
 Claude Code's built-in tools (Bash, Read, Edit, etc.) plus any
-Omnigent tools declared in YAML (passed through as MCP tools).
+tesseract tools declared in YAML (passed through as MCP tools).
 
 **What breaks if this fails:**
 - ``executor.type: claude_sdk`` spec translation regresses.
 - The ``claude_sdk`` harness wiring loses its MCP-tool bridging
-  (Omnigent tools declared in YAML stop reaching Claude).
+  (tesseract tools declared in YAML stop reaching Claude).
 - Harness-specific ``--model`` resolution changes.
 
 Dependency: requires the ``claude-agent-sdk`` Python package. We

@@ -1,6 +1,6 @@
 """
 Tests for :mod:`omnigent.repl._session_log` — the JSON dump
-helper that ports the legacy ``--log`` flag to Omnigent mode.
+helper that ports the legacy ``--log`` flag to tesseract mode.
 
 Two layers:
 

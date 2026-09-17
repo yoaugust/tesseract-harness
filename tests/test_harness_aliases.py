@@ -65,7 +65,7 @@ def test_canonicalize_harness(alias: str | None, canonical: str | None) -> None:
         ("native-antigravity", True),
         ("agy-native", True),
         ("native-agy", True),
-        # SDK harnesses are NOT native — they replay the Omnigent
+        # SDK harnesses are NOT native — they replay the tesseract
         # transcript and don't own an on-disk runtime transcript. A
         # regression that classified these as native would wrongly route a
         # fork into the native-rebuild path.

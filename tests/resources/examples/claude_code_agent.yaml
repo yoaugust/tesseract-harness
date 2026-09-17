@@ -1,7 +1,7 @@
 # Agent that uses Claude Code as the execution harness.
 #
 # Claude Code provides powerful built-in tools (Bash, file Read/Edit, etc.)
-# plus any Omnigent tools you define are passed to it as MCP tools.
+# plus any tesseract tools you define are passed to it as MCP tools.
 #
 # Requirements:
 #   pip install claude-agent-sdk   (for SDK mode, preferred)
@@ -32,7 +32,7 @@ executor:
   harness: claude-sdk
 
 tools:
-  # These Omnigent tools are passed to Claude Code as MCP tools,
+  # These tesseract tools are passed to Claude Code as MCP tools,
   # available alongside Claude Code's built-in Bash, Read, Edit, etc.
   calculate:
     type: function

@@ -3,7 +3,7 @@
 The ``omnigent hermes`` wrapper launches the real ``hermes`` TUI in a runner-owned
 tmux pane, and :mod:`omnigent.harnesses.hermes_native.bridge` injects web-UI messages into
 it. That covers the web→TUI direction, but the *embedded terminal* is then the
-only surface that reflects the agent's work — the Omnigent conversation view (chat
+only surface that reflects the agent's work — the tesseract conversation view (chat
 bubbles, title) stays empty because nothing mirrors the TUI's transcript back into
 the session.
 
@@ -942,7 +942,7 @@ async def _post_external_session_status(
     ``idle`` with no id still resolves via the server popping the active id and the
     snapshot refetch — the abort / turn-spanned-a-prior-batch path.
 
-    :raises httpx.HTTPError: If the Omnigent request fails or is rejected.
+    :raises httpx.HTTPError: If the tesseract request fails or is rejected.
     """
     data: dict[str, object] = {"status": status}
     if response_id is not None:
@@ -1089,9 +1089,9 @@ async def forward_hermes_store_to_session(
     ``external_conversation_item``. The high-water ``id`` is persisted to
     ``bridge_dir`` so a supervisor restart resumes without re-posting.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: Static HTTP headers (auth normally via ``auth``).
-    :param session_id: Omnigent session/conversation id.
+    :param session_id: tesseract session/conversation id.
     :param bridge_dir: The hermes-native bridge dir (holds the persisted cursor).
     :param agent_name: Agent label stamped on mirrored assistant items.
     :param workspace: The session's working directory (Hermes' ``sessions.cwd``).
@@ -1117,7 +1117,7 @@ async def forward_hermes_store_to_session(
         persisted.active_turn_id if hermes_session_id is not None else None
     )
     # Track whether we have already PATCHed the external_session_id to the
-    # Omnigent server so we do it at most once per forwarder lifetime.
+    # tesseract server so we do it at most once per forwarder lifetime.
     _external_id_synced = False
     timeout = httpx.Timeout(_POST_TIMEOUT_S)
     from omnigent.cli_auth import open_server_client

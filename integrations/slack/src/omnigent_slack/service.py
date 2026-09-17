@@ -65,7 +65,7 @@ _ACK_TEXT = "_Working on it…_"
 _IDLE_FLUSH_SECONDS = 2.0
 
 _SERVER_UNREACHABLE_TEXT = (
-    ":warning: I couldn't reach your Omnigent server. If it moved or is "
+    ":warning: I couldn't reach your tesseract server. If it moved or is "
     "down, run /omnigent to reconfigure."
 )
 
@@ -96,7 +96,7 @@ _STREAM_INTERRUPTED_TEXT = (
 # failed-launch subcase).
 _MANAGED_SANDBOX_NOT_READY_TEXT = (
     ":warning: Your managed sandbox isn't ready yet. Try again in a moment; if it "
-    "keeps happening, contact your Omnigent operator."
+    "keeps happening, contact your tesseract operator."
 )
 
 # The same "no runner" report on an EXTERNAL host: no runner is bound, and the
@@ -193,7 +193,7 @@ class SlackOmnigentService:
         self._store = store
         self._pool = pool
         self._setup = setup
-        # The one operator-configured Omnigent server. Always the routing
+        # The one operator-configured tesseract server. Always the routing
         # target — any server_url persisted on an older config/session row is
         # ignored, so a config change points every thread at the new server.
         self._server_url = server_url
@@ -320,11 +320,11 @@ class SlackOmnigentService:
         # claim so a redelivery / re-send isn't silently deduped away.
         try:
             if not event_is_dm(event):
-                # In channels Omnigent only joins a thread when @-mentioned (which
+                # In channels tesseract only joins a thread when @-mentioned (which
                 # arrives as an app_mention event). Plain messages — even a reply in
                 # a thread that already has a session, and even one that mentions the
                 # bot (app_mention handles that copy) — are human discussion and must
-                # not be added to the Omnigent session.
+                # not be added to the tesseract session.
                 self._logger.info(
                     "Ignoring channel message channel=%s ts=%s",
                     event.get("channel"),
@@ -697,7 +697,7 @@ class SlackOmnigentService:
         record = await self._store.get_session(turn.key)
         if record is not None:
             self._logger.info(
-                "Using existing Omnigent session thread=%s session_id=%s",
+                "Using existing tesseract session thread=%s session_id=%s",
                 turn.key.display(),
                 record.session_id,
             )
@@ -761,11 +761,11 @@ class SlackOmnigentService:
             # error can carry a stack trace / internal path and the thread is
             # visible to the whole channel (DESIGN.md: server bodies are not echoed).
             self._logger.exception(
-                "Failed to start Omnigent session thread=%s", turn.key.display()
+                "Failed to start tesseract session thread=%s", turn.key.display()
             )
             raise _TurnAborted(
-                ":warning: Something went wrong starting your Omnigent session. Please try "
-                "again; if it keeps happening, contact your Omnigent operator."
+                ":warning: Something went wrong starting your tesseract session. Please try "
+                "again; if it keeps happening, contact your tesseract operator."
             ) from exc
 
         await self._store.upsert_session(
@@ -778,7 +778,7 @@ class SlackOmnigentService:
             host_type=turn.host_type,
         )
         self._logger.info(
-            "Mapped Slack thread to new Omnigent session thread=%s session_id=%s runner_id=%s",
+            "Mapped Slack thread to new tesseract session thread=%s session_id=%s runner_id=%s",
             turn.key.display(),
             session_id,
             runner_id,
@@ -888,7 +888,7 @@ class SlackOmnigentService:
         except Exception:
             # Log the detail here (never surfaced — it can carry a stack trace /
             # internal path); the user gets the generic failure via ``errored``.
-            self._logger.exception("Omnigent turn failed for %s", turn.key.display())
+            self._logger.exception("tesseract turn failed for %s", turn.key.display())
             state.errored = True
         finally:
             # Settle any card still open (turn ended before its resolution push,
@@ -986,7 +986,7 @@ class SlackOmnigentService:
             # embed a stack trace / internal path, so log it and show the generic
             # failure — do NOT echo it to the channel.
             self._logger.warning(
-                "Omnigent in-band turn error thread=%s: %s", turn.key.display(), event_error
+                "tesseract in-band turn error thread=%s: %s", turn.key.display(), event_error
             )
             state.errored = True
 
@@ -1080,7 +1080,7 @@ def _event_id(body: dict[str, Any], event: dict[str, Any]) -> str | None:
 async def _session_title(
     client: SlackClientProtocol, key: ThreadKey, event: dict[str, Any]
 ) -> str:
-    """Build the Omnigent session title: ``Slack: <thread permalink>``.
+    """Build the tesseract session title: ``Slack: <thread permalink>``.
 
     A real Slack thread permalink (via ``chat.getPermalink``) is a clickable URL
     that the web UI linkifies, so the session list points back at the originating

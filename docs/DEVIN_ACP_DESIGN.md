@@ -1,6 +1,6 @@
 # Devin (`acp:devin`) — architecture, state of the world, and follow-ups
 
-Devin (Cognition's `devin acp`) runs through Omnigent's **generic ACP harness** —
+Devin (Cognition's `devin acp`) runs through tesseract's **generic ACP harness** —
 no bespoke transport, no fork of the executor six other agents share. What makes
 it more than a config row is one small, self-contained vendor layer that plugs in
 above a seam; everything below the seam is the generic ACP pipeline.
@@ -15,7 +15,7 @@ This document is three things:
 
 > Current as of 2026-08-26. Grounded in `harness_capabilities()` on `main`, the
 > harness bench (`tests/harness_bench`), and live `devin acp` probes (Devin Pro,
-> v3000.x). Devin authenticates itself (`devin auth login`); Omnigent stores no
+> v3000.x). Devin authenticates itself (`devin auth login`); tesseract stores no
 > Devin credential.
 
 ---
@@ -31,11 +31,11 @@ absent. Where a gap has a tracking PR it is named; those are expanded under
 | Capability | State | Mechanism / caveat |
 |---|:---:|---|
 | Integration | ✓ | ACP subprocess (`devin acp`) over JSON-RPC/stdio; generic executor |
-| Auth | ✓ | Devin's own (`devin auth login`); Omnigent stores no credential |
+| Auth | ✓ | Devin's own (`devin auth login`); tesseract stores no credential |
 | Model family | ✓ | Multi — SWE / Claude / Gemini / GPT; effort is encoded in the model id |
 | Model switch mid-session | ✓ | Warm, via `session/set_config_option` (#4703) — no respawn |
 | Setup + picker | ✓ | Builtin `devin` row; catalog-derived identity (#4909, #4920); a configured `acp:` agent of the same name wins (#4927) |
-| Omnigent MCP relay | ✓ | stdio; 26 builtin tools bridged via `session/new.mcpServers` |
+| tesseract MCP relay | ✓ | stdio; 26 builtin tools bridged via `session/new.mcpServers` |
 | Streaming / reasoning / tool cards | ✓ | `agent_message_chunk` / `agent_thought_chunk` / `tool_call` |
 | Images · cost/usage · interrupt | ✓ | image blocks · `result.usage` · `session/cancel` |
 | Tool-call identity in the approval card | ✓ | Card names the tool + command, not `"tool"` / `{}` (#5050) |
@@ -45,7 +45,7 @@ absent. Where a gap has a tracking PR it is named; those are expanded under
 | **Sub-agents surface in the UI** | ✓ | Devin's parallel sub-agents appear as child sessions, labelled "Devin" (#5489) |
 | Sub-agent transcript depth | ✓ | Child chat shows the sub-agent's nested tool calls, routed via `cognition.ai/subagent_context` (#5575), and they persist across reload (#5583) |
 | Policy on edits / MCP tools | ~ | Shell is gated; file edits (under *accept-edits*) and the agent's own MCP tools are not — #4707 |
-| Shell **execution** | ~ | Devin executes its shell; Omnigent gates but does not run it (no terminal takeover) — #4701 |
+| Shell **execution** | ~ | Devin executes its shell; tesseract gates but does not run it (no terminal takeover) — #4701 |
 | Cost / token budget | ~ | `cachedReadTokens` dropped; no budget primitive — #4704 |
 | Compaction | ~ | Devin compacts internally and surfaces no progress |
 | Warm resume | ✗ | Cold text-replay only; `session/load` not implemented — #4705 |
@@ -333,13 +333,13 @@ The roadmap, roughly in priority order. Each is additive and capability-gated pe
 the constraint above. Items with an open PR are named; the rest have no PR yet. A
 couple have shipped since this doc first landed — kept below, marked, as history.
 
-### Tool mediation — run the shell in Omnigent (#4701, open)
+### Tool mediation — run the shell in tesseract (#4701, open)
 
-Today Omnigent *gates* Devin's shell (the command is visible to policy since #5050)
+Today tesseract *gates* Devin's shell (the command is visible to policy since #5050)
 but Devin *executes* it. Advertising the ACP `terminal/*` client capability makes
-Devin delegate execution back to Omnigent, so the sandbox, audit trail, and policy
+Devin delegate execution back to tesseract, so the sandbox, audit trail, and policy
 verdict cannot be bypassed by the agent's own mode — and the user can take the
-terminal over. Verified end-to-end against real `devin acp` (ALLOW ran in Omnigent;
+terminal over. Verified end-to-end against real `devin acp` (ALLOW ran in tesseract;
 DENY blocked). Gated on the capability, so agents that ignore it are unaffected.
 
 ### Gate edits and MCP tools via PreToolUse hooks (#4707, open)
@@ -360,7 +360,7 @@ fallback.
 
 ### Detect un-lent MCP servers (#4706, open)
 
-Any ACP agent can load MCP servers Omnigent never lent, bypassing policy. Devin
+Any ACP agent can load MCP servers tesseract never lent, bypassing policy. Devin
 announces them (`_cognition.ai/mcp/serversChanged`); parsing that turns an invisible
 hole into a visible warning for the whole ACP family. (Note: the PreToolUse bridge
 above can *gate* those tools via `^mcp__.*` even though it can't stop them loading.)
@@ -384,13 +384,13 @@ reload. Kept here as history — no longer open.
 
 ### Sub-agent sandbox root
 
-**Devin's own isolation model, not an Omnigent seam gap.** Observed while capturing
+**Devin's own isolation model, not an tesseract seam gap.** Observed while capturing
 frames: Devin's sub-agents run under a different env root than the task directory
 (e.g. `tmp.tmvzH5OXHu` vs the task's `tmp.nAW8FoCJcT`), so a sub-agent's `write` to
 the task dir is denied and Devin falls back to writing files itself via `exec`. The
 sub-agent's `request_scope` can't cross into the parent task's root — that is Devin's
 sandbox architecture, not something the `AcpExtension` seam can or should fix from
-Omnigent's side. There is no Omnigent PR because there is no Omnigent-side gap; if it
+tesseract's side. There is no tesseract PR because there is no tesseract-side gap; if it
 ever needs addressing it belongs upstream in Devin (or a future ACP scope-negotiation
 primitive).
 
@@ -398,7 +398,7 @@ primitive).
 
 - **Fork history** — no ACP mechanism; native harnesses rebuild from history.
 - **Steering (mid-turn) / live queue** — ACP has no mid-turn message path, so
-  Omnigent can interrupt and re-prompt but not inject into a running turn.
+  tesseract can interrupt and re-prompt but not inject into a running turn.
 - **Compaction progress** — Devin compacts internally and surfaces no
   `CompactionComplete`, so long sessions show no compaction indicator.
 - **Headless silent-stall** — a permission request in `-p` mode with no card to

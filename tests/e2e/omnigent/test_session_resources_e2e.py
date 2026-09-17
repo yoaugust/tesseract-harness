@@ -347,7 +347,7 @@ def test_session_resources_e2e(
 
             # ── Terminals (auto-created REPL terminal) ────────
             # Runner-hosted SDK sessions auto-create the embedded
-            # Omnigent REPL terminal (``terminal_tui_main``) on bind;
+            # tesseract REPL terminal (``terminal_tui_main``) on bind;
             # it is the only terminal until the agent launches more.
             # An empty list means the auto-create regressed; extra
             # entries mean something else launched unexpectedly.

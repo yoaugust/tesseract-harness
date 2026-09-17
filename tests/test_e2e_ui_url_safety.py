@@ -30,7 +30,7 @@ def _pytest_configure() -> Callable[[Config], None]:
 def test_unsafe_ui_base_url_reason_refuses_known_dev_ports(port: int) -> None:
     reason = unsafe_ui_base_url_reason(f"http://example.com:{port}")
 
-    assert reason == f"port {port} is a known Omnigent/Vite dev port"
+    assert reason == f"port {port} is a known tesseract/Vite dev port"
 
 
 @pytest.mark.parametrize(

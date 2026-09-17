@@ -1,4 +1,4 @@
-"""Shared helper: spawn a dedicated *OIDC-mode* Omnigent server pointed at a
+"""Shared helper: spawn a dedicated *OIDC-mode* tesseract server pointed at a
 fake in-process IdP, so the SPA's login-redirect journey can be filmed.
 
 The shared ``live_server`` runs single-user with auth off, and the accounts

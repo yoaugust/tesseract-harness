@@ -80,7 +80,7 @@ def _tmux_command_sequence(commands: list[list[str]]) -> list[str]:
     Flatten tmux commands into one client command sequence.
 
     Tmux accepts multiple commands in one invocation when separated by
-    a literal ``;`` argv. This lets Omnigent configure a fresh
+    a literal ``;`` argv. This lets tesseract configure a fresh
     private server and create the session without writing a tmux conf
     file.
 
@@ -103,7 +103,7 @@ def _tmux_managed_option_commands(
     keep_alive_after_exit: bool = False,
 ) -> list[list[str]]:
     """
-    Build tmux commands for Omnigent-managed global options.
+    Build tmux commands for tesseract-managed global options.
 
     :param scrollback: Tmux history limit, e.g. ``10000``.
     :param allow_passthrough: Whether to allow pane programs to send
@@ -236,7 +236,7 @@ def _tmux_lockdown_commands() -> list[list[str]]:
     """
     Build tmux commands that remove user-facing pane/window creation controls.
 
-    Managed terminals must stay inside Omnigent' terminal registry.
+    Managed terminals must stay inside tesseract' terminal registry.
     Disabling the prefix table and right-click context menus prevents an
     attached user from creating extra panes, windows, or sessions through
     tmux UI controls. The root-table unbinds are quiet so missing default
@@ -274,7 +274,7 @@ def _tmux_status_option_commands() -> list[list[str]]:
             "set-option",
             "-g",
             "status-left",
-            f"Omnigent: #{{{_TMUX_CONVERSATION_LINK_OPTION}}}",
+            f"tesseract: #{{{_TMUX_CONVERSATION_LINK_OPTION}}}",
         ],
         ["set-option", "-g", "status-left-style", "fg=default,bg=default"],
         ["set-option", "-g", "status-left-length", "200"],
@@ -950,7 +950,7 @@ class TerminalInstance:
     _egress_tmpdir: Path | None = field(default=None, repr=False)
     _idle_task: asyncio.Task[None] | None = field(default=None, repr=False)
     # Threaded idle-watcher state. Mirrors :attr:`_idle_task` but for
-    # callers that don't have a long-lived event loop (the Omnigent path:
+    # callers that don't have a long-lived event loop (the tesseract path:
     # ``SysTerminalLaunchTool`` runs ``asyncio.run`` per call, so an
     # asyncio task started inside it dies the moment ``launch``
     # returns). The thread polls tmux capture-pane synchronously
@@ -1593,7 +1593,7 @@ class TerminalInstance:
         Start a daemon thread driving idle/activity edges from the pane.
 
         Thread-based sibling of :meth:`start_idle_watcher` for callers
-        without a long-lived event loop. The Omnigent ``sys_terminal_launch``
+        without a long-lived event loop. The tesseract ``sys_terminal_launch``
         path runs ``SysTerminalLaunchTool.invoke`` on a worker thread
         and drives :meth:`launch` via ``asyncio.run`` per call — that
         loop exits the moment ``launch`` returns, so an asyncio task

@@ -2,7 +2,7 @@
 """Deterministic mock-LLM CUJ driver for the polly coding orchestrator.
 
 This is the *reproducible loop* half of the ``polly-e2e-dev`` skill. It boots a
-throwaway local Omnigent server from the current checkout (which carries
+throwaway local tesseract server from the current checkout (which carries
 ``omnigent.inner.nessie.policies`` — the module polly's guardrails resolve) plus
 the repo's mock-LLM server, rewrites the ``examples/polly`` bundle to the
 ``openai-agents`` harness wired to the mock, then drives ``omnigent run`` turns
@@ -296,7 +296,7 @@ def _kill(pids: set[int]) -> None:
 
 @dataclass
 class _Servers:
-    """Handles for the mock LLM + local Omnigent server."""
+    """Handles for the mock LLM + local tesseract server."""
 
     mock_url: str
     server_url: str
@@ -307,7 +307,7 @@ class _Servers:
 
 @contextmanager
 def _servers(tmp: Path) -> Iterator[_Servers]:
-    """Start the mock LLM and a throwaway local Omnigent server; reap both.
+    """Start the mock LLM and a throwaway local tesseract server; reap both.
 
     ``omni run`` turns make the server spawn per-conversation runner/harness
     subprocesses that a plain server SIGTERM does not reap. We snapshot runner

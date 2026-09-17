@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent messages into a native Pi TUI."""
+"""Executor that bridges tesseract messages into a native Pi TUI."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ class PiNativeExecutor(Executor):
     Harness-side executor for ``omnigent pi`` web UI turns.
 
     The native Pi process is already running in the session terminal with
-    the Omnigent Pi extension loaded. Each turn queues the latest user
+    the tesseract Pi extension loaded. Each turn queues the latest user
     message into the bridge inbox; the extension consumes it and calls
     ``pi.sendUserMessage`` inside the TUI process.
 
@@ -84,7 +84,7 @@ class PiNativeExecutor(Executor):
         Queue the latest user message for Pi.
 
         :param messages: Conversation history in executor message shape.
-        :param tools: Tool schemas from Omnigent. Ignored for now; native
+        :param tools: Tool schemas from tesseract. Ignored for now; native
             Pi owns its configured tool surface.
         :param system_prompt: System prompt from the agent spec. Ignored
             because the native Pi terminal controls its own prompt/settings.
@@ -156,9 +156,9 @@ def _bridge_dir_from_env() -> Path:
 
 def _request_session_id_from_env() -> str | None:
     """
-    Resolve the Omnigent session id that requested this harness process.
+    Resolve the tesseract session id that requested this harness process.
 
-    :returns: Omnigent session id, e.g. ``"conv_abc123"``, or ``None``.
+    :returns: tesseract session id, e.g. ``"conv_abc123"``, or ``None``.
     """
     raw = os.environ.get(PI_NATIVE_REQUEST_SESSION_ID_ENV_VAR, "").strip()
     return raw or None

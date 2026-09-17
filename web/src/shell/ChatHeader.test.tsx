@@ -372,7 +372,7 @@ describe("ChatHeader — conversation breadcrumb", () => {
 
   it("names the product, not the internal wrapper row, on a native sub-agent", () => {
     // A Claude Code Task child is bound to its parent's `claude-native-ui`
-    // agent — an Omnigent internal the server hides everywhere else
+    // agent — an tesseract internal the server hides everywhere else
     // (`public_agent_name`). The wrapper label names the product instead.
     renderHeader({
       sidebarOpen: true,

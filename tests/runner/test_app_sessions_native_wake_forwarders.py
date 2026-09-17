@@ -37,7 +37,7 @@ class _WakePost:
 
 class _QueuedResponseServerClient:
     """
-    Omnigent HTTP client stub that returns a fixed queue of real responses.
+    tesseract HTTP client stub that returns a fixed queue of real responses.
 
     A real stub (NOT ``MagicMock``) so that an unexpected attribute access or
     an extra POST beyond the queue fails the test loudly instead of silently
@@ -112,7 +112,7 @@ async def test_wake_post_retries_transient_503_then_succeeds(
     """
     A transient 503 wake response is retried and the next 200 succeeds.
 
-    Guards the core bug: Omnigent returns a genuine 503 ``RUNNER_UNAVAILABLE``
+    Guards the core bug: tesseract returns a genuine 503 ``RUNNER_UNAVAILABLE``
     *response* (not a transport exception) while the parent's runner tunnel
     reconnects. The wake POST must treat that as a failure and retry, not
     accept it as delivered.
@@ -287,7 +287,7 @@ def test_wake_post_transport_error_is_retryable() -> None:
     A transport-level error (no response) is always retryable.
 
     A ``ConnectError`` carries no HTTP response — the POST may never have
-    reached Omnigent — so the wake should be retried.
+    reached tesseract — so the wake should be retried.
     """
     request = httpx.Request("POST", "http://test/v1/sessions/p/events")
     exc = httpx.ConnectError("connection refused", request=request)

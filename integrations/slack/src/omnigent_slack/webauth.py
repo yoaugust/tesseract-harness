@@ -17,7 +17,7 @@ bot's own Databricks App URL:
   Persists the tokens exchanged on the GET (stashed under a single-use confirm
   id) so the Socket-Mode bot can act as the user — and refresh without
   re-enrollment. Storing only on this explicit POST means a credential is never
-  persisted without the user affirming the Omnigent↔Slack account linkage.
+  persisted without the user affirming the tesseract↔Slack account linkage.
 
 The authorization code is single-use, so it's exchanged once on the GET and the
 resulting tokens held in a short-lived in-memory stash until the confirming POST.
@@ -165,7 +165,7 @@ class WebAuthServer:
                 # consent page naming the identities. POST — the consent page's
                 # Confirm button — is the only thing that stores the token, so a
                 # credential is never persisted without the user affirming the
-                # Omnigent↔Slack account linkage.
+                # tesseract↔Slack account linkage.
                 web.get("/auth/callback", self._handle_callback),
                 web.post("/auth/callback", self._handle_confirm),
             ]
@@ -246,7 +246,7 @@ class WebAuthServer:
         pair, then — the confused-deputy guard — requires the OAuth-authenticated
         email to equal the email the link was issued for. On success it stashes
         the tokens under a single-use confirm id and renders a consent page naming
-        the exact Omnigent + Slack identities; the token is persisted to the store
+        the exact tesseract + Slack identities; the token is persisted to the store
         only when the user clicks Confirm (the POST). The code is single-use, so
         it's exchanged here (not re-exchanged on the POST).
 
@@ -338,7 +338,7 @@ class WebAuthServer:
         Looks up the single-use confirm id, then stores the tokens for the Slack
         identity the signed state bound them to. Storing only on this explicit
         POST means a credential is never persisted without the user affirming the
-        Omnigent↔Slack linkage on a page that named both identities.
+        tesseract↔Slack linkage on a page that named both identities.
         """
         data = await request.post()
         confirm_id = str(data.get("confirm_id", ""))
@@ -442,7 +442,7 @@ def _identity_summary(
     """
     workspace = f" in Slack workspace <b>{html.escape(team_name)}</b>" if team_name else ""
     return (
-        f"You are {verb} your Omnigent <b>{html.escape(server_url)}</b> account "
+        f"You are {verb} your tesseract <b>{html.escape(server_url)}</b> account "
         f"<b>{html.escape(idp_email)}</b> with Slack user "
         f"<b>{html.escape(slack_email)}</b>{workspace}."
     )
@@ -452,7 +452,7 @@ def _consent_page(
     *, confirm_id: str, server_url: str, idp_email: str, slack_email: str, team_name: str
 ) -> str:
     # Shown after the code exchange but BEFORE anything is stored. Names the exact
-    # Omnigent + Slack identities being linked and requires an explicit Confirm (a
+    # tesseract + Slack identities being linked and requires an explicit Confirm (a
     # POST carrying the single-use confirm id) before the token is saved — so a
     # credential is never persisted without the user affirming the linkage.
     summary = _identity_summary(
@@ -466,7 +466,7 @@ def _consent_page(
         f"{summary}<br><br>"
         "Only continue if <b>all of the above</b> are correct and this is you. If "
         "anything is unrecognized, do <b>NOT</b> confirm — doing so lets that Slack "
-        "user act as you and use your Omnigent account. Close this tab instead."
+        "user act as you and use your tesseract account. Close this tab instead."
         "<br><br>"
         '<form method="post" action="/auth/callback">'
         f'<input type="hidden" name="confirm_id" value="{html.escape(confirm_id)}">'
@@ -474,13 +474,13 @@ def _consent_page(
         'border:0;border-radius:6px;background:#1a1a1a;color:#fff;cursor:pointer">'
         "Confirm &amp; connect</button></form>"
     )
-    return _page("Confirm your Omnigent connection", message)
+    return _page("Confirm your tesseract connection", message)
 
 
 def _success_page(*, server_url: str, idp_email: str, slack_email: str, team_name: str) -> str:
     workspace = f" in Slack workspace <b>{html.escape(team_name)}</b>" if team_name else ""
     summary = (
-        f"You connected your Omnigent <b>{html.escape(server_url)}</b> account "
+        f"You connected your tesseract <b>{html.escape(server_url)}</b> account "
         f"<b>{html.escape(idp_email)}</b> with Slack user "
         f"<b>{html.escape(slack_email)}</b>{workspace}."
     )

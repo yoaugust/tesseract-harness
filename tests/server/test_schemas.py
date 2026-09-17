@@ -566,7 +566,7 @@ def test_elicitation_request_params_preserves_unknown_fields() -> None:
     MCP's ElicitRequestParams allows arbitrary extras under params
     (the spec uses extra="allow") so MCP servers can attach context.
     Our params model preserves the same behavior so an MCP server's
-    elicitation/create call traversing harness → Omnigent → client doesn't
+    elicitation/create call traversing harness → tesseract → client doesn't
     lose fields the MCP server attached.
     """
     params = ElicitationRequestParams(

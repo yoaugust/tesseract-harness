@@ -52,10 +52,10 @@ _logger = logging.getLogger(__name__)
 # and prompts in the TUI for each tool. This is the ONLY pre-emptive control agy
 # exposes — its ``hooks.json`` PreToolUse hook does not fire on tool execution in
 # 1.0.8 (verified; see docs/claude/antigravity-native-governance-design.md §2.3),
-# so there is no per-tool / web-routed gate. Omnigent therefore maps its
+# so there is no per-tool / web-routed gate. tesseract therefore maps its
 # ``permission_mode`` onto this single flag.
 _SKIP_PERMISSIONS_FLAG = "--dangerously-skip-permissions"
-# Omnigent permission mode that maps to agy's all-or-nothing bypass.
+# tesseract permission mode that maps to agy's all-or-nothing bypass.
 _BYPASS_PERMISSION_MODE = "bypassPermissions"
 # Fallback binary path when ``agy`` is not on PATH.
 _AGY_FALLBACK_PATH = Path.home() / ".local" / "bin" / "agy"
@@ -165,10 +165,10 @@ def should_skip_permissions(
     For a non-bypass, interactive (attended) launch the flag is omitted so agy's
     default ``request-review`` prompts the user per tool — answered by the
     attached TTY (CLI) or, on the host-spawned web path, surfaced as a real-time
-    Omnigent elicitation by the RPC read driver's interaction bridge (see
+    tesseract elicitation by the RPC read driver's interaction bridge (see
     :mod:`omnigent.harnesses.antigravity_native.reader` /
     :mod:`omnigent.harnesses.antigravity_native.interactions`). agy exposes no firing
-    pre-tool hook, so Omnigent cannot pre-empt a tool before it runs; the
+    pre-tool hook, so tesseract cannot pre-empt a tool before it runs; the
     elicitation card is the honest gate.
 
     .. warning:: The ``headless`` argument is currently derived from the
@@ -179,7 +179,7 @@ def should_skip_permissions(
        attached" — otherwise a web-attended session would auto-bypass here. See
        the matching note on ``_launch_is_headless``.
 
-    :param permission_mode: The session's effective Omnigent permission mode,
+    :param permission_mode: The session's effective tesseract permission mode,
         e.g. ``"bypassPermissions"`` / ``"default"`` / ``"acceptEdits"``.
         ``None`` is treated as a non-bypass mode.
     :param headless: ``True`` when no interactive client will attach (sandbox /
@@ -222,7 +222,7 @@ def build_agy_launch(
     prompt, which would otherwise hang an unattended turn). Otherwise it is
     omitted so agy's default ``request-review`` prompts the attached user. This
     is the *only* pre-emptive control agy honors; it is all-or-nothing and
-    cannot be routed to the web UI or made per-tool (the genuine Omnigent policy
+    cannot be routed to the web UI or made per-tool (the genuine tesseract policy
     gate for this harness is post-hoc/audit-only). The flag is not duplicated
     when *extra_args* already carries it.
 
@@ -239,7 +239,7 @@ def build_agy_launch(
         ``None`` omits ``--model`` so agy uses its default.
     :param resume: ``True`` to resume an existing conversation; ``False``
         to start a fresh one.
-    :param permission_mode: The session's effective Omnigent permission mode,
+    :param permission_mode: The session's effective tesseract permission mode,
         e.g. ``"bypassPermissions"``. ``None`` (the default) is a non-bypass
         mode. See :func:`should_skip_permissions`.
     :param headless: ``True`` when no interactive client will attach to the agy

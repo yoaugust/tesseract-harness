@@ -400,7 +400,7 @@ async def test_setup_shows_login_in_modal_and_advances_on_approval(tmp_path: Pat
         import json as _json
 
         authorize_body = _json.loads(authorize_route.calls.last.request.content)
-        assert authorize_body["client_id"] == "Slack-Omnigent-Acme Corp"
+        assert authorize_body["client_id"] == "Slack-tesseract-Acme Corp"
 
         # The background poll approves and advances the SAME modal (views_update).
         for _ in range(50):

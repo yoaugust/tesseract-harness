@@ -2,7 +2,7 @@
 
 Guards the background-daemon telemetry env chain: a user who exports
 ``CLAUDE_CODE_ENABLE_TELEMETRY=1`` (plus the ``OTEL_*`` exporter config)
-and then starts Omnigent in the background finds the flag missing
+and then starts tesseract in the background finds the flag missing
 from the detached daemon's environment — ``_build_host_daemon_env`` allowlists
 ``CLAUDE_CODE_OAUTH_TOKEN`` / ``CLAUDE_CODE_USE_BEDROCK`` but not the telemetry
 opt-in — and therefore missing from every runner the daemon spawns, so the

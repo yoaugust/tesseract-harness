@@ -400,7 +400,7 @@ class BlockStream:
                     # Already rendered the ⏵ line for this call_id
                     # (e.g. via the inline observed event from the
                     # harness's content_block_stop, or via the
-                    # ``ToolCallInProgress`` event the Omnigent server
+                    # ``ToolCallInProgress`` event the tesseract server
                     # emits at action_required arrival). Re-register
                     # in pending_tools so the eventual ``ToolResult``
                     # can pair by call_id — the prior pending entry

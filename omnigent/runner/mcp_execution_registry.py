@@ -1,6 +1,6 @@
 """Runner-owned MCP executions that survive a server-tunnel replacement.
 
-The Omnigent server reaches local MCP processes through a tunneled runner
+The tesseract server reaches local MCP processes through a tunneled runner
 request.  A server restart cancels that request, but it must not cancel and
 then replay an external tool that may already have side effects.  This
 registry shields the actual execution and lets the next server generation

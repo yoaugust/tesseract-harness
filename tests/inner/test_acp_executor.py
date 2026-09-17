@@ -1736,7 +1736,7 @@ async def test_end_to_end_against_fake_acp_agent(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Omnigent MCP bridge (session/new.mcpServers via the shared serve-mcp relay)
+# tesseract MCP bridge (session/new.mcpServers via the shared serve-mcp relay)
 # ---------------------------------------------------------------------------
 
 
@@ -1873,7 +1873,7 @@ async def test_inject_system_prompt_false_skips_prepend(tmp_path: Path) -> None:
     """inject_system_prompt=False prevents the spec's system prompt from being
     folded into the first ACP user turn (#4917 — Pi-fork agents like omp).
 
-    Without this fix, Omnigent's system prompt is prepended to the user message
+    Without this fix, tesseract's system prompt is prepended to the user message
     on the first turn.  For agents that fully own their own system prompt (Pi
     forks), this confuses the internal Claude model into emitting XML tool-call
     fragments (``</function></tool_call>``) when there is no MCP relay backing

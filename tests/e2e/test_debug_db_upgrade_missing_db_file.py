@@ -1,12 +1,12 @@
 """E2E reproduction: DB-schema mismatch journeys must end in actionable errors.
 
-A user whose ``chat.db`` was stamped by a newer Omnigent build hit two
+A user whose ``chat.db`` was stamped by a newer tesseract build hit two
 failures in a row:
 
 1. ``omnigent server`` misreported the newer-build database as "schema is
    out of date" and crashed attempting an automatic migration. This was
    fixed by the newer-schema guard ("reject schemas from newer builds"),
-   which now stops with a clear "newer than this version of Omnigent"
+   which now stops with a clear "newer than this version of tesseract"
    message; ``test_server_rejects_newer_build_database_with_clear_message``
    guards that behavior.
 
@@ -86,7 +86,7 @@ def _run_cli(args: list[str], tmp_path: Path) -> subprocess.CompletedProcess[str
 def _seed_newer_build_db(db_path: Path) -> None:
     """Create a SQLite DB stamped with a revision unknown to this build.
 
-    Mirrors what a newer Omnigent build leaves behind: an
+    Mirrors what a newer tesseract build leaves behind: an
     ``alembic_version`` table pointing at a migration this build's chain
     does not contain.
 
@@ -153,11 +153,11 @@ def test_server_rejects_newer_build_database_with_clear_message(
 ) -> None:
     """``omnigent server`` must reject a newer-build DB with clear guidance.
 
-    Journey (crash-report trace 1): the user starts Omnigent locally against
+    Journey (crash-report trace 1): the user starts tesseract locally against
     a ``chat.db`` written by a newer build. The server must not misreport it
     as "schema is out of date" and attempt (and fail) an automatic
     migration; it must state the database is newer than this build and tell
-    the user to upgrade Omnigent. Regression guard for the newer-schema
+    the user to upgrade tesseract. Regression guard for the newer-schema
     reject fix.
     """
     db_path = tmp_path / "chat.db"

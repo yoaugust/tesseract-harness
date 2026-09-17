@@ -56,7 +56,7 @@ class CodexGoalRunner:
     @staticmethod
     def _goal_to_api(goal: dict[str, object]) -> dict[str, object]:
         """
-        Convert a Codex app-server goal object to Omnigent API field names.
+        Convert a Codex app-server goal object to tesseract API field names.
 
         Codex app-server speaks camelCase JSON-RPC fields. The AP/UI session
         API uses snake_case, so normalize the goal at the runner boundary

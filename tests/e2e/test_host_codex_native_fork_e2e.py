@@ -11,7 +11,7 @@ recall it. Both resume shapes are exercised:
    off the source repo.
 
 The regression these guard against: codex forks used to resume *fresh* —
-they got the copied Omnigent transcript as context but not Codex's
+they got the copied tesseract transcript as context but not Codex's
 internal thread / rollout state. The current path clones the source
 rollout into the clone's own ``CODEX_HOME`` under a freshly minted thread
 id (``_clone_codex_rollout``) and launches ``codex resume

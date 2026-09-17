@@ -1,5 +1,5 @@
 {
-  // Omnigent server on Cloudflare Containers, backed by D1 (database) and
+  // tesseract server on Cloudflare Containers, backed by D1 (database) and
   // R2 (artifact store, via omnigent's native S3 backend over the R2 S3 API).
   // Full walkthrough: deploy/cloudflare/README.md.
   "name": "omnigent",

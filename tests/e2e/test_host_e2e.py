@@ -185,7 +185,7 @@ def _pid_alive(pid: int) -> bool:
 
 
 def _write_smoke_agent_yaml(tmp_path: Path) -> Path:
-    """Create a minimal Omnigent YAML for host e2e tests.
+    """Create a minimal tesseract YAML for host e2e tests.
 
     :param tmp_path: Pytest temp directory.
     :returns: Path to the agent directory.

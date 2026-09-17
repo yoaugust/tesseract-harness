@@ -2,7 +2,7 @@
 
 A scheduled task fires an agent session on a recurring RRULE schedule. These
 tools let an agent create, list, update, and delete its own scheduled tasks. The
-runner dispatches each to the Omnigent server's ``/v1/scheduled-tasks`` REST
+runner dispatches each to the tesseract server's ``/v1/scheduled-tasks`` REST
 endpoints (same posture as the policy / session-query tools) — the runner has no
 in-process store.
 

@@ -12,9 +12,9 @@ by ``omnigent qwen`` in the session terminal). The bridge dir is read from
 
 Tool policies: in this first cut, qwen runs its tools inside its own TUI and
 gates them with its own in-terminal approval (like goose-/cursor-native), which
-Omnigent does not intercept. qwen *can* delegate approval externally
+tesseract does not intercept. qwen *can* delegate approval externally
 (``can_use_tool`` control requests on ``--json-file``, answered via
-``confirmation_response`` on ``--input-file``) — wiring that through Omnigent's
+``confirmation_response`` on ``--input-file``) — wiring that through tesseract's
 TOOL_CALL policy is the documented follow-up; see ``docs/QWEN_NATIVE_DESIGN.md``.
 """
 

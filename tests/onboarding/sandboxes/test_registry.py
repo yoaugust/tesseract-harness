@@ -62,7 +62,7 @@ def _set_entry_points(
 
 
 def test_plugin_state_loads_builtins() -> None:
-    """The cached plugin state includes core Omnigent built-in providers."""
+    """The cached plugin state includes core tesseract built-in providers."""
     reset_plugin_state_for_tests()
     state = plugin_state()
     assert isinstance(state, SandboxProviderPluginState)

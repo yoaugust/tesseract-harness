@@ -1,6 +1,6 @@
 """E2E: a mid-turn steer must steer the running Kimi turn, not queue behind it.
 
-Regression guard for kimi-native steering. Omnigent injects a steer into the
+Regression guard for kimi-native steering. tesseract injects a steer into the
 Kimi TUI via :func:`omnigent.harnesses.kimi_native.bridge.inject_user_message`.
 An UNFIXED build commits it with ``Enter`` only; mid-turn, Kimi QUEUES a bare ``Enter``
 (shown as ``↑ to edit · ctrl-s to steer immediately``) and ignores it until the
@@ -684,7 +684,7 @@ def test_midturn_steer_is_applied_not_queued(
             "Mid-turn steer was QUEUED, not applied to the running turn: Kimi's queue-pane "
             f"affordance {_QUEUE_AFFORDANCE!r} reappeared for kimi {version_str} within the "
             f"{absence_window:.1f}s absence window (measured calibration repaint latency "
-            f"{repaint_latency:.2f}s). Omnigent committed the steer with Enter and never sent "
+            f"{repaint_latency:.2f}s). tesseract committed the steer with Enter and never sent "
             f"the CLI's Ctrl-S steer key.\nPane:\n{last_pane}"
         )
         # Absence is only trustworthy if we actually saw the pane throughout the window.

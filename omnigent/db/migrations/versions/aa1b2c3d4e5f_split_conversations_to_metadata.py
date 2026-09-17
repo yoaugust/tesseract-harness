@@ -4,7 +4,7 @@ Revision ID: aa1b2c3d4e5f
 Revises: z5a2b3c4d5e6
 Create Date: 2026-07-10 00:00:00.000000
 
-Splits Omnigent operational metadata out of the ``conversations`` table into a
+Splits tesseract operational metadata out of the ``conversations`` table into a
 new ``omnigent_conversation_metadata`` table (1-to-1 paired by
 ``(workspace_id, id)``). The columns moved are: ``kind``, ``runner_id``,
 ``host_id``, ``sub_agent_name``, ``external_session_id``, ``session_state``,

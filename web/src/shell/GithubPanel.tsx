@@ -1150,7 +1150,7 @@ function GithubPanelDetails({
         <GithubEmptyState
           icon={DownloadIcon}
           title="Update your host to use GitHub"
-          hint="The GitHub panel needs the host running Omnigent 0.13.0 or later. Update the host, then reconnect the session."
+          hint="The GitHub panel needs the host running tesseract 0.13.0 or later. Update the host, then reconnect the session."
         >
           {emptyStateAction}
         </GithubEmptyState>

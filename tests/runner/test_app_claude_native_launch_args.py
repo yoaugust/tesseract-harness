@@ -406,7 +406,7 @@ def test_auto_harness_launch_names_the_routed_spawn_tool_and_preapproves_it(
     Both halves of the live failure: the model reported
     ``mcp__omnigent__sys_session_create`` as nonexistent (no note, and the
     schema is deferred behind tool search), and Claude Code's don't-ask mode
-    denied the Omnigent MCP call outright (no ``--allowedTools``).
+    denied the tesseract MCP call outright (no ``--allowedTools``).
     """
     args = _augmented(bridge_dir, auto_harness=True)
 

@@ -160,7 +160,7 @@ class ExecutorAdapter(HarnessApp):
         self._pr_tool_calls: dict[str, tuple[str, dict[str, Any]]] = {}
 
     async def run_turn(self, request: CreateResponseRequest, ctx: TurnContext) -> None:
-        """Drive the inner executor for one turn, translating its events to Omnigent SSE.
+        """Drive the inner executor for one turn, translating its events to tesseract SSE.
 
         Lazily constructs the executor on the first call; subsequent calls reuse the cached
         instance. Installs stable tool/elicitation/policy bridges once on first use.
@@ -723,7 +723,7 @@ class ExecutorAdapter(HarnessApp):
         return self._executor
 
     def _translate_event(self, event: ExecutorEvent, ctx: TurnContext) -> None:
-        """Translate one inner ExecutorEvent into Omnigent SSE events via ``ctx.emit``."""
+        """Translate one inner ExecutorEvent into tesseract SSE events via ``ctx.emit``."""
         if isinstance(event, TextChunk):
             ctx.emit(
                 OutputTextDeltaEvent(
@@ -754,10 +754,10 @@ class ExecutorAdapter(HarnessApp):
         elif isinstance(event, ToolCallRequest):
             # Emit observed function_call INLINE (interleaved with text). Queue the tool_use_id
             # so the post-stream dispatch reuses the same call_id for deduplication.
-            # Emit bare names (strip MCP prefix) to match the Omnigent wire shape.
+            # Emit bare names (strip MCP prefix) to match the tesseract wire shape.
             tool_use_id = _call_id_from_metadata(event.metadata)
             # Observed native tools already ran inside their harness. They must
-            # never enter the queue consumed by Omnigent's dispatch bridge.
+            # never enter the queue consumed by tesseract's dispatch bridge.
             if tool_use_id is not None and event.metadata.get("internally_executed") is not True:
                 self._pending_mcp_call_ids.append(tool_use_id)
             call_id = tool_use_id or f"call_{uuid.uuid4().hex[:12]}"
@@ -914,7 +914,7 @@ class ExecutorAdapter(HarnessApp):
         # scaffold can build a response.failed terminal event).
 
     def _build_error_detail(self, exception: BaseException) -> Any:
-        """Map an exception to a semantic code the Omnigent retry allowlist recognizes.
+        """Map an exception to a semantic code the tesseract retry allowlist recognizes.
 
         OmnigentError uses its own ``code``; others go through ``classify_inner_exception``.
         Unknown types fall back to base class (``type(exception).__name__``).
@@ -1184,7 +1184,7 @@ def _translate_input_to_messages(
 def _extract_role_keyed_messages(
     input_value: list[dict[str, Any]],
 ) -> list[Message]:
-    """Extract role-keyed message items from an Omnigent input list.
+    """Extract role-keyed message items from an tesseract input list.
 
     Tool-call items (function_call, function_call_output, etc.) are skipped — the inner SDK
     reconstructs them from its own Layer 1 state. Returns empty list for non-history inputs.

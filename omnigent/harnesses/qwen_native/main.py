@@ -1,7 +1,7 @@
-"""Native qwen TUI wrapper for the Omnigent CLI.
+"""Native qwen TUI wrapper for the tesseract CLI.
 
 ``omnigent qwen`` launches Qwen Code's interactive TUI (``qwen``) inside an
-Omnigent-runner-owned tmux terminal and attaches the local TTY — the qwen analog
+tesseract-runner-owned tmux terminal and attaches the local TTY — the qwen analog
 of ``omnigent goose`` / ``omnigent cursor``. The runner spawns the process (see
 :func:`omnigent.runner.app._auto_create_qwen_terminal`), pointing qwen at the
 bridge dir's ``--input-file`` / ``--json-file`` so web-UI turns and the
@@ -10,7 +10,7 @@ orchestration: session create/resume, daemon runner bind, terminal-ready poll,
 and the direct tmux attach.
 
 Auth is qwen's own configuration (OpenAI-compatible env vars, or the interactive
-``/auth`` command persisted under ``~/.qwen``); no Omnigent-managed key is
+``/auth`` command persisted under ``~/.qwen``); no tesseract-managed key is
 required. Like goose there is no extension bridge — the runner sets up the
 terminal environment and the dual-output / input-file flags directly.
 """
@@ -85,7 +85,7 @@ class NativeQwenLaunch:
 
 @dataclass(frozen=True)
 class LaunchedQwenTerminal:
-    """Terminal resource returned by the Omnigent runner launch path."""
+    """Terminal resource returned by the tesseract runner launch path."""
 
     terminal_id: str
     tmux_socket: Path | None
@@ -98,7 +98,7 @@ class PreparedQwenTerminal:
 
     :param reattached: ``True`` when an existing, still-running session terminal
         was reused (the live-reattach path: prior session intact).
-    :param cold_resumed: ``True`` when resuming an existing Omnigent session whose
+    :param cold_resumed: ``True`` when resuming an existing tesseract session whose
         terminal had already exited, so a *fresh* ``qwen`` TUI was launched.
         Mirrors goose-native: ``cold_resumed`` and ``reattached`` are mutually
         exclusive (the cold-resume path leaves ``reattached`` False).
@@ -166,10 +166,10 @@ def run_qwen_native(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch the qwen TUI in an Omnigent terminal.
+    Launch the qwen TUI in an tesseract terminal.
 
-    :param server: Resolved Omnigent server URL.
-    :param session_id: Optional existing Omnigent conversation id.
+    :param server: Resolved tesseract server URL.
+    :param session_id: Optional existing tesseract conversation id.
     :param qwen_args: Raw qwen CLI args to persist for the runner-owned TUI.
     :param resume_picker: ``True`` runs the qwen-native picker.
     :param auto_open_conversation: When ``True``, open the browser conversation
@@ -182,7 +182,7 @@ def run_qwen_native(
     _preflight_local_tools()
     if server is None:
         raise click.ClickException(
-            "qwen requires a resolved Omnigent server URL. The CLI should call "
+            "qwen requires a resolved tesseract server URL. The CLI should call "
             "_ensure_backend before run_qwen_native."
         )
     with TemporaryDirectory(prefix="omnigent-qwen-native-") as tmpdir:
@@ -235,11 +235,11 @@ def _run_with_remote_server(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch qwen on an Omnigent server via a daemon-spawned runner.
+    Launch qwen on an tesseract server via a daemon-spawned runner.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param spec_path: Generated qwen wrapper agent spec.
-    :param session_id: Optional existing Omnigent session id.
+    :param session_id: Optional existing tesseract session id.
     :param resume_picker: When ``True``, run the qwen-native picker.
     :param qwen_args: Raw qwen CLI args.
     :param auto_open_conversation: Whether to open the web conversation URL.
@@ -435,7 +435,7 @@ async def _create_qwen_session(
 
 
 async def _fetch_qwen_session(client: httpx.AsyncClient, session_id: str) -> _JsonObject:
-    """Fetch an existing Omnigent session."""
+    """Fetch an existing tesseract session."""
     resp = await client.get(f"/v1/sessions/{url_component(session_id)}")
     if resp.status_code == 404:
         raise click.ClickException(f"Conversation {session_id!r} not found on the server.")

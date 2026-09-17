@@ -1,4 +1,4 @@
-"""Fixtures for Omnigent e2e tests (mock LLM).
+"""Fixtures for tesseract e2e tests (mock LLM).
 
 All tests use the in-process mock LLM server via :func:`mock_credentials_env`
 and :func:`mock_llm_server_url`. Real-credential fixtures have been removed
@@ -18,7 +18,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-# Root of the Omnigent checkout that ships the ``omnigent``
+# Root of the tesseract checkout that ships the ``omnigent``
 # package, the example YAMLs, and (in the main checkout) the
 # ``.venv`` with omnigent + pexpect + openai-agents installed.
 #
@@ -72,23 +72,23 @@ def omnigent_python() -> Path:
     Path to the Python interpreter that has the ``omnigent``
     package + its harness dependencies installed.
 
-    The Omnigent repo ships its own ``.venv`` with
+    The tesseract repo ships its own ``.venv`` with
     ``omnigent``, ``pexpect``, ``openai-agents``,
     ``claude-agent-sdk``, etc. pre-installed. Agent-plane's e2e
     tests use that interpreter directly rather than adding
     omnigent as an omnigent dep (omnigent is not
     distributed as a package yet).
 
-    :returns: Absolute path to the Omnigent ``.venv`` Python
+    :returns: Absolute path to the tesseract ``.venv`` Python
         interpreter, e.g.
         ``"/path/to/omnigent/.venv/bin/python"``.
     :raises RuntimeError: If the interpreter is not present at
-        the expected path — indicates the Omnigent checkout is
+        the expected path — indicates the tesseract checkout is
         missing or its .venv hasn't been created.
     """
     if not _OMNIGENT_VENV_PYTHON.is_file():
         raise RuntimeError(
-            f"Omnigent venv python not found at {_OMNIGENT_VENV_PYTHON}. "
+            f"tesseract venv python not found at {_OMNIGENT_VENV_PYTHON}. "
             f"These e2e tests require the sibling checkout at "
             f"{_OMNIGENT_REPO} with .venv set up."
         )
@@ -98,14 +98,14 @@ def omnigent_python() -> Path:
 @pytest.fixture(scope="session")
 def omnigent_repo_root() -> Path:
     """
-    Root of the Omnigent checkout used as the subprocess cwd.
+    Root of the tesseract checkout used as the subprocess cwd.
 
-    Omnigent YAMLs reference example tool modules via dotted
+    tesseract YAMLs reference example tool modules via dotted
     paths like ``tests.resources.examples._shared.tool_functions.get_current_time``, so
     the subprocess must run with the repo root on sys.path
     (i.e. as its cwd).
 
-    :returns: Absolute path to the Omnigent repo root, e.g.
+    :returns: Absolute path to the tesseract repo root, e.g.
         ``"/path/to/omnigent"``.
     """
     return _OMNIGENT_REPO

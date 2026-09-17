@@ -442,7 +442,7 @@ def test_translate_event_meta_captures_session_id() -> None:
             "command": "kimi -r session_abc123",
         }
     )
-    assert events == []  # meta events yield no Omnigent-visible events
+    assert events == []  # meta events yield no tesseract-visible events
     assert ex._session_id == "session_abc123"
 
 

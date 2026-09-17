@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent web-chat turns into the native Hermes TUI.
+"""Executor that bridges tesseract web-chat turns into the native Hermes TUI.
 
 It does not launch ``hermes`` — the ``omnigent hermes`` wrapper already launched
 the interactive ``hermes`` TUI in the session terminal. Each web-UI turn injects

@@ -299,7 +299,7 @@ def _run_configure_databricks() -> None:
 
     Shells out to ``ucode configure`` to authenticate workspaces and set
     up harnesses (Claude SDK, Codex, OpenAI Agents, Pi). After setup,
-    Omnigent reads ``~/.ucode/state.json`` to pick per-harness model
+    tesseract reads ``~/.ucode/state.json`` to pick per-harness model
     defaults and base URLs.
 
     :returns: None.
@@ -323,7 +323,7 @@ def _run_configure_databricks() -> None:
             "see the command output above for details."
         )
 
-    click.echo("ucode configuration complete. Omnigent will use state.json for harness setup.")
+    click.echo("ucode configuration complete. tesseract will use state.json for harness setup.")
 
 
 def _warn_missing_harness_dependencies() -> None:
@@ -983,7 +983,7 @@ def _configure_harness_add(family: str | None = None) -> str | None:
         # Ask only for the workspace URL — never a profile name. The flow
         # below authenticates that one workspace and runs `ucode configure`
         # against it, scoped to the harness the user drilled into. This is
-        # the one place Omnigent triggers a Databricks CLI / ucode login;
+        # the one place tesseract triggers a Databricks CLI / ucode login;
         # it never happens on a bare `run`, so a user who only wants their
         # own provider is never routed through Databricks unexpectedly.
         from omnigent.onboarding.configure_models import family_label
@@ -2076,7 +2076,7 @@ def _manage_qwen_harness() -> None:
     to launch ``qwen`` for ``/auth`` — it does **not** pretend to run a ``qwen
     login``
     (there isn't one). Storing/injecting an OpenAI-compatible key *through
-    Omnigent* is deferred (see docs/QWEN_FOLLOWUPS.md, Provider Injection).
+    tesseract* is deferred (see docs/QWEN_FOLLOWUPS.md, Provider Injection).
 
     Like the CLI-backed harnesses, a missing CLI gates the drill-in — there's
     nothing to configure for a harness you can't run.
@@ -2154,11 +2154,11 @@ def _manage_qwen_harness() -> None:
 
 
 def _print_goose_auth_help() -> None:
-    """Print Goose's configuration options (Omnigent manages no Goose credential)."""
+    """Print Goose's configuration options (tesseract manages no Goose credential)."""
     from omnigent.onboarding.interactive import console
 
     console.print(
-        "\n  [bold]Configure Goose[/bold] (Omnigent stores no Goose credential):\n"
+        "\n  [bold]Configure Goose[/bold] (tesseract stores no Goose credential):\n"
         "    • Interactive: run [bold]goose configure[/bold] to pick a provider "
         "and store its key (keyring or ~/.config/goose/config.yaml)\n"
         "    • Env override: set [bold]GOOSE_PROVIDER[/bold] + [bold]GOOSE_MODEL[/bold] "
@@ -2204,7 +2204,7 @@ def _show_acp_cli_harness(name: str) -> None:
     """Show install + sign-in instructions for one builtin ACP CLI harness.
 
     These harnesses own their credentials (``OWN_AUTH``) and install out-of-band,
-    so there is nothing for Omnigent to store or run on the user's behalf — the
+    so there is nothing for tesseract to store or run on the user's behalf — the
     drill-in reports what it can and names the two commands. Read-only: it
     changes no config, which is why it's a display rather than a manage loop.
 
@@ -2237,10 +2237,10 @@ def _show_acp_cli_harness(name: str) -> None:
 def _manage_goose_harness() -> None:
     """Run the level-2 loop for Goose: ensure the CLI, then guide ``goose configure``.
 
-    Goose owns its own auth (keyring / ``~/.config/goose/config.yaml``) — Omnigent
+    Goose owns its own auth (keyring / ``~/.config/goose/config.yaml``) — tesseract
     stores no Goose credential — so, like the Qwen drill-in, this reports
     best-effort configuration status and offers to launch ``goose configure``; it
-    does not store a key through Omnigent. A missing CLI gates the drill-in
+    does not store a key through tesseract. A missing CLI gates the drill-in
     (nothing to configure for a harness you can't run); Goose ships out-of-band
     (brew / curl, no npm package), so we show its install hint rather than
     auto-installing. Serves both ``goose-native`` (TUI) and the headless
@@ -2295,13 +2295,13 @@ def _manage_goose_harness() -> None:
 
 
 def _print_acp_examples() -> None:
-    """Print example ACP-agent commands (Omnigent stores no credential)."""
+    """Print example ACP-agent commands (tesseract stores no credential)."""
     from omnigent.onboarding.interactive import console
 
     console.print(
         "\n  [bold]Custom ACP agents[/bold] — connect any agent that speaks the "
         "Agent Client Protocol ([underline]agentclientprotocol.com[/underline]).\n"
-        "  Omnigent stores no credential — log into each agent via its own CLI first.\n\n"
+        "  tesseract stores no credential — log into each agent via its own CLI first.\n\n"
         "  Example commands to paste:\n"
         "    • Gemini CLI     [bold]gemini --experimental-acp[/bold]\n"
         "    • Qwen Code      [bold]qwen --acp[/bold]\n"
@@ -2435,7 +2435,7 @@ def _import_openclaw_agents() -> None:
                 f"    • [bold]{escape(entry.name)}[/bold] → "
                 f"[dim]{escape(entry.command)}[/dim]{suffix}"
             )
-        console.print("  [dim]Omnigent stores only these launch commands, not credentials.[/dim]")
+        console.print("  [dim]tesseract stores only these launch commands, not credentials.[/dim]")
 
         if not click.confirm("Import coding agents from OpenClaw?", default=True):
             console.print("  [yellow]Skipped OpenClaw import.[/yellow]")
@@ -2451,7 +2451,7 @@ def _manage_acp_agent(slug: str) -> None:
     """Per-agent drill-in for one configured ACP agent: remove it.
 
     Reached by selecting the agent's own row in the configure-harnesses overview.
-    A single-shot menu (Remove / Back) — Omnigent stores no credential, so there
+    A single-shot menu (Remove / Back) — tesseract stores no credential, so there
     is nothing else to manage per agent yet.
 
     :param slug: The agent's slug (see :func:`omnigent.onboarding.acp_auth.slugify`).
@@ -2480,7 +2480,7 @@ def _manage_hermes_harness() -> None:
     """Run the level-2 loop for Hermes: install the CLI, then configure it.
 
     Hermes owns its own auth via ``hermes model`` (interactive provider/model
-    picker) and is installed via a curl script from Nous Research — Omnigent
+    picker) and is installed via a curl script from Nous Research — tesseract
     stores no Hermes credential. A missing CLI offers to run the vendor
     installer; when installed, the drill-in offers to launch ``hermes model``
     for provider configuration.
@@ -2564,7 +2564,7 @@ def _manage_kiro_harness() -> None:
     """Run the level-2 loop for Kiro: ensure the CLI is installed and signed in.
 
     Kiro owns its own auth via ``kiro-cli login`` (Builder ID / social login /
-    Identity Center) and is installed via Kiro's curl installer — Omnigent stores
+    Identity Center) and is installed via Kiro's curl installer — tesseract stores
     no Kiro credential. A missing CLI gates the drill-in; when installed, the
     drill-in offers to launch ``kiro-cli login`` to sign in. Mirrors
     :func:`_manage_hermes_harness`.
@@ -2621,7 +2621,7 @@ def _manage_kiro_harness() -> None:
 def _print_kimi_auth_help() -> None:
     """Print Kimi Code's authentication options.
 
-    Kimi authenticates against Moonshot AI's backend rather than an Omnigent
+    Kimi authenticates against Moonshot AI's backend rather than an tesseract
     credential. Membership accounts use ``kimi login`` (OAuth). Pay-per-use
     accounts are rejected by OAuth ("unable to verify your membership
     benefits"), so they configure an API-key provider instead — and which one
@@ -2635,7 +2635,7 @@ def _print_kimi_auth_help() -> None:
       ``https://api.kimi.com/coding/v1`` to ``~/.kimi-code/config.toml``.
 
     Both are covered below so a user on either platform can complete auth.
-    Omnigent stores no kimi credential and cannot thread one per spawn, so all
+    tesseract stores no kimi credential and cannot thread one per spawn, so all
     of this lives in the kimi CLI's own config.
     """
     from omnigent.onboarding.interactive import console
@@ -2665,7 +2665,7 @@ def _print_kimi_auth_help() -> None:
         '            type = "kimi"\n'
         '            base_url = "https://api.kimi.com/coding/v1"\n'
         '            api_key = "sk-…"[/dim]\n'
-        "    • Omnigent stores no kimi credential and cannot thread one per "
+        "    • tesseract stores no kimi credential and cannot thread one per "
         "spawn — configure it once in the kimi CLI\n"
     )
 
@@ -3386,8 +3386,8 @@ def _print_opencode_auth_help() -> None:
         "      stored in ~/.local/share/opencode/auth.json.\n"
         "    • Provider env vars (OPENAI_API_KEY / ANTHROPIC_API_KEY / …) are auto-detected.\n"
         "    • Databricks gateway: set an agent ``profile`` (configured under Claude / Codex);\n"
-        "      Omnigent synthesizes opencode's per-session provider config from it.\n"
-        "  Omnigent stores no OpenCode credential of its own.\n"
+        "      tesseract synthesizes opencode's per-session provider config from it.\n"
+        "  tesseract stores no OpenCode credential of its own.\n"
         f"  [dim]Tip:[/dim] 'Set default model' picks which model "
         f"`{cli_invocation(name='omni')} opencode` launches on\n"
         "  (otherwise OpenCode uses its built-in default, opencode/big-pickle)."
@@ -3401,7 +3401,7 @@ def _manage_opencode_harness() -> None:
     ``~/.local/share/opencode/auth.json``) or ambient provider env vars — so,
     like the Goose / Qwen drill-ins, this reports which providers OpenCode can
     reach and offers to launch its native login; it never stores a key through
-    Omnigent. (For the Databricks-gateway path the agent's ``profile`` is
+    tesseract. (For the Databricks-gateway path the agent's ``profile`` is
     synthesized into opencode's per-session config instead — set under
     Claude / Codex.)
 
@@ -3452,7 +3452,7 @@ def _manage_opencode_harness() -> None:
             return
 
     # OpenCode owns its provider auth (``opencode auth login`` → auth.json) or
-    # ambient env keys; Omnigent stores nothing. Report what's reachable and
+    # ambient env keys; tesseract stores nothing. Report what's reachable and
     # offer to run its native login — like the Goose/Qwen drill-ins.
     status: str | None = None
     while True:
@@ -3585,16 +3585,16 @@ def _run_configure_harnesses_interactive() -> None:
     _ANTIGRAVITY = "\x00antigravity"
     # Sentinel marking the Qwen Code row — like Antigravity/Cursor it is not a
     # provider family (its v1 auth is the CLI's own env vars / ``/auth`` flow,
-    # not an Omnigent credential), so it dispatches to its own drill-in.
+    # not an tesseract credential), so it dispatches to its own drill-in.
     _QWEN = "\x00qwen"
-    # Sentinel marking the OpenCode row — native-server harness with no Omnigent
+    # Sentinel marking the OpenCode row — native-server harness with no tesseract
     # credential of its own (it routes through the bound agent's Databricks
     # gateway profile or ambient provider env), so it dispatches to its own
     # binary-install/info drill-in.
     _OPENCODE = "\x00opencode"
     # Sentinel marking the Goose row — like Qwen/Antigravity/Cursor it is not a
     # provider family (Goose owns its own auth via ``goose configure``, not an
-    # Omnigent credential), so it dispatches to its own drill-in.
+    # tesseract credential), so it dispatches to its own drill-in.
     _GOOSE = "\x00goose"
     # Sentinel marking the Hermes row — like Goose it owns its own auth via
     # ``hermes model`` and is installed via a curl installer.

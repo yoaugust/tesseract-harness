@@ -233,7 +233,7 @@ tunnel, so:
 - a busy sandbox lives as long as work keeps arriving;
 - an idle one is reclaimed within one window (default 1h, env
   `OMNIGENT_AGENT_SANDBOX_SHUTDOWN_WINDOW_S`);
-- the agent-sandbox controller does the teardown, so the Omnigent server never
+- the agent-sandbox controller does the teardown, so the tesseract server never
   enumerates or babysits live Pods.
 
 Switching is one line: every other key stays in the same `kubernetes:` block:
@@ -297,9 +297,9 @@ caches all survive a suspend. Requirements and caveats:
 ### Warm pools are not usable yet
 
 The extension CRDs (`SandboxWarmPool` / `SandboxClaim`) look like the answer to
-slow image pulls, but they cannot help Omnigent as the API stands: a
+slow image pulls, but they cannot help tesseract as the API stands: a
 `SandboxClaim` that sets either `env` or `volumeClaimTemplates` is documented
-(and tested upstream) to force a **cold start**, and Omnigent needs both, a
+(and tested upstream) to force a **cold start**, and tesseract needs both, a
 per-session host identity in `env` and a per-session workspace claim. A warm
 pod's pre-created volumes are also pool-owned and recycled across claims, which
 is not acceptable for sandbox isolation. Pre-pulling the host image onto nodes
@@ -314,7 +314,7 @@ output directories) mount pre-created PersistentVolumeClaims:
 
 1. Create the PV/PVC **in the runner namespace** (`omnigent-sandboxes`) out of
    band — via your GitOps repo, with whatever backend your cluster provides
-   (NFS/SMB CSI drivers, SAN, cloud disks). Omnigent only references the claim;
+   (NFS/SMB CSI drivers, SAN, cloud disks). tesseract only references the claim;
    it never creates volumes, so the server RBAC stays unchanged.
 2. List the claims under `sandbox.kubernetes.pvc_mounts` (see
    `sandbox-config.yaml`). Mount paths may not overlap `/home/omnigent`, the

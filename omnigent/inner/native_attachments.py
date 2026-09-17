@@ -229,8 +229,8 @@ async def resolve_file_id_block(
 
     :param block: Content block for which :func:`has_unresolved_file_id`
         is true.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
-    :param client: HTTP client pointed at the Omnigent server.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
     :returns: The rebuilt block without ``file_id``, or ``None`` when the
         fetch failed — callers keep the original block so a visible
         marker can surface downstream.

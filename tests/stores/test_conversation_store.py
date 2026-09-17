@@ -2828,7 +2828,7 @@ def test_list_conversations_filtered_by_agent_id_returns_matching_only(
     agent_store: SqlAlchemyAgentStore,
 ) -> None:
     """
-    Powers Omnigent mode ``--continue`` (resume the most-recent
+    Powers tesseract mode ``--continue`` (resume the most-recent
     conversation for *this agent*). Two agents, three
     conversations: agent_alpha owns convs 1+2, agent_beta
     owns conv 3. Filtering by agent_alpha returns exactly the
@@ -4688,7 +4688,7 @@ def test_fork_conversation_stamps_source_external_session_id(
         f"Fork should carry the source's external session id, got {fork.labels!r}"
     )
     # The clone is a fresh session — it has no native session of its own
-    # yet. Copying external_session_id would make two Omnigent sessions claim
+    # yet. Copying external_session_id would make two tesseract sessions claim
     # the same Claude session.
     reloaded = conversation_store.get_conversation(fork.id)
     assert reloaded is not None
@@ -4843,7 +4843,7 @@ def test_fork_conversation_cross_family_drops_external_session_directive(
     and the runner's clone path launches FRESH when its clone attempt
     fails — silently losing history. Omitting the directive routes the
     runner to the carry-history rebuild path (native transcript built from
-    the copied Omnigent items) instead.
+    the copied tesseract items) instead.
     """
     from omnigent.stores.conversation_store import (
         FORK_CARRY_HISTORY_LABEL_KEY,
@@ -6849,7 +6849,7 @@ def test_get_conversation_costs_one_checkout(
 ) -> None:
     """One logical read = one pool checkout, and it still returns every field.
 
-    ``get_conversation`` reads the AP ``conversations`` row plus the Omnigent
+    ``get_conversation`` reads the AP ``conversations`` row plus the tesseract
     ``omnigent_conversation_metadata`` row. In single-DB mode both live on one
     engine, so the whole read must share a single checkout — every extra
     checkout is a ``pool_pre_ping`` round trip on Lakebase, on the hottest read
@@ -6875,7 +6875,7 @@ def test_get_conversation_costs_one_checkout(
     assert conv is not None
     # AP-table fields.
     assert conv.title == "budget"
-    # Omnigent-metadata fields — all None if the metadata read were dropped.
+    # tesseract-metadata fields — all None if the metadata read were dropped.
     assert (conv.runner_id, conv.host_id) == (
         "runner_budget",
         "4f64b6ee625f4e8259185c35c6e63f3d",

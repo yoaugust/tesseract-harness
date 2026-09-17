@@ -95,7 +95,7 @@ _SANDBOX_MEMORY_GIB: int = 4
 _CREATE_TIMEOUT_S: float = 900.0
 
 # Daytona's idle auto-stop default is 15 minutes; 0 disables it. An
-# Omnigent host must survive arbitrary idle gaps between turns, so
+# tesseract host must survive arbitrary idle gaps between turns, so
 # auto-stop is always disabled (sandbox lifecycle is owned by the
 # managed-session machinery: session delete / relaunch terminate it).
 _AUTO_STOP_DISABLED: int = 0

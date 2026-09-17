@@ -45,7 +45,7 @@ _VALID_SEARCH_DEPTHS = frozenset({"lite", "deep"})
 
 # Identifies this integration to Nimble via the ``X-Client-Source`` header that
 # Nimble's own SDKs send (e.g. langchain-nimble sends ``"langchain-nimble"``),
-# so traffic from the Omnigent provider is attributable.
+# so traffic from the tesseract provider is attributable.
 _CLIENT_SOURCE = "omnigent"
 
 

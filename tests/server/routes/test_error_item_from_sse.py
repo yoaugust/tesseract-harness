@@ -66,7 +66,7 @@ def test_response_failed_propagates_llm_source() -> None:
 
 def test_response_failed_propagates_harness_source() -> None:
     """A ``response.failed`` with ``source="harness"`` (Claude Code crash) is stored
-    as ``source="harness"`` so users can see it's a harness fault, not Omnigent."""
+    as ``source="harness"`` so users can see it's a harness fault, not tesseract."""
     item = _error_item_from_sse(
         _failed_event(source="harness", code="connection_error", message="harness died"),
         response_id="resp_1",

@@ -1,6 +1,6 @@
 """Tests for qwen-native fork/resume recording synthesis.
 
-Covers converting Omnigent items into qwen chat-recording records and writing
+Covers converting tesseract items into qwen chat-recording records and writing
 the recording + discovery sidecars (``runtime.json`` / ``meta.json``) that qwen
 needs to resolve ``--resume``. An optional, opt-in end-to-end test confirms a
 real ``qwen --resume`` loads the synthesized recording.

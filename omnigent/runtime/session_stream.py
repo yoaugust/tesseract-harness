@@ -244,7 +244,7 @@ def publish(conversation_id: str, event: dict[str, Any]) -> int:
         "delta": "Hello"}``. The ``"type"`` key SHOULD match the
         ``type`` ``Literal`` of one of the variants in
         :data:`omnigent.server.schemas.ServerStreamEvent`;
-        the Omnigent route layer validates each emitted dict against
+        the tesseract route layer validates each emitted dict against
         the union before serializing, so an unmodelled event
         fails loud at the SSE boundary.
     :returns: The number of subscriber slots the event was dispatched
@@ -414,7 +414,7 @@ async def subscribe(
     with _lock:
         _subscribers.setdefault(conversation_id, set()).add(entry)
     # Read the pre-ready snapshot synchronously here — after slot
-    # registration, before the ``yield`` below suspends. On the Omnigent event
+    # registration, before the ``yield`` below suspends. On the tesseract event
     # loop (where the relay calls ``publish``) nothing runs in between, so
     # the snapshot and the live tail partition exactly: deltas before this
     # point are in the snapshot, deltas after are on ``queue``. Reading it

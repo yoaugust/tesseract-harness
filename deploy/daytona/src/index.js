@@ -1,9 +1,9 @@
-// Omnigent <-> Daytona egress relay.
+// tesseract <-> Daytona egress relay.
 //
 // Daytona Tier 1/2 sandboxes can only reach an allowlisted set of public
 // domains; *.workers.dev is on that list. This Worker lives there and
 // transparently reverse-proxies EVERY request (plain HTTP and WebSocket
-// upgrades alike) to the real Omnigent server, so the in-sandbox host's
+// upgrades alike) to the real tesseract server, so the in-sandbox host's
 // dial-back — the host tunnel WS, the runner tunnel WS, and the host's
 // plain HTTP calls — all reach the server through the firewall.
 //

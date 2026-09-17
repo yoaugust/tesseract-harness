@@ -415,7 +415,7 @@ async def test_auto_create_codex_terminal_uses_persisted_resume_launch_config(
 
     The CLI now persists launch intent and asks the runner to ensure the
     terminal. This test exercises the runner helper directly: it must read
-    ``terminal_launch_args`` and ``external_session_id`` from the Omnigent snapshot,
+    ``terminal_launch_args`` and ``external_session_id`` from the tesseract snapshot,
     start the app-server itself, launch the TUI as ``codex ... resume
     --remote <runner-ws> <thread>``, and run the known-thread forwarder. If
     this regresses, the CLI falls back into split ownership or loses user
@@ -762,7 +762,7 @@ async def test_auto_create_codex_terminal_fork_clones_rollout_and_resumes(
     When the clone has no ``external_session_id`` but carries the fork
     labels, the runner must clone the SOURCE's rollout into the clone's
     own ``CODEX_HOME`` under a freshly minted thread id, pre-set that id
-    on the Omnigent session, and launch ``codex resume <minted_id>`` (not the
+    on the tesseract session, and launch ``codex resume <minted_id>`` (not the
     source thread). A regression launches fresh (no ``resume`` subcommand)
     and the clone loses the source's Codex history.
 
@@ -1044,7 +1044,7 @@ async def test_auto_create_codex_terminal_fork_builds_rollout_from_items_and_res
     """A forked codex clone builds from items when its source rollout is unavailable.
 
     This covers both a non-Codex source with no source thread id and an imported
-    Codex source whose rollout lives outside Omnigent's private ``CODEX_HOME``.
+    Codex source whose rollout lives outside tesseract's private ``CODEX_HOME``.
 
     :param tmp_path: Temporary directory for isolated bridge state.
     :param monkeypatch: Pytest monkeypatch fixture.
@@ -1080,7 +1080,7 @@ async def test_auto_create_codex_terminal_fork_builds_rollout_from_items_and_res
 
     class _ItemsForkSnapshotClient:
         """Server client: clone snapshot (carry-history, no source thread)
-        plus the copied Omnigent items the rollout is built from."""
+        plus the copied tesseract items the rollout is built from."""
 
         async def get(
             self,
@@ -1281,7 +1281,7 @@ async def test_auto_create_codex_terminal_fork_builds_rollout_from_items_and_res
 
     # The rollout was BUILT (not cloned) in the clone's CODEX_HOME under the
     # minted id, carrying the source conversation's codeword — proving the
-    # copied Omnigent items, not a source rollout, seeded the history.
+    # copied tesseract items, not a source rollout, seeded the history.
     clone_home = codex_home_for_bridge_dir(bridge_dir_for_bridge_id(session_id))
     built = list(clone_home.glob(f"sessions/**/rollout-*-{minted}.jsonl"))
     assert len(built) == 1, f"expected one built rollout under {clone_home}, found {built}"
@@ -1291,7 +1291,7 @@ async def test_auto_create_codex_terminal_fork_builds_rollout_from_items_and_res
     assert meta["cwd"] == str(workspace.resolve())
     assert codeword in body, (
         "Built rollout must carry the source conversation's text from the "
-        "copied Omnigent items; missing it means history was not seeded."
+        "copied tesseract items; missing it means history was not seeded."
     )
 
 
@@ -1549,7 +1549,7 @@ async def test_auto_create_codex_terminal_uses_worktree_workspace_not_bundle_dir
     assert launch_captured["parent_os_env"] is codex_os_env
 
     # A transient / unparseable version probe must not strand a runner-owned
-    # session behind Codex's terminal-only hook review screen. Omnigent's
+    # session behind Codex's terminal-only hook review screen. tesseract's
     # supported Codex floor is newer than the release that added this flag.
     assert app_server.codex_cli_version is None
     assert launch_captured["spec"].args[0] == "--dangerously-bypass-hook-trust"
@@ -1889,7 +1889,7 @@ async def _run_antigravity_auto_create(
     :param tmp_path: Temporary directory for isolated bridge state.
     :param monkeypatch: Pytest monkeypatch fixture.
     :param session_id: Session/conversation id under test.
-    :param snapshot: The Omnigent session snapshot the helper should read.
+    :param snapshot: The tesseract session snapshot the helper should read.
     :param candidate_ports: Ports ``_candidate_agy_rpc_ports`` yields (``[]`` →
         the bootstrap never finds a candidate port).
     :param pane: ``(tmux_socket, tmux_target)`` ``_terminal_tmux_pane`` returns,
@@ -1931,7 +1931,7 @@ async def _run_antigravity_auto_create(
     # ``supervise_reader`` at its definition module (the helper imports it lazily)
     # so the test does not start a real one. The reader is wrapped in
     # ``_run_antigravity_reader``, which still opens (and, on teardown, closes) a
-    # real Omnigent client around this stub — fine, since nothing posts here.
+    # real tesseract client around this stub — fine, since nothing posts here.
     reader_calls: list[dict[str, Any]] = []
 
     def _counting_reader(*args: Any, **kwargs: Any) -> Any:
@@ -2694,7 +2694,7 @@ async def test_auto_create_antigravity_wires_reader_task_and_interaction_bridge(
 
     monkeypatch.setattr(reader_mod, "supervise_reader", _capturing_reader)
 
-    # Control the reader's Omnigent client transport: record the elicitation hook
+    # Control the reader's tesseract client transport: record the elicitation hook
     # POST and return the human's ACCEPT verdict as an ElicitationResult body.
     hook_posts: list[tuple[str, dict[str, Any]]] = []
 
@@ -2821,7 +2821,7 @@ async def test_auto_create_antigravity_wires_omnigent_mcp_relay(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Auto-create wires the Omnigent MCP relay so agy gets the sys_* tools (#1194).
+    """Auto-create wires the tesseract MCP relay so agy gets the sys_* tools (#1194).
 
     Asserts the three wiring points end-to-end against fakes:
 
@@ -3107,9 +3107,9 @@ async def test_codex_subagent_always_needs_runner_terminal(
             """
             Return child then parent session snapshots.
 
-            :param url: Omnigent session snapshot URL.
+            :param url: tesseract session snapshot URL.
             :param timeout: HTTP timeout in seconds.
-            :returns: Fake Omnigent session response.
+            :returns: Fake tesseract session response.
             """
             del timeout
             if url.endswith("/ff5cac23d0beb79fad914046049f32ff"):

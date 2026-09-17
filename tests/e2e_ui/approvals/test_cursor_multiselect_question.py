@@ -11,7 +11,7 @@ transcript-detected call into the web ``AskUserQuestion`` shape in
 that payload — checkboxes when ``multiSelect`` is true, radios otherwise.
 
 The user-observable failure: the agent asks a multi-select question, but the
-Omnigent chat card only allows selecting ONE option (radio semantics — picking a
+tesseract chat card only allows selecting ONE option (radio semantics — picking a
 second option deselects the first).
 
 This test drives the REAL production path end-to-end minus the Cursor TUI

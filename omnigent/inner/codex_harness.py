@@ -54,7 +54,7 @@ Env vars read at startup:
   (from :func:`dataclasses.asdict`). When unset, the wrap
   falls back to a default
   ``OSEnvSpec(type="caller_process", sandbox=type="none")`` so
-  Omnigent mode parity with the legacy non-AP path holds for
+  tesseract mode parity with the legacy non-AP path holds for
   specs that don't declare an ``os_env:`` block.
 - ``HARNESS_CODEX_RETRY_POLICY``: JSON-encoded
   :class:`RetryPolicy` (from :meth:`RetryPolicy.to_json`)
@@ -157,7 +157,7 @@ def _resolve_os_env() -> OSEnvSpec:
     Resolve the inner-executor :class:`OSEnvSpec` from env config.
 
     Reads :data:`_ENV_OS_ENV` and decodes the JSON-encoded dict
-    Omnigent serialized via :func:`dataclasses.asdict` on its
+    tesseract serialized via :func:`dataclasses.asdict` on its
     :class:`OSEnvSpec`. When the env var is missing or
     malformed, falls back to ``caller_process + sandbox=none``
     so Codex's natives stay enabled — matches the legacy
@@ -205,7 +205,7 @@ def _resolve_retry_policy() -> RetryPolicy:
 
     Reads :data:`_ENV_RETRY_POLICY` and delegates to
     :meth:`RetryPolicy.from_json`. Falls back to
-    ``RetryPolicy()`` (defaults) when missing — Omnigent omits the
+    ``RetryPolicy()`` (defaults) when missing — tesseract omits the
     env var when the spec's ``llm.retry`` matches defaults.
     Validation/parse errors degrade to the default policy with
     a warning log rather than crash, matching the

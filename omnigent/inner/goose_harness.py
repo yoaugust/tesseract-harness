@@ -9,11 +9,11 @@ Wraps a :class:`omnigent.inner.goose_executor.GooseExecutor`, which drives
 ``goose acp`` over the Agent Client Protocol — the chat-first, headless
 counterpart to the terminal-first ``goose-native`` TUI harness
 (:mod:`omnigent.inner.goose_native_harness`). Goose's mid-turn tool approvals
-surface as web elicitation cards (via Omnigent's TOOL_CALL policy + ``ctx.elicit``
+surface as web elicitation cards (via tesseract's TOOL_CALL policy + ``ctx.elicit``
 bridges the :class:`ExecutorAdapter` installs), mirroring the qwen wrap.
 
 Auth is Goose's own configuration (``goose configure`` → keyring /
-``~/.config/goose/config.yaml``); Omnigent stores no Goose credential. A spec
+``~/.config/goose/config.yaml``); tesseract stores no Goose credential. A spec
 ``executor.model`` is forwarded as a ``GOOSE_MODEL`` override; the provider stays
 whatever ``goose configure`` selected unless ``HARNESS_GOOSE_PROVIDER`` overrides
 it.

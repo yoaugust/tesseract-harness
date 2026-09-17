@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent web-chat turns into Claude Code."""
+"""Executor that bridges tesseract web-chat turns into Claude Code."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ class ClaudeNativeExecutor(Executor):
     Harness-side executor for ``omnigent claude`` web UI turns.
 
     It does not launch Claude itself. The native wrapper has already
-    launched Claude Code in the session terminal with the Omnigent
+    launched Claude Code in the session terminal with the tesseract
     bridge MCP server and hooks enabled. Each executor turn only
     injects the latest web UI user message into the same tmux pane
     Claude is attached to (via ``tmux send-keys``). User-visible
@@ -132,7 +132,7 @@ class ClaudeNativeExecutor(Executor):
         :param messages: Conversation history in executor message
             shape. The latest user message is delivered to Claude;
             prior history already lives in Claude Code's own session.
-        :param tools: Tool schemas from Omnigent. Ignored here;
+        :param tools: Tool schemas from tesseract. Ignored here;
             Claude-native output/tool activity is terminal-originated
             and mirrored from Claude's transcript.
         :param system_prompt: Per-turn composed system prompt. Ignored here:
@@ -377,9 +377,9 @@ def _bridge_dir_from_env() -> Path:
 
 def _request_session_id_from_env() -> str | None:
     """
-    Resolve the Omnigent session id that requested this harness process.
+    Resolve the tesseract session id that requested this harness process.
 
-    :returns: Omnigent session id, e.g. ``"conv_abc123"``, or ``None`` when
+    :returns: tesseract session id, e.g. ``"conv_abc123"``, or ``None`` when
         the spawn env predates active-session validation.
     """
     raw = os.environ.get(REQUEST_SESSION_ID_ENV_VAR, "").strip()
@@ -391,7 +391,7 @@ def _session_is_active(bridge_dir: Path, request_session_id: str | None) -> bool
     Return whether a request may inject into the shared Claude pane.
 
     :param bridge_dir: Native bridge directory.
-    :param request_session_id: Omnigent session id from
+    :param request_session_id: tesseract session id from
         :data:`REQUEST_SESSION_ID_ENV_VAR`, e.g. ``"conv_abc123"``.
         ``None`` preserves old harness spawns that lack the guard env.
     :returns: ``True`` when injection is allowed.

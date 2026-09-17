@@ -636,11 +636,11 @@ export interface ConversationState {
   isNativeTerminalSession: boolean;
   /**
    * Whether this is a native-terminal wrapper whose model is chosen inside the
-   * vendor TUI (qwen/goose/cursor/pi/opencode) rather than through an Omnigent
+   * vendor TUI (qwen/goose/cursor/pi/opencode) rather than through an tesseract
    * model picker. The composer status line hides its model/effort label for
-   * these — Omnigent's bound `llmModel` is just an unused default (it would
+   * these — tesseract's bound `llmModel` is just an unused default (it would
    * otherwise read e.g. "claude-sonnet-4-6" on a Qwen session). claude-/codex-
-   * native DO expose an Omnigent picker, so they keep the label. `false` on
+   * native DO expose an tesseract picker, so they keep the label. `false` on
    * `/`, before the snapshot resolves, and for non-native sessions.
    */
   nativeVendorOwnsModel: boolean;
@@ -3579,7 +3579,7 @@ function sessionBindingPatch(
   const retainModelSeed = state.sessionModelSeeded && session.llmModel == null;
   return {
     isNativeTerminalSession: isNativeTerminalSessionFn(session),
-    // Native wrapper whose model lives in the vendor TUI (no Omnigent picker):
+    // Native wrapper whose model lives in the vendor TUI (no tesseract picker):
     // qwen/goose/cursor/pi/opencode. nativeModelFamilyForSession is non-null
     // only for claude-/codex-native, which keep the composer model label.
     nativeVendorOwnsModel:
@@ -6595,7 +6595,7 @@ export function handleSessionEvent(event: StreamEvent, streamConversationId?: st
       // Claude-native: a `/skill-name` or surfaced CLI command typed
       // in the web composer round-trips through tmux → Claude TUI →
       // transcript → `external_conversation_item` (type=slash_command)
-      // → `response.output_item.done`. The Omnigent server bypasses
+      // → `response.output_item.done`. The tesseract server bypasses
       // persistence for these (no `session.input.consumed` fires),
       // so the optimistic bubble in `pendingUserMessages` would
       // otherwise linger next to the rendered SlashCommandBlock

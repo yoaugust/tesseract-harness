@@ -1,7 +1,7 @@
 """Regression tests: opencode-native MCP entries must not inherit the 60 s default.
 
 The bug: opencode's MCP client defaults to a 60 s SDK timeout for every tool call.
-Omnigent's relay budget is 300 s (_TOOL_CALL_TIMEOUT_S).  Any relayed tool call
+tesseract's relay budget is 300 s (_TOOL_CALL_TIMEOUT_S).  Any relayed tool call
 longer than 60 s (long shell, large search, blocking sub-agent, approval wait) is
 killed by opencode with "MCP error -32001: Request timed out" even though the
 relay is willing to wait.
@@ -40,7 +40,7 @@ from omnigent.harnesses.opencode_native.provider import (
 
 
 def test_build_omnigent_mcp_server_emits_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
-    """The generated opencode MCP entry for Omnigent must include an explicit
+    """The generated opencode MCP entry for tesseract must include an explicit
     ``timeout`` so opencode's MCP client does not fall back to the 60 s SDK
     default and kill in-flight relayed tool calls.
 
@@ -103,7 +103,7 @@ def test_build_mcp_block_propagates_server_timeout() -> None:
     call budgets.
 
     Without this, there is no user-side workaround for the 60 s client default
-    for declared (non-Omnigent) MCP servers either.
+    for declared (non-tesseract) MCP servers either.
     """
     servers = [
         N(

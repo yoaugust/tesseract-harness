@@ -8,7 +8,7 @@ Two halves:
   call ``service.handle_*`` / ``setup._handle_*`` directly, exactly as the unit
   tests do.
 - :class:`FakeOmnigentServer` — a ``respx`` router that stands in for the
-  Omnigent HTTP API. It owns the endpoint contract (paths, status codes, body
+  tesseract HTTP API. It owns the endpoint contract (paths, status codes, body
   shapes drawn from ``OmnigentClient``) in ONE place, exposes scenario knobs
   (``auth_required``, ``agents``, ``hosts``, ``sse_body`` …) rather than raw
   routes, and records every request so a test can assert the bot issued
@@ -193,7 +193,7 @@ def _flatten_blocks(view: dict[str, Any]) -> str:
     return "\n".join(parts)
 
 
-# ── Omnigent API contract the Slack client depends on ─────────────────────────
+# ── tesseract API contract the Slack client depends on ─────────────────────────
 #
 # The single source of truth for which server endpoints the bot calls, and
 # which of those are part of the server's PUBLIC (schema-documented) surface.
@@ -282,7 +282,7 @@ DEFAULT_SSE_BODY = (
 
 
 class FakeOmnigentServer:
-    """A ``respx`` router standing in for the Omnigent HTTP API.
+    """A ``respx`` router standing in for the tesseract HTTP API.
 
     Install it inside a ``respx.mock`` block with :meth:`install`. Tests set
     scenario knobs (``auth_required``, ``agents``, ``hosts``, ``sse_body`` …);

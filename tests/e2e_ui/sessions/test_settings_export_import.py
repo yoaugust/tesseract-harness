@@ -180,6 +180,6 @@ def test_import_rejects_invalid_json(page: Page, seeded_session: tuple[str, str]
         # Dialog stays open and shows error.
         expect(page.get_by_role("dialog", name="Import settings")).to_be_visible()
         expect(page.get_by_role("alert")).to_be_visible()
-        expect(page.get_by_role("alert")).to_contain_text("valid Omnigent settings")
+        expect(page.get_by_role("alert")).to_contain_text("valid tesseract settings")
     finally:
         Path(temp_path).unlink()

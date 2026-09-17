@@ -1,4 +1,4 @@
-"""Native Codex TUI wrapper for the Omnigent CLI."""
+"""Native Codex TUI wrapper for the tesseract CLI."""
 
 from __future__ import annotations
 
@@ -145,11 +145,11 @@ def _resolve_codex_auth_source() -> _CodexAuthSource:
     """
     Resolve the local Codex auth source used for availability checks.
 
-    This is the seam for future managed credentials: once Omnigent can provide
+    This is the seam for future managed credentials: once tesseract can provide
     centrally managed Codex credentials, this resolver can return that source
     instead. For now it deliberately defaults to Codex's local ``auth.json`` via
     the same ``CODEX_HOME`` source resolver used when launching native Codex, so
-    inherited private Omnigent homes map back to the user's real Codex home.
+    inherited private tesseract homes map back to the user's real Codex home.
 
     :returns: Local Codex auth source to inspect synchronously.
     """
@@ -348,7 +348,7 @@ class _ResumeWorkspaceActionOption:
 @dataclass
 class LaunchedCodexTerminal:
     """
-    Terminal resource returned by the Omnigent runner launch path.
+    Terminal resource returned by the tesseract runner launch path.
 
     :param terminal_id: Terminal resource id, e.g.
         ``"terminal_codex_main"``.
@@ -368,7 +368,7 @@ class PreparedCodexTerminal:
     """
     Prepared native Codex terminal attachment details.
 
-    :param session_id: Omnigent session/conversation id.
+    :param session_id: tesseract session/conversation id.
     :param terminal_id: Terminal resource id to attach.
     :param tmux_socket: Local tmux socket path when the runner exposed
         one and it is reachable from this CLI process.
@@ -422,11 +422,11 @@ def run_codex_native(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch Codex TUI in an Omnigent terminal.
+    Launch Codex TUI in an tesseract terminal.
 
-    :param server: Resolved Omnigent server URL, e.g.
+    :param server: Resolved tesseract server URL, e.g.
         ``"http://127.0.0.1:8123"``.
-    :param session_id: Optional existing Omnigent conversation id,
+    :param session_id: Optional existing tesseract conversation id,
         e.g. ``"conv_abc123"``.
     :param codex_args: Raw Codex CLI args to pass before ``resume``.
     :param resume_picker: ``True`` runs the Codex-native picker.
@@ -447,7 +447,7 @@ def run_codex_native(
     _preflight_local_tools()
     if server is None:
         raise click.ClickException(
-            "Codex requires a resolved Omnigent server URL. The CLI should call "
+            "Codex requires a resolved tesseract server URL. The CLI should call "
             "_ensure_backend before run_codex_native."
         )
     with TemporaryDirectory(prefix="omnigent-codex-native-") as tmpdir:
@@ -468,7 +468,7 @@ def _record_launch_for_fresh_session(session_id: str) -> None:
     """
     Persist the wrapper's current cwd as the Codex session launch state.
 
-    :param session_id: Newly created Omnigent conversation id, e.g.
+    :param session_id: Newly created tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :returns: None.
     """
@@ -492,7 +492,7 @@ def _align_working_directory_with_session(session_id: str) -> None:
     present and points at a different existing directory, ask whether
     to switch there before the runner and app-server sample cwd.
 
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :returns: None. Side-effect-only; may change process cwd.
     :raises click.ClickException: If recorded state exists but no
         viable resume directory exists, or if the user cancels.
@@ -672,10 +672,10 @@ def _run_with_local_server(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Start a local Omnigent server, launch Codex, and attach to it.
+    Start a local tesseract server, launch Codex, and attach to it.
 
     :param spec_path: Generated Codex wrapper agent spec.
-    :param session_id: Optional existing Omnigent session id.
+    :param session_id: Optional existing tesseract session id.
     :param resume_picker: When ``True``, run the Codex-native picker.
     :param codex_args: Raw Codex CLI args.
     :param command: Codex executable to run.
@@ -773,12 +773,12 @@ def _run_with_remote_server(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch Codex on an Omnigent server via a daemon-spawned runner.
+    Launch Codex on an tesseract server via a daemon-spawned runner.
 
-    :param base_url: Remote Omnigent server base URL, e.g.
+    :param base_url: Remote tesseract server base URL, e.g.
         ``"https://example.databricks.com"``.
     :param spec_path: Generated Codex wrapper agent spec.
-    :param session_id: Optional existing Omnigent session id.
+    :param session_id: Optional existing tesseract session id.
     :param resume_picker: When ``True``, run the Codex-native picker.
     :param codex_args: Raw Codex CLI args.
     :param model: Optional Codex model id.
@@ -903,9 +903,9 @@ async def _prepare_codex_terminal_via_daemon(
     terminal. The CLI only persists launch intent, waits for the terminal
     resource, and attaches to it.
 
-    :param base_url: Omnigent server base URL, e.g.
+    :param base_url: tesseract server base URL, e.g.
         ``"https://example.databricks.com"``.
-    :param headers: HTTP auth headers for Omnigent requests.
+    :param headers: HTTP auth headers for tesseract requests.
     :param session_id: Existing session id to resume, or ``None`` for a
         fresh session.
     :param session_bundle: Gzipped Codex wrapper bundle. Required when
@@ -1037,7 +1037,7 @@ async def _ensure_codex_terminal_on_runner(
     """
     Ask the bound runner to ensure the Codex app-server and terminal exist.
 
-    :param client: HTTP client pointed at the Omnigent server.
+    :param client: HTTP client pointed at the tesseract server.
     :param session_id: Session id, e.g. ``"conv_abc123"``.
     :returns: None.
     :raises click.ClickException: If the runner rejects the ensure request.
@@ -1062,7 +1062,7 @@ async def _wait_for_codex_terminal_ready(
     """
     Wait until the runner exposes the Codex terminal resource.
 
-    :param client: HTTP client pointed at the Omnigent server.
+    :param client: HTTP client pointed at the tesseract server.
     :param session_id: Session id, e.g. ``"conv_abc123"``.
     :param timeout_s: Max seconds to wait, e.g. ``60.0``.
     :returns: Terminal details including direct tmux attach metadata when
@@ -1090,16 +1090,16 @@ async def _post_initial_prompt(
     auth: httpx.Auth | None,
 ) -> None:
     """
-    Send the first Codex prompt through Omnigent instead of the app-server.
+    Send the first Codex prompt through tesseract instead of the app-server.
 
-    :param base_url: Omnigent server base URL.
-    :param headers: HTTP auth headers for Omnigent requests.
+    :param base_url: tesseract server base URL.
+    :param headers: HTTP auth headers for tesseract requests.
     :param session_id: Session id, e.g. ``"conv_abc123"``.
     :param prompt: User prompt text.
     :param auth: Optional refresh-capable HTTP auth for long-lived
         Databricks-backed sessions.
     :returns: None.
-    :raises click.ClickException: If Omnigent rejects the prompt.
+    :raises click.ClickException: If tesseract rejects the prompt.
     """
     from omnigent.cli_auth import open_server_client
 
@@ -1141,7 +1141,7 @@ async def _prepare_codex_terminal(
     """
     Create/bind a session, start app-server, and launch Codex TUI.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers.
     :param session_id: Optional existing session id.
     :param runner_id: Runner id to bind.
@@ -1302,7 +1302,7 @@ async def _prepare_codex_terminal(
                 remote_url=codex_ws_url,
                 env=codex_terminal_env(app_server),
                 # Give the --remote TUI the same provider overrides as
-                # the app-server so it resolves the Omnigent provider
+                # the app-server so it resolves the tesseract provider
                 # and skips the OpenAI-login onboarding screen.
                 config_overrides=tuple(app_server.config_overrides),
                 codex_cli_version=app_server.codex_cli_version,
@@ -1353,7 +1353,7 @@ async def _attach_with_forwarder(
     """
     Attach to the Codex terminal while forwarding app-server events.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers.
     :param prepared: Prepared terminal details.
     :param prompt: Optional first prompt to send.
@@ -1454,7 +1454,7 @@ def _start_codex_forwarder(
     """
     Start the transcript forwarder for a prepared Codex terminal.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers.
     :param prepared: Prepared terminal details with a known thread id.
     :param auth: Optional long-lived HTTP auth for remote sessions.
@@ -1493,7 +1493,7 @@ async def _initialize_fresh_terminal_thread(
     terminal sharing while letting Codex query the real attached
     terminal during startup.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers.
     :param prepared: Prepared terminal details whose ``thread_id`` is
         still ``None``.
@@ -1533,9 +1533,9 @@ async def _attach_terminal_resource(
     recover: Callable[[], Awaitable[None]] | None,
 ) -> None:
     """
-    Attach the current terminal to the prepared Omnigent terminal resource.
+    Attach the current terminal to the prepared tesseract terminal resource.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers.
     :param prepared: Prepared terminal details.
     :param recover: Optional reconnect recovery callback.
@@ -1566,10 +1566,10 @@ async def _attach_terminal_resource(
 
 def _active_codex_session_id(bridge_dir: Path) -> str | None:
     """
-    Return the active Omnigent session id for a native Codex bridge.
+    Return the active tesseract session id for a native Codex bridge.
 
     :param bridge_dir: Native Codex bridge directory.
-    :returns: Omnigent session id, e.g. ``"conv_abc123"``, or ``None`` when
+    :returns: tesseract session id, e.g. ``"conv_abc123"``, or ``None`` when
         bridge state has not been written yet.
     """
     state = read_bridge_state(bridge_dir)
@@ -1613,7 +1613,7 @@ async def _attach_direct_tmux(socket_path: Path, tmux_target: str) -> None:
     This avoids the local WebSocket + PTY relay used for browser and
     non-local runner attaches. ``TMUX`` is removed from the child
     environment so users who run ``omnigent codex`` inside their own
-    tmux session can still attach to Omnigent' private tmux server.
+    tmux session can still attach to tesseract' private tmux server.
 
     :param socket_path: Runner tmux socket path.
     :param tmux_target: Tmux target to attach, e.g. ``"main"``.
@@ -1653,7 +1653,7 @@ async def _create_codex_session(
     :param terminal_launch_args: Pass-through Codex CLI args to persist
         for runner-owned terminal launch, e.g.
         ``["--config", "approval_policy=on-request"]``.
-    :returns: New Omnigent session id.
+    :returns: New tesseract session id.
     """
     labels = dict(_SESSION_LABELS)
     if bridge_id is not None:
@@ -1682,10 +1682,10 @@ async def _create_codex_session(
 
 async def _fetch_codex_session(client: httpx.AsyncClient, session_id: str) -> _JsonObject:
     """
-    Fetch an existing Omnigent session.
+    Fetch an existing tesseract session.
 
     :param client: HTTP client pointed at AP.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :returns: Decoded session payload.
     """
     resp = await client.get(f"/v1/sessions/{url_component(session_id)}")
@@ -1708,7 +1708,7 @@ def _mint_codex_thread_id() -> str:
     Codex thread ids are UUIDv7 (time-ordered), e.g.
     ``"019e96aa-0be2-7343-8d3b-6f914d60936b"``. A fork writes the cloned
     rollout under a freshly minted id (rather than reusing the source's)
-    so the clone gets its own Omnigent ``external_session_id`` — mirroring how
+    so the clone gets its own tesseract ``external_session_id`` — mirroring how
     claude-native assigns the clone a new transcript uuid. The stdlib has
     no UUIDv7 generator before Python 3.14, so we assemble one per
     RFC 9562 §5.7 (48-bit millisecond timestamp + version + variant +
@@ -1901,11 +1901,11 @@ async def _ensure_local_codex_resume_rollout(
     """
     Refresh Codex's local rollout JSONL for cold resume.
 
-    Cross-machine resume has the Omnigent conversation and Codex thread id on
+    Cross-machine resume has the tesseract conversation and Codex thread id on
     the server, but not necessarily the app-server's local
     ``$CODEX_HOME/sessions/.../rollout-*-<thread>.jsonl`` file. Codex
     ``resume <thread>`` reads that local rollout, so before launching a
-    known-thread terminal we rewrite it from committed Omnigent items. This
+    known-thread terminal we rewrite it from committed tesseract items. This
     keeps the server transcript authoritative when a previous local rollout
     has diverged. Before fetching that transcript, we best-effort replay any
     proven-undelivered dead letters so successful recovery is reflected in the
@@ -1914,8 +1914,8 @@ async def _ensure_local_codex_resume_rollout(
     when its committed history is empty or shorter than the local file;
     local-only records are intentionally discarded.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param external_session_id: Codex thread id, e.g.
         ``"019e96aa-0be2-7343-8d3b-6f914d60936b"``.
     :param codex_home: Per-session private ``CODEX_HOME`` whose
@@ -1937,7 +1937,7 @@ async def _ensure_local_codex_resume_rollout(
     :param terminal_launch_args: Persisted Codex approval/sandbox launch args.
     :returns: Path to the refreshed rollout, or to a valid local fallback when
         server history is temporarily unavailable.
-    :raises click.ClickException: If Omnigent history cannot be fetched and no
+    :raises click.ClickException: If tesseract history cannot be fetched and no
         valid local fallback exists, if the rollout cannot be written, or if
         the persisted Codex thread id is unsafe for use in a rollout filename.
     """
@@ -2079,10 +2079,10 @@ async def _fetch_all_session_items_for_codex_resume(
     session_id: str,
 ) -> list[_JsonObject]:
     """
-    Fetch committed Omnigent session items in chronological order.
+    Fetch committed tesseract session items in chronological order.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :returns: Flat API item dicts from
         ``GET /v1/sessions/{id}/items``.
     :raises _CodexResumeHistoryUnavailableError: If transport or server errors
@@ -2154,10 +2154,10 @@ def _codex_rollout_records_from_session_items(
     terminal_launch_args: Sequence[str] | None = None,
 ) -> list[_JsonObject]:
     """
-    Convert Omnigent session items into Codex rollout JSONL records.
+    Convert tesseract session items into Codex rollout JSONL records.
 
     The generated records follow Codex's rollout shape: one
-    ``session_meta`` record, a ``turn_context`` before each Omnigent response
+    ``session_meta`` record, a ``turn_context`` before each tesseract response
     group, Responses-style ``response_item`` payloads for user, assistant,
     and tool history, and an ``event_msg`` mirror after each user/assistant
     message. All three session_meta extras and the event_msg mirrors are
@@ -2169,9 +2169,9 @@ def _codex_rollout_records_from_session_items(
     records codex reconstructs zero visible turns — the resume "succeeds"
     but the thread opens empty.
 
-    :param items: Flat Omnigent item dicts in chronological order, e.g.
+    :param items: Flat tesseract item dicts in chronological order, e.g.
         ``{"type": "message", "role": "user", "content": [...]}``.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
         Used for deterministic synthetic turn ids.
     :param external_session_id: Codex thread id, e.g.
         ``"019e96aa-0be2-7343-8d3b-6f914d60936b"``.
@@ -2371,14 +2371,14 @@ def _codex_event_msg_record_for_message(
 
 def _interrupted_response_ids_from_session_items(items: list[_JsonObject]) -> set[str]:
     """
-    Return response ids for Omnigent turns that ended interrupted.
+    Return response ids for tesseract turns that ended interrupted.
 
-    A Codex interrupted turn is persisted in Omnigent as visible transcript text
+    A Codex interrupted turn is persisted in tesseract as visible transcript text
     plus an ``interrupted`` assistant marker. For native resume, the whole
     response group must be skipped so Codex does not restore the cancelled
     user request, partial assistant answer, or any partial tool history.
 
-    :param items: Flat Omnigent item dicts in chronological order, e.g.
+    :param items: Flat tesseract item dicts in chronological order, e.g.
         ``[{"response_id": "codex_turn_123", "interrupted": True}]``.
     :returns: Response ids to exclude from synthesized Codex rollout
         history, e.g. ``{"codex_turn_123"}``.
@@ -2395,9 +2395,9 @@ def _interrupted_response_ids_from_session_items(items: list[_JsonObject]) -> se
 
 def _session_item_response_id(item: _JsonObject) -> str | None:
     """
-    Extract a non-empty Omnigent response id from a flat item.
+    Extract a non-empty tesseract response id from a flat item.
 
-    :param item: Flat Omnigent item dict, e.g.
+    :param item: Flat tesseract item dict, e.g.
         ``{"response_id": "codex_turn_123"}``.
     :returns: Response id, e.g. ``"codex_turn_123"``, or ``None``.
     """
@@ -2407,12 +2407,12 @@ def _session_item_response_id(item: _JsonObject) -> str | None:
 
 def _codex_response_item_from_session_item(item: _JsonObject) -> _JsonObject | None:
     """
-    Convert one Omnigent item into one Codex ``response_item`` payload.
+    Convert one tesseract item into one Codex ``response_item`` payload.
 
-    :param item: Flat Omnigent item dict, e.g.
+    :param item: Flat tesseract item dict, e.g.
         ``{"type": "function_call", "name": "shell", ...}``.
     :returns: Responses-style item payload, or ``None`` for unsupported
-        or empty Omnigent items.
+        or empty tesseract items.
     """
     payload = _codex_response_item_payload(item)
     if payload is None:
@@ -2425,14 +2425,14 @@ def _codex_response_item_from_session_item(item: _JsonObject) -> _JsonObject | N
 
 def _is_interrupted_assistant_session_item(item: _JsonObject) -> bool:
     """
-    Return whether an Omnigent item is an interrupted assistant partial.
+    Return whether an tesseract item is an interrupted assistant partial.
 
-    Omnigent persists these messages so the web transcript can show the text and
+    tesseract persists these messages so the web transcript can show the text and
     the interrupted label after refresh. They must not be synthesized back
     into Codex's native rollout during resume, or Codex may treat a partial
     answer as completed history and continue from a cancelled turn.
 
-    :param item: Flat Omnigent item dict, e.g.
+    :param item: Flat tesseract item dict, e.g.
         ``{"type": "message", "role": "assistant", "interrupted": True}``.
     :returns: ``True`` for interrupted assistant messages.
     """
@@ -2445,11 +2445,11 @@ def _is_interrupted_assistant_session_item(item: _JsonObject) -> bool:
 
 def _codex_response_item_payload(item: _JsonObject) -> _JsonObject | None:
     """
-    Convert one supported Omnigent item into a Codex response payload body.
+    Convert one supported tesseract item into a Codex response payload body.
 
-    :param item: Flat Omnigent item dict.
+    :param item: Flat tesseract item dict.
     :returns: Payload without the optional item id, or ``None`` for
-        unsupported / empty Omnigent items.
+        unsupported / empty tesseract items.
     """
     item_type = item.get("type")
     if item_type == "message":
@@ -2463,9 +2463,9 @@ def _codex_response_item_payload(item: _JsonObject) -> _JsonObject | None:
 
 def _codex_message_payload_from_session_item(item: _JsonObject) -> _JsonObject | None:
     """
-    Convert an Omnigent message item into a Codex message payload.
+    Convert an tesseract message item into a Codex message payload.
 
-    :param item: Omnigent message item.
+    :param item: tesseract message item.
     :returns: Codex message payload, or ``None`` for unsupported roles
         or empty text content.
     """
@@ -2486,11 +2486,11 @@ def _codex_function_call_payload_from_session_item(
     item: _JsonObject,
 ) -> _JsonObject | None:
     """
-    Convert an Omnigent function call item into a Codex function call payload.
+    Convert an tesseract function call item into a Codex function call payload.
 
-    :param item: Omnigent function call item.
+    :param item: tesseract function call item.
     :returns: Codex function call payload.
-    :raises click.ClickException: If the Omnigent item violates required tool
+    :raises click.ClickException: If the tesseract item violates required tool
         history fields.
     """
     name = item.get("name")
@@ -2498,20 +2498,20 @@ def _codex_function_call_payload_from_session_item(
     if not isinstance(name, str) or not name:
         item_id = item.get("id")
         raise click.ClickException(
-            "Cannot synthesize Codex resume rollout: Omnigent function_call "
+            "Cannot synthesize Codex resume rollout: tesseract function_call "
             f"{item_id!r} has an invalid name."
         )
     if not isinstance(call_id, str) or not call_id:
         item_id = item.get("id")
         raise click.ClickException(
-            "Cannot synthesize Codex resume rollout: Omnigent function_call "
+            "Cannot synthesize Codex resume rollout: tesseract function_call "
             f"{item_id!r} has an invalid call_id."
         )
     arguments = item.get("arguments")
     if not isinstance(arguments, str):
         item_id = item.get("id")
         raise click.ClickException(
-            "Cannot synthesize Codex resume rollout: Omnigent function_call "
+            "Cannot synthesize Codex resume rollout: tesseract function_call "
             f"{item_id!r} has non-string arguments."
         )
     return {
@@ -2526,25 +2526,25 @@ def _codex_function_call_output_payload_from_session_item(
     item: _JsonObject,
 ) -> _JsonObject | None:
     """
-    Convert an Omnigent function output item into a Codex function output payload.
+    Convert an tesseract function output item into a Codex function output payload.
 
-    :param item: Omnigent function output item.
+    :param item: tesseract function output item.
     :returns: Codex function output payload.
-    :raises click.ClickException: If the Omnigent item violates required tool
+    :raises click.ClickException: If the tesseract item violates required tool
         output fields.
     """
     call_id = item.get("call_id")
     if not isinstance(call_id, str) or not call_id:
         item_id = item.get("id")
         raise click.ClickException(
-            "Cannot synthesize Codex resume rollout: Omnigent function_call_output "
+            "Cannot synthesize Codex resume rollout: tesseract function_call_output "
             f"{item_id!r} has an invalid call_id."
         )
     output = item.get("output")
     if not isinstance(output, str):
         item_id = item.get("id")
         raise click.ClickException(
-            "Cannot synthesize Codex resume rollout: Omnigent function_call_output "
+            "Cannot synthesize Codex resume rollout: tesseract function_call_output "
             f"{item_id!r} has non-string output."
         )
     return {
@@ -2560,11 +2560,11 @@ def _codex_content_blocks_from_api_content(
     api_type: str,
 ) -> list[_JsonObject]:
     """
-    Extract text blocks from an Omnigent content array for Codex rollout items.
+    Extract text blocks from an tesseract content array for Codex rollout items.
 
-    :param content: Omnigent content array, e.g.
+    :param content: tesseract content array, e.g.
         ``[{"type": "input_text", "text": "hello"}]``.
-    :param api_type: Omnigent block type to include, e.g.
+    :param api_type: tesseract block type to include, e.g.
         ``"input_text"`` or ``"output_text"``.
     :returns: Codex/OpenAI content blocks preserving *api_type*.
     """
@@ -2588,16 +2588,16 @@ def _codex_turn_id_for_session_item(
     index: int,
 ) -> str:
     """
-    Return a Codex turn id for an Omnigent item.
+    Return a Codex turn id for an tesseract item.
 
-    Codex-native forwarder stores Omnigent ``response_id`` as
+    Codex-native forwarder stores tesseract ``response_id`` as
     ``"codex_<turn_id>"`` for mirrored items. When that prefix is not
     present, build a deterministic synthetic turn id from stable inputs.
 
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param external_session_id: Codex thread id, e.g.
         ``"019e96aa-0be2-7343-8d3b-6f914d60936b"``.
-    :param item: Flat Omnigent item dict.
+    :param item: Flat tesseract item dict.
     :param index: Zero-based fallback item index.
     :returns: Codex turn id, e.g. ``"turn_abc123"``.
     """
@@ -2632,10 +2632,10 @@ async def _patch_external_session_id(
     thread_id: str,
 ) -> None:
     """
-    Persist the native Codex thread id on the Omnigent session.
+    Persist the native Codex thread id on the tesseract session.
 
     :param client: HTTP client pointed at AP.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param thread_id: Codex thread id.
     :returns: None.
     """
@@ -2716,7 +2716,7 @@ async def _launch_codex_terminal(
     Launch the server-backed Codex terminal resource.
 
     :param client: HTTP client pointed at AP.
-    :param session_id: Omnigent session id.
+    :param session_id: tesseract session id.
     :param codex_args: Raw Codex CLI args.
     :param command: Codex executable.
     :param thread_id: Codex thread id to resume. ``None`` starts a
@@ -2813,7 +2813,7 @@ async def _find_running_codex_terminal(
     and cold-resume the Codex thread.
 
     :param client: HTTP client pointed at AP.
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :returns: Terminal details, or ``None`` when absent.
     :raises click.ClickException: If the server rejects the lookup for
         a reason other than "not currently attachable".
@@ -2867,7 +2867,7 @@ def _codex_terminal_lookup_is_reattach_miss(resp: httpx.Response) -> bool:
 
 def _response_error_code(resp: httpx.Response) -> str | None:
     """
-    Extract a structured Omnigent error code from *resp* if present.
+    Extract a structured tesseract error code from *resp* if present.
 
     :param resp: HTTP response from AP.
     :returns: ``error.code`` when the JSON body has one, otherwise
@@ -2888,7 +2888,7 @@ def _response_error_code(resp: httpx.Response) -> str | None:
 
 def _runner_offline_message(message: str) -> bool:
     """
-    Return whether *message* is the Omnigent stale-runner error shape.
+    Return whether *message* is the tesseract stale-runner error shape.
 
     :param message: Error text extracted from AP, e.g.
         ``"runner 'runner_abc' is offline for conversation 'conv_123'"``.
@@ -2908,9 +2908,9 @@ async def _close_codex_terminal(
     """
     Best-effort close of the AP-side Codex terminal resource.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers.
-    :param session_id: Omnigent session id.
+    :param session_id: tesseract session id.
     :param terminal_id: Terminal resource id.
     :returns: None.
     """
@@ -2938,7 +2938,7 @@ def _resolve_session_id_for_resume(
     """
     Translate resume inputs into a concrete Codex-native session id.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param headers: HTTP auth headers.
     :param session_id: Explicit session id, e.g. ``"conv_abc123"``.
     :param resume_picker: ``True`` for bare ``--resume``.
@@ -2957,7 +2957,7 @@ def _resolve_session_id_for_resume(
         """
         Run the async Codex-native picker.
 
-        :returns: Selected Omnigent session id, or ``None``.
+        :returns: Selected tesseract session id, or ``None``.
         """
         async with OmnigentClient(
             base_url=base_url,

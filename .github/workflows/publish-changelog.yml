@@ -250,7 +250,7 @@ jobs:
           PYEOF
 
       # Runs the tools-less formatter and secret-scans its output; degrades to the
-      # raw release body (below) if the agent can't run. Omnigent is checked out
+      # raw release body (below) if the agent can't run. tesseract is checked out
       # into omnigent/, so the action's workdir is that subdir.
       - name: Run release-post formatter
         id: format

@@ -433,7 +433,7 @@ contextBridge.exposeInMainWorld("omnigentSetup", {
    * Persist + navigate to a server URL. Connecting this machine as a runner is
    * a separate, explicit action from the host menu — not a connect-time choice.
    * Resolves `{needsConfirm:true, url}` when a remote URL doesn't look like an
-   * Omnigent server; re-call with `{force:true}` to proceed anyway.
+   * tesseract server; re-call with `{force:true}` to proceed anyway.
    * @param {string} url
    * @param {{force?: boolean}} [opts]
    */

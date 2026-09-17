@@ -47,7 +47,7 @@ def test_prepare_managed_pi_agent_dir_copies_settings_and_symlinks_npm(
 def test_prepare_managed_pi_agent_dir_empty_global_writes_overlay_only(
     tmp_path: Path,
 ) -> None:
-    """Missing global settings still writes the Omnigent overlay."""
+    """Missing global settings still writes the tesseract overlay."""
     global_agent = tmp_path / "empty-global"
     global_agent.mkdir()
     managed = tmp_path / "managed"

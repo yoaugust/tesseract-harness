@@ -1,10 +1,10 @@
-# Omnigent Slack Bot
+# tesseract Slack Bot
 
-Slack Socket Mode bot that maps one Slack thread to one Omnigent session. The
-bot talks to **one** Omnigent server, set by the operator via
+Slack Socket Mode bot that maps one Slack thread to one tesseract session. The
+bot talks to **one** tesseract server, set by the operator via
 `OMNIGENT_SERVER_URL` — Slack users never enter a URL, so the bot only ever
 issues requests to that fixed host. Each user still authenticates as their own
-Omnigent identity against it.
+tesseract identity against it.
 
 > This README is the operator/user guide (setup, scopes, running, auth). For the
 > user-facing behaviour contract (setup, DM, channels, error handling), see
@@ -35,7 +35,7 @@ Doing it by hand instead:
   the request URL is ignored, so any placeholder works.
 4. Install the app into the workspace.
 5. Set the two Slack tokens (`OMNIGENT_SLACK_BOT_TOKEN`,
-   `OMNIGENT_SLACK_APP_TOKEN`) and your Omnigent server URL
+   `OMNIGENT_SLACK_APP_TOKEN`) and your tesseract server URL
    (`OMNIGENT_SERVER_URL`) as **environment variables**. If your server sets
    `OMNIGENT_DEVICE_CLIENT_SECRET`, set the same value here so the bot is
    accepted as an authorized device-grant client. See **Configuration** below
@@ -133,7 +133,7 @@ Set `LOG_LEVEL=DEBUG` in the environment when diagnosing why Slack events are no
 ## Per-user setup flow
 
 The first time a user interacts with the bot (a channel `@mention` or a DM)
-without having configured, the bot DMs them a **Set up Omnigent** button and,
+without having configured, the bot DMs them a **Set up tesseract** button and,
 for channel mentions, drops an ephemeral pointer in the thread.
 
 The button opens a modal that connects to the operator-configured server (no
@@ -156,8 +156,8 @@ bot (or DMing it) starts a session on the configured server.
 
 ## Authentication
 
-For Omnigent servers with authentication enabled, each Slack user logs in with
-their own Omnigent identity — no Omnigent credential ever passes through Slack.
+For tesseract servers with authentication enabled, each Slack user logs in with
+their own tesseract identity — no tesseract credential ever passes through Slack.
 Login happens inside the single `/omnigent` configuration modal, not a separate
 command.
 
@@ -171,7 +171,7 @@ even if the user is already signed in — so a link the user didn't personally
 start can't be approved by reflex.) The server issues a short-lived,
 session-scoped delegated
 token plus a rotating refresh token, so the bot silently refreshes and the
-token can't reach admin endpoints. **The Omnigent server must have the device
+token can't reach admin endpoints. **The tesseract server must have the device
 grant enabled** (`OMNIGENT_DEVICE_GRANT_ENABLED=1` — it is default-off);
 otherwise the `/oauth/*` routes are absent and accounts-mode login can't
 complete. If the server sets `OMNIGENT_DEVICE_CLIENT_SECRET`, set the same
@@ -202,7 +202,7 @@ Either way the flow is the same from Slack's side:
 4. The **same modal advances automatically** to the agent / host / workspace
   picker as the now-authenticated identity — no DM, no re-running the command.
 
-The bot reads no auth-mode config itself; the Omnigent server's own
+The bot reads no auth-mode config itself; the tesseract server's own
 `OMNIGENT_OIDC_*` / `OMNIGENT_AUTH_*` env vars decide its mode (see the server's
 `[deploy/README.md](../../deploy/README.md#auth)`).
 
@@ -219,7 +219,7 @@ threat model.
 
 ### Databricks Apps web-auth
 
-When the Omnigent server is deployed as a **Databricks App**, it runs in header
+When the tesseract server is deployed as a **Databricks App**, it runs in header
 mode: the Databricks Apps proxy authenticates every request and injects the
 user's identity. A Socket-Mode event carries no such proxy-authenticated
 request, so the device/OIDC flows above can't be driven. Instead the bot runs a
@@ -241,7 +241,7 @@ enrollment page it serves as its own Databricks App:
    link bound to user A, signed in by victim V, can't store V's token under A.
    Mismatch → refused (HTTP 403).
 5. **Confirm before storing:** the GET stores nothing — it shows a consent page
-   naming the exact identities being linked ("your Omnigent `<server>` account
+   naming the exact identities being linked ("your tesseract `<server>` account
    `<idp-email>` with Slack user `<slack-email>`") and a **Confirm** button. The
    pair is persisted only when the user submits the confirming POST, then the
    setup modal advances automatically. The token is bounded by the OAuth app's
@@ -285,7 +285,7 @@ Mention the bot with a message to start a session:
 ```
 
 Replies stream in live and render Markdown. Replies in that Slack thread continue
-the same Omnigent session. A channel thread belongs to whoever started it; a
+the same tesseract session. A channel thread belongs to whoever started it; a
 follow-up from a different user gets a private ("Only visible to you") note
 pointing them to start their own thread.
 

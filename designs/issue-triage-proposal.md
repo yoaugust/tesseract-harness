@@ -104,11 +104,11 @@ The bot posts exactly one duplicate-check comment on every new issue. The commen
 
 **Why:** Authors need to understand automated closure decisions and benefit from discovering related work even when the match is uncertain. Keeping the response short, templated, and limited to duplicate detection avoids the verbose, speculative behavior that caused backlash against bots such as Dosu ([discussion #25153](https://github.com/langchain-ai/langchain/discussions/25153)).
 
-### Decision: Omnigent triage agent over `claude-code-action`
+### Decision: tesseract triage agent over `claude-code-action`
 
 Use `omnigent run .github/triage/` as the triage engine — a tool-less Claude SDK harness that outputs structured JSON, with all GitHub mutations in trusted workflow steps.
 
-**Why:** `claude-code-action` requires a direct Anthropic API key (`ANTHROPIC_API_KEY`), which we don't have — our LLM access routes through the Databricks gateway. More critically, `claude-code-action` gives the LLM shell access and a GitHub token, creating a prompt injection → secret exfiltration attack surface (a crafted issue body could trick the agent into running `printenv` → `gh issue comment`). The Omnigent approach eliminates this structurally: the LLM has no tools, no shell, and no `GH_TOKEN` — it only outputs JSON that is validated against allowlists before any GitHub mutation occurs.
+**Why:** `claude-code-action` requires a direct Anthropic API key (`ANTHROPIC_API_KEY`), which we don't have — our LLM access routes through the Databricks gateway. More critically, `claude-code-action` gives the LLM shell access and a GitHub token, creating a prompt injection → secret exfiltration attack surface (a crafted issue body could trick the agent into running `printenv` → `gh issue comment`). The tesseract approach eliminates this structurally: the LLM has no tools, no shell, and no `GH_TOKEN` — it only outputs JSON that is validated against allowlists before any GitHub mutation occurs.
 
 **Alternatives considered:**
 

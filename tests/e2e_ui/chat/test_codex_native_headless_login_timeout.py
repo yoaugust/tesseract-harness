@@ -2,7 +2,7 @@
 
 Regression test for the headless login-fallback timeout: on a machine where the
 native-Codex launch routing resolves to "Codex CLI login" with no usable
-stored credential (no Omnigent provider configured, empty ``CODEX_HOME``),
+stored credential (no tesseract provider configured, empty ``CODEX_HOME``),
 the runner still launches the ``--remote`` Codex TUI headlessly. The TUI
 parks on the ChatGPT sign-in / onboarding screen, never emits
 ``thread/started``, and the user's first chat message hangs for the whole

@@ -314,7 +314,7 @@ def test_no_store_configured(monkeypatch: pytest.MonkeyPatch) -> None:
     Returns an error when ``get_comment_store()`` returns ``None``.
 
     This happens in deployments that don't initialise a comment store
-    (e.g. standalone REPL without Omnigent server). The tool must surface a
+    (e.g. standalone REPL without tesseract server). The tool must surface a
     clear message rather than raising AttributeError.
     """
     import omnigent.runtime as _runtime

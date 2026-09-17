@@ -24,7 +24,7 @@ executor:
     harness: claude-sdk
 
 prompt: |
-  You are the Omnigent documentation-impact classifier. You are given the code
+  You are the tesseract documentation-impact classifier. You are given the code
   change from a pull request that has just MERGED — its changed-file list and
   diff. You are deliberately NOT given the PR title or description (those are
   author-controlled prose); judge from what the code actually changed. Decide
@@ -37,7 +37,7 @@ prompt: |
 
   1. **Core user-journey update** — it changes something a user *does, sees, or
      configures*: install / setup / onboarding, how they run or interact with
-     Omnigent (terminal, web UI, mobile, desktop), the built-in agents users
+     tesseract (terminal, web UI, mobile, desktop), the built-in agents users
      invoke (Polly, Debby), contextual policies they set, or
      collaboration / shared-server / deploy flows.
   2. **Integration update** — a harness, model provider, MCP / tool, sandbox, or

@@ -240,7 +240,7 @@ def _spawn_server_handler(
     meta_gets: list[str] | None = None,
 ):
     """
-    Build a mock Omnigent-server handler for a fresh named spawn.
+    Build a mock tesseract-server handler for a fresh named spawn.
 
     Serves the no-existing-child lookup, the child create, the copy
     endpoint (recording its body and answering with ``mapping`` or an

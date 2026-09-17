@@ -1,4 +1,4 @@
-"""Shared helper: spawn a dedicated *multi-user* header-auth Omnigent server.
+"""Shared helper: spawn a dedicated *multi-user* header-auth tesseract server.
 
 The suite's shared ``live_server`` runs single-user
 (``OMNIGENT_LOCAL_SINGLE_USER=1``, set in ``tests/conftest.py``), where the

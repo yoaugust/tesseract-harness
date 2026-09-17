@@ -65,7 +65,7 @@ class _RecordingClient:
     Mirrors the stub used by ``tests/test_codex_native_forwarder.py``: only
     ``post`` is exercised (by ``_post_session_event``), and every call is
     recorded so the test can assert exactly what the forwarder mirrored to the
-    Omnigent server.
+    tesseract server.
     """
 
     def __init__(self) -> None:
@@ -136,7 +136,7 @@ async def _drive_turn_started(
     and dispatches a ``turn/started`` notification through it.
 
     :param client: Recording HTTP client stub.
-    :param session_id: Omnigent conversation id.
+    :param session_id: tesseract conversation id.
     :param bridge_dir: The session's native-Codex bridge directory.
     :param state: Mutable forwarder state.
     :returns: None.
@@ -164,21 +164,21 @@ def test_turn_started_mirrors_terminal_effort_change_to_composer(tmp_path: Path)
     A ``/model`` effort change in the terminal must mirror at ``turn/started``.
 
     Setup mirrors a running native-Codex session whose launch effort
-    (``medium``) has already been mirrored to Omnigent, then the user changes
+    (``medium``) has already been mirrored to tesseract, then the user changes
     the effort to ``high`` in the embedded terminal (``/model``), which rewrites
     ``config.toml`` (model unchanged, ``model_reasoning_effort = "high"``) with
     no ``thread/settings`` notification. The next terminal turn opens
     (``turn/started``).
 
     The forwarder must observe the new effort from ``config.toml`` and mirror it
-    to the Omnigent server as an ``external_reasoning_effort_change`` carrying
+    to the tesseract server as an ``external_reasoning_effort_change`` carrying
     ``high`` -- the event the server persists and echoes to the SPA so the chat
     composer gear updates. On ``main`` no such POST is made (the ``turn/started``
     path re-reads model + developer instructions but never effort), so the
     composer stays stale: this assertion reproduces the stale-composer bug.
     """
     session_id = "conv_effort_mirror"
-    # Launch model + effort, both already mirrored to Omnigent at spawn.
+    # Launch model + effort, both already mirrored to tesseract at spawn.
     state = fwd._CodexForwarderState()
     state.model = "gpt-5.5"
     state.posted_model = "gpt-5.5"
@@ -208,7 +208,7 @@ def test_turn_started_mirrors_terminal_effort_change_to_composer(tmp_path: Path)
     # The terminal effort change must reach the server so the composer updates.
     assert effort_posts, (
         "turn/started after an in-TUI /model effort change did not "
-        "mirror the new effort to Omnigent (no external_reasoning_effort_change "
+        "mirror the new effort to tesseract (no external_reasoning_effort_change "
         "POST), so the chat composer gear stays stale. Posts observed: "
         f"{[body.get('type') for _u, body in client.posts]}"
     )

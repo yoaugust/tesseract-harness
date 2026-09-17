@@ -649,7 +649,7 @@ def _native_ask_gate_lock(conversation_id: str, deciding_policy: str) -> asyncio
     ALLOW. Get-or-create is race-free because there is no ``await`` between the
     lookup and the insert (single event loop).
 
-    :param conversation_id: Omnigent conversation id whose ASK gate is being
+    :param conversation_id: tesseract conversation id whose ASK gate is being
         serialized, e.g. ``"conv_abc123"``. Sub-agent native tool calls
         evaluate against the parent conversation id, so they share its lock.
     :param deciding_policy: Name of the policy that produced the ASK verdict,
@@ -989,7 +989,7 @@ def _signal_terminal_resolved_harness_elicitation_impl(
     keyed on the parked prompt's tool identity, not on a claude-native
     check — so a Codex hook that records ``tool_name`` benefits too.
 
-    :param session_id: Omnigent conversation id whose forwarder mirrored the
+    :param session_id: tesseract conversation id whose forwarder mirrored the
         result, e.g. ``"conv_abc123"``.
     :param tool_name: Tool name the result is for, e.g. ``"Bash"``.
     :param tool_input: Tool input the result is for, e.g.
@@ -1075,7 +1075,7 @@ def _consume_pre_resolved_harness_elicitation(
     """
     Consume a resolution that arrived before the hook wait registered.
 
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param elicitation_id: Harness elicitation id, e.g.
         ``"elicit_codex_abc123"``.
     :param request_fingerprint: Digest of the consuming re-park's request
@@ -1159,7 +1159,7 @@ def _signal_harness_elicitation_resolved_by_id(
     """
     Resolve or pre-resolve one parked harness elicitation by id.
 
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :param elicitation_id: Harness elicitation id, e.g.
         ``"elicit_codex_abc123"``.
     :returns: None.
@@ -2265,7 +2265,7 @@ async def _persist_external_model_change(
     Persist and broadcast the model the harness reports it is running.
 
     Mirrors a harness-side model report — the launch's own model, or a
-    ``/model`` change made inside the pane — onto the Omnigent session:
+    ``/model`` change made inside the pane — onto the tesseract session:
     writes ``reported_model`` VERBATIM (the harness's own spelling,
     never collapsed to a picker alias) so the value survives reload,
     and publishes a ``session.model`` SSE event so every surface
@@ -2323,7 +2323,7 @@ async def _persist_external_session_title(
     Persist and broadcast a session rename made inside the terminal.
 
     Mirrors a ``/rename`` typed into a claude-native session's Claude Code
-    pane onto the Omnigent session: writes ``title`` so the new name
+    pane onto the tesseract session: writes ``title`` so the new name
     survives reload and publishes a ``session.title`` SSE event so the
     web session list updates live.
 
@@ -2403,7 +2403,7 @@ def _persist_external_model_options(
     Sourced from the harness's live model registry (pi-native:
     ``ctx.modelRegistry.getAvailable()``), so it reflects the models the
     harness actually loaded no matter how it authenticated — an
-    Omnigent-configured provider OR the harness's own ``/login``. This is why
+    tesseract-configured provider OR the harness's own ``/login``. This is why
     the pi picker populates even in the ``/login`` path, where no
     ``models.json`` is written into the bridge dir for a file-read to find.
 
@@ -2502,7 +2502,7 @@ async def _persist_external_reasoning_effort_change(
     """
     Persist and broadcast a reasoning-effort switch made inside the terminal.
 
-    Mirrors a native-terminal thinking-level change onto the Omnigent session.
+    Mirrors a native-terminal thinking-level change onto the tesseract session.
     Unlike the public PATCH path, this deliberately does NOT forward an
     ``effort_change`` back to the runner: the terminal is already on that
     effort, so re-injecting it would loop.
@@ -2886,7 +2886,7 @@ def _publish_external_conversation_item(
     them exactly like local/composer messages. Assistant/tool-side
     items use ``response.output_item.done`` because they are already
     completed records from Claude's transcript, not token deltas from
-    an active Omnigent task.
+    an active tesseract task.
 
     :param session_id: Session/conversation identifier.
     :param item: Persisted conversation item.
@@ -3171,11 +3171,11 @@ async def _persist_external_assistant_message(
     conversation_store: ConversationStore,
 ) -> str:
     """
-    Persist and broadcast assistant text produced outside Omnigent tasks.
+    Persist and broadcast assistant text produced outside tesseract tasks.
 
     The event is append-only conversation history. It intentionally
     bypasses the legacy persist path so mirroring a
-    Claude terminal response does not create or steer an Omnigent
+    Claude terminal response does not create or steer an tesseract
     agent task.
 
     :param session_id: Session/conversation identifier.
@@ -3523,7 +3523,7 @@ async def _persist_external_subagent_start(
     sub-agent and emit the parent's ``session.created`` SSE event.
 
     Claude Code spawns sub-agents internally via its Task tool and
-    never POSTs to Omnigent to register them. The forwarder watches the
+    never POSTs to tesseract to register them. The forwarder watches the
     parent's on-disk ``subagents/`` directory and calls this handler
     when a new ``.meta.json`` appears. We reuse the parent's
     ``agent_id`` (claude-native sub-agents don't have their own
@@ -4179,7 +4179,7 @@ def _latest_assistant_text_from_store(
 
     Native harnesses mirror completed transcript items to the AP
     server, not necessarily to the runner's in-memory history. This
-    helper lets Omnigent forward the durable assistant output with the
+    helper lets tesseract forward the durable assistant output with the
     terminal-observed idle edge.
 
     :param conversation_store: Store used to read conversation items.
@@ -4265,7 +4265,7 @@ def _require_collaboration_mode_forward(
     Fail when a live Codex Plan-mode switch was not applied by the runner.
 
     Codex Plan mode is a loaded-thread collaboration mode inside Codex
-    app-server. Persisting the Omnigent label without a successful runner
+    app-server. Persisting the tesseract label without a successful runner
     update would make the web UI claim Plan mode while Codex still runs in
     the previous mode, so explicit UI toggles require a confirmed 2xx forward.
 
@@ -6288,7 +6288,7 @@ def _extract_claude_native_runner_failure(resp: httpx.Response) -> str | None:
 
     Runner ``POST /v1/sessions/{id}/events`` returns HTTP 200 for a
     syntactically valid harness stream even when the harness emits
-    ``response.failed``. Claude-native Omnigent forwarding must treat that
+    ``response.failed``. Claude-native tesseract forwarding must treat that
     as failed injection, otherwise the web UI would believe a message
     reached the terminal when ``tmux send-keys`` actually failed.
 
@@ -6364,7 +6364,7 @@ async def _forward_session_change_to_runner_impl(
       boundary, so they ignore the return value.
     * Explicit ``compact`` — the caller inspects the returned status
       to decide whether the runner handled the control (claude-native,
-      200) or the Omnigent server must run its own in-process compaction
+      200) or the tesseract server must run its own in-process compaction
       (204 / no runner). See the ``compact`` branch in
       :func:`post_event`.
 
@@ -6372,12 +6372,12 @@ async def _forward_session_change_to_runner_impl(
     session router binding, fall back to the global runner client
     (in-process / test setups where the router hasn't bound the
     session). When neither resolves to a client, the POST is silently
-    skipped — the persisted value on the Omnigent side is the authoritative
+    skipped — the persisted value on the tesseract side is the authoritative
     fallback, picked up by the next spawn.
 
     Non-2xx runner responses (e.g. 503 when the tmux pane isn't
     advertised yet) are logged as warnings so the failure surfaces
-    in the Omnigent log — otherwise the POST succeeds at the httpx layer
+    in the tesseract log — otherwise the POST succeeds at the httpx layer
     and the status would be silently dropped.
 
     :param session_id: Session/conversation identifier, e.g.
@@ -7786,7 +7786,7 @@ def _same_provider_family_impl(a: Agent, b: Agent) -> bool:
     ``False`` when either family is undeterminable, so a fork that can't
     confirm both agents speak the same provider resets model settings and
     skips resuming the source's native session (the runner rebuilds the
-    native transcript from Omnigent items instead).
+    native transcript from tesseract items instead).
 
     :param a: First agent (e.g. the fork source's agent).
     :param b: Second agent (e.g. the switch target).
@@ -7840,7 +7840,7 @@ def _agent_carries_native_fork_history_impl(agent: Agent) -> bool:
     """Return whether *agent*'s native harness rebuilds a fork's transcript.
 
     claude-native / codex-native / pi-native each record a resumable native
-    session file that the runner rebuilds from the copied Omnigent items on
+    session file that the runner rebuilds from the copied tesseract items on
     fork/resume, so a fork bound to one of them carries prior history into the
     native CLI. Used by both fork and switch-agent. cursor-native is a native
     CLI but has no resumable session file to rebuild; it carries fork history a
@@ -8652,7 +8652,7 @@ def _validate_terminal_launch_args(value: list[str] | None) -> list[str] | None:
 
     Enforces a flat list of strings within bounded count / length.
     The flat-list shape is the security boundary: there is no key for
-    a caller to smuggle internal launch wiring (bridge dir, Omnigent URL,
+    a caller to smuggle internal launch wiring (bridge dir, tesseract URL,
     auth) through — those stay runner-owned (see
     designs/NATIVE_RUNNER_SERVER_LAUNCH.md).
 
@@ -10278,7 +10278,7 @@ async def _handle_mcp_tools_list(
     Delegates execution to the runner's ``POST
     /v1/sessions/{id}/mcp/execute`` endpoint so that stdio MCP
     subprocesses spawn on the runner's machine (correct ``cwd``,
-    env, and tooling). The Omnigent server's role here is routing only —
+    env, and tooling). The tesseract server's role here is routing only —
     policy evaluation happens in ``tools/call``.
 
     :param rpc_id: The JSON-RPC request id, e.g. ``1``.

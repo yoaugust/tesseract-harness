@@ -1,16 +1,16 @@
 ---
 name: run-load-test
-description: Run the Omnigent load test and produce a results file explaining the latencies. Load when the user wants to load-test / stress-test / benchmark Omnigent under concurrency ("load test omnigent", "stress test the server", "how many hosts/sessions/turns can it handle", "load test real agent turns / conversations", "run a load test"). The test makes each simulated user a real omnigent host that creates host-bound sessions and drives real multi-turn conversations with a mocked LLM; it boots its own local stack (dev/loadtest/run.py). Gather inputs, run it, then read the generated summary.md and explain the latency distribution (avg/median/p95/p99, throughput, failures). NOT for single-request latency micro-benchmarks (that is dev/benchmarks/).
+description: Run the tesseract load test and produce a results file explaining the latencies. Load when the user wants to load-test / stress-test / benchmark tesseract under concurrency ("load test omnigent", "stress test the server", "how many hosts/sessions/turns can it handle", "load test real agent turns / conversations", "run a load test"). The test makes each simulated user a real omnigent host that creates host-bound sessions and drives real multi-turn conversations with a mocked LLM; it boots its own local stack (dev/loadtest/run.py). Gather inputs, run it, then read the generated summary.md and explain the latency distribution (avg/median/p95/p99, throughput, failures). NOT for single-request latency micro-benchmarks (that is dev/benchmarks/).
 ---
 
-# Run the Omnigent load test
+# Run the tesseract load test
 
 Drives `dev/loadtest/` end to end: collect inputs → run → read `summary.md` →
 explain the latencies. **Each Locust user is a real `omnigent host`** that
 registers over the host tunnel, creates host-bound sessions, and drives **real
 multi-turn conversations** — every turn is a genuine post→idle loop through the
 host's runner, with the **LLM mocked** (zero latency) so the numbers are
-Omnigent's own overhead. `-u N` scales the number of hosts.
+tesseract's own overhead. `-u N` scales the number of hosts.
 
 It **boots its own local stack** (server + mock LLM), so there is no server to
 point at, and it runs **from a repo checkout** only. For single-request latency
@@ -64,7 +64,7 @@ writes `dev/loadtest/results/omnigent_load_test-<timestamp>/`.
   the per-host `results/.../host-workspaces/<name>/host.log`. At high N, failures
   usually mean the *load box* saturated, not the server.
 - **turn** — the headline latency: one full post→idle agent turn on a host's
-  runner (mocked LLM), so it is Omnigent's per-turn overhead. It **grows across a
+  runner (mocked LLM), so it is tesseract's per-turn overhead. It **grows across a
   conversation** as history accumulates, so a rising p95/p99 with larger
   `--turns-per-session` is expected and is the interesting signal.
 - **host online** — host tunnel registration cost; **session create** — the

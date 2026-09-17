@@ -1,11 +1,11 @@
 ---
 name: omnigent-knowledge
-description: Deep reference on Omnigent config format, executor types, skill/tool structure, and conventions. Load when you need to look up how the platform works.
+description: Deep reference on tesseract config format, executor types, skill/tool structure, and conventions. Load when you need to look up how the platform works.
 ---
 
-# Omnigent Knowledge Base
+# tesseract Knowledge Base
 
-## What is Omnigent?
+## What is tesseract?
 
 Agent plane is a server that hosts, manages, and executes agents via an
 OpenResponses-compatible API. Users create **agent directories** (also
@@ -141,7 +141,7 @@ sub-agents; it **requires** a `config.harness`:
 ## AGENTS.md Format
 
 Free-form markdown. This becomes the agent-authored portion of the system
-prompt; Omnigent may append framework-owned lifecycle or metadata instructions
+prompt; tesseract may append framework-owned lifecycle or metadata instructions
 at runtime. Best practices:
 
 - Start with a clear identity statement ("You are a ...")

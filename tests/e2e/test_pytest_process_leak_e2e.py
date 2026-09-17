@@ -1,9 +1,9 @@
-"""End-to-end regression test: pytest must not leave Omnigent processes behind.
+"""End-to-end regression test: pytest must not leave tesseract processes behind.
 
-Reproduces the developer journey from the bug report "pytest leaves Omnigent
+Reproduces the developer journey from the bug report "pytest leaves tesseract
 servers and host daemons running after the suite exits":
 
-1. run pytest on a CLI test that spawns a real detached Omnigent child,
+1. run pytest on a CLI test that spawns a real detached tesseract child,
 2. pytest exits (green) and removes its temp ``OMNIGENT_DATA_DIR``,
 3. ``ps`` still shows ``omnigent.host._daemon_entry`` / ``omnigent.cli
    server`` / ``omnigent.runner._zygote`` processes spawned by the run —
@@ -136,7 +136,7 @@ def _proc_cmdline(proc: psutil.Process) -> str:
 
 
 def _surviving_omnigent_procs(tmp_root: Path, nested_pid: int) -> list[tuple[int, str]]:
-    """Find live Omnigent processes attributable to the nested pytest run.
+    """Find live tesseract processes attributable to the nested pytest run.
 
     A survivor is attributed by the private ``TMPDIR`` the nested run was
     confined to: its ``OMNIGENT_DATA_DIR`` env (inherited by host daemons
@@ -148,7 +148,7 @@ def _surviving_omnigent_procs(tmp_root: Path, nested_pid: int) -> list[tuple[int
 
     :param tmp_root: The private ``TMPDIR`` the nested run used.
     :param nested_pid: The nested pytest's pid, excluded from the scan.
-    :returns: ``(pid, cmdline)`` pairs of surviving Omnigent processes.
+    :returns: ``(pid, cmdline)`` pairs of surviving tesseract processes.
     """
     tmp_prefix = f"{tmp_root}{os.sep}"
     survivors: list[tuple[int, str]] = []
@@ -183,10 +183,10 @@ def _reap(pid: int) -> None:
 
 
 def test_pytest_run_leaves_no_omnigent_processes(tmp_path: Path) -> None:
-    """A pytest session must reap every Omnigent child its tests spawned.
+    """A pytest session must reap every tesseract child its tests spawned.
 
     Drives the real journey: run pytest on a CLI test that spawns a
-    detached Omnigent host daemon, let pytest exit, then assert nothing
+    detached tesseract host daemon, let pytest exit, then assert nothing
     from the run is still alive. Without session-teardown reaping this
     FAILS: the run leaves a ``python -m omnigent.host._daemon_entry``
     orphan behind (and, on runs that exercise the local-backend path,
@@ -247,7 +247,7 @@ def test_pytest_run_leaves_no_omnigent_processes(tmp_path: Path) -> None:
 
         leaked = "\n".join(f"  pid {pid}: {cmd}" for pid, cmd in survivors)
         assert not survivors, (
-            "pytest exited but left Omnigent processes from its run alive "
+            "pytest exited but left tesseract processes from its run alive "
             "(session teardown never reaped spawned children — they squat "
             "port 6767 and keep serving after their temp data dir is "
             f"deleted):\n{leaked}"

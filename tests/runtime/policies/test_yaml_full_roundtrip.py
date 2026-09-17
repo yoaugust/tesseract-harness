@@ -268,7 +268,7 @@ async def test_yaml_on_key_stays_string(
     conversation_store: SqlAlchemyConversationStore,
 ) -> None:
     """YAML 1.1 parses `on:` as boolean True by default.
-    Omnigent' custom loader keeps it as a string. If
+    tesseract' custom loader keeps it as a string. If
     this regresses, every policy's `on:` key disappears
     and all policies silently stop firing.
 

@@ -1,4 +1,4 @@
-// Intermediate library build for the embeddable Omnigent island.
+// Intermediate library build for the embeddable tesseract island.
 //
 // This is a PRE-BUNDLE step, not the final artifact. Vite bundles web and
 // ALL of its own dependencies (monaco, shiki, xterm, tiptap, react-query, …)

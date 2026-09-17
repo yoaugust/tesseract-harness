@@ -192,7 +192,7 @@
       "priority_label": "comp:server",
       "weight": 1.2,
       "weight_source": "editorial",
-      "definition": "The Omnigent server: HTTP API, session creation and lifecycle, request routing.",
+      "definition": "The tesseract server: HTTP API, session creation and lifecycle, request routing.",
       "paths": [
         "omnigent/server/"
       ],

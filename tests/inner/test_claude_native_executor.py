@@ -37,7 +37,7 @@ async def test_run_turn_injects_user_message_without_streaming_transcript(
     Web UI turns are typed into Claude's tmux pane only.
 
     The background transcript forwarder is the only path allowed to
-    produce visible Omnigent chat items. This fails if the executor
+    produce visible tesseract chat items. This fails if the executor
     regresses to tailing JSONL and producing duplicate assistant text.
     """
     bridge_dir = tmp_path / "bridge"
@@ -105,7 +105,7 @@ async def test_run_turn_does_not_advertise_active_omnigent_tools(
 
     Claude-native chat visibility is terminal-originated. Web-chat
     submission is an input adapter, so tool activity must come back
-    from Claude's transcript rather than from a transient Omnigent turn.
+    from Claude's transcript rather than from a transient tesseract turn.
     """
     bridge_dir = tmp_path / "bridge"
     sent_messages: list[dict[str, Any]] = []

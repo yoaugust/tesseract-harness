@@ -13,8 +13,8 @@ terminated when the last handle to the job closes.
 So this backend trades a different set of guarantees than its POSIX siblings:
 
 - **Provided**: process-tree containment (the helper and every descendant are
-  killed together when Omnigent closes the job handle, including on an
-  unexpected Omnigent crash, since the OS closes handles of dead processes) and
+  killed together when tesseract closes the job handle, including on an
+  unexpected tesseract crash, since the OS closes handles of dead processes) and
   optional CPU/memory ceilings.
 - **NOT provided**: filesystem isolation (read/write roots), network isolation,
   or syscall filtering. ``read_paths`` / ``write_paths`` / ``allow_network`` in

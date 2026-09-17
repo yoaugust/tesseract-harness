@@ -18,7 +18,7 @@ _SESSION = "ses_reconnect"
 
 
 class _RecordingServerClient:
-    """httpx-shaped stub recording Omnigent event POSTs."""
+    """httpx-shaped stub recording tesseract event POSTs."""
 
     def __init__(self) -> None:
         self.posts: list[tuple[str, dict[str, Any]]] = []

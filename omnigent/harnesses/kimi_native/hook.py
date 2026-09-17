@@ -1,4 +1,4 @@
-"""Kimi Code hook commands for the native Omnigent wrapper.
+"""Kimi Code hook commands for the native tesseract wrapper.
 
 Registered into a per-session ``config.toml`` ``[[hooks]]`` array (see
 :mod:`omnigent.harnesses.kimi_native.credentials`) so the running ``kimi`` TUI invokes
@@ -9,13 +9,13 @@ stdin, and reads the decision back from stdout as
 
 - ``evaluate-policy`` — the ``PreToolUse`` deny-gate. Mirrors
   :func:`omnigent.harnesses.claude_native.hook._main_evaluate_policy`: it converts the
-  Kimi hook payload into an Omnigent ``EvaluationRequest`` (the snake-cased
+  Kimi hook payload into an tesseract ``EvaluationRequest`` (the snake-cased
   Kimi fields ``tool_name`` / ``tool_input`` / ``hook_event_name`` line up
   with :func:`omnigent.native.native_policy_hook.hook_payload_to_evaluation_request`),
   POSTs to ``/v1/sessions/{id}/policies/evaluate``, and emits a ``deny`` only
   for a constraining ``POLICY_ACTION_DENY`` verdict. ``ALLOW`` (the engine's
   no-match default) emits nothing, so kimi's own in-TUI approval prompt still
-  runs — Omnigent enforces its deny-policy without silencing the user's
+  runs — tesseract enforces its deny-policy without silencing the user's
   consent. Fails CLOSED (deny) when an already-governed session can't reach a
   verdict, matching the claude-native gate.
 
@@ -119,14 +119,14 @@ def _read_stdin_payload() -> dict[str, object] | None:
 
 
 def _main_evaluate_policy(argv: list[str]) -> int:
-    """Evaluate a kimi ``PreToolUse`` hook against Omnigent policies.
+    """Evaluate a kimi ``PreToolUse`` hook against tesseract policies.
 
     Reads the hook payload from stdin, POSTs an ``EvaluationRequest`` to
     ``/v1/sessions/{id}/policies/evaluate``, and writes kimi's hook decision
     to stdout. Only ``POLICY_ACTION_DENY`` produces a ``deny``; everything
     else emits nothing ("no opinion") so kimi's own approval prompt still
     fires. An already-governed session that cannot obtain a verdict fails
-    CLOSED with a ``deny`` (this hook is the sole Omnigent enforcement point
+    CLOSED with a ``deny`` (this hook is the sole tesseract enforcement point
     for kimi tool calls).
 
     :param argv: CLI argv after the ``evaluate-policy`` subcommand.
@@ -190,7 +190,7 @@ def _main_evaluate_policy(argv: list[str]) -> int:
     try:
         eval_response = resp.json()
     except json.JSONDecodeError:
-        print("omnigent kimi evaluate-policy hook: malformed Omnigent response", file=sys.stderr)
+        print("omnigent kimi evaluate-policy hook: malformed tesseract response", file=sys.stderr)
         return _fail_closed()
 
     hook_output = evaluation_response_to_hook_output(hook_event, eval_response)

@@ -1,10 +1,10 @@
-# Deploying the Omnigent Slack bot on Databricks Apps
+# Deploying the tesseract Slack bot on Databricks Apps
 
-This directory deploys the **Omnigent Slack bot** to
+This directory deploys the **tesseract Slack bot** to
 [Databricks Apps](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/)
 via [Asset Bundles](https://docs.databricks.com/aws/en/dev-tools/bundles/).
 
-Deploy the bot here when the Omnigent **server** it talks to is itself a
+Deploy the bot here when the tesseract **server** it talks to is itself a
 Databricks App (header/proxy auth). In that mode the bot can't drive the usual
 device/OIDC login, so it runs a **custom U2M OAuth app** (authorization code +
 PKCE, `offline_access`) via an enrollment page it serves as a Databricks App: a
@@ -46,7 +46,7 @@ dependencies in-container at boot. Runs unchanged from a laptop; re-runnable.
    authenticated via a profile (`--profile`) or env auth.
 4. A **Slack app** (Socket Mode + Interactivity) with its bot token (`xoxb-…`)
   and app-level token (`xapp-…`) — see the integration README's *Setup*.
-5. The **target Omnigent server app** already deployed as a Databricks App (you
+5. The **target tesseract server app** already deployed as a Databricks App (you
   pass its URL as `--server-url`).
 6. Permission to create a **secret scope** and grant the app's service principal
   `READ` on it.
@@ -200,7 +200,7 @@ Environment wired by `databricks.yml` (secrets via `value_from`, rest inline):
 | `OMNIGENT_SLACK_DATABRICKS_STATE_SECRET` | secret               | HMAC key signing the enrollment `state`          |
 | `OMNIGENT_SLACK_DATABRICKS_SCOPES`       | inline (optional)    | Requested scopes (default `all-apis`; must be a superset of the server app's scopes; `openid` + `offline_access` forced on) |
 | `OMNIGENT_SLACK_SERVER_AUTH`             | inline               | `databricks` (selects the OAuth mode)            |
-| `OMNIGENT_SERVER_URL`                    | `--server-url`       | Omnigent server the bot drives                   |
+| `OMNIGENT_SERVER_URL`                    | `--server-url`       | tesseract server the bot drives                   |
 | `OMNIGENT_SLACK_DATABRICKS_APP_URL`      | `--app-url`          | This app's public URL — link base + redirect URI |
 | `OMNIGENT_DATA_DIR`                      | inline               | Ephemeral SQLite store dir                       |
 

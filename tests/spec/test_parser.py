@@ -845,7 +845,7 @@ _UPSTREAM_BAD_ARGUMENT_HINT = (
 # The literal ``description:`` line from the ``dev-productivity`` plugin's
 # ``simplify`` skill. Claude Code loads it; strict YAML rejects it because a
 # plain scalar may not contain ``": "`` — so every user with that plugin
-# installed silently lost the skill from Omnigent's menus.
+# installed silently lost the skill from tesseract's menus.
 _UPSTREAM_COLON_IN_DESCRIPTION = (
     "description: Refines already-working code for clarity, consistency, and "
     "maintainability while preserving behavior. Targets code the user wants "
@@ -861,7 +861,7 @@ def test_parse_skill_accepts_unquoted_colon_in_description(
     A description carrying an unquoted ``": "`` still yields a skill.
 
     Authors write prose in ``description:`` without quoting it, and prose
-    contains colons. Claude Code accepts that; if Omnigent insists on strict
+    contains colons. Claude Code accepts that; if tesseract insists on strict
     YAML the skill vanishes from its menus with only a log line to say why.
     """
     skill_dir = tmp_path / "simplify"
@@ -2021,7 +2021,7 @@ def test_parse_os_env_caller_process(tmp_path: Path) -> None:
     """A native YAML ``os_env:`` mapping parses into a real
     :class:`OSEnvSpec` with the declared ``type`` and ``cwd``.
 
-    What breaks if this fails: native Omnigent YAMLs cannot opt into
+    What breaks if this fails: native tesseract YAMLs cannot opt into
     sys_os_* tools — the whole point of step 5l.
     """
     from omnigent.inner.datamodel import OSEnvSpec

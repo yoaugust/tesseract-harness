@@ -1,6 +1,6 @@
-"""Reap Omnigent processes leaked by a test session.
+"""Reap tesseract processes leaked by a test session.
 
-Tests spawn real Omnigent subprocesses — detached host daemons
+Tests spawn real tesseract subprocesses — detached host daemons
 (``omnigent.host._daemon_entry``), local servers (``omnigent.cli server``),
 and runner zygotes (``omnigent.runner._zygote``). They are started with
 ``start_new_session=True``, so nothing reaps them when pytest exits:
@@ -12,7 +12,7 @@ file).
 The session fixture points ``OMNIGENT_DATA_DIR`` at a throwaway
 per-session directory, and every spawn path propagates that variable to
 its children (the host-daemon and runner env allowlists both carry it), so
-the directory doubles as an attribution key: a live Omnigent process whose
+the directory doubles as an attribution key: a live tesseract process whose
 exec-time environment or command line references it was spawned by this
 session and is safe to terminate. Nothing else on the machine — another
 test session, a developer's real server — ever references this exact path.
@@ -80,7 +80,7 @@ def _cmdline_references_dir(argv: list[str], needle: str) -> bool:
 
 
 def _is_pytest_process(argv: list[str]) -> bool:
-    """Whether *argv* is a pytest run rather than a spawned Omnigent process.
+    """Whether *argv* is a pytest run rather than a spawned tesseract process.
 
     Token-based on purpose: a leaked server's ``--database-uri`` embeds the
     ``omnigent-pytest-<rand>`` data-dir name, so a substring test on the
@@ -94,7 +94,7 @@ def _is_pytest_process(argv: list[str]) -> bool:
 
 
 def find_leaked_omnigent_processes(data_dir: Path | str) -> list[psutil.Process]:
-    """Find live Omnigent processes attributable to *data_dir*.
+    """Find live tesseract processes attributable to *data_dir*.
 
     A process is attributed when its exec-time ``OMNIGENT_DATA_DIR`` equals
     *data_dir* (host daemons and zygotes inherit it via the spawn-env
@@ -133,7 +133,7 @@ def find_leaked_omnigent_processes(data_dir: Path | str) -> list[psutil.Process]
 def reap_leaked_omnigent_processes(
     data_dir: Path | str, *, timeout: float = _REAP_TIMEOUT_S
 ) -> tuple[list[str], list[str]]:
-    """Terminate every Omnigent process attributable to *data_dir*.
+    """Terminate every tesseract process attributable to *data_dir*.
 
     TERM first (a daemon's clean shutdown also stops the children it
     owns), then KILL whatever remains after *timeout*.

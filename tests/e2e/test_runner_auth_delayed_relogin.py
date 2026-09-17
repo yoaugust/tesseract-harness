@@ -79,14 +79,14 @@ def isolated_credentials(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Ite
     """Isolate every credential-discovery source into a temp directory.
 
     Scrubs ambient Databricks and runner-auth environment variables, points
-    the Omnigent token store (``auth_tokens.json``) at a temp state dir, and
+    the tesseract token store (``auth_tokens.json``) at a temp state dir, and
     points the Databricks SDK at an empty config file — so credential
     discovery genuinely returns ``None`` until a test writes a stored token
     (simulating the user completing ``omnigent login`` minutes later).
 
     :param tmp_path: pytest-provided temp directory.
     :param monkeypatch: pytest monkeypatch fixture.
-    :yields: The isolated Omnigent state directory holding
+    :yields: The isolated tesseract state directory holding
         ``auth_tokens.json``.
     """
     state_dir = tmp_path / "omnigent-state"
@@ -121,7 +121,7 @@ def _write_stored_oidc_token(state_dir: Path, server_url: str, token: str) -> No
     isolated ``auth_tokens.json`` — exactly what a completed login leaves on
     disk for credential discovery to find.
 
-    :param state_dir: The isolated Omnigent state directory.
+    :param state_dir: The isolated tesseract state directory.
     :param server_url: Server URL the token is stored under.
     :param token: The session token string to store.
     :returns: None.
@@ -150,7 +150,7 @@ def test_delayed_relogin_is_rediscovered_after_bootstrap_invalidation(
     missing fallback and returns ``None`` forever, bricking the runner until
     process restart.
 
-    :param isolated_credentials: Isolated Omnigent state directory fixture.
+    :param isolated_credentials: Isolated tesseract state directory fixture.
     :returns: None.
     """
     server_url = "http://127.0.0.1:59999"
@@ -360,7 +360,7 @@ async def test_established_tunnel_survives_login_redirect_and_reconnects() -> No
 
 
 class _Ok200Handler(BaseHTTPRequestHandler):
-    """Answer 200 OK to every GET, standing in for an Omnigent endpoint."""
+    """Answer 200 OK to every GET, standing in for an tesseract endpoint."""
 
     def log_message(self, format: str, *args: object) -> None:
         """Suppress default request logging.
@@ -544,7 +544,7 @@ def test_rejection_after_bootstrap_fallback_reaches_the_resolved_provider(
     forwarding to the provider, so every retry re-sends the same revoked
     token and the runner's callbacks 401 forever.
 
-    :param isolated_credentials: Isolated Omnigent state directory fixture.
+    :param isolated_credentials: Isolated tesseract state directory fixture.
     :param monkeypatch: pytest monkeypatch fixture.
     :param mint_server: Base URL of the mint + resource server fixture.
     :returns: None.

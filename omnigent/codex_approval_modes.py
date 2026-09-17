@@ -2,7 +2,7 @@
 
 The interactive ``codex`` TUI switches approval stance through its own
 ``/permissions`` popup, NOT through the app-server ``thread/settings/update``
-RPC (that path drives model/effort but is a no-op for approval). So Omnigent's
+RPC (that path drives model/effort but is a no-op for approval). So tesseract's
 running-session switcher drives the popup by keystroke: type ``/permissions``,
 then the option's menu digit (position-independent, unlike arrow navigation),
 then confirm the sub-dialog for the ones that ask.

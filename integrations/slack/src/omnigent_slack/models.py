@@ -59,7 +59,7 @@ class ThreadKey:
 class UserConfig:
     """A Slack user's chosen agent, host, and workspace.
 
-    The Omnigent server is operator-fixed (``OMNIGENT_SERVER_URL``), so it
+    The tesseract server is operator-fixed (``OMNIGENT_SERVER_URL``), so it
     is not part of a user's config.
 
     ``host_type`` picks between the two ways a session gets a host. It is
@@ -77,7 +77,7 @@ class UserConfig:
 
 @dataclass(frozen=True, slots=True)
 class SessionRecord:
-    """A Slack thread's Omnigent session and where it runs.
+    """A Slack thread's tesseract session and where it runs.
 
     ``host_type`` is recorded per session, not just per user: it decides whether
     a later turn on this thread may launch a runner, and it must survive both a

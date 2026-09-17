@@ -1,4 +1,4 @@
-# Omnigent UBI images: server (default target) + host (`--target host`).
+# tesseract UBI images: server (default target) + host (`--target host`).
 #
 # Red Hat Universal Base Image (UBI 9) variant of the standard Dockerfile,
 # for RHEL/OpenShift environments that require UBI-compliant containers.

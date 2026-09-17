@@ -140,7 +140,7 @@ _DEFAULT_ENV_PASSTHROUGH: tuple[str, ...] = (
     "PYTHONUNBUFFERED",
     "PYTHONDONTWRITEBYTECODE",
     "PYTHONFAULTHANDLER",
-    # Omnigent session marker: always pass the "inside Omnigent" marker
+    # tesseract session marker: always pass the "inside tesseract" marker
     # through so an agent's sandboxed shell can detect the session, the
     # way CLAUDE_CODE / CODEX are visible in their agents' shells. Set on
     # the runner via runner.identity.OMNIGENT_SESSION_ENV_VAR.

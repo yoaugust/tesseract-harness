@@ -117,7 +117,7 @@ class SlackNotifier:
         if workspace:
             lines.append(f":file_folder: `{workspace}`")
         lines.append(
-            f":globe_with_meridians: <{self._session_web_link(session_id)}|Open in Omnigent>"
+            f":globe_with_meridians: <{self._session_web_link(session_id)}|Open in tesseract>"
         )
         try:
             await client.chat_postMessage(
@@ -177,7 +177,7 @@ class SlackNotifier:
             client,
             key,
             user_id,
-            "This thread's Omnigent session belongs to whoever started it, so I "
+            "This thread's tesseract session belongs to whoever started it, so I "
             "can't add your message to it. Start a new thread by mentioning me "
             "(or DM me) to get your own session.",
         )
@@ -216,7 +216,7 @@ class SlackNotifier:
         await self.post_ephemeral(client, key, user_id, text)
 
     def _session_web_link(self, session_id: str) -> str:
-        # Link to the session's conversation page in the Omnigent web UI, where a
+        # Link to the session's conversation page in the tesseract web UI, where a
         # user can continue a thread that's mid-turn in Slack (the web UI accepts
         # concurrent input and shows any pending actions).
         #

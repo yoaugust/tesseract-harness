@@ -1,5 +1,5 @@
 """End-to-end coverage for inline tool-call + result streaming under
-the Omnigent REPL.
+the tesseract REPL.
 
 Migrated to use the mock LLM server. The mock server is configured
 to return a tool call response followed by a text completion, exercising

@@ -3610,7 +3610,7 @@ def test_start_session_agy_skip_permissions(seeded_session: tuple[str, str]) -> 
     """Arming agy's DANGEROUS permission bypass rides along to the create.
 
     ``--dangerously-skip-permissions`` is agy's only pre-emptive permission
-    control and is all-or-nothing: once armed, Omnigent cannot re-gate
+    control and is all-or-nothing: once armed, tesseract cannot re-gate
     individual tools, because agy fires no pre-tool hook for it to intercept.
     The red banner is therefore the only guardrail between the user and an
     agent that edits any file and runs any command without asking — so this

@@ -1,7 +1,7 @@
 import Foundation
 
 enum WorkspaceURLExpander {
-  /// Path the Omnigent SPA is mounted at inside a Databricks workspace. Matches
+  /// Path the tesseract SPA is mounted at inside a Databricks workspace. Matches
   /// Android and Electron's `WORKSPACE_UI_PATH`.
   static let workspaceUIPath = "/omnigent"
 
@@ -59,7 +59,7 @@ enum WorkspaceURLExpander {
   /// anything else — a non-workspace host, or a URL that already carries a path (a
   /// deliberate deep link we must not override).
   ///
-  /// A bare workspace root shows the Databricks landing page, not Omnigent, so the
+  /// A bare workspace root shows the Databricks landing page, not tesseract, so the
   /// shell rewrites it. Matched by domain with no probe, mirroring Android's
   /// `databricksWorkspaceUiUrl`; query and fragment survive because `?o=<org>`
   /// selects which workspace the request lands in.

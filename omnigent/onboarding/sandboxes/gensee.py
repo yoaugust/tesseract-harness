@@ -1,7 +1,7 @@
 """Gensee managed sandbox launcher.
 
-Gensee allocates one ephemeral sandbox runtime for each managed Omnigent host.
-The runtime starts an Omnigent-compatible environment and connects back to the
+Gensee allocates one ephemeral sandbox runtime for each managed tesseract host.
+The runtime starts an tesseract-compatible environment and connects back to the
 server; lifecycle operations travel over Gensee's HTTPS control-plane API. This
 is therefore a managed-only, provider-native host launcher: it does not expose
 remote exec or the ``omnigent sandbox create`` CLI bootstrap primitives.
@@ -78,7 +78,7 @@ class _OperationDeadline:
 
 
 class GenseeSandboxLauncher(SandboxHostLauncher):
-    """Launch one ephemeral Gensee runtime per managed Omnigent host."""
+    """Launch one ephemeral Gensee runtime per managed tesseract host."""
 
     provider: ClassVar[str] = "gensee"
 

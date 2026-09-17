@@ -378,12 +378,12 @@ describe("SettingsPage", () => {
     expect(localStorage.getItem("omnigent:default-transcript-view")).toBe("terminal");
   });
 
-  it("renders the color theme dropdown, defaults to Omnigent, and applies a palette on change", () => {
+  it("renders the color theme dropdown, defaults to tesseract, and applies a palette on change", () => {
     localStorage.clear();
     renderPage("/settings/appearance");
 
     const select = screen.getByTestId("color-theme-select") as HTMLSelectElement;
-    // Nothing stored → the default (Omnigent) palette is selected and no
+    // Nothing stored → the default (tesseract) palette is selected and no
     // data-theme override is applied to the document.
     expect(select.value).toBe("omni");
     expect(document.documentElement.getAttribute("data-theme")).toBeNull();
@@ -615,7 +615,7 @@ describe("SettingsPage", () => {
     expect(localStorage.getItem("omnigent:code-font-size")).toBeNull();
     expect(localStorage.getItem("omnigent:code-font-weight")).toBeNull();
 
-    // Color theme is back to Omnigent.
+    // Color theme is back to tesseract.
     expect((screen.getByTestId("color-theme-select") as HTMLSelectElement).value).toBe("omni");
     expect(document.documentElement.getAttribute("data-theme")).toBeNull();
 

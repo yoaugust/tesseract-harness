@@ -1574,7 +1574,7 @@ class TestGateNativeTool(unittest.TestCase):
     ``_policy_evaluator`` and maps the proto verdict to ``{block, reason}``.
 
     This is the security-critical mapping: a TOOL_CALL DENY from the
-    Omnigent policy engine must become ``block=True`` so Pi refuses the
+    tesseract policy engine must become ``block=True`` so Pi refuses the
     native tool. ALLOW (and the no-evaluator path) must become
     ``block=False`` so legitimate native tool use isn't broken.
     """
@@ -3721,7 +3721,7 @@ def test_clean_pi_env_includes_omnigent_session_marker(monkeypatch) -> None:
     """The ``OMNIGENT`` session marker survives the Pi env scrub.
 
     The marker (set once on the runner) must reach the Pi CLI so the
-    shell commands Pi runs can detect they are inside an Omnigent
+    shell commands Pi runs can detect they are inside an tesseract
     session, like ``CLAUDE_CODE`` / ``CODEX``.
 
     :param monkeypatch: Pytest monkeypatch fixture.

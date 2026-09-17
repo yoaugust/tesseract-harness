@@ -34,7 +34,7 @@ from .test_native_claude_render_parity import (
     _wait_terminal_connected,
 )
 
-# A slash command that is neither a Claude Code built-in, an Omnigent-allowed
+# A slash command that is neither a Claude Code built-in, an tesseract-allowed
 # command, nor a plausible skill name -- Claude Code cannot recognize it.
 _UNKNOWN_COMMAND = "/definitely-not-a-real-command"
 

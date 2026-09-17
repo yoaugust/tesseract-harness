@@ -406,7 +406,7 @@ async def test_switch_cross_family_resets_model_but_carries_history(
 
     The model id is provider-bound so it must reset; history is NOT — the
     switch clears ``external_session_id`` and the runner rebuilds the
-    native transcript from this session's own Omnigent items, a conversion
+    native transcript from this session's own tesseract items, a conversion
     that doesn't depend on the source harness.
     """
     conv_store = _ConversationStore(conversations={"e9f8f58523cec9a57d3bdf93be543e8c": _conv()})
@@ -430,7 +430,7 @@ async def test_switch_cross_family_resets_model_but_carries_history(
     # Cross-family → reset model settings (a model id is provider-bound).
     assert call["copy_model_settings"] is False
     # Native target carries history regardless of family: the runner
-    # rebuilds the transcript from Omnigent items. False here would mean
+    # rebuilds the transcript from tesseract items. False here would mean
     # the cross-family gate regressed and the session resumes blank.
     assert call["carry_history_into_native"] is True
 

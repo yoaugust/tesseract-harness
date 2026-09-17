@@ -21,7 +21,7 @@ AcpExecutor` — the same code path a user-configured ``acp:<slug>`` agent uses.
 To promote a new ACP-speaking vendor CLI to a builtin harness, add one row and
 its docs; do not add a new inner module, registry entries, or a per-harness
 spawn-env builder. Rows own their auth and model selection (``OWN_AUTH``): no
-Omnigent credential or model override is wired, so a ``/model`` pick is
+tesseract credential or model override is wired, so a ``/model`` pick is
 rejected up front rather than silently dropped.
 
 One consequence worth knowing before adding a row: the generic ACP spawn env is
@@ -54,7 +54,7 @@ class AcpCliHarness:
     :param args: Argv appended after the binary to start the CLI's ACP stdio
         server, e.g. ``("--acp",)`` or ``("agent", "stdio")``.
     :param aliases: Accepted alternate spellings, canonicalized to the row key.
-    :param omnigent_mcp: Whether to offer Omnigent's MCP server in
+    :param omnigent_mcp: Whether to offer tesseract's MCP server in
         ``session/new``. Some vendor CLIs don't yet support session-scoped
         MCP and ignore ``mcpServers``, configuring MCP out of band instead
         (e.g. jcode reads ``~/.jcode/mcp.json``); set ``False`` for those so
@@ -90,7 +90,7 @@ ACP_CLI_HARNESSES: dict[str, AcpCliHarness] = {
     # Devin (Cognition's ``devin`` CLI) drives ``devin acp`` — its ACP stdio
     # server. Ships via a curl installer (not npm) and authenticates through its
     # own ``devin auth login``, which writes a credential file it reads back at
-    # spawn; Omnigent stores nothing. The row runs Devin's account-default model:
+    # spawn; tesseract stores nothing. The row runs Devin's account-default model:
     # a row carries no per-user model, and ``DEVIN_MODEL`` cannot reach the agent
     # (see the env note above), so pinning a model needs a user-configured
     # ``acp:<slug>`` agent whose command passes ``--model``.
@@ -101,13 +101,13 @@ ACP_CLI_HARNESSES: dict[str, AcpCliHarness] = {
             None,
             login_args=("auth", "login"),
             install_hint="curl -fsSL https://cli.devin.ai/install.sh | bash",
-            auth_hint="run `devin auth login` (Omnigent stores no Devin credential)",
+            auth_hint="run `devin auth login` (tesseract stores no Devin credential)",
         ),
         args=("acp",),
     ),
     # Grok Build (xAI's ``grok`` CLI) drives ``grok agent stdio``. Ships via a
     # curl installer (not npm) and authenticates through its own ``grok login``
-    # (xAI OAuth, device-code capable) or ``XAI_API_KEY``; Omnigent stores no
+    # (xAI OAuth, device-code capable) or ``XAI_API_KEY``; tesseract stores no
     # credential.
     "grok": AcpCliHarness(
         install=HarnessInstallSpec(
@@ -123,9 +123,9 @@ ACP_CLI_HARNESSES: dict[str, AcpCliHarness] = {
     ),
     # jcode (https://jcode.sh) drives ``jcode acp``. Ships via a curl
     # installer (not npm) and owns its provider/model config in
-    # ``~/.jcode/config.toml``; Omnigent stores no credential. Its ACP server
+    # ``~/.jcode/config.toml``; tesseract stores no credential. Its ACP server
     # ignores ``mcpServers`` in ``session/new`` (session-scoped MCP isn't
-    # supported; MCP is configured in ``~/.jcode/mcp.json``), so the Omnigent
+    # supported; MCP is configured in ``~/.jcode/mcp.json``), so the tesseract
     # MCP server is not offered.
     "jcode": AcpCliHarness(
         install=HarnessInstallSpec(

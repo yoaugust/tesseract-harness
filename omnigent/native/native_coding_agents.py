@@ -61,7 +61,7 @@ def public_agent_name(name: str | None) -> str | None:
     """Return a user-facing agent name, hiding internal native-UI wrapper names.
 
     Native coding-agent wrappers carry an internal ``<tool>-native-ui`` agent
-    name (e.g. ``pi-native-ui``) that is an Omnigent implementation detail. When
+    name (e.g. ``pi-native-ui``) that is an tesseract implementation detail. When
     such a name is projected into tool output the model reads — and may repeat
     back to the user (``sys_session_get_info`` answering "what agent are you?")
     — expose the clean public display name (e.g. ``Pi``) instead, so the

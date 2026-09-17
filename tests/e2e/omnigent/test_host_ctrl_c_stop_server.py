@@ -99,11 +99,11 @@ def _spawn_connect(
     Spawn ``omnigent host ""`` (local mode) under a real PTY.
 
     The empty positional argument selects local mode — connect spawns (or
-    reuses) the detached local Omnigent server and connects the foreground daemon
+    reuses) the detached local tesseract server and connects the foreground daemon
     to it. Databricks auth comes from the env (the ``--profile`` flag was
     removed from the omnigent CLI).
 
-    :param omnigent_python: Python interpreter with Omnigent installed.
+    :param omnigent_python: Python interpreter with tesseract installed.
     :param repo_root: Checkout root used as the subprocess cwd.
     :param env: Subprocess environment from :func:`_connect_env`.
     :returns: A live pexpect child.
@@ -222,7 +222,7 @@ def _prespawn_persistent_server(
     respawning — i.e. it reproduces "a server is already running that connect
     did not start".
 
-    :param omnigent_python: Python interpreter with Omnigent installed.
+    :param omnigent_python: Python interpreter with tesseract installed.
     :param repo_root: Checkout root used as the subprocess cwd.
     :param env: Subprocess environment (isolated HOME) from
         :func:`_connect_env`.

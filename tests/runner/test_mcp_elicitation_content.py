@@ -293,7 +293,7 @@ async def test_the_runner_events_endpoint_carries_the_content() -> None:
 
     Every other test here calls ``resolve`` directly, which is precisely the
     line the old handler never reached with content. Posting the approval the
-    way the Omnigent server posts it is what proves the handler forwards it.
+    way the tesseract server posts it is what proves the handler forwards it.
     """
     import httpx
 
@@ -405,7 +405,7 @@ async def test_a_wrongly_typed_answer_declines_rather_than_substituting() -> Non
 
 
 def _mrtr_request(schema: dict[str, Any] | None) -> dict[str, Any]:
-    """Build an ``inputRequests`` entry like the Omnigent server sends."""
+    """Build an ``inputRequests`` entry like the tesseract server sends."""
     params: dict[str, Any] = {"message": "Which environment?", "mode": "form"}
     if schema is not None:
         params["requestedSchema"] = schema

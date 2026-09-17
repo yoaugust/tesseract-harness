@@ -160,7 +160,7 @@ def test_session_start_hook_emits_conversation_url_system_message(
 
     This fails if ``omnigent claude`` stops routing the web URL
     through Claude's hook output path, leaving users with no startup
-    pointer back to the Omnigent conversation.
+    pointer back to the tesseract conversation.
     """
     monkeypatch.setattr("omnigent.harnesses.claude_native.bridge._TRUSTED_PARENT", tmp_path)
     monkeypatch.setattr("omnigent.harnesses.claude_native.bridge._BRIDGE_ROOT", tmp_path / "root")
@@ -187,7 +187,7 @@ def test_session_start_hook_emits_conversation_url_system_message(
     captured = capsys.readouterr()
     assert exit_code == 0
     assert json.loads(captured.out) == {
-        "systemMessage": "Open this session in Omnigent: http://127.0.0.1:8787/c/conv_abc"
+        "systemMessage": "Open this session in tesseract: http://127.0.0.1:8787/c/conv_abc"
     }
     assert captured.err == ""
     assert read_transcript_path(bridge_dir) == transcript_path
@@ -239,7 +239,7 @@ def test_session_start_hook_maps_workspace_hosted_server_to_ui_mount(
     assert exit_code == 0
     assert json.loads(captured.out) == {
         "systemMessage": (
-            "Open this session in Omnigent: "
+            "Open this session in tesseract: "
             "https://example.databricks.com/omnigent/c/conv_abc?o=2850744067564480"
         )
     }
@@ -251,7 +251,7 @@ def test_clear_session_start_hook_rotates_before_printing_conversation_url(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     """
-    ``/clear`` SessionStart prints the URL for the replacement Omnigent session.
+    ``/clear`` SessionStart prints the URL for the replacement tesseract session.
 
     Claude renders hook stdout immediately, before the background
     forwarder can poll the hook log. This test fails if the banner
@@ -301,7 +301,7 @@ def test_clear_session_start_hook_rotates_before_printing_conversation_url(
             """
             Return the old session snapshot.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :returns: HTTP response object.
             """
             import httpx
@@ -322,7 +322,7 @@ def test_clear_session_start_hook_rotates_before_printing_conversation_url(
             """
             Create the replacement session or transfer the terminal.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :param json: Request JSON body.
             :returns: HTTP response object.
             """
@@ -345,7 +345,7 @@ def test_clear_session_start_hook_rotates_before_printing_conversation_url(
             """
             Bind the new session or clear the old runner binding.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :param json: Request JSON body.
             :returns: HTTP response object.
             """
@@ -383,7 +383,7 @@ def test_clear_session_start_hook_rotates_before_printing_conversation_url(
     captured = capsys.readouterr()
     assert exit_code == 0
     assert json.loads(captured.out) == {
-        "systemMessage": "Open this session in Omnigent: http://127.0.0.1:8787/c/conv_new"
+        "systemMessage": "Open this session in tesseract: http://127.0.0.1:8787/c/conv_new"
     }
     assert captured.err == ""
     assert requests == [
@@ -419,7 +419,7 @@ def test_clear_session_start_hook_rotates_before_printing_conversation_url(
     # The /clear rotation gates Claude's welcome banner and must fail
     # fast — it uses _SESSION_ROTATION_TIMEOUT_S, NOT the day-long
     # permission long-poll budget. If this regresses to
-    # _PERMISSION_TIMEOUT_S (86400) an unresponsive Omnigent server would hang
+    # _PERMISSION_TIMEOUT_S (86400) an unresponsive tesseract server would hang
     # the banner for a full day instead of returning None so the
     # background forwarder can rotate.
     rotation_timeout = _FakeHttpxClient.captured_timeouts[0]
@@ -433,7 +433,7 @@ def test_fork_session_start_hook_forks_before_printing_conversation_url(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     """
-    Claude ``/fork`` SessionStart prints the URL for the forked Omnigent session.
+    Claude ``/fork`` SessionStart prints the URL for the forked tesseract session.
 
     Claude reports ``/fork``/``/branch`` as ``SessionStart`` with
     ``source=resume``. This test fails if the hook no longer detects
@@ -484,7 +484,7 @@ def test_fork_session_start_hook_forks_before_printing_conversation_url(
             """
             Return the old session snapshot.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :returns: HTTP response object.
             """
             import httpx
@@ -503,9 +503,9 @@ def test_fork_session_start_hook_forks_before_printing_conversation_url(
 
         def post(self, url: str, *, json: dict[str, object]) -> object:
             """
-            Fork the Omnigent session or transfer the terminal.
+            Fork the tesseract session or transfer the terminal.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :param json: Request JSON body.
             :returns: HTTP response object.
             """
@@ -528,7 +528,7 @@ def test_fork_session_start_hook_forks_before_printing_conversation_url(
             """
             Bind the forked session or clear the old runner binding.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :param json: Request JSON body.
             :returns: HTTP response object.
             """
@@ -589,7 +589,7 @@ def test_fork_session_start_hook_forks_before_printing_conversation_url(
     captured = capsys.readouterr()
     assert exit_code == 0
     assert json.loads(captured.out) == {
-        "systemMessage": "Open this session in Omnigent: http://127.0.0.1:8787/c/conv_fork"
+        "systemMessage": "Open this session in tesseract: http://127.0.0.1:8787/c/conv_fork"
     }
     assert captured.err == ""
     assert requests == [
@@ -614,7 +614,7 @@ def test_fork_session_start_hook_forks_before_printing_conversation_url(
     # The /fork rotation gates Claude's welcome banner and must fail
     # fast — it uses _SESSION_ROTATION_TIMEOUT_S, NOT the day-long
     # permission long-poll budget. If this regresses to
-    # _PERMISSION_TIMEOUT_S (86400) an unresponsive Omnigent server would hang
+    # _PERMISSION_TIMEOUT_S (86400) an unresponsive tesseract server would hang
     # the banner for a full day instead of returning None so the
     # background forwarder can fork.
     rotation_timeout = _FakeHttpxClient.captured_timeouts[0]
@@ -628,15 +628,15 @@ def test_resume_session_start_without_branch_marker_does_not_fork(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     """
-    Ordinary Claude resumes do not create Omnigent forks.
+    Ordinary Claude resumes do not create tesseract forks.
 
     This fails if every ``SessionStart source=resume`` starts forking
-    Omnigent sessions, which would break normal Claude resume flows.
+    tesseract sessions, which would break normal Claude resume flows.
     """
 
     class _FailingHttpxClient:
         """
-        HTTP client stub that fails if fork detection makes Omnigent calls.
+        HTTP client stub that fails if fork detection makes tesseract calls.
 
         :param headers: Headers passed to :class:`httpx.Client`.
         :param timeout: Timeout passed to :class:`httpx.Client`.
@@ -698,7 +698,7 @@ def test_resume_session_start_without_branch_marker_does_not_fork(
     captured = capsys.readouterr()
     assert exit_code == 0
     assert json.loads(captured.out) == {
-        "systemMessage": "Open this session in Omnigent: http://127.0.0.1:8787/c/conv_old"
+        "systemMessage": "Open this session in tesseract: http://127.0.0.1:8787/c/conv_old"
     }
     recorded = (bridge_dir / "hooks.jsonl").read_text(encoding="utf-8")
     assert "omnigent_fork_detected" not in recorded
@@ -715,7 +715,7 @@ def test_non_session_start_hook_does_not_emit_conversation_url_context(
 
     This fails if Stop/UserPromptSubmit hooks start producing stdout,
     which Claude could interpret as hook output for events that are only
-    supposed to update Omnigent bridge state.
+    supposed to update tesseract bridge state.
     """
     bridge_dir = tmp_path / "bridge"
     payload = {"hook_event_name": "Stop"}
@@ -743,10 +743,10 @@ def test_permission_request_hook_posts_to_active_session_from_bridge_config(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     """
-    Permission command hook routes to the current active Omnigent session.
+    Permission command hook routes to the current active tesseract session.
 
     This fails if the hook bakes in the launch conversation id: after
-    Claude ``/clear`` rotates the bridge to a new Omnigent session, approval
+    Claude ``/clear`` rotates the bridge to a new tesseract session, approval
     requests would still appear on the old conversation.
     """
     posted: dict[str, object] = {}
@@ -789,9 +789,9 @@ def test_permission_request_hook_posts_to_active_session_from_bridge_config(
 
         def post(self, url: str, *, json: dict[str, object]) -> object:
             """
-            Record the outgoing Omnigent request.
+            Record the outgoing tesseract request.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :param json: Request JSON body.
             :returns: HTTP response object.
             """
@@ -852,7 +852,7 @@ def _prepare_permission_bridge(tmp_path: Path, session_id: str) -> Path:
 
     :param tmp_path: Test-scoped temp directory (already patched as the
         trusted bridge parent by the caller).
-    :param session_id: Active Omnigent session id, e.g. ``"conv_x"``.
+    :param session_id: Active tesseract session id, e.g. ``"conv_x"``.
     :returns: The prepared bridge directory.
     """
     bridge_dir = prepare_bridge_dir(
@@ -924,7 +924,7 @@ def test_permission_request_hook_retries_transport_cut_with_same_id(
             """
             Fail the first attempt at the transport layer, then succeed.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :param json: Request JSON body.
             :returns: HTTP 200 with a decision on the second attempt.
             :raises httpx.ReadError: On the first attempt.
@@ -978,7 +978,7 @@ def test_permission_request_hook_does_not_retry_rejections(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     """
-    A 4xx from the Omnigent server is a deliberate answer — no retry.
+    A 4xx from the tesseract server is a deliberate answer — no retry.
 
     Retrying a rejection (bad payload, foreign elicitation id) would
     hammer the server with a request it already refused; the hook must
@@ -1025,7 +1025,7 @@ def test_permission_request_hook_does_not_retry_rejections(
             """
             Reject every attempt with HTTP 400.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :param json: Request JSON body.
             :returns: HTTP 400 response.
             """
@@ -1186,9 +1186,9 @@ def test_build_hook_settings_omits_policy_hooks_without_omnigent_server_url(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """
-    ``build_hook_settings`` omits policy hooks when no Omnigent URL is set.
+    ``build_hook_settings`` omits policy hooks when no tesseract URL is set.
 
-    Without an Omnigent server there are no policies to evaluate; registering
+    Without an tesseract server there are no policies to evaluate; registering
     the hooks would cause no-op subprocesses on every tool call.
     """
     monkeypatch.setattr("omnigent.harnesses.claude_native.bridge._TRUSTED_PARENT", tmp_path)
@@ -1207,7 +1207,7 @@ def test_build_hook_settings_omits_policy_hooks_without_omnigent_server_url(
     for entry in hooks.get("PostToolUse", []):
         cmd = entry["hooks"][0]["command"]
         assert "evaluate-policy" not in cmd, (
-            "Policy evaluation hook should not be registered without Omnigent URL"
+            "Policy evaluation hook should not be registered without tesseract URL"
         )
 
 
@@ -1264,9 +1264,9 @@ def test_evaluate_policy_pre_tool_use_converts_and_returns_deny(
 
         def post(self, url: str, *, json: dict[str, object]) -> object:
             """
-            Record the outgoing Omnigent request and return a DENY verdict.
+            Record the outgoing tesseract request and return a DENY verdict.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :param json: Request JSON body (EvaluationRequest).
             :returns: HTTP response object with EvaluationResponse.
             """
@@ -1443,9 +1443,9 @@ def test_evaluate_policy_post_tool_use_converts_and_returns_context(
 
         def post(self, url: str, *, json: dict[str, object]) -> object:
             """
-            Record the outgoing Omnigent request and return a DENY verdict.
+            Record the outgoing tesseract request and return a DENY verdict.
 
-            :param url: Target Omnigent URL.
+            :param url: Target tesseract URL.
             :param json: Request JSON body (EvaluationRequest).
             :returns: HTTP response with EvaluationResponse.
             """

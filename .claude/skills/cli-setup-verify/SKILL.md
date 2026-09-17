@@ -1,11 +1,11 @@
 ---
 name: cli-setup-verify
-description: Verify the Omnigent CLI's setup/onboarding flow, terminal UI/UX, and critical user journeys in a completely isolated, reproducible loop. Drives the real `omnigent` binary through a PTY (pexpect) inside a throwaway OMNIGENT_CONFIG_HOME / OMNIGENT_DATA_DIR sandbox that never touches the user's real ~/.omnigent, captures ANSI-stripped frames for UX inspection, and proves a change is verifiable via a before→fix→after baseline diff. Load when developing or reviewing a CLI setup/onboarding/REPL/picker change (omnigent/cli.py, omnigent/onboarding/*, omnigent/repl/*, scripts/install_oss.sh), reproducing a cold-start/first-run UX bug, or confirming a fix actually lands. Several agents can run it concurrently on separate worktrees.
+description: Verify the tesseract CLI's setup/onboarding flow, terminal UI/UX, and critical user journeys in a completely isolated, reproducible loop. Drives the real `omnigent` binary through a PTY (pexpect) inside a throwaway OMNIGENT_CONFIG_HOME / OMNIGENT_DATA_DIR sandbox that never touches the user's real ~/.omnigent, captures ANSI-stripped frames for UX inspection, and proves a change is verifiable via a before→fix→after baseline diff. Load when developing or reviewing a CLI setup/onboarding/REPL/picker change (omnigent/cli.py, omnigent/onboarding/*, omnigent/repl/*, scripts/install_oss.sh), reproducing a cold-start/first-run UX bug, or confirming a fix actually lands. Several agents can run it concurrently on separate worktrees.
 ---
 
-# Verifying the Omnigent CLI setup & UX in a closed loop
+# Verifying the tesseract CLI setup & UX in a closed loop
 
-The Omnigent CLI's first impression is: `curl | sh` → run `omnigent` → pick a
+The tesseract CLI's first impression is: `curl | sh` → run `omnigent` → pick a
 model credential → start a session. This skill lets an agent **enter that flow,
 examine the UI/UX, and prove whether a change is verifiable** — without a
 browser, without real credentials, and **without ever touching the developer's

@@ -89,7 +89,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 # A Claude-family model the gateway serves only on its Anthropic surface.
 _CLAUDE_MODEL = "claude-fable-5-1"
 
-# Wide PTY so the CLI's "Omnigent: <url>/c/<id>" line and pi's status bar (which
+# Wide PTY so the CLI's "tesseract: <url>/c/<id>" line and pi's status bar (which
 # echoes the resolved model) are not wrapped/truncated.
 _PTY_ROWS = 50
 _PTY_COLS = 220
@@ -111,7 +111,7 @@ _STALE_ENV_VARS = (
     "https_proxy",
 )
 
-# pi prints "Omnigent: <url>/c/<id>"; its id is a bare 32-hex. Keep the claude/
+# pi prints "tesseract: <url>/c/<id>"; its id is a bare 32-hex. Keep the claude/
 # codex "conv_<hex>" form too so the matcher is harness-agnostic.
 _CONV_ID_RE = re.compile(r"/c/(conv_[0-9a-f]+|[0-9a-f]{32})")
 
@@ -470,7 +470,7 @@ def test_facet_a_live_pi_cli_gateway_claude_404_journey(fake_gateway: str) -> No
     threading.Thread(target=_drain, name=f"pi-pty-drain-{pid}", daemon=True).start()
 
     try:
-        # 1. The CLI prints "Omnigent: <url>/c/<conv>" once the session exists.
+        # 1. The CLI prints "tesseract: <url>/c/<conv>" once the session exists.
         conv = str(
             _wait_for(
                 lambda: _match_conv(_output()), timeout=160, what="conversation id", tail=_output

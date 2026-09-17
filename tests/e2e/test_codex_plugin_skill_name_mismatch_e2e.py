@@ -129,7 +129,7 @@ class _SpecStub:
 
 
 class _ServerClient:
-    """Fake Omnigent server client returning a fixed session snapshot."""
+    """Fake tesseract server client returning a fixed session snapshot."""
 
     def __init__(self, workspace: str) -> None:
         """:param workspace: Session workspace path to report."""
@@ -259,7 +259,7 @@ async def test_codex_home_and_exposed_name_agree(
 
     ``populate_codex_skills_from_bundle`` decides what the actual codex
     runtime can load (``CODEX_HOME/skills/<dir>``). Whatever name any
-    Omnigent surface exposes for the installed plugin skill (claude-family
+    tesseract surface exposes for the installed plugin skill (claude-family
     menus namespace it ``<plugin>:<skill>``), the codex runtime must be able
     to load that same name — the reported contract's "the name shown to the model/user
     should be the same name that the Codex runtime can load, or the resolver

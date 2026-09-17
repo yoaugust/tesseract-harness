@@ -312,7 +312,7 @@ class SessionStatusPoller:
         self._pane_pid_getter = pane_pid_getter
         # Claude's own session uuid, resolved lazily from the bridge.
         self._session_id_getter = session_id_getter
-        # The Omnigent conversation id this poller watches — for debug-log
+        # The tesseract conversation id this poller watches — for debug-log
         # attribution only (distinct from Claude's session uuid above).
         self._omnigent_session_id = omnigent_session_id
         self._config_dir = config_dir

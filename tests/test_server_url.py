@@ -1,6 +1,6 @@
 """Tests for the :class:`omnigent.util.server_url.ServerUrl` value type.
 
-The one representation of an Omnigent server URL: requests target
+The one representation of an tesseract server URL: requests target
 ``api_base``, user-facing messages show ``display``. These tests pin the
 mapping between the two and the ``?o=`` (SPOG workspace selector)
 threading, so a regression can't leak the internal API mount back into

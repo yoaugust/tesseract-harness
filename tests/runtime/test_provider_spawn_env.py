@@ -1488,7 +1488,7 @@ def test_kimi_no_provider_emits_no_gateway_vars(config_home: Path) -> None:
 
     A regression here would either steal an ambient OPENAI_API_KEY (mis-billing)
     or point at a stale URL the user never configured. Upstream kimi reads its
-    provider config from ``~/.kimi-code/config.toml``; Omnigent never injects."""
+    provider config from ``~/.kimi-code/config.toml``; tesseract never injects."""
     _write_config(config_home, {"providers": {}})
     spec = _make_spec(harness="kimi")
 

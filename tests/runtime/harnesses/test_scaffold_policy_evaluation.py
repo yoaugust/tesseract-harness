@@ -78,7 +78,7 @@ async def test_evaluate_policy_round_trip(_turn_ctx: TurnContext) -> None:
         "The evaluate_policy method should emit an upstream SSE event."
     )
     # The event must carry the exact evaluation_id, phase, and data
-    # so the runner can route the request to the Omnigent server.
+    # so the runner can route the request to the tesseract server.
     assert emitted.evaluation_id == eval_id
     assert emitted.phase == phase
     assert emitted.data == data

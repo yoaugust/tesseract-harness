@@ -22,7 +22,7 @@ import { SetupTerminalStep } from "@/pages/onboarding/SetupTerminalStep";
 
 /**
  * Outcome of a connect attempt. `needsConfirm` → the URL doesn't look like an
- * Omnigent server (re-try with force); `error` → the connect was rejected and
+ * tesseract server (re-try with force); `error` → the connect was rejected and
  * the message should be shown; neither → navigation is underway.
  */
 export interface ConnectResult {
@@ -44,7 +44,7 @@ export interface ServerSelectorV2Setup {
   /** Organization-provided server URLs. */
   managedServers: string[];
   /** Persist + navigate to a server URL. Resolves `{needsConfirm}` when the URL
-   *  doesn't look like an Omnigent server (call again with force), or `{error}`
+   *  doesn't look like an tesseract server (call again with force), or `{error}`
    *  when the connect was rejected — so the step can show it rather than
    *  silently doing nothing. Navigation on success replaces this page. */
   onConnect: (url: string, force?: boolean) => Promise<ConnectResult>;

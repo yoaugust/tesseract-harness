@@ -176,13 +176,13 @@ def register_hooks_routes(
 
         Auth: standard session ACL — the wrapper's outbound headers
         (``ap_auth_headers`` in :func:`build_hook_settings`) carry
-        the same Bearer token used for every other Omnigent request. For
+        the same Bearer token used for every other tesseract request. For
         local-server mode (no auth provider), unauth'd calls are
         allowed.
 
         :param request: FastAPI request — body is Claude Code's
             PermissionRequest payload as JSON.
-        :param session_id: Omnigent conversation id from the URL path.
+        :param session_id: tesseract conversation id from the URL path.
         :returns: Claude PermissionRequest hookSpecificOutput JSON,
             or ``200`` with empty body on timeout (fail-ask).
         :raises OmnigentError: 404 if the session doesn't exist,
@@ -586,7 +586,7 @@ def register_hooks_routes(
 
         :param request: FastAPI request — body is the
             ``EvaluationRequest`` JSON envelope.
-        :param session_id: Omnigent conversation id from the URL path.
+        :param session_id: tesseract conversation id from the URL path.
         :returns: ``EvaluationResponse`` JSON with ``result``,
             ``reason``, and optional ``data``.
         :raises OmnigentError: 404 if the session doesn't exist,
@@ -1045,7 +1045,7 @@ def register_hooks_routes(
 
         :param request: FastAPI request carrying the Codex JSON-RPC
             request envelope.
-        :param session_id: Omnigent conversation id from the URL path.
+        :param session_id: tesseract conversation id from the URL path.
         :returns: Codex JSON-RPC ``result`` payload for the forwarded
             request, or ``200`` with empty body on timeout/disconnect.
         :raises OmnigentError: 404 if the session does not exist,
@@ -1136,7 +1136,7 @@ def register_hooks_routes(
         :class:`~omnigent.server.schemas.ElicitationRequestParams` dict.
 
         :param request: FastAPI request carrying the agy elicitation body.
-        :param session_id: Omnigent conversation id from the URL path.
+        :param session_id: tesseract conversation id from the URL path.
         :returns: ``ElicitationResult`` JSON on user verdict; ``200`` with
             empty body on timeout/disconnect (bridge interprets as ``None``).
         :raises OmnigentError: 404 if the session does not exist, 400 if
@@ -1234,7 +1234,7 @@ def register_hooks_routes(
         :param request: FastAPI request carrying the detected prompt
             (``elicitation_id`` plus the ``message`` / ``content_preview`` /
             ``operation_type`` to render).
-        :param session_id: Omnigent conversation id from the URL path.
+        :param session_id: tesseract conversation id from the URL path.
         :returns: An ``ElicitationResult`` (``{"action": …}``) on a web
             verdict, or ``200`` with empty body on TUI-resolution / timeout /
             disconnect.
@@ -1352,7 +1352,7 @@ def register_hooks_routes(
         :param request: FastAPI request carrying the detected prompt
             (``elicitation_id``, ``message``, ``content_preview``,
             ``operation_type``, optional ``agent`` / ``policy_name``).
-        :param session_id: Omnigent conversation id from the URL path.
+        :param session_id: tesseract conversation id from the URL path.
         :returns: An ``ElicitationResult`` (``{"action": …}``) on a web verdict,
             or ``200`` with empty body on TUI-resolution / timeout / disconnect.
         :raises OmnigentError: 404 if the session does not exist, 400 if the

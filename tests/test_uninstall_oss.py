@@ -74,9 +74,9 @@ def test_uninstall_script_removes_profile_block_and_runs_wheel_last(tmp_path: Pa
     profile = home / ".zshrc"
     profile.write_text(
         "keep\n"
-        "# >>> Omnigent installer >>>\n"
+        "# >>> tesseract installer >>>\n"
         'export PATH="/fake/bin:$PATH"\n'
-        "# <<< Omnigent installer <<<\n"
+        "# <<< tesseract installer <<<\n"
         "keep2\n"
     )
     fake_bin, uv_log = _fake_uv(tmp_path)
@@ -88,7 +88,7 @@ def test_uninstall_script_removes_profile_block_and_runs_wheel_last(tmp_path: Pa
     assert result.returncode == 0, result.stderr
     payload = json.loads(result.stdout)
     assert payload["summary"]["done"] >= 2
-    assert "Omnigent installer" not in profile.read_text()
+    assert "tesseract installer" not in profile.read_text()
     assert profile.read_text() == "keep\nkeep2\n"
     assert uv_log.read_text().strip() == "tool uninstall omnigent"
     assert list(home.glob(".zshrc.omnigent.bak.*"))
@@ -100,9 +100,9 @@ def test_uninstall_script_bare_command_is_dry_run(tmp_path: Path) -> None:
     profile = home / ".zshrc"
     profile.write_text(
         "keep\n"
-        "# >>> Omnigent installer >>>\n"
+        "# >>> tesseract installer >>>\n"
         'export PATH="/fake/bin:$PATH"\n'
-        "# <<< Omnigent installer <<<\n"
+        "# <<< tesseract installer <<<\n"
         "keep2\n"
     )
     fake_bin, uv_log = _fake_uv(tmp_path)
@@ -113,7 +113,7 @@ def test_uninstall_script_bare_command_is_dry_run(tmp_path: Path) -> None:
     assert "reported: profile_block" in result.stdout
     assert "reported: wheel" in result.stdout
     assert "Preview only" in result.stdout
-    assert profile.read_text().startswith("keep\n# >>> Omnigent installer >>>")
+    assert profile.read_text().startswith("keep\n# >>> tesseract installer >>>")
     assert not uv_log.exists()
 
 
@@ -148,9 +148,9 @@ def test_uninstall_script_purge_without_target_also_removes_cli(tmp_path: Path) 
     profile = home / ".zshrc"
     profile.write_text(
         "keep\n"
-        "# >>> Omnigent installer >>>\n"
+        "# >>> tesseract installer >>>\n"
         'export PATH="/fake/bin:$PATH"\n'
-        "# <<< Omnigent installer <<<\n"
+        "# <<< tesseract installer <<<\n"
         "keep2\n"
     )
     fake_bin, uv_log = _fake_uv(tmp_path)
@@ -161,7 +161,7 @@ def test_uninstall_script_purge_without_target_also_removes_cli(tmp_path: Path) 
 
     assert result.returncode == 0, result.stderr
     assert not state.exists()
-    assert "Omnigent installer" not in profile.read_text()
+    assert "tesseract installer" not in profile.read_text()
     assert uv_log.read_text().strip() == "tool uninstall omnigent"
 
 
@@ -172,14 +172,14 @@ def test_uninstall_script_purge_uses_unique_backup_paths_for_multiple_trees(
     state = home / ".omnigent"
     workspace = home / "omnigent"
     linux_desktop_dirs = (
-        home / ".config" / "Omnigent",
-        home / ".cache" / "Omnigent",
-        home / ".local" / "state" / "Omnigent",
+        home / ".config" / "tesseract",
+        home / ".cache" / "tesseract",
+        home / ".local" / "state" / "tesseract",
     )
     mac_desktop_dirs = (
-        home / "Library" / "Application Support" / "Omnigent",
-        home / "Library" / "Caches" / "Omnigent",
-        home / "Library" / "Logs" / "Omnigent",
+        home / "Library" / "Application Support" / "tesseract",
+        home / "Library" / "Caches" / "tesseract",
+        home / "Library" / "Logs" / "tesseract",
     )
     for directory in (state, workspace, *linux_desktop_dirs, *mac_desktop_dirs):
         directory.mkdir(parents=True)
@@ -212,9 +212,9 @@ def test_uninstall_script_refuses_tampered_profile_and_skips_wheel(tmp_path: Pat
     home = tmp_path / "home"
     home.mkdir()
     original_block = (
-        "# >>> Omnigent installer >>>\n"
+        "# >>> tesseract installer >>>\n"
         'export PATH="/fake/bin:$PATH"\n'
-        "# <<< Omnigent installer <<<\n"
+        "# <<< tesseract installer <<<\n"
     )
     profile = home / ".zshrc"
     profile.write_text(original_block.replace("/fake/bin", "/tampered/bin"))
@@ -513,9 +513,9 @@ def test_uninstall_script_removes_fish_profile_blocks(tmp_path: Path) -> None:
     fish_conf.parent.mkdir(parents=True)
     fish_confd.parent.mkdir(parents=True)
     block = (
-        "# >>> Omnigent installer >>>\n"
+        "# >>> tesseract installer >>>\n"
         "set -gx PATH /fake/bin $PATH\n"
-        "# <<< Omnigent installer <<<\n"
+        "# <<< tesseract installer <<<\n"
     )
     fish_conf.write_text(f"keep\n{block}keep2\n")
     fish_confd.write_text(f"before\n{block}after\n")
@@ -646,9 +646,9 @@ def test_uninstall_script_rerun_is_idempotent(tmp_path: Path) -> None:
     profile = home / ".zshrc"
     profile.write_text(
         "keep\n"
-        "# >>> Omnigent installer >>>\n"
+        "# >>> tesseract installer >>>\n"
         'export PATH="/fake/bin:$PATH"\n'
-        "# <<< Omnigent installer <<<\n"
+        "# <<< tesseract installer <<<\n"
     )
     fake_bin, _ = _fake_uv(tmp_path)
     path = f"{fake_bin}:{os.environ.get('PATH', '')}"
@@ -658,4 +658,4 @@ def test_uninstall_script_rerun_is_idempotent(tmp_path: Path) -> None:
 
     assert first.returncode == 0, first.stderr
     assert second.returncode == 0, second.stderr
-    assert "Omnigent installer" not in profile.read_text()
+    assert "tesseract installer" not in profile.read_text()

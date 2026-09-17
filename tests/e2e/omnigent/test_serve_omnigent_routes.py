@@ -4,10 +4,10 @@ Migrated to mock LLM: the test only boots the server and probes
 HTTP routes -- no LLM calls are made, so mock credentials suffice.
 
 **What breaks if this fails:**
-- The Omnigent mode dispatch site at ``_serve_agent`` stops calling into
+- The tesseract mode dispatch site at ``_serve_agent`` stops calling into
   omnigent and falls back to the legacy ``create_app``.
 - The shim's ``_omnigent_register_yaml_bundle`` stops registering
-  the synthesized bundle with Omnigent' ``AgentStore``.
+  the synthesized bundle with tesseract' ``AgentStore``.
 - The shim's YAML translation pipeline regresses.
 """
 
@@ -80,7 +80,7 @@ def _wait_for_health(
     timeout: float,
     proc: subprocess.Popen[str],
 ) -> None:
-    """Poll Omnigent' ``/health`` until the server responds 200."""
+    """Poll tesseract' ``/health`` until the server responds 200."""
     deadline = time.monotonic() + timeout
     last_error: str | None = None
     while time.monotonic() < deadline:

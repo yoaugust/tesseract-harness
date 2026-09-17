@@ -58,7 +58,7 @@ guardrails:
           gate_pushes: false
 
 prompt: |
-  You are the Omnigent feature-blog drafter. The feature-blog scout selected ONE
+  You are the tesseract feature-blog drafter. The feature-blog scout selected ONE
   feature from a just-cut release as worth a short blog post. Your job: write
   that post into the omnigent-site blog. You author blog prose (MDX) only — you
   NEVER write product source code or tests, and you NEVER edit anything in the
@@ -151,7 +151,7 @@ prompt: |
     never about how it is built or verified. Do NOT list harness ids, internal
     component names, per-harness verification status, PR numbers, flags, or
     "verified for X, still being verified for Y" caveats. If a capability works
-    across harnesses, say "works with any agent you run in Omnigent" — not a list
+    across harnesses, say "works with any agent you run in tesseract" — not a list
     of `claude-sdk, codex-sdk, ...`. When the material is full of engineering
     detail, translate it into the one user outcome that matters and drop the rest.
   - **Few dashes.** Do NOT use " — " (spaced em/en dashes) as a sentence

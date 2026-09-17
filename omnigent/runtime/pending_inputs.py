@@ -2,7 +2,7 @@
 
 Backs the optimistic "queued message" bubble for native-terminal
 sessions (claude-native / codex-native) so it survives a client
-re-bind. On those sessions the Omnigent server does NOT persist a web-typed
+re-bind. On those sessions the tesseract server does NOT persist a web-typed
 user message at POST time — the message is forwarded into the vendor
 TUI and the transcript forwarder later mirrors it back as the single
 durable writer (see ``_dispatch_session_event_to_runner``). Until that
@@ -49,7 +49,7 @@ bubble always renders the just-persisted content regardless.
 
 Limitations (identical to :mod:`pending_elicitations`):
 
-* In-memory only; multi-replica Omnigent deploys would each see their own
+* In-memory only; multi-replica tesseract deploys would each see their own
   slice. Session events are already process-affine (``session_stream``
   is in-process with no replay, and a session's runner relay + SSE
   subscribers live on one process), so this rides the same affinity.

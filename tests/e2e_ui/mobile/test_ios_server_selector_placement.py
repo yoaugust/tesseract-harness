@@ -9,7 +9,7 @@ uses) and stops requesting the floating pill over the chat surface on shells
 that host that picker.
 
 The pill itself is native SwiftUI chrome (``ServerSwitcher`` in
-``web/ios/Omnigent/WebShellView.swift``) that Playwright cannot render, but
+``web/ios/tesseract/WebShellView.swift``) that Playwright cannot render, but
 its placement is a web-visible contract:
 
 * the shell pushes the pill's exact footprint over the bridge
@@ -51,7 +51,7 @@ _MOBILE_VIEWPORT: ViewportSize = {"width": 390, "height": 844}
 _SAFE_TOP_PX = 59
 
 # The native bars' footprints the iOS shell pushes over the bridge — mirror of
-# InsetMetrics in web/ios/Omnigent/WebShellView.swift:
+# InsetMetrics in web/ios/tesseract/WebShellView.swift:
 #   topBar    = serverSwitcherHeight (28) + serverSwitcherTopPadding (8) = 36
 #   bottomBar = barSegmentHeight (34) + barCapsulePadding*2 (8)
 #               + barBottomPadding (6) = 48
@@ -135,7 +135,7 @@ def _switcher_band(inner_width: float) -> dict[str, float]:
     """Compute the native server-switcher pill's floating band, in CSS px.
 
     Mirrors ``ServerSwitcherMetrics.maxWidth`` and the ``.padding(.top, 8)`` /
-    28 px height placement in ``web/ios/Omnigent/WebShellView.swift``: the
+    28 px height placement in ``web/ios/tesseract/WebShellView.swift``: the
     pill is horizontally centered at ``min(172, max(120, 0.38 * width))`` wide,
     floating ``serverSwitcherTopPadding`` below the OS safe-area inset.
 

@@ -1,7 +1,7 @@
-"""Startup banner builder for the Omnigent REPL and onboarding wizard.
+"""Startup banner builder for the tesseract REPL and onboarding wizard.
 
 Migrated from the legacy ``omnigent.inner.cli`` module during the
-``--no-sessions-api`` sunset so that the Omnigent REPL and onboarding wizard can
+``--no-sessions-api`` sunset so that the tesseract REPL and onboarding wizard can
 continue rendering the mascot-art welcome box without pulling in
 the legacy CLI.
 """

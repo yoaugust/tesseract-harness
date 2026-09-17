@@ -1,4 +1,4 @@
-"""The Omnigent brand wordmark and Otto lockup for CLI output.
+"""The tesseract brand wordmark and Otto lockup for CLI output.
 
 A bold "ANSI-Shadow" block-letter ``omnigent`` wordmark — the canonical
 figlet font with one duplicate body row dropped (5 rows), so every letter

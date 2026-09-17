@@ -8,7 +8,7 @@ still picks up openai-agents without needing the ``claude`` / ``codex``
 / ``pi`` binaries.
 
 **What breaks if this fails:**
-- Omnigent' YAML spec parser regresses on ``tools.*`` entries
+- tesseract' YAML spec parser regresses on ``tools.*`` entries
   (``function`` / ``cancellable_function`` types).
 - The wrapped harness loses its MCP tool bridging or its
   prompt-construction path.

@@ -1,11 +1,11 @@
-"""Codex Code hook entrypoint for native Omnigent policy enforcement.
+"""Codex Code hook entrypoint for native tesseract policy enforcement.
 
 Registered as the ``PreToolUse`` / ``PostToolUse`` command hook in the
 per-session private ``CODEX_HOME`` (see
 :mod:`omnigent.harnesses.codex_native.app_server`). Codex spawns this module as
 a short subprocess before/after each built-in tool call, piping the hook
 payload on stdin and reading a verdict on stdout. The conversion to/from
-the Omnigent policy schema is shared with the Claude-native hook via
+the tesseract policy schema is shared with the Claude-native hook via
 :mod:`omnigent.native.native_policy_hook`.
 """
 
@@ -75,7 +75,7 @@ def main(argv: list[str] | None = None) -> int:
 def _main_evaluate_policy(argv: list[str]) -> int:
     """
     Evaluate a Codex ``PreToolUse`` / ``PostToolUse`` /
-    ``UserPromptSubmit`` hook against Omnigent policies.
+    ``UserPromptSubmit`` hook against tesseract policies.
 
     Reads the hook JSON payload from stdin, converts it into the
     proto-compatible ``EvaluationRequest`` schema via
@@ -98,7 +98,7 @@ def _main_evaluate_policy(argv: list[str]) -> int:
     OPEN. Conditions that mean the session simply is not governed — no
     bridge state, no ``ap_server_url``, an unparseable payload, or an
     ``mcp__omnigent__*`` tool already gated on the relay path — still
-    return exit 0 with no output ("no opinion") so non-Omnigent tool calls
+    return exit 0 with no output ("no opinion") so non-tesseract tool calls
     are never blocked. The complementary fail-loud guard — asserting the
     hook is actually registered and trusted — lives at session startup in
     :mod:`omnigent.harnesses.codex_native.app_server`, not here, because a
@@ -183,14 +183,14 @@ def _main_evaluate_policy(argv: list[str]) -> int:
     if resp is None:
         return _fail_closed(api_error or (reauth.failure_reason if reauth else None))
     if not resp.content:
-        print("omnigent codex evaluate-policy hook: empty Omnigent response", file=sys.stderr)
+        print("omnigent codex evaluate-policy hook: empty tesseract response", file=sys.stderr)
         return _fail_closed()
 
     try:
         eval_response = resp.json()
     except json.JSONDecodeError:
         print(
-            "omnigent codex evaluate-policy hook: malformed Omnigent response",
+            "omnigent codex evaluate-policy hook: malformed tesseract response",
             file=sys.stderr,
         )
         return _fail_closed()

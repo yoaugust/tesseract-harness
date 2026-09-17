@@ -3,7 +3,7 @@
 The runner injects MCP tool schemas into the harness request body
 right before forwarding (designs/RUNNER_MCP.md §Schema injection).
 The merge must append, not replace, so builtins / client-side tools
-from the Omnigent server survive. A future refactor that swaps ``+`` for
+from the tesseract server survive. A future refactor that swaps ``+`` for
 ``=`` would silently clobber those tools — these tests fail loudly
 on that regression.
 """
@@ -26,7 +26,7 @@ def _schema(name: str) -> dict[str, Any]:
 
 
 def test_inject_appends_after_existing_tools() -> None:
-    """MCP schemas land AFTER the Omnigent server's tools, in order.
+    """MCP schemas land AFTER the tesseract server's tools, in order.
 
     Order matters: the harness's tool list defines a deterministic
     iteration order downstream; flipping it could change which tool

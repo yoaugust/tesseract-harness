@@ -1,8 +1,8 @@
 """CodexExecutor: run agents through the Codex App Server.
 
 This executor keeps one long-lived ``codex app-server`` subprocess per
-Omnigent session, persists the Codex thread across turns, and exposes
-Omnigent tools to Codex as App Server ``dynamicTools``.
+tesseract session, persists the Codex thread across turns, and exposes
+tesseract tools to Codex as App Server ``dynamicTools``.
 """
 
 from __future__ import annotations
@@ -131,7 +131,7 @@ _STDERR_CHUNK_LIMIT = 65536
 _STREAM_READ_CHUNK_SIZE = 65536
 # Files symlinked from the real CODEX_HOME into the per-session temp home.
 # Symlinks (not copies) so credential refreshes in the real home propagate
-# to running sessions without any action from Omnigent. ``.credentials.json``
+# to running sessions without any action from tesseract. ``.credentials.json``
 # is codex's OAuth store for remote (``url =``) MCP servers; without it a
 # private home starts those servers unauthenticated while stdio ones work.
 # ``memories_1.sqlite`` is Codex's memories database; without it a private
@@ -494,7 +494,7 @@ def _clean_codex_env(extra_allow: Iterable[str] = ()) -> dict[str, str]:
     separately.
 
     The filtered dict is also the executor's own view of its launch, not just
-    the subprocess env: the app-server session reads Omnigent's per-session
+    the subprocess env: the app-server session reads tesseract's per-session
     codex signals back out of it, so those names have to survive the filter
     (see :data:`_CODEX_OMNIGENT_LAUNCH_ENV_VARS`).
 
@@ -729,9 +729,9 @@ def populate_codex_skills_from_bundle(
 
 def _is_omnigent_private_codex_home(path: Path) -> bool:
     """
-    Return whether *path* is an Omnigent-created private ``CODEX_HOME``.
+    Return whether *path* is an tesseract-created private ``CODEX_HOME``.
 
-    Omnigent launches Codex with private homes for session state
+    tesseract launches Codex with private homes for session state
     isolation. Those homes are not the user's source of truth for auth;
     nested launches must not treat them as the real login directory.
 
@@ -756,7 +756,7 @@ def _private_codex_home_config_source(path: Path) -> Path | None:
     """
     Infer the original config source from a private Codex home.
 
-    A parent Omnigent launch bridges ``auth.json`` and ``config.toml`` into
+    A parent tesseract launch bridges ``auth.json`` and ``config.toml`` into
     its private home as symlinks. If a nested launch inherits that private
     ``CODEX_HOME``, those symlink targets are the only durable record of a
     custom parent source.
@@ -783,7 +783,7 @@ def _resolve_codex_home_config_source(source_dir: Path, home_codex_home: Path) -
     Resolve the single Codex home to read auth/config from.
 
     User-supplied ``CODEX_HOME`` remains authoritative, except when it
-    points at an Omnigent private home from a parent session. In that
+    points at an tesseract private home from a parent session. In that
     nested case, the private home is session state, not the login source,
     so the user's normal ``~/.codex`` directory is the intended source.
 
@@ -806,9 +806,9 @@ def _codex_home_config_source_from_env() -> Path:
     """
     Return the Codex home whose auth/config should be bridged.
 
-    Codex stores subscription login state in ``CODEX_HOME``. Omnigent
+    Codex stores subscription login state in ``CODEX_HOME``. tesseract
     launches Codex with private per-session homes for isolation, then bridges
-    only auth/config from the user's source home. Nested Omnigent processes
+    only auth/config from the user's source home. Nested tesseract processes
     can inherit a parent private home, so this resolver maps that specific
     inherited session-state home back to the user's default ``~/.codex``.
 
@@ -866,7 +866,7 @@ def _populate_codex_home_config(
     :param minimal_config: Copy only auth and provider-routing config when
         ``True``. ``None`` preserves the environment-controlled behavior.
     :param inject_hooks: Skip the ``hooks.json`` symlink because the caller
-        generates a merged regular file (user hooks + Omnigent hooks) at that
+        generates a merged regular file (user hooks + tesseract hooks) at that
         path instead — see :func:`write_codex_hooks_file`. Left ``False`` when
         no hooks are injected, so the user's file stays symlinked and a
         mid-session edit to it still takes effect.
@@ -979,7 +979,7 @@ def materialize_codex_provider_config(
 
     :param codex_home: Private session ``CODEX_HOME`` directory.
     :param config_overrides: Pending Codex config override strings.
-    :param retry_policy: Omnigent retry policy to apply through Codex's native
+    :param retry_policy: tesseract retry policy to apply through Codex's native
         provider settings. ``None`` uses :class:`RetryPolicy` defaults.
     :returns: Overrides safe to retain in subprocess arguments.
     """
@@ -1115,7 +1115,7 @@ def _codex_router_hook_command(
     :param subcommand: Hook-script subcommand, e.g. ``"route-subagent"``.
     :param bridge_dir: Session bridge directory holding the router
         advertisement.
-    :param session_id: Omnigent session id, or ``None`` when the
+    :param session_id: tesseract session id, or ``None`` when the
         advertisement is expected to carry it.
     :param python_executable: Python to run; ``None`` uses
         :data:`sys.executable`.
@@ -1145,14 +1145,14 @@ def codex_router_hooks_settings(
     python_executable: str | None = None,
 ) -> dict[str, Any]:
     """
-    Build the Omnigent half of a routing ``hooks.json`` payload.
+    Build the tesseract half of a routing ``hooks.json`` payload.
 
     One event: a ``PreToolUse`` gate on the spawn tool (matched by regex
     because codex flattens the name) that asks the runner which model the
     spawn may use and rewrites / denies accordingly.
 
     :param bridge_dir: Session bridge directory.
-    :param session_id: Omnigent session id baked into the commands.
+    :param session_id: tesseract session id baked into the commands.
     :param harness: Harness label sent to the endpoint, e.g. ``"codex"``.
     :param python_executable: Python for the hook commands.
     :returns: A ``hooks.json``-shaped dict.
@@ -1193,7 +1193,7 @@ def merge_codex_user_hooks(payload: dict[str, Any], user_hooks_path: Path) -> di
     """
     Merge the user's ``hooks.json`` entries into a generated payload.
 
-    Omnigent's entries stay in first position per event so the routing
+    tesseract's entries stay in first position per event so the routing
     gate runs before user hooks; events the user declares alone are added
     wholesale. A missing or malformed user file leaves *payload*
     unchanged — routing must not break because the user's hooks file is
@@ -1247,7 +1247,7 @@ def write_codex_hooks_file(
     Write the private CODEX_HOME's single ``hooks.json`` (atomically).
 
     The one writer for every hook generator: *payloads* are merged in
-    order (Omnigent's stay in first position per event) and the user's
+    order (tesseract's stay in first position per event) and the user's
     hooks are appended last. A symlink to the user's file is replaced by
     the merged regular file, and is the merge source when
     *user_hooks_source* is not given.
@@ -1296,7 +1296,7 @@ def write_codex_router_hooks_file(
 
     :param codex_home: Private per-session ``CODEX_HOME``.
     :param bridge_dir: Session bridge directory.
-    :param session_id: Omnigent session id baked into the hook commands.
+    :param session_id: tesseract session id baked into the hook commands.
     :param harness: Harness label sent to the endpoint.
     :param python_executable: Python for the hook commands.
     :param user_hooks_source: The user's real ``hooks.json`` to merge.
@@ -1370,7 +1370,7 @@ def codex_extended_catalog_requested(env: Mapping[str, str] | None = None) -> bo
     return (source.get(CODEX_EXTENDED_CATALOG_ENV_VAR) or "").strip() == "1"
 
 
-#: Omnigent's own per-session signals for a codex launch: the subagent-router
+#: tesseract's own per-session signals for a codex launch: the subagent-router
 #: rendezvous, its session id, and the extended-catalog request. The runner sets
 #: them in the harness process env, and the executor reads them back out of
 #: ``_clean_codex_env``'s filtered copy — so they must be allowed through it or
@@ -1790,7 +1790,7 @@ def _databricks_codex_config_overrides(
         "model_supports_reasoning_summaries=true",
         (
             "model_providers.omnigent_databricks="
-            '{name="Omnigent Databricks",'
+            '{name="tesseract Databricks",'
             f"base_url={json.dumps(base_url)},"
             'auth={command="sh",'
             f'args=["-c",{auth_command_json}],'
@@ -1851,7 +1851,7 @@ def _provider_codex_config_overrides(
     overrides.append(f'model_provider="{provider_name}"')
     overrides.append(
         f"model_providers.{provider_name}="
-        '{name="Omnigent Provider",'
+        '{name="tesseract Provider",'
         f"base_url={json.dumps(base_url)},"
         'auth={command="sh",'
         f'args=["-c",{auth_command_json}],'
@@ -2242,7 +2242,7 @@ def _dynamic_tool_result_payload(result: CodexToolResult) -> CodexParams:
 class _PendingToolResult:
     """Tracks a dynamic tool invocation pending a Codex result event.
 
-    :param name: The tool name Codex asked Omnigent to run.
+    :param name: The tool name Codex asked tesseract to run.
     :param result: The raw tool result payload, or ``None`` if the tool
         hasn't completed yet.
     :param status: Classification of ``result`` (success / error / blocked).
@@ -3390,12 +3390,12 @@ class CodexExecutor(Executor):
             *gateway* — the gateway path pins its own generated provider.
         :param gateway_host: Gateway workspace host origin, e.g.
             ``"https://example.databricks.com"``.  Set from
-            ``HARNESS_CODEX_GATEWAY_HOST`` (written by the Omnigent workflow
+            ``HARNESS_CODEX_GATEWAY_HOST`` (written by the tesseract workflow
             layer). When set, skips profile host lookup and requires the
             gateway base URL and auth command values.
         :param base_url_override: Override the Codex gateway base URL instead
             of deriving it from the profile host.  Set from
-            ``HARNESS_CODEX_GATEWAY_BASE_URL`` (written by the Omnigent workflow
+            ``HARNESS_CODEX_GATEWAY_BASE_URL`` (written by the tesseract workflow
             layer). Required whenever ``gateway_host`` is set.
         :param gateway_auth_command: Shell command that prints a bearer token,
             e.g.
@@ -3407,7 +3407,7 @@ class CodexExecutor(Executor):
             ``HARNESS_CODEX_GATEWAY_AUTH_REFRESH_INTERVAL_MS``.
         :param enable_web_search: Leave Codex's built-in ``web_search`` tool
             enabled.  Set ``False`` to force the model to use only
-            Omnigent-bridged tools.
+            tesseract-bridged tools.
         :param disable_native_tools: When True, disable supported native
             Codex tools for the turn.
         :param retry_policy: The spec's ``llm.retry`` budget. Threads
@@ -3491,7 +3491,7 @@ class CodexExecutor(Executor):
             # config. On the Databricks-profile-derivation branch (no gateway
             # host or base URL supplied directly) a ``databricks-*`` default is
             # legitimate Databricks behavior; on the directly-supplied neutral
-            # gateway path the Omnigent producer must have resolved a model, and the
+            # gateway path the tesseract producer must have resolved a model, and the
             # path never falls back to a ``databricks-*`` model.
             effective_model: str
             if host is None:
@@ -3539,13 +3539,13 @@ class CodexExecutor(Executor):
                 base_url = base_url_override
                 auth_command = gateway_auth_command
                 if model is None:
-                    # Directly-supplied neutral gateway: the Omnigent producer always
+                    # Directly-supplied neutral gateway: the tesseract producer always
                     # resolves a concrete model (spec > provider default >
                     # catalog default) before spawning. Fail loud rather than
                     # silently selecting a ``databricks-*`` default.
                     raise OSError(
                         "CodexExecutor(gateway=True) with a gateway base URL requires a "
-                        "model: the Omnigent producer must resolve one before spawning."
+                        "model: the tesseract producer must resolve one before spawning."
                     )
                 effective_model = model
             # ``DATABRICKS_HOST`` is read by the Databricks ``databricks auth
@@ -3562,7 +3562,7 @@ class CodexExecutor(Executor):
             )
         if not enable_web_search:
             # Disable Codex's built-in web_search tool so the model can only reach
-            # tools exposed by Omnigent as dynamicTools. The top-level web_search
+            # tools exposed by tesseract as dynamicTools. The top-level web_search
             # key accepts "live", "cached", or "disabled".
             self._codex_config_overrides.append('web_search="disabled"')
         self._tool_executor: CodexToolExecutor | None = None

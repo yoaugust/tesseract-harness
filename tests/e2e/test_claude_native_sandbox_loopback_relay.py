@@ -14,8 +14,8 @@ consulted. ``post_evaluate_with_retry`` sees the sandbox's ``403`` as a final
 prompt is rejected before reaching the model:
 
     ● UserPromptSubmit operation blocked by hook:
-      Omnigent policy evaluation unavailable (could not reach or authenticate to
-      the Omnigent server); failing closed for this request.
+      tesseract policy evaluation unavailable (could not reach or authenticate to
+      the tesseract server); failing closed for this request.
       Detail: server returned 403: {"detail":"POST 127.0.0.1:38967/policies/evaluate
       not permitted by policy","error":"policy_denied"}
 

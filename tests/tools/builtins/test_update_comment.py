@@ -307,7 +307,7 @@ def test_no_store_configured(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Returns an error when ``get_comment_store()`` returns ``None``.
 
-    Deployments without Omnigent server do not initialise a comment store;
+    Deployments without tesseract server do not initialise a comment store;
     the tool must surface a clear message rather than raising on
     ``None.get(...)``.
     """

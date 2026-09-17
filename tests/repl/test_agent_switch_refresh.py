@@ -50,7 +50,7 @@ class _SnapshotSessions:
 
 class _SnapshotClient:
     """
-    Omnigent client stub exposing only the ``sessions.get`` surface.
+    tesseract client stub exposing only the ``sessions.get`` surface.
 
     :param snapshot: Snapshot served by ``sessions.get``.
     """
@@ -73,7 +73,7 @@ class _RaisingSessions:
 
 
 class _RaisingClient:
-    """Omnigent client stub whose ``sessions.get`` always fails."""
+    """tesseract client stub whose ``sessions.get`` always fails."""
 
     def __init__(self) -> None:
         self.sessions = _RaisingSessions()
@@ -114,7 +114,7 @@ def _make_adapter(client: object, agent_name: str = "nessie") -> _SessionsChatRe
     """
     Build a real adapter attached to an existing session id.
 
-    :param client: Omnigent client (stub) handed to the adapter.
+    :param client: tesseract client (stub) handed to the adapter.
     :param agent_name: Launch-time agent name, e.g. ``"nessie"``.
     :returns: Adapter with ``session_id`` pre-set (no HTTP issued).
     """

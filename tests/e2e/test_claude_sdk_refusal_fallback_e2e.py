@@ -5,7 +5,7 @@ prompt) and return an API *refusal*. On a refusal the CLI arms its
 refusal-fallback and re-issues the turn on a different family — Opus for the
 ``cyber`` category — resolving that family through
 ``ANTHROPIC_DEFAULT_OPUS_MODEL``. On a gateway that serves Claude under its own
-ids, that env is only set if Omnigent pins it: unpinned, the alias resolves to
+ids, that env is only set if tesseract pins it: unpinned, the alias resolves to
 a **canonical** vendor id (``claude-opus-4-8``) the gateway does not serve, so
 the fallback request fails ``model_not_found`` and the whole turn dies with
 ``inner executor error: There's an issue with the selected model

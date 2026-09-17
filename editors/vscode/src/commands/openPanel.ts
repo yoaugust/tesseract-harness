@@ -1,7 +1,7 @@
 /**
- * "Omnigent: Open" command.
+ * "tesseract: Open" command.
  *
- * The Omnigent UI renders only in the editor-beside `WebviewPanel`, owned by the
+ * The tesseract UI renders only in the editor-beside `WebviewPanel`, owned by the
  * shared `EditorPanelController`. `omnigent.open` simply ensures that panel is
  * open and revealed; the controller owns the singleton and the resolved local
  * server target.

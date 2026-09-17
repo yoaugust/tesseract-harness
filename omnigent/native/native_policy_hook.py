@@ -1,4 +1,4 @@
-"""Shared conversion between native-harness hooks and Omnigent policy events.
+"""Shared conversion between native-harness hooks and tesseract policy events.
 
 Both Claude Code and Codex expose a command-hook system whose
 ``PreToolUse`` / ``PostToolUse`` payloads use the same field names
@@ -70,12 +70,12 @@ _USER_PROMPT_SUBMIT = "UserPromptSubmit"
 # body). Mirrors the runner-side fail-closed default in
 # ``omnigent.runner.app._evaluate_policy_via_omnigent``.
 _EVAL_UNAVAILABLE_REASON = (
-    "Omnigent policy evaluation unavailable (could not reach or authenticate to the "
-    "Omnigent server); failing closed for this tool call."
+    "tesseract policy evaluation unavailable (could not reach or authenticate to the "
+    "tesseract server); failing closed for this tool call."
 )
 _EVAL_UNAVAILABLE_REQUEST_REASON = (
-    "Omnigent policy evaluation unavailable (could not reach or authenticate to the "
-    "Omnigent server); failing closed for this request."
+    "tesseract policy evaluation unavailable (could not reach or authenticate to the "
+    "tesseract server); failing closed for this request."
 )
 
 
@@ -161,14 +161,14 @@ def policy_hook_request_headers() -> dict[str, str]:
 def policy_hook_wrapper_script(server_url: str, session_id: str, hook_script_path: str) -> str:
     """Build the ``/bin/sh`` wrapper a native policy hook is launched as.
 
-    Resolves a one-shot Omnigent-server token and bakes the auth +
+    Resolves a one-shot tesseract-server token and bakes the auth +
     workspace-routing headers (via
     :func:`omnigent.cli_auth.databricks_request_headers`) into
     :data:`_AUTH_HEADERS_ENV`, so the hook's POST authenticates and routes to
     the workspace. The token is a secret, so callers MUST write the returned
     wrapper ``0o700`` (owner-only) — it is never world-readable.
 
-    :param server_url: Omnigent server base URL the hook posts to.
+    :param server_url: tesseract server base URL the hook posts to.
     :param session_id: Session / conversation id for policy evaluation.
     :param hook_script_path: Absolute path to the hook's Python entrypoint.
     :returns: Shell-script text for the wrapper (write it ``0o700``).
@@ -189,7 +189,7 @@ def policy_hook_wrapper_script(server_url: str, session_id: str, hook_script_pat
 
 
 class PolicyHookReauth:
-    """Callable that re-mints the Omnigent bearer for a policy hook subprocess.
+    """Callable that re-mints the tesseract bearer for a policy hook subprocess.
 
     The baked one-shot token dies with the ~1h Databricks OAuth lifetime; on a
     lapsed-token signal (401 or Apps ``302→/oidc/``) ``post_evaluate_with_retry``
@@ -239,7 +239,7 @@ class PolicyHookReauth:
 def policy_hook_reauth(server_url: str, headers: dict[str, str]) -> PolicyHookReauth:
     """Build a :class:`PolicyHookReauth` callable for *server_url*.
 
-    :param server_url: Omnigent server base URL the hook POSTs to.
+    :param server_url: tesseract server base URL the hook POSTs to.
     :param headers: Current (lapsed) headers; the fresh bearer is merged over
         a copy so routing headers survive.
     :returns: A :class:`PolicyHookReauth` instance. Call it to attempt a
@@ -291,9 +291,9 @@ def hook_payload_to_evaluation_request(
     Maps ``PreToolUse`` to a ``PHASE_TOOL_CALL`` event, ``PostToolUse``
     to a ``PHASE_TOOL_RESULT`` event, and ``UserPromptSubmit`` to a
     ``PHASE_REQUEST`` event (the prompt text from the payload's
-    ``prompt`` field becomes the request content). Omnigent MCP tools
+    ``prompt`` field becomes the request content). tesseract MCP tools
     (``mcp__omnigent__*``) are skipped because they are already
-    policy-checked by the relay path (``ProxyMcpManager`` → Omnigent
+    policy-checked by the relay path (``ProxyMcpManager`` → tesseract
     ``/mcp`` endpoint → ``_evaluate_tool_call_policy``); evaluating
     them here would double-count. Connector-native MCP tools
     (for example ``mcp__github__*``) still need this pre-call gate.
@@ -323,8 +323,8 @@ def hook_payload_to_evaluation_request(
             },
         }
     tool_name = payload.get("tool_name", "")
-    # Omnigent MCP tools are already policy-checked by the relay path
-    # (ProxyMcpManager → Omnigent /mcp endpoint → _evaluate_tool_call_policy).
+    # tesseract MCP tools are already policy-checked by the relay path
+    # (ProxyMcpManager → tesseract /mcp endpoint → _evaluate_tool_call_policy).
     # Skip only those here to avoid double evaluation; connector-native MCP
     # tools such as mcp__github__* must still go through this hook.
     if isinstance(tool_name, str) and tool_name.startswith("mcp__omnigent__"):
@@ -532,8 +532,8 @@ def fail_closed_hook_output(
 
 
 _EVAL_UNAVAILABLE_ASK_REASON = (
-    "Omnigent policy evaluation unavailable (could not reach or authenticate to the "
-    "Omnigent server); please approve or deny this tool call manually."
+    "tesseract policy evaluation unavailable (could not reach or authenticate to the "
+    "tesseract server); please approve or deny this tool call manually."
 )
 
 
@@ -590,7 +590,7 @@ def post_evaluate_with_retry(
     reauth: Callable[[], dict[str, str] | None] | None = None,
 ) -> tuple[httpx.Response, None] | tuple[None, str]:
     """
-    POST to the Omnigent policy evaluate endpoint, retrying on transient errors.
+    POST to the tesseract policy evaluate endpoint, retrying on transient errors.
 
     Retries on 5xx HTTP responses and connection-level errors
     (:class:`httpx.ConnectError`, :class:`httpx.ConnectTimeout`) within
@@ -620,7 +620,7 @@ def post_evaluate_with_retry(
     The caller is responsible for fail-closed handling on ``None``.
 
     :param url: Absolute URL of the evaluate endpoint.
-    :param headers: Auth headers for the Omnigent server.
+    :param headers: Auth headers for the tesseract server.
     :param eval_request: ``EvaluationRequest`` JSON body to POST.
     :param read_timeout: Per-attempt read timeout in seconds. Should be
         large (e.g. one day) to accommodate long-polling ASK gates.
@@ -676,7 +676,7 @@ def post_evaluate_with_retry(
                         headers = refreshed
                         reauthed = True
                         print(
-                            f"omnigent {hook_label}: Omnigent auth expired "
+                            f"omnigent {hook_label}: tesseract auth expired "
                             "(login redirect/401); re-minted token and retrying",
                             file=sys.stderr,
                         )
@@ -690,7 +690,7 @@ def post_evaluate_with_retry(
                 if resp.is_redirect:
                     location = resp.headers.get("location", "")
                     last_error = (
-                        f"Omnigent auth expired: HTTP {resp.status_code} login redirect"
+                        f"tesseract auth expired: HTTP {resp.status_code} login redirect"
                         + (f" to {location}" if location else "")
                     )
                     print(
@@ -708,7 +708,7 @@ def post_evaluate_with_retry(
             )
             if status < 500:
                 print(
-                    f"omnigent {hook_label}: Omnigent returned {status}"
+                    f"omnigent {hook_label}: tesseract returned {status}"
                     + (f": {body_preview}" if body_preview else ""),
                     file=sys.stderr,
                 )
@@ -717,7 +717,7 @@ def post_evaluate_with_retry(
                 time.monotonic() - attempt_started >= _EVALUATE_POLICY_HELD_POLL_FLOOR_S
             )
             print(
-                f"omnigent {hook_label}: Omnigent returned {status}"
+                f"omnigent {hook_label}: tesseract returned {status}"
                 + (
                     " after a held poll (gateway sever); re-parking"
                     if held_poll_severed
@@ -728,7 +728,7 @@ def post_evaluate_with_retry(
         except (httpx.ConnectError, httpx.ConnectTimeout) as exc:
             last_error = f"connection error: {exc}"
             print(
-                f"omnigent {hook_label}: Omnigent request failed; retrying: {exc}",
+                f"omnigent {hook_label}: tesseract request failed; retrying: {exc}",
                 file=sys.stderr,
             )
         except httpx.HTTPError as exc:
@@ -742,7 +742,7 @@ def post_evaluate_with_retry(
             )
             if not held_poll_severed:
                 print(
-                    f"omnigent {hook_label}: Omnigent request failed: {exc}",
+                    f"omnigent {hook_label}: tesseract request failed: {exc}",
                     file=sys.stderr,
                 )
                 return None, last_error

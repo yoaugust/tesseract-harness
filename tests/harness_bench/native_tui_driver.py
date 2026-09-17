@@ -305,7 +305,7 @@ class NativeTuiDriver:
             **self._resolved_env.base_env,
             "OMNIGENT_RUNNER_TUNNEL_TOKEN": binding_token,
         }
-        # Omnigent-credential natives resolve their provider from global config.
+        # tesseract-credential natives resolve their provider from global config.
         if not self._vendor.own_auth:
             base_env["OMNIGENT_CONFIG_HOME"] = str(self._write_provider_config())
         self._proc = spawn_omnigent_server(self._tmp, port, base_env, binding_token)
@@ -643,12 +643,12 @@ class NativeTuiDriver:
         return result
 
     def _drive_mcp_tool_turn(self, *, timeout: float = _TOOL_TURN_TIMEOUT_S) -> TurnResult:
-        """Call the read-only Omnigent MCP relay tool for this native harness."""
+        """Call the read-only tesseract MCP relay tool for this native harness."""
         assert self._vendor is not None
         result = TurnResult()
         if self._vendor.harness not in _NATIVE_OMNIGENT_MCP_HARNESSES:
             result.error = (
-                f"{self._vendor.harness!r} has no Omnigent MCP bridge; "
+                f"{self._vendor.harness!r} has no tesseract MCP bridge; "
                 "its relayed tools use another native mechanism"
             )
             return result

@@ -487,7 +487,7 @@ describe("workspace chrome injection wiring (src/main.js)", () => {
         "call (it was removed or commented out). That call wires the did-finish-load",
         "listener that injects WORKSPACE_CHROME_HIDE_CSS to hide the Databricks workspace",
         "top-nav/switcher in the desktop window. Without it the switcher reappears and users",
-        "can navigate out of Omnigent into other workspace apps. Re-add the call (the wiring",
+        "can navigate out of tesseract into other workspace apps. Re-add the call (the wiring",
         "is defined in src/workspace-chrome.js); do not delete this test.",
       ].join(" "),
     );

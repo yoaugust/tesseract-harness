@@ -69,7 +69,7 @@ ANTIGRAVITY_NATIVE_TERMINAL_ROLE = "antigravity-native"
 QWEN_NATIVE_TERMINAL_ROLE = "qwen-native"
 KIMI_NATIVE_TERMINAL_ROLE = "kimi-native"
 HERMES_NATIVE_TERMINAL_ROLE = "hermes-native"
-# Role marker for the embedded Omnigent REPL terminal auto-created for
+# Role marker for the embedded tesseract REPL terminal auto-created for
 # runner-hosted SDK sessions (``omnigent attach`` in a tmux pane — the
 # SDK mirror of the native terminals above). The attach WebSocket uses
 # this marker to recreate the terminal when its tmux session has died
@@ -418,7 +418,7 @@ class SessionResourceRegistry:
         """Install the PTY-activity-derived session-status publisher.
 
         The runner passes a callback that publishes a ``session.status``
-        event onto the session's SSE queue (which the Omnigent server relays
+        event onto the session's SSE queue (which the tesseract server relays
         through its normal status path). It is invoked on the event loop
         (the watcher thread hops via ``loop.call_soon_threadsafe``), so
         the callback itself may use the loop-only ``_publish_event``

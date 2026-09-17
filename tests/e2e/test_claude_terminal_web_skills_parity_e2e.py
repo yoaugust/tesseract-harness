@@ -96,7 +96,7 @@ class _SpecStub:
 
 
 class _ServerClient:
-    """Fake Omnigent server client returning a fixed session snapshot."""
+    """Fake tesseract server client returning a fixed session snapshot."""
 
     def __init__(self, workspace: str) -> None:
         """:param workspace: Session workspace path to report."""

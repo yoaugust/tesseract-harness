@@ -240,7 +240,7 @@ async def test_report_command_includes_description_arg_in_url(
 async def test_report_command_includes_version_in_url(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Omnigent version is included in the issue body when available.
+    """tesseract version is included in the issue body when available.
 
     Failure: the version field is blank, making it impossible to tell
     which release a report came from.

@@ -236,7 +236,7 @@ async def test_terminal_resource_role_moves_on_transfer(
     """
     Private terminal role markers follow terminal transfer.
 
-    Native Codex can rotate ownership between Omnigent sessions. If the role stays
+    Native Codex can rotate ownership between tesseract sessions. If the role stays
     on the old session id, a warm reattach to the new session would look like
     a generic terminal and be replaced incorrectly.
 

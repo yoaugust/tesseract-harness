@@ -2,7 +2,7 @@
 Tests for :mod:`omnigent.spec._omnigent_legacy_shim` — the
 compatibility layer that lets legacy omnigent
 ``(content, phase)`` function-policy callables run under
-Omnigent' ``(ctx, context)`` convention.
+tesseract' ``(ctx, context)`` convention.
 
 Each test pins one of the shim's contracts. The e2e integration
 that exercises the full translator → engine pipeline lives in
@@ -153,7 +153,7 @@ def test_legacy_content_tool_result_plain_string_passes_through() -> None:
 
 def test_legacy_content_tool_result_json_text_parses_to_dict() -> None:
     """
-    TOOL_RESULT: when Omnigent' raw string IS a JSON-encoded
+    TOOL_RESULT: when tesseract' raw string IS a JSON-encoded
     object, the shim parses it into the corresponding Python
     dict. Mirrors omnigent-native's
     :func:`omnigent.inner.mcp_tools._extract_call_result_payload`,
@@ -275,13 +275,13 @@ def test_legacy_context_threads_configured_phases_when_provided() -> None:
     ``context["configured_phases"]`` (notably the Databricks
     ``google_policy``) deny by default unless the caller
     advertises which phases they hooked. Without this, every
-    Google MCP write through the Omnigent denied with
+    Google MCP write through the tesseract denied with
     ``google_policy requires on=["tool_call", "tool_result"]``
     (the original bug).
 
     What breaks if this fails: any policy that uses
     ``context["configured_phases"]`` as a contract assertion
-    silently denies under Omnigent mode.
+    silently denies under tesseract mode.
     """
     engine_ctx = {"labels": {}, "conversation_id": "c_abc"}
     # ``TOOL_RESULT`` chosen because that's the phase that
@@ -339,7 +339,7 @@ def test_legacy_context_omits_tool_name_on_tool_call() -> None:
 
     The shim must mirror this so callables that branch on
     ``"tool_name" in context`` to discriminate phase behave
-    identically across native and Omnigent mode.
+    identically across native and tesseract mode.
 
     What breaks if this fails: a legacy callable that writes
     ``if "tool_name" in context:`` as shorthand for "we're on a
@@ -423,7 +423,7 @@ def test_build_wraps_legacy_callable_and_converts_args(
     ephemeral_module: Any,
 ) -> None:
     """
-    Legacy callables get wrapped. The wrapper takes Omnigent'
+    Legacy callables get wrapped. The wrapper takes tesseract'
     ``(ctx, context)`` call shape and invokes the underlying
     callable with the legacy ``(content, phase)`` shape.
 
@@ -455,7 +455,7 @@ def test_build_wraps_legacy_callable_and_converts_args(
     # Legacy callable received legacy-shaped args — verified by
     # inspecting the captured call and by the real return value.
     # The shim coerces the old {"action": ...} dict to the V0
-    # {"decision": {"result": ...}} format so the Omnigent'
+    # {"decision": {"result": ...}} format so the tesseract'
     # _coerce_to_policy_result can handle it uniformly.
     assert calls == [({"tool": "sleep", "args": {"seconds": 8}}, "tool_call")]
     assert result == {"result": "DENY", "reason": "too long"}
@@ -611,7 +611,7 @@ def test_build_forwards_reset_turn_attribute_from_legacy_callable() -> None:
     ``examples/_shared/rate_limit_policy.py`` returns an
     ``evaluate`` callable with a ``reset_turn`` attribute. The
     shim must surface that attribute on the wrapper so
-    Omnigent' :class:`FunctionPolicy.reset_turn` can find
+    tesseract' :class:`FunctionPolicy.reset_turn` can find
     and invoke it at turn boundaries.
 
     What breaks if this fails: per-turn rate-limit counters
@@ -672,7 +672,7 @@ def test_rate_limit_factory_reset_turn_propagates_through_shim_and_policy() -> N
 
     What breaks if this fails: per-turn rate limits silently
     behave as per-session limits when configured under
-    Omnigent mode. The agent runs further than the YAML author
+    tesseract mode. The agent runs further than the YAML author
     intended, with no visible deny in logs.
     """
     import asyncio

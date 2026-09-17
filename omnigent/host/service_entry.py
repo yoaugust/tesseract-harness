@@ -11,10 +11,10 @@ from omnigent.host import HOST_FATAL_EXIT_CODE
 
 def main() -> int:
     """Run the foreground host command and normalize permanent failures."""
-    parser = argparse.ArgumentParser(description="Omnigent host service")
+    parser = argparse.ArgumentParser(description="tesseract host service")
     mode = parser.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--server", help="Remote Omnigent server URL.")
-    mode.add_argument("--local", action="store_true", help="Run a local Omnigent server.")
+    mode.add_argument("--server", help="Remote tesseract server URL.")
+    mode.add_argument("--local", action="store_true", help="Run a local tesseract server.")
     args = parser.parse_args()
 
     from omnigent.cli import cli

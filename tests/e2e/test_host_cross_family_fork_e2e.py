@@ -4,7 +4,7 @@ Covers forking an openai-family source into the anthropic NATIVE harness:
 codex-native → claude-native and openai-agents (SDK) → claude-native. The
 source's history is the wrong format (or has no native transcript at all)
 for the target, so the runner must take the REBUILD path: synthesize the
-Claude transcript from the fork's copied Omnigent items
+Claude transcript from the fork's copied tesseract items
 (``_ensure_local_claude_resume_transcript``) under a freshly minted
 session uuid, then ``--resume`` it.
 
@@ -210,7 +210,7 @@ def _recall_marker_in_clone(
     """
     Ask the clone to recall the planted word and assert it surfaces.
 
-    The recall only succeeds if the source's Omnigent items were rebuilt
+    The recall only succeeds if the source's tesseract items were rebuilt
     into the clone's native transcript and resumed — a fresh launch (the
     regression) has no history and never echoes the marker.
 
@@ -233,7 +233,7 @@ def _recall_marker_in_clone(
     text = poll_marker(client, session_id=fork_id, marker=marker, timeout=180.0)
     assert marker in text, (
         f"{target_harness} clone did not recall {marker!r} (got {text!r}) — the "
-        f"{source_harness} source's Omnigent items were not rebuilt into the "
+        f"{source_harness} source's tesseract items were not rebuilt into the "
         f"clone's native transcript, so it launched fresh without history"
     )
 
@@ -250,7 +250,7 @@ def test_fork_codex_native_into_claude_native_rebuilds_history(
     The headline cross-family case: the source has a captured Codex thread
     id, but a Claude target can't resume a Codex rollout — the fork must
     skip the source-session directive and the runner must rebuild the
-    Claude transcript from the copied Omnigent items, then ``--resume`` it.
+    Claude transcript from the copied tesseract items, then ``--resume`` it.
 
     :param live_server: The test server URL.
     :param http_client: HTTP client pointed at the test server.
@@ -318,7 +318,7 @@ def test_fork_openai_sdk_source_into_claude_native_rebuilds_history(
     from the target's (anthropic), so — unlike the same-family
     ``test_fork_sdk_source_into_native_builds_history`` — the fork route
     used to refuse to carry history at all. The runner must rebuild the
-    clone's Claude transcript from the copied Omnigent items and resume it.
+    clone's Claude transcript from the copied tesseract items and resume it.
     Only the Claude CLI is needed (the source runs in-process on the
     server's runner), so this is the cross-family case that runs on hosts
     without a codex login.

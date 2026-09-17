@@ -127,7 +127,7 @@ jobs:
           else:
               # Fallback: no matching section — keep a minimal generic note.
               out.write_text(
-                  f"Omnigent VS Code extension `{version}`.\n", encoding="utf-8"
+                  f"tesseract VS Code extension `{version}`.\n", encoding="utf-8"
               )
               print(f"::warning::No '## [{version}]' CHANGELOG section found — using a generic note.")
           PY

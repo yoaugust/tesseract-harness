@@ -301,7 +301,7 @@ describe("About menu wiring", () => {
     const checkItem = findMenuItem(menu, "check_for_updates");
     aboutItem.click();
 
-    assert.equal(aboutItem.label, "About Omnigent");
+    assert.equal(aboutItem.label, "About tesseract");
     assert.equal(harness.calls.aboutOpens.length, 1);
 
     checkItem.click();
@@ -319,7 +319,7 @@ describe("About menu wiring", () => {
     const aboutItem = findMenuItem(menu, "open_about");
     aboutItem.click();
 
-    assert.equal(aboutItem.label, "About Omnigent");
+    assert.equal(aboutItem.label, "About tesseract");
     assert.equal(harness.calls.aboutOpens.length, 1);
   });
 });
@@ -427,7 +427,7 @@ describe("auto-update main-process wiring", () => {
       {
         channel: "omnigent:update-download",
         args: [],
-        message: "Download an Omnigent update?",
+        message: "Download an tesseract update?",
         prepare: () => {},
         assertRan: (harness) => {
           assert.equal(harness.calls.downloadUpdate, 1);
@@ -436,7 +436,7 @@ describe("auto-update main-process wiring", () => {
       {
         channel: "omnigent:update-install",
         args: [],
-        message: "Restart Omnigent to install an update?",
+        message: "Restart tesseract to install an update?",
         prepare: (harness) => {
           harness.autoUpdater.emit("update-downloaded", { version: "0.4.0" });
         },
@@ -448,7 +448,7 @@ describe("auto-update main-process wiring", () => {
       {
         channel: "omnigent:set-update-config",
         args: [{ mode: "manual" }],
-        message: "Change Omnigent update settings?",
+        message: "Change tesseract update settings?",
         prepare: () => {},
         assertRan: (harness) => {
           assert.equal(harness.readSettings().update_mode, "manual");
@@ -472,7 +472,7 @@ describe("auto-update main-process wiring", () => {
 
       assert.equal(harness.calls.showMessageBox.length, 1, item.channel);
       assert.equal(harness.calls.showMessageBox[0].win, harness.api.windows.keys().next().value);
-      assert.equal(harness.calls.showMessageBox[0].options.title, "Omnigent");
+      assert.equal(harness.calls.showMessageBox[0].options.title, "tesseract");
       assert.equal(harness.calls.showMessageBox[0].options.message, item.message);
       assert.deepEqual(plain(harness.calls.showMessageBox[0].options.buttons), [
         "Don't Allow",

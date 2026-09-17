@@ -4,7 +4,7 @@ Spawns Goose (``goose acp``) as a subprocess and communicates via the Agent
 Client Protocol (ACP) — a JSON-RPC 2.0 protocol over newline-delimited JSON on
 stdin/stdout. This is the *headless* Goose harness (``harness: goose``), the
 chat-first counterpart to the terminal-first ``goose-native`` TUI harness:
-output streams into the Omnigent conversation as chat, and Goose's mid-turn tool
+output streams into the tesseract conversation as chat, and Goose's mid-turn tool
 approvals surface as web elicitation cards rather than in-terminal prompts.
 
 Protocol flow (verified against Goose 1.38):
@@ -19,8 +19,8 @@ Protocol flow (verified against Goose 1.38):
   4. Re-use the same ``sessionId`` for subsequent turns (Goose retains context).
 
 Goose runs its own agent loop, tool execution, context window, and compaction
-internally. This executor translates the ACP event stream into Omnigent
-ExecutorEvents and routes Goose's permission requests through Omnigent's
+internally. This executor translates the ACP event stream into tesseract
+ExecutorEvents and routes Goose's permission requests through tesseract's
 TOOL_CALL policy + human-consent elicitation (mirroring ``QwenExecutor`` /
 ``ClaudeSDKExecutor``).
 
@@ -224,7 +224,7 @@ class GooseExecutor(Executor):
         self._cwd = cwd or os.getcwd()
         self._os_env = os_env
         # Whether to advertise ``clientCapabilities.fs`` so Goose delegates file
-        # reads/writes back to us (executed through the Omnigent OSEnvironment,
+        # reads/writes back to us (executed through the tesseract OSEnvironment,
         # which enforces the spec's sandbox read/write roots) instead of using
         # its own raw file tools. Enabled only when an os_env is configured and
         # it isn't a ``fork`` env — a forked env operates on a *copied* tree
@@ -256,14 +256,14 @@ class GooseExecutor(Executor):
         self._context_window: int | None = None
 
         # Bridges the ExecutorAdapter installs so Goose's mid-turn
-        # ``session/request_permission`` routes through Omnigent's TOOL_CALL
+        # ``session/request_permission`` routes through tesseract's TOOL_CALL
         # policy + human-consent elicitation rather than blind auto-approve.
         # ``None`` means "no bridge wired" (standalone use / unit tests), in
         # which case permission falls back to allow. See :meth:`_decide_permission`.
         self._policy_evaluator: _PolicyEvaluator | None = None
         self._elicitation_handler: _ElicitationHandler | None = None
-        # Adapter-injected tool bridge + the Omnigent-tool MCP relay it backs.
-        # Exposes Omnigent builtin tools to goose via session/new.mcpServers
+        # Adapter-injected tool bridge + the tesseract-tool MCP relay it backs.
+        # Exposes tesseract builtin tools to goose via session/new.mcpServers
         # (the shared serve-mcp relay); goose keeps its own developer tools.
         self._tool_executor: _ToolExecutor | None = None
         self._mcp = OmnigentAcpMcp(label="goose")
@@ -567,12 +567,12 @@ class GooseExecutor(Executor):
     async def _respond_to_agent_request(self, request: _AcpJsonObject) -> None:
         """Answer a server-initiated ACP request from goose.
 
-        - ``session/request_permission`` — decide via Omnigent's TOOL_CALL policy
+        - ``session/request_permission`` — decide via tesseract's TOOL_CALL policy
           + human-consent elicitation (:meth:`_decide_permission`), then select
           the matching allow/reject option. NOT a blind approve.
         - ``fs/read_text_file`` / ``fs/write_text_file`` — when fs delegation is
           advertised (an os_env is configured; see :attr:`_fs_delegation`), Goose
-          routes its file I/O here, executed through the Omnigent OSEnvironment so
+          routes its file I/O here, executed through the tesseract OSEnvironment so
           the spec's sandbox read/write roots are enforced. Off → never arrive.
         - anything else — reply with JSON-RPC ``method not found`` so goose fails
           loudly rather than acting on empty data.
@@ -1008,9 +1008,9 @@ class GooseExecutor(Executor):
 
     @staticmethod
     def _usage_from_result(result: _AcpJsonObject) -> dict[str, int] | None:
-        """Map Goose's final ``result.usage`` to Omnigent's usage keys.
+        """Map Goose's final ``result.usage`` to tesseract's usage keys.
 
-        Goose reports ``{totalTokens, inputTokens, outputTokens}``; Omnigent's
+        Goose reports ``{totalTokens, inputTokens, outputTokens}``; tesseract's
         ``TurnComplete.usage`` uses ``{input_tokens, output_tokens, total_tokens}``.
         """
         usage = result.get("usage")
@@ -1099,7 +1099,7 @@ class GooseExecutor(Executor):
         final response (``stopReason``) arrives — then yields ``TurnComplete``
         with token usage.
         """
-        # Captured for the Omnigent MCP relay set up lazily at session/new.
+        # Captured for the tesseract MCP relay set up lazily at session/new.
         self._omnigent_tools = tools or []
         try:
             if self._proc is None or self._proc.returncode is not None:

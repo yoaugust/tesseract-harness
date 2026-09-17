@@ -1,4 +1,4 @@
-# Omnigent CLI output contract
+# tesseract CLI output contract
 
 This is the contract every `omnigent` command follows when it writes to a
 terminal, so the whole CLI reads as one coherent, branded product. The
@@ -56,7 +56,7 @@ The `scripts/install_oss.sh` installer mirrors the same accent
 Status lines — consistent glyph + color, correct stream:
 
 ```python
-ui.step("Installing Omnigent")     # ==>  accent   (stdout)
+ui.step("Installing tesseract")     # ==>  accent   (stdout)
 ui.success("Verified omnigent")    #  ✓   green    (stdout)
 ui.info("Using ~/.omnigent")       #  ·   dim      (stdout)
 ui.warn("tmux not found")          #  !   yellow   (stderr)

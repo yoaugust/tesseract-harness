@@ -148,7 +148,7 @@ async def test_start_creates_instance_dir_with_sentinel(
     """start() creates the per-AP-instance dir and writes AP_PID.
 
     The sentinel is what the orphan sweep keys off; without it,
-    a subsequent Omnigent boot can't tell live instances from dead.
+    a subsequent tesseract boot can't tell live instances from dead.
     """
     await manager.start()
     try:
@@ -156,7 +156,7 @@ async def test_start_creates_instance_dir_with_sentinel(
         sentinel = manager.instance_dir / _AP_PID_FILE
         assert sentinel.exists()
         # The recorded PID is this process — proves the sweep on
-        # a sibling Omnigent boot would correctly identify us as alive.
+        # a sibling tesseract boot would correctly identify us as alive.
         assert sentinel.read_text(encoding="utf-8").strip() == str(os.getpid())
     finally:
         await manager.shutdown()
@@ -997,7 +997,7 @@ async def test_idle_reaper_disabled_when_timeout_zero(
 async def test_orphan_sweep_removes_dead_omnigent_dirs(
     short_tmp_parent: Path,
 ) -> None:
-    """A sibling Omnigent dir with a non-running PID gets cleaned.
+    """A sibling tesseract dir with a non-running PID gets cleaned.
 
     Plants a fake AP-instance dir under tmp_parent with an
     AP_PID sentinel pointing at a non-running PID, then boots a
@@ -1029,7 +1029,7 @@ async def test_orphan_sweep_removes_dead_omnigent_dirs(
 async def test_orphan_sweep_preserves_live_omnigent_dirs(
     short_tmp_parent: Path,
 ) -> None:
-    """A sibling Omnigent dir with a live PID is left alone.
+    """A sibling tesseract dir with a live PID is left alone.
 
     Plants a fake AP-instance dir whose AP_PID sentinel points at
     *this test process* (which is live by definition). The
@@ -1044,7 +1044,7 @@ async def test_orphan_sweep_preserves_live_omnigent_dirs(
     fresh = HarnessProcessManager(tmp_parent=short_tmp_parent)
     await fresh.start()
     try:
-        # If sweep removed the sibling, a concurrent Omnigent would
+        # If sweep removed the sibling, a concurrent tesseract would
         # have its dir deleted out from under it — exactly the
         # bug the live-PID check is meant to prevent.
         assert sibling_dir.exists()
@@ -1112,10 +1112,10 @@ async def test_get_client_env_override_propagates_to_subprocess(
 ) -> None:
     """``get_client(env=...)`` threads env vars into the spawned subprocess.
 
-    Verifies the v1 spec-config flow: Omnigent passes per-spec env vars
+    Verifies the v1 spec-config flow: tesseract passes per-spec env vars
     via ``env`` to ``get_client``, and the spawned subprocess
     sees them in its own ``os.environ``. Without this propagation,
-    Omnigent would have to mutate its own ``os.environ`` (which races
+    tesseract would have to mutate its own ``os.environ`` (which races
     across concurrent conversations with different specs).
     """
     await manager.start()

@@ -28,7 +28,7 @@ from omnigent.runner.identity import OMNIGENT_SESSION_ENV_VAR
 
 # Categories every POSIX CLI needs regardless of vendor: where the user's
 # config lives, how to reach the network, how to format output, where to put
-# temp files, and the "you are inside Omnigent" marker.
+# temp files, and the "you are inside tesseract" marker.
 #
 # Deliberately NOT here: USER / LOGNAME / SHELL / TZ. pi passes those and
 # codex does not, so they stay per-harness rather than silently widening

@@ -129,7 +129,7 @@ function matchesIdentity(
 
 export function defineExtension(lifecycle: ExtensionLifecycle): void {
   const identity = globalThis.__OMNIGENT_EXTENSION__;
-  if (!identity) throw new Error("Omnigent extension bootstrap is missing");
+  if (!identity) throw new Error("tesseract extension bootstrap is missing");
   let active = false;
   let port: MessagePort | null = null;
   let requestSequence = 0;

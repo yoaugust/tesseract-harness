@@ -1,20 +1,20 @@
-# Critical User Journeys — Omnigent Slack bot
+# Critical User Journeys — tesseract Slack bot
 
-The user-facing journeys the bot supports, with the canonical Omnigent terms and
+The user-facing journeys the bot supports, with the canonical tesseract terms and
 pointers to the code that implements each. This is the behaviour contract; the
 architecture and auth internals live in the [README](../README.md) and
 [`DATABRICKS_APP_WEBAUTH_DESIGN.md`](DATABRICKS_APP_WEBAUTH_DESIGN.md).
 
 ## Terminology
 
-Terms used the way the Omnigent codebase uses them:
+Terms used the way the tesseract codebase uses them:
 
-- **Enrollment** — linking a Slack user to their own **Omnigent identity** on the
+- **Enrollment** — linking a Slack user to their own **tesseract identity** on the
   operator-fixed server, yielding a **delegated token** (an access + refresh
   bearer) the bot stores encrypted and presents on that user's behalf. Not
-  "login/account creation" — the Omnigent account already exists; enrollment
+  "login/account creation" — the tesseract account already exists; enrollment
   authorizes the bot to act as it.
-- **Session** — one Omnigent conversation. The bot maps **one Slack thread → one
+- **Session** — one tesseract conversation. The bot maps **one Slack thread → one
   session** (`ThreadKey`, keyed on `(team_id, channel_id, thread_ts)`), in both
   channels and DMs. A session has an **`owner_user_id`** — the Slack user who
   started the thread.
@@ -34,7 +34,7 @@ Terms used the way the Omnigent codebase uses them:
 
 ## 1. Setup (enrollment)
 
-Link a Slack user to their Omnigent identity on the server, so the bot can run
+Link a Slack user to their tesseract identity on the server, so the bot can run
 turns as them. Implemented in `setup.py` (modal flow) + `auth_manager.py` /
 `oauth.py` / `webauth.py` (the auth flows). The exact flow depends on the
 server's auth mode (`OMNIGENT_SLACK_SERVER_AUTH`): `auto` drives the server's
@@ -77,7 +77,7 @@ In a channel the bot only joins a thread when explicitly mentioned (needs
   `owner_user_id` = the mentioning user (`handle_app_mention` → `_route_turn`).
 - **Only `@`-mention replies reach the server.** Plain channel messages — even
   replies in a thread that already has a session — are human discussion and are
-  **not** forwarded to Omnigent; only `app_mention` events drive a channel turn
+  **not** forwarded to tesseract; only `app_mention` events drive a channel turn
   (`handle_message` drops non-DM messages).
 
 ## 4. Error handling

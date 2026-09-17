@@ -4,7 +4,7 @@ This opt-in test covers the user-facing Kiro native path: the CLI starts a
 runner-owned ``kiro-cli chat --tui`` terminal, the server accepts a web-style
 ``POST /v1/sessions/{id}/events`` message, the Kiro bridge injects it into the
 TUI, and the Kiro session forwarder mirrors the assistant response back into
-the Omnigent conversation.
+the tesseract conversation.
 
 Run locally with a logged-in Kiro CLI::
 

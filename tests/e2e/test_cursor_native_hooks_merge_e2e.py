@@ -2,7 +2,7 @@
 
 Guards the regression where launching the cursor-native harness in a workspace
 that already carries a project-scoped ``.cursor/hooks.json`` (e.g. Universe's
-``preToolUse`` policy hook) fully replaced that file with Omnigent's
+``preToolUse`` policy hook) fully replaced that file with tesseract's
 session-specific ``stop`` usage hook, destroying the user's existing hooks.
 The destructive write happens during the runner-side terminal launch
 (``write_hooks_config`` in :mod:`omnigent.harnesses.cursor_native.bridge`, called from
@@ -21,7 +21,7 @@ The journey it drives is exactly the user's:
 1. a workspace already has ``.cursor/hooks.json`` with a ``preToolUse`` hook;
 2. the user launches ``omnigent cursor`` from that workspace;
 3. after the cursor terminal comes up, ``.cursor/hooks.json`` must still
-   contain the pre-existing ``preToolUse`` hook alongside Omnigent's ``stop``
+   contain the pre-existing ``preToolUse`` hook alongside tesseract's ``stop``
    usage hook. A launch path that clobbers the file wholesale instead of
    merging fails the final assertion.
 
@@ -67,7 +67,7 @@ pytestmark = pytest.mark.skipif(
 _SESSION_ID_TIMEOUT = 120.0
 _TERMINAL_READY_TIMEOUT = 120.0
 
-# The CLI prints ``Omnigent: <server>/c/<session-id>`` shortly after creating
+# The CLI prints ``tesseract: <server>/c/<session-id>`` shortly after creating
 # the session. Unlike ``wait_for_conversation_id``'s ``conv_<hex>`` pattern,
 # this matches both id shapes servers mint (``conv_<hex>`` and bare hex/uuid).
 _SESSION_URL_ID_RE = re.compile(r"/c/([A-Za-z0-9_-]{8,})")
@@ -106,7 +106,7 @@ def test_cursor_native_launch_preserves_existing_hooks_json(
     real ``omnigent cursor --server …`` CLI from that workspace, waits for the
     cursor terminal to register (which strictly follows the launch path's
     hooks.json write), and asserts the rewritten ``hooks.json`` still contains
-    the original ``preToolUse`` hook alongside Omnigent's usage ``stop`` hook.
+    the original ``preToolUse`` hook alongside tesseract's usage ``stop`` hook.
 
     :param resume_test_server: Base URL of the allow-list-free test server.
     :param tmp_path: Per-test temp dir; hosts the seeded workspace.
@@ -141,13 +141,13 @@ def test_cursor_native_launch_preserves_existing_hooks_json(
         hooks = data.get("hooks")
         assert isinstance(hooks, dict), f"hooks.json lost its hooks mapping:\n{raw}"
 
-        # Sanity: the launch did register Omnigent's per-turn usage stop hook
+        # Sanity: the launch did register tesseract's per-turn usage stop hook
         # (this is the write that clobbers the file today).
         stop_commands = [
             entry.get("command", "") for entry in hooks.get("stop", []) if isinstance(entry, dict)
         ]
         assert any("cursor_native.usage" in command for command in stop_commands), (
-            "launch never registered Omnigent's cursor_native usage stop hook in "
+            "launch never registered tesseract's cursor_native usage stop hook in "
             f".cursor/hooks.json — cannot observe the rewrite; file was:\n{raw}"
         )
 

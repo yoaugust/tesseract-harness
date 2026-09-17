@@ -1,6 +1,6 @@
-# Deploying Omnigent
+# Deploying tesseract
 
-Omnigent ships several ways to deploy the server, organized by
+tesseract ships several ways to deploy the server, organized by
 target platform. Pick the one that matches your environment.
 
 Deploying buys you a stable URL: sessions become reachable from any device,
@@ -11,7 +11,7 @@ the machines that register as hosts (see [Execution model](#execution-model)).
 ## Deploy in one click
 
 No local tooling needed. Pick a platform, click the button, and your
-Omnigent server is live with HTTPS in a few minutes.
+tesseract server is live with HTTPS in a few minutes.
 
 | Platform | Button | Docs |
 |---|---|---|
@@ -131,10 +131,10 @@ deploy/
 | Deploy on a Databricks workspace (Lakebase + UC Volumes), self-managed | Databricks Apps | [`databricks/README.md`](databricks/README.md): uses Asset Bundles |
 
 > **On Databricks?** The fully managed
-> [Omnigent on Databricks](https://docs.databricks.com/aws/en/omnigent/)
+> [tesseract on Databricks](https://docs.databricks.com/aws/en/omnigent/)
 > (Beta) is the recommended path: Databricks operates the server for
 > you, wired to workspace identity, Foundation Models, AI Gateway, and
-> MLflow Tracing. Enable the **Omnigent** preview in your workspace
+> MLflow Tracing. Enable the **tesseract** preview in your workspace
 > settings. The self-managed Databricks Apps bundle above is for when
 > you need control the managed service does not expose yet.
 
@@ -221,7 +221,7 @@ you or your team routinely open several.
 
 ## Execution model
 
-Omnigent runs in two pieces that talk to each other over a
+tesseract runs in two pieces that talk to each other over a
 WebSocket tunnel:
 
 - **Server**: the FastAPI app you deploy here. Handles HTTP / SSE
@@ -280,7 +280,7 @@ omnigent sandbox connect --provider modal --sandbox-id <id> --server https://you
 
 > [!NOTE]
 > Modal caps sandbox lifetime at 24 hours. Re-run `create` + `connect` to
-> roll the host onto a fresh sandbox. Daytona and Islo have no Omnigent-imposed
+> roll the host onto a fresh sandbox. Daytona and Islo have no tesseract-imposed
 > lifetime cap; Daytona free-tier orgs restrict egress to an allowlist; see
 > [`daytona/README.md`](daytona/README.md) for the relay workaround. E2B
 > shares Modal's 24-hour cap **and** boots from a pre-built E2B *template*
@@ -323,7 +323,7 @@ for a later sweep, while the session history and durable host binding stay
 available for a fresh sandbox generation. Both
 `terminate_after_offline_days` and `sweep_interval_s` must be positive integers.
 
-**The host image.** Most sandboxes boot from the official prebaked host image (`ghcr.io/omnigent-ai/omnigent-host:latest`, published by CI from the `host` target of [`docker/Dockerfile`](docker/Dockerfile)), so the host starts in seconds instead of installing Omnigent at boot. The image ships the coding-harness CLIs (`claude`, `codex`, `pi`, `kiro-cli`). Blaxel uses `blaxel/omnigent-host:latest`, which combines this host runtime with Blaxel's required `sandbox-api`. E2B uses its provider template. Gensee uses a provider-managed runtime rather than this registry-image setting. To use a custom image with a provider that accepts one, build the same `host` target and point the provider config at it:
+**The host image.** Most sandboxes boot from the official prebaked host image (`ghcr.io/omnigent-ai/omnigent-host:latest`, published by CI from the `host` target of [`docker/Dockerfile`](docker/Dockerfile)), so the host starts in seconds instead of installing tesseract at boot. The image ships the coding-harness CLIs (`claude`, `codex`, `pi`, `kiro-cli`). Blaxel uses `blaxel/omnigent-host:latest`, which combines this host runtime with Blaxel's required `sandbox-api`. E2B uses its provider template. Gensee uses a provider-managed runtime rather than this registry-image setting. To use a custom image with a provider that accepts one, build the same `host` target and point the provider config at it:
 
 ```bash
 docker build -f docker/Dockerfile --target host \
@@ -355,7 +355,7 @@ modal secret create omnigent-llm \
   OMNIGENT_ANTHROPIC_API_KEY=sk-ant-… OPENAI_API_KEY=sk-…
 ```
 
-Prefer `OMNIGENT_ANTHROPIC_API_KEY` for Claude Code API-key auth. Omnigent
+Prefer `OMNIGENT_ANTHROPIC_API_KEY` for Claude Code API-key auth. tesseract
 resolves it into Claude Code's `apiKeyHelper`, avoiding a raw
 `ANTHROPIC_API_KEY` in the Claude CLI process.
 
@@ -535,7 +535,7 @@ branding:
     main: logo.png               # branding-assets/logo.png
     loading: loading.webp        # working indicator (falls back to main)
     favicon: favicon.png         # browser-tab icon
-  powered_by: true               # "Powered by Omnigent" credit; false to hide
+  powered_by: true               # "Powered by tesseract" credit; false to hide
 ```
 
 Logo files must live under a dedicated `branding-assets/` directory beside the
@@ -550,9 +550,9 @@ The values are served over the unauthenticated `GET /v1/info` and
 `GET /v1/branding/logo/<variant>` endpoints so the login screen is branded before
 sign-in. Any unset field keeps its built-in default, so a partial block is fine.
 
-The small "Powered by Omnigent" credit under the landing composer appears only
+The small "Powered by tesseract" credit under the landing composer appears only
 once you set custom branding; `powered_by: false` hides it even then. It always
-shows the Omnigent mascot, never your logo.
+shows the tesseract mascot, never your logo.
 
 ## Adding a new deploy target
 

@@ -79,7 +79,7 @@ function SetupApp() {
     onConnect: async (url, force) => {
       // setServerUrl persists the URL and navigates the window to it; on success
       // the server's SPA takes over and this page goes away. It resolves
-      // {needsConfirm} when a remote URL doesn't look like an Omnigent server —
+      // {needsConfirm} when a remote URL doesn't look like an tesseract server —
       // pass that back so the step can warn and let the user proceed anyway. A
       // rejection (e.g. main-side normalizeUrl rejects an input the renderer
       // accepted) is surfaced as {error} so the step can show it, rather than

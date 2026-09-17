@@ -546,7 +546,7 @@ def test_build_codex_native_server_uses_profile_host_without_static_token(
     """
     Native Codex accepts Databricks CLI OAuth profiles without static tokens.
 
-    A default Omnigent install may not include ``databricks-sdk`` in the
+    A default tesseract install may not include ``databricks-sdk`` in the
     runner process. In that case a bearer cannot be minted at startup, but the
     profile's host is still enough: Codex gets an ``auth.command`` that runs
     ``databricks auth token --profile`` at request time.
@@ -1502,7 +1502,7 @@ async def test_a_smart_routing_codex_native_session_gains_the_spawn_apparatus(
     assert (codex_home / "model_catalog.json").is_file()
     assert "model_catalog_json" in (codex_home / "config.toml").read_text(encoding="utf-8")
     assert _mcp_tool_approvals(codex_home) == _ROUTED_TOOL_APPROVALS
-    # Omnigent's policy hook stays first, then the spawn gate, then user hooks.
+    # tesseract's policy hook stays first, then the spawn gate, then user hooks.
     assert _hook_matchers(codex_home, "PreToolUse") == [None, _SPAWN_MATCHER, None]
 
 
@@ -1629,7 +1629,7 @@ def test_remote_codex_rejects_unmaterialized_provider_config() -> None:
 
 async def test_untrusted_hook_is_trusted_via_batchwrite() -> None:
     """
-    An untrusted Omnigent hook is trusted with its currentHash.
+    An untrusted tesseract hook is trusted with its currentHash.
 
     This is the core flow: list → write trusted_hash → verify trusted.
     It fails if the batchWrite omits our key, writes the wrong hash, or
@@ -1666,7 +1666,7 @@ def test_write_codex_policy_hooks_file_merges_user_hooks(tmp_path: Path) -> None
     """User hooks symlinked into the private home are merged into hooks.json.
 
     _write_codex_policy_hooks_file replaces the symlink with a merged
-    regular file containing both the Omnigent policy hooks and the user's
+    regular file containing both the tesseract policy hooks and the user's
     hooks, so user hooks fire alongside policy enforcement.
     """
     from omnigent.harnesses.codex_native.app_server import _write_codex_policy_hooks_file
@@ -1797,7 +1797,7 @@ def test_user_prompt_submit_carries_the_route_turn_hook(tmp_path: Path) -> None:
 
 async def test_missing_hook_raises() -> None:
     """
-    No discovered Omnigent hook fails loud (anti fail-open).
+    No discovered tesseract hook fails loud (anti fail-open).
 
     If our hook was never registered/loaded, enforcement would silently
     not run. The flow must raise rather than return quietly. Fails if a
@@ -1828,7 +1828,7 @@ async def test_still_untrusted_after_write_raises() -> None:
 
 async def test_user_hooks_are_never_trusted() -> None:
     """
-    Only Omnigent hooks are trusted; user-declared hooks are left alone.
+    Only tesseract hooks are trusted; user-declared hooks are left alone.
 
     The private CODEX_HOME symlinks the user's config.toml, which may
     declare its own hooks. Auto-trusting those would be a security hole.
@@ -2101,7 +2101,7 @@ async def test_trust_failure_is_fail_open_with_reason(
     _set_codex_version(monkeypatch, (0, 136, 0))
 
     async def _raise_trust(_self: CodexNativeAppServer) -> None:
-        raise RuntimeError("Omnigent policy hook was not discovered for cwd ...")
+        raise RuntimeError("tesseract policy hook was not discovered for cwd ...")
 
     monkeypatch.setattr(CodexNativeAppServer, "_trust_policy_hooks", _raise_trust)
 
@@ -2430,7 +2430,7 @@ async def test_trust_step_covers_router_hooks_when_routing_armed(
 
 async def test_trust_all_codex_hooks_trusts_user_hooks() -> None:
     """
-    The runner-owned trust-all pass covers user hooks, not just Omnigent's.
+    The runner-owned trust-all pass covers user hooks, not just tesseract's.
 
     Codex ignores ``--dangerously-bypass-hook-trust`` for the startup
     review screen on a persistent ``resume``; persisting trust for the

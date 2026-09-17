@@ -196,7 +196,7 @@ def _to_conversation(
     :param row: The SQLAlchemy ORM row to convert.
     :param meta: Optional metadata row from
         ``omnigent_conversation_metadata``. When ``None``, all
-        Omnigent-operational fields default (``kind="default"``,
+        tesseract-operational fields default (``kind="default"``,
         everything else ``None`` / ``False``).
     :param labels: Pre-fetched guardrails labels for this
         conversation. ``None`` means "no label fetch was
@@ -278,7 +278,7 @@ def _new_session_conversation_row(
     Build the AP conversation row for atomic session creation.
 
     The agent binding (``agent_id``) and the per-session override blob
-    (``session_overrides``) live on this row; Omnigent operational fields
+    (``session_overrides``) live on this row; tesseract operational fields
     (runner_id, host_id, workspace, terminal_launch_args, kind, etc.)
     live on the paired metadata row.
 
@@ -326,7 +326,7 @@ def _new_session_metadata_row(
     host_id: str | None = None,
 ) -> SqlConversationMetadata:
     """
-    Build the Omnigent metadata row paired with a new session conversation.
+    Build the tesseract metadata row paired with a new session conversation.
 
     :param conversation_id: New conversation id, e.g. ``"conv_abc123"``.
     :param parent_conversation_id: When set, the row is created as a
@@ -757,7 +757,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         Creates or reuses a SQLAlchemy engine and session factory,
         and ensures the FTS virtual table exists.
 
-        :param storage_location: SQLAlchemy database URI for the Omnigent DB,
+        :param storage_location: SQLAlchemy database URI for the tesseract DB,
             e.g. ``"sqlite:///omnigent.db"`` or
             ``"postgresql://<user>:<password>@host/db"``.
         :param conversation_storage_location: SQLAlchemy database URI for the Agent
@@ -765,7 +765,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             ``storage_location`` when ``None`` (single-DB mode).
         """
         super().__init__(storage_location, conversation_storage_location)
-        # Omnigent DB: agents, hosts, policies, files, user_daily_costs,
+        # tesseract DB: agents, hosts, policies, files, user_daily_costs,
         # session_permissions, comments, omnigent_conversation_metadata.
         self._engine = get_or_create_engine(storage_location)
         self._session = make_named_managed_session_maker(
@@ -784,8 +784,8 @@ class SqlAlchemyConversationStore(ConversationStore):
         )
 
         # Agent Platform DB: conversations, conversation_items, conversation_labels.
-        # Defaults to the Omnigent DB when not separately configured. Always creates
-        # a separate session factory so AP and Omnigent writes run in independent
+        # Defaults to the tesseract DB when not separately configured. Always creates
+        # a separate session factory so AP and tesseract writes run in independent
         # transactions, even when both point at the same underlying engine.
         conv_uri = conversation_storage_location or storage_location
         self._conv_engine = (
@@ -805,7 +805,7 @@ class SqlAlchemyConversationStore(ConversationStore):
 
         # Dialect-appropriate row-locking flags. Each flag is derived from its
         # own engine so a mixed-dialect split-DB (e.g. Postgres AP + SQLite
-        # Omnigent) gets the correct lock strategy for each table group.
+        # tesseract) gets the correct lock strategy for each table group.
         self._supports_for_update = self._conv_engine.dialect.name != "sqlite"
         self._meta_supports_for_update = self._engine.dialect.name != "sqlite"
         # SQLite rowid is monotonically increasing absent deletions; it serves
@@ -824,9 +824,9 @@ class SqlAlchemyConversationStore(ConversationStore):
 
     def _get_meta(self, conversation_id: str) -> SqlConversationMetadata | None:
         """
-        Fetch the metadata row for a conversation from the Omnigent DB.
+        Fetch the metadata row for a conversation from the tesseract DB.
 
-        Always goes through the Omnigent-DB session maker: in split-DB mode
+        Always goes through the tesseract-DB session maker: in split-DB mode
         ``omnigent_conversation_metadata`` lives on a different engine than the
         caller's AP session, so the caller's session cannot serve it. A caller
         inside :func:`shared_read_scope` pays no second pool checkout for it
@@ -980,7 +980,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             json.dumps(terminal_launch_args) if terminal_launch_args is not None else None
         )
         try:
-            # Get parent's root from AP, then write AP row and Omnigent meta separately.
+            # Get parent's root from AP, then write AP row and tesseract meta separately.
             root_id = new_id
             if parent_conversation_id is not None:
                 with self._conv_session("select_parent_conversation") as ap_sess:
@@ -1096,7 +1096,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         Fetch a conversation by its unique ID.
 
         Issues three queries: the conversation row (which carries the agent
-        binding + per-session override blob), the Omnigent-DB metadata row, and
+        binding + per-session override blob), the tesseract-DB metadata row, and
         a label fetch on ``conversation_labels``. They run inside a
         :func:`shared_read_scope` so the whole read costs one pool checkout per
         engine — one in single-DB mode, where the metadata table would otherwise
@@ -1181,7 +1181,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         if not conversation_ids:
             return {}
         unique_ids = list(set(conversation_ids))
-        # runner_id and host_id are in the Omnigent DB (metadata).
+        # runner_id and host_id are in the tesseract DB (metadata).
         with self._session("get_session_connectivity") as session:
             meta_rows = session.execute(
                 select(
@@ -2350,7 +2350,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         from omnigent.server.auth import LEVEL_OWNER
 
         # ACL (accessible_by/owned_by) resolves against session_permissions on
-        # the Omnigent DB, so it still needs a pre-fetch; archived now lives on
+        # the tesseract DB, so it still needs a pre-fetch; archived now lives on
         # the AP conversations table and is filtered inline below.
         permission_ids: list[str] | None = None
         if accessible_by is not None or owned_by is not None:
@@ -2539,14 +2539,14 @@ class SqlAlchemyConversationStore(ConversationStore):
         # kind and archived both live on the AP ``conversations`` table now
         # (kind derived from parent-nullness, archived a real column), so they
         # are filtered directly on the AP query below. The only filters that
-        # still require an Omnigent-side prefetch are the permission scopes.
+        # still require an tesseract-side prefetch are the permission scopes.
         # shared_only also needs both accessible and owned sets so it can
         # compute the difference (accessible − owned).
         needs_meta_filter = (accessible_by is not None) or (owned_by is not None) or shared_only
 
         qualifying_ids: list[str] | None = None
         if needs_meta_filter:
-            # Pre-fetch permission-qualifying IDs from the Omnigent DB
+            # Pre-fetch permission-qualifying IDs from the tesseract DB
             # (session_permissions), then filter the AP query. accessible_by and
             # owned_by are intersected (both applied) to match the prior
             # behaviour. (ACL pushdown to a single AP query is a follow-up.)
@@ -2637,7 +2637,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             if has_agent_id is True:
                 stmt = stmt.where(SqlConversation.agent_id.is_not(None))
             if agent_name is not None:
-                # Agents live in the Omnigent DB — resolve to IDs first, then
+                # Agents live in the tesseract DB — resolve to IDs first, then
                 # filter on the conversations.agent_id column directly.
                 with self._session("list_conversations") as agent_sess:
                     agent_ids_for_name = list(
@@ -2689,7 +2689,7 @@ class SqlAlchemyConversationStore(ConversationStore):
                 # EITHER the first-class membership (metadata.project_id → the
                 # owner's project of that name) OR the legacy ``omni_project``
                 # label. The label is colocated on the AP DB (inline subquery);
-                # projects + metadata are on the Omnigent DB, so member ids are
+                # projects + metadata are on the tesseract DB, so member ids are
                 # resolved there first, then combined with the label subquery.
                 label_filed = select(SqlConversationLabel.conversation_id).where(
                     SqlConversationLabel.workspace_id == current_workspace_id(),
@@ -2818,7 +2818,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             # Build AP-only entities; metadata fetched separately below.
             ap_entities = [(r, labels_by_conv.get(r.id, {})) for r in rows]
 
-        # Fetch metadata from Omnigent DB and merge.
+        # Fetch metadata from tesseract DB and merge.
         meta_by_id: dict[str, SqlConversationMetadata] = {}
         if row_ids:
             with self._session("list_conversations") as meta_sess:
@@ -3003,7 +3003,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         )
 
         # Two transactions: AP (the conversation row, which carries the agent
-        # binding + per-session override blob) and Omnigent (metadata).
+        # binding + per-session override blob) and tesseract (metadata).
         def update_ap(
             ap_sess: Session,
         ) -> tuple[SqlConversation, dict[str, str]] | None:
@@ -3709,7 +3709,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         """
         Insert a conversation row and session-scoped agent.
 
-        The AP conversation phase commits before the Omnigent agent and
+        The AP conversation phase commits before the tesseract agent and
         metadata phase. Each transaction retries independently on CRDB;
         the split databases cannot provide one atomic commit across both.
 
@@ -3803,7 +3803,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         encoded_overrides = _encode_session_overrides({"reasoning_effort": reasoning_effort})
         prepared_labels = dict(labels) if labels else {}
 
-        # Conversation + labels go to AP; agent + metadata go to Omnigent.
+        # Conversation + labels go to AP; agent + metadata go to tesseract.
         # Get parent root_id from AP first.
         root_conversation_id: str | None = None
         if parent_conversation_id is not None:
@@ -3938,7 +3938,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             Required when ``cloned_agent_bundle_location`` is set.
         :param cloned_agent_bundle_location: When set, clone this
             bundle into a new session-scoped agent row (id
-            ``agent_id``) in the same Omnigent transaction as the fork
+            ``agent_id``) in the same tesseract transaction as the fork
             metadata. ``None`` keeps the legacy bind-existing behavior.
         :param cloned_agent_description: Optional description for the
             cloned agent row. Ignored unless
@@ -3994,7 +3994,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             cross-family agent switch: the source's native transcript is
             the wrong format for the target harness, so the directive is
             skipped and the runner builds the native transcript from the
-            copied Omnigent items instead.
+            copied tesseract items instead.
         :param presentation_labels: When not ``None``, drop the source's
             ``omnigent.ui`` / ``omnigent.wrapper`` labels from the clone
             and apply these instead, so the clone's Web UI mode matches the
@@ -4085,7 +4085,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         encoded_session_agent_kind = encode_agent_kind("session")
 
         # Fetch source metadata (workspace, external_session_id, terminal_launch_args)
-        # from the Omnigent DB before opening the AP session.
+        # from the tesseract DB before opening the AP session.
         with self._session("fork_conversation") as meta_sess:
             source_meta_ref: SqlConversationMetadata | None = meta_sess.get(
                 SqlConversationMetadata, (current_workspace_id(), source_conversation_id)
@@ -4262,7 +4262,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             # even when the source predates the counter.
             new_conv_values["next_position"] = len(source_items)
 
-            # Cloned agent: the row itself is written to the Omnigent DB after
+            # Cloned agent: the row itself is written to the tesseract DB after
             # the AP session commits (see the block below the with-statement);
             # the fork's binding already lives on new_conv.agent_id.
             if creating_clone:
@@ -4357,7 +4357,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             # When the fork binds a native target, mark it so the runner
             # rebuilds the native transcript (clone the source's native
             # transcript when same-family, else build from the copied
-            # Omnigent items) rather than launching fresh (see
+            # tesseract items) rather than launching fresh (see
             # FORK_CARRY_HISTORY_LABEL_KEY).
             if carry_history_into_native:
                 fork_labels[FORK_CARRY_HISTORY_LABEL_KEY] = "1"
@@ -4403,7 +4403,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             insert_ap,
         )
 
-        # Write fork metadata (and cloned agent if any) to the Omnigent DB.
+        # Write fork metadata (and cloned agent if any) to the tesseract DB.
         def insert_metadata(
             meta_sess: Session,
         ) -> SqlConversationMetadata:
@@ -4455,7 +4455,7 @@ class SqlAlchemyConversationStore(ConversationStore):
 
         See :meth:`ConversationStore.switch_conversation_agent` for the
         full contract. The AP binding and label phase commits before the
-        Omnigent agent and metadata phase. Each transaction retries
+        tesseract agent and metadata phase. Each transaction retries
         independently because the two databases cannot share a commit.
 
         :param conversation_id: Session to switch, e.g. ``"conv_abc123"``.
@@ -4494,7 +4494,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         encoded_agent_kind = encode_agent_kind("session")
 
         # AP holds the conversation (agent binding + overrides) + labels;
-        # Omnigent holds agent+metadata. Read old_agent_id before overwriting it.
+        # tesseract holds agent+metadata. Read old_agent_id before overwriting it.
         def update_ap(ap_sess: Session) -> str | None:
             row_query = select(SqlConversation).where(
                 SqlConversation.workspace_id == current_workspace_id(),
@@ -4538,7 +4538,7 @@ class SqlAlchemyConversationStore(ConversationStore):
             update_ap,
         )
 
-        # Update agent + metadata on the Omnigent side.
+        # Update agent + metadata on the tesseract side.
         def update_metadata(session: Session) -> None:
             if old_agent_id is not None:
                 old_agent = session.get(SqlAgent, (current_workspace_id(), old_agent_id))
@@ -4590,7 +4590,7 @@ class SqlAlchemyConversationStore(ConversationStore):
         See the protocol docstring for the semantics.
 
         Two queries, not one: ``host_id`` / ``workspace`` live on the metadata
-        table (Omnigent DB) while ``archived`` lives on ``conversations`` (AP
+        table (tesseract DB) while ``archived`` lives on ``conversations`` (AP
         DB, which may be a separate engine), so they cannot be joined. They
         are ordered so the overwhelmingly common answer — nothing else is in
         the directory — costs a single indexed query and returns before the AP
@@ -4646,8 +4646,8 @@ class SqlAlchemyConversationStore(ConversationStore):
             ``False`` otherwise.
         """
         # AP rows are deleted first so the conversation is immediately unreachable;
-        # Omnigent-side rows (metadata/comments/policies/permissions) are cleaned up
-        # second. A failure of the second transaction leaves orphaned Omnigent rows
+        # tesseract-side rows (metadata/comments/policies/permissions) are cleaned up
+        # second. A failure of the second transaction leaves orphaned tesseract rows
         # for a conversation that no longer exists — an acceptable best-effort tradeoff.
         encoded_session_agent_kind = encode_agent_kind("session")
 
@@ -4673,7 +4673,7 @@ class SqlAlchemyConversationStore(ConversationStore):
                 cast(str, result[0]) for result in ap_sess.execute(select(cte.c.id)).fetchall()
             ]
             # Collect the subtree's agent bindings before their rows go, so
-            # the Omnigent transaction below can delete the session-scoped
+            # the tesseract transaction below can delete the session-scoped
             # agent rows that backed these conversations. Only include agents
             # with NO surviving reference outside the deleted subtree: a
             # session-scoped agent may be referenced by multiple conversations

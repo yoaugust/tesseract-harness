@@ -1,6 +1,6 @@
-# Omnigent on Railway
+# tesseract on Railway
 
-Deploy Omnigent to Railway. Railway pulls the pre-built image, runs it next to
+Deploy tesseract to Railway. Railway pulls the pre-built image, runs it next to
 a managed Postgres, and serves it over HTTPS on `*.up.railway.app`.
 
 > **Railway is not yet a true one-click.** Unlike Render's `render.yaml` (fully
@@ -78,7 +78,7 @@ steps below are validated end-to-end:
 
 ## Release features
 
-In the Omnigent service's **Variables** tab, set `OMNIGENT_FEATURES` to a
+In the tesseract service's **Variables** tab, set `OMNIGENT_FEATURES` to a
 comma-separated enabled set such as `usage_page`. Railway redeploys the service
 automatically. Remove the key from the value to roll back, then reload the web
 app. See [`designs/FEATURE_FLAGS.md`](../../designs/FEATURE_FLAGS.md) for known
@@ -155,7 +155,7 @@ Railway redeploys automatically when a new image tag is pushed to GHCR
 ## Cost
 
 Railway Hobby plan: ~$5/month base + per-minute CPU/memory usage. A lightly
-loaded Omnigent instance (few concurrent users) typically stays under
+loaded tesseract instance (few concurrent users) typically stays under
 $10–15/month total including the Postgres plugin.
 
 ## Publishing the template

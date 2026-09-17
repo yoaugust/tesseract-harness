@@ -3,7 +3,7 @@ Unit tests for the native-terminal cost-approval popup script.
 
 Covers :mod:`omnigent.native.native_cost_popup` — the program that runs inside
 a ``tmux display-popup`` on a native harness pane, reads an
-approve/decline answer, and POSTs the verdict to the Omnigent elicitation-
+approve/decline answer, and POSTs the verdict to the tesseract elicitation-
 resolve endpoint (the same endpoint the web ApprovalCard uses).
 
 The tests drive the public :func:`omnigent.native.native_cost_popup.main`
@@ -291,7 +291,7 @@ def test_main_missing_omnigent_server_url_fails_loud(
     """
     A config file without ``ap_server_url`` aborts via ``SystemExit``.
 
-    There is no safe default for "where is the Omnigent server", so the script
+    There is no safe default for "where is the tesseract server", so the script
     fails loud (the popup just closes; the web card remains answerable)
     rather than POSTing to a guessed URL.
     """

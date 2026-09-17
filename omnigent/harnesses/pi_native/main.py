@@ -1,4 +1,4 @@
-"""Native Pi TUI wrapper for the Omnigent CLI."""
+"""Native Pi TUI wrapper for the tesseract CLI."""
 
 from __future__ import annotations
 
@@ -74,7 +74,7 @@ class NativePiLaunch:
 
 @dataclass(frozen=True)
 class LaunchedPiTerminal:
-    """Terminal resource returned by the Omnigent runner launch path."""
+    """Terminal resource returned by the tesseract runner launch path."""
 
     terminal_id: str
     tmux_socket: Path | None
@@ -210,10 +210,10 @@ def run_pi_native(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch Pi TUI in an Omnigent terminal.
+    Launch Pi TUI in an tesseract terminal.
 
-    :param server: Resolved Omnigent server URL.
-    :param session_id: Optional existing Omnigent conversation id.
+    :param server: Resolved tesseract server URL.
+    :param session_id: Optional existing tesseract conversation id.
     :param pi_args: Raw Pi CLI args to persist for the runner-owned TUI.
     :param resume_picker: ``True`` runs the Pi-native picker.
     :param auto_open_conversation: When ``True``, open the browser
@@ -226,7 +226,7 @@ def run_pi_native(
     _preflight_local_tools()
     if server is None:
         raise click.ClickException(
-            "Pi requires a resolved Omnigent server URL. The CLI should call "
+            "Pi requires a resolved tesseract server URL. The CLI should call "
             "_ensure_backend before run_pi_native."
         )
     with TemporaryDirectory(prefix="omnigent-pi-native-") as tmpdir:
@@ -280,11 +280,11 @@ def _run_with_remote_server(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch Pi on an Omnigent server via a daemon-spawned runner.
+    Launch Pi on an tesseract server via a daemon-spawned runner.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param spec_path: Generated Pi wrapper agent spec.
-    :param session_id: Optional existing Omnigent session id.
+    :param session_id: Optional existing tesseract session id.
     :param resume_picker: When ``True``, run the Pi-native picker.
     :param pi_args: Raw Pi CLI args.
     :param auto_open_conversation: Whether to open the web conversation URL.
@@ -358,8 +358,8 @@ async def _prepare_pi_terminal_via_daemon(
     """
     Create or resume a Pi-native session through a daemon runner.
 
-    :param base_url: Omnigent server base URL.
-    :param headers: HTTP auth headers for Omnigent requests.
+    :param base_url: tesseract server base URL.
+    :param headers: HTTP auth headers for tesseract requests.
     :param session_id: Existing session id to resume, or ``None``.
     :param session_bundle: Gzipped Pi wrapper bundle for fresh sessions.
     :param pi_args: User pass-through Pi args.
@@ -463,10 +463,10 @@ async def _create_pi_session(
     """
     Create a bundled terminal-first Pi session.
 
-    :param client: HTTP client pointed at Omnigent.
+    :param client: HTTP client pointed at tesseract.
     :param bundle: Gzipped agent bundle.
     :param terminal_launch_args: Pass-through Pi CLI args to persist.
-    :returns: New Omnigent session id.
+    :returns: New tesseract session id.
     """
     metadata: _JsonObject = {"labels": dict(_SESSION_LABELS)}
     if terminal_launch_args:
@@ -489,7 +489,7 @@ async def _create_pi_session(
 
 
 async def _fetch_pi_session(client: httpx.AsyncClient, session_id: str) -> _JsonObject:
-    """Fetch an existing Omnigent session."""
+    """Fetch an existing tesseract session."""
     resp = await client.get(f"/v1/sessions/{url_component(session_id)}")
     if resp.status_code == 404:
         raise click.ClickException(f"Conversation {session_id!r} not found on the server.")

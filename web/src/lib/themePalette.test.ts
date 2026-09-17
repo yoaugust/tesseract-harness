@@ -180,7 +180,7 @@ describe("themePalette", () => {
     expect(solarized?.tokens.dark.shellBackground).toBe("#002b36");
   });
 
-  it("keeps Omnigent's text selection on the brand tint, not the neutral primary", () => {
+  it("keeps tesseract's text selection on the brand tint, not the neutral primary", () => {
     const omni = PALETTES.find((palette) => palette.id === "omni")!;
     expect(omni.tokens.light.selectionBackground).toBe("rgba(240, 1, 150, 0.1)");
     expect(omni.tokens.light.selectionForeground).toBe("#651249");

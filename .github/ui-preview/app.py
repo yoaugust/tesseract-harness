@@ -1,11 +1,11 @@
 """Entry point for the per-PR UI Preview app (Databricks Apps).
 
-Unlike Omnigent's production Databricks deploy (``deploy/databricks/``, which
+Unlike tesseract's production Databricks deploy (``deploy/databricks/``, which
 uses Lakebase Postgres + UC Volumes), this preview is deliberately *ephemeral
 and self-contained* so a fresh app can be created and torn down per PR with no
 external state: a SQLite database + local-disk artifact store under a temp dir.
 
-There is no bundled LLM or runner. Omnigent executes agent turns on a runner
+There is no bundled LLM or runner. tesseract executes agent turns on a runner
 that the user connects from their own machine/sandbox (``omnigent host --server
 <url>``), so the preview only needs to serve the web UI + API. A reviewer browses
 the UI as-is, and can connect their own host to drive a real session.
@@ -81,7 +81,7 @@ def main() -> None:
         str(ARTIFACT_DIR),
         "--no-open",
     ]
-    logger.info("Starting Omnigent server: %s", " ".join(cmd))
+    logger.info("Starting tesseract server: %s", " ".join(cmd))
     os.execvp(cmd[0], cmd)
 
 

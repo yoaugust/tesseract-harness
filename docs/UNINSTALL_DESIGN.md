@@ -1,4 +1,4 @@
-# Omnigent Uninstaller Design
+# tesseract Uninstaller Design
 
 Status: Implemented in PR #2550
 Owner: Pat Sukprasert (@PattaraS)
@@ -8,7 +8,7 @@ Implementation note: PR #2550 ships the OSS CLI/script implementation as one
 combined PR rather than the staged PR breakdown below. Checkboxes marked here
 reflect the current implementation and focused test coverage in that PR.
 
-This document specifies how Omnigent should be uninstalled. It is written to be
+This document specifies how tesseract should be uninstalled. It is written to be
 handed to an implementer without further design decisions. Track delivery with
 the checklists in each section.
 
@@ -69,13 +69,13 @@ Design principles that recur below:
 ### entries sub-objects
 
 `profiles` (array) - shell profiles that received the delimited PATH block:
-`path`, `marker_begin` (`# >>> Omnigent installer >>>`), `marker_end`
-(`# <<< Omnigent installer <<<`), `line_range` [int,int] (1-indexed inclusive,
+`path`, `marker_begin` (`# >>> tesseract installer >>>`), `marker_end`
+(`# <<< tesseract installer <<<`), `line_range` [int,int] (1-indexed inclusive,
 advisory - removal re-locates by marker), `block_sha256` (of block text incl.
 markers, for tamper detection), `content_matches_current` (bool), `source`,
 `confidence`.
 
-`injected_external_config` (array) - entries Omnigent wrote into third-party
+`injected_external_config` (array) - entries tesseract wrote into third-party
 files: `path`, `marker` (logical key, e.g. `mcp_servers.omnigent`), `format`
 (`json` \| `toml` \| `delimited_block`), `allowlist` (array of exact key paths /
 block markers we may remove - removal touches ONLY these), `block_sha256`
@@ -111,7 +111,7 @@ backfill may only write `unknown`), `confidence` (`none` whenever
   "generator": { "name": "omnigent", "version": "1.42.0", "strategy": "install", "os": "macos", "wrote_at": "2026-07-14T18:03:22Z" },
   "entries": {
     "profiles": [
-      { "path": "~/.zshrc", "marker_begin": "# >>> Omnigent installer >>>", "marker_end": "# <<< Omnigent installer <<<",
+      { "path": "~/.zshrc", "marker_begin": "# >>> tesseract installer >>>", "marker_end": "# <<< tesseract installer <<<",
         "line_range": [212, 215], "block_sha256": "9f2c...e1", "content_matches_current": true,
         "source": "recorded", "confidence": "certain" }
     ],
@@ -187,7 +187,7 @@ invent provenance.
 Anchor guard (refuse to fabricate): before writing anything, require at least
 one genuine install signal: `~/.omnigent/installation_id` exists, OR the wheel
 is installed (`uv tool list` shows `omnigent`), OR a known profile contains the
-exact marker pair. If none, write nothing and report "no Omnigent install
+exact marker pair. If none, write nothing and report "no tesseract install
 detected."
 
 Fast vs deep:
@@ -450,7 +450,7 @@ Checklist:
 
 ## Appendix A: ELI5
 
-Omnigent is a houseguest.
+tesseract is a houseguest.
 
 - Installing = the guest moves in: hangs a coat by the door (the PATH line in
   your shell profile), keeps a box of their stuff in a closet (`~/.omnigent` -
@@ -584,7 +584,7 @@ Omnigent is a houseguest.
              +--------------------------------------+
 
    Other package surfaces:
-   OS/package-manager uninstall owns package files. The Omnigent
+   OS/package-manager uninstall owns package files. The tesseract
    uninstaller handles local profile/state cleanup and uses
    uv tool uninstall for uv-installed wheels; it does not remove
    shared dependencies or act as a cross-domain reaper.

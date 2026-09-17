@@ -12,7 +12,7 @@ the spawn-env the runner passes (see
 picked ``acp:<slug>`` to a user-configured command in the ``acp:`` config block.
 
 Auth is each agent's own (the user logs into their agent via its own CLI);
-Omnigent stores no credential. Tool approvals surface as web elicitation cards
+tesseract stores no credential. Tool approvals surface as web elicitation cards
 via ``session/request_permission`` (bridges the :class:`ExecutorAdapter` installs).
 
 Env vars read at startup:
@@ -24,7 +24,7 @@ Env vars read at startup:
   configured to accept one in ``session/new``).
 - ``HARNESS_ACP_SESSION_ID_MODE``: ``server`` (default) or ``client``.
 - ``HARNESS_ACP_SEND_MODEL``: ``"1"`` to send the model in ``session/new``.
-- ``HARNESS_ACP_OMNIGENT_MCP``: ``"0"`` to disable Omnigent's MCP relay;
+- ``HARNESS_ACP_OMNIGENT_MCP``: ``"0"`` to disable tesseract's MCP relay;
   ``session/new`` still receives an empty ``mcpServers`` array.
 - ``HARNESS_ACP_OS_ENV``: JSON-encoded :class:`OSEnvSpec`. When unset, falls
   back to ``caller_process`` + ``sandbox=none``.
@@ -34,12 +34,12 @@ Env vars read at startup:
   value is read from this process's own environment.
 - ``HARNESS_ACP_PROMPT_TIMEOUT_S``: optional idle (time-without-progress) deadline in
   seconds for a prompt turn (default 300); must be positive and finite or the child aborts.
-- ``HARNESS_ACP_PERMISSION_MODE``: Omnigent permission stance, ``auto`` (default) or
+- ``HARNESS_ACP_PERMISSION_MODE``: tesseract permission stance, ``auto`` (default) or
   ``bypassPermissions`` — the latter skips the approval card for a tool call no
   policy had an opinion on, so a headless agent runs without parking on prompts.
-- ``HARNESS_ACP_INJECT_SYSTEM_PROMPT``: ``"0"`` to skip folding the Omnigent system
+- ``HARNESS_ACP_INJECT_SYSTEM_PROMPT``: ``"0"`` to skip folding the tesseract system
   prompt into the first ACP turn. Recommended for Pi-fork agents (e.g. ``omp``) that
-  fully own their own system prompt — prepending Omnigent's text can cause the agent's
+  fully own their own system prompt — prepending tesseract's text can cause the agent's
   internal Claude model to emit XML tool-call fragments when no MCP relay is backing the
   described tools (see ``omnigent_mcp``). Defaults to ``"1"`` (inject).
 """

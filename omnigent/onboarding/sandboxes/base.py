@@ -1,5 +1,5 @@
 """
-Provider-agnostic interface for running Omnigent hosts in remote sandboxes.
+Provider-agnostic interface for running tesseract hosts in remote sandboxes.
 
 A *sandbox launcher* wraps one sandbox provider (Databricks Lakebox, Modal,
 Daytona, …) behind the small set of transport / lifecycle primitives that the
@@ -42,7 +42,7 @@ if TYPE_CHECKING:
 
 DEFAULT_HOST_IMAGE: str = "ghcr.io/omnigent-ai/omnigent-host:latest"
 """Default sandbox image across providers: the official prebaked
-Omnigent host image, published by CI from the ``host`` target of
+tesseract host image, published by CI from the ``host`` target of
 ``deploy/docker/Dockerfile`` (``:latest`` tracks main; ``:sha-<short>``
 pins a commit). It bakes the full omnigent install plus git / tmux /
 curl and the coding-harness CLIs, so sandbox creation skips the

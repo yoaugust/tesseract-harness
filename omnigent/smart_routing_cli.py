@@ -124,7 +124,7 @@ def check_smart_routing_available(
     option. An older server that omits ``smart_routing_sources`` degrades to its
     ``smart_routing_enabled`` answer for both sources, so it blocks nothing new.
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:6767"``.
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:6767"``.
     :param harnesses: Harness ids the route may pick, e.g.
         ``("claude-native",)``.
     :param host_id: This machine's host id, e.g. ``"host_abc123"``. ``None``
@@ -208,7 +208,7 @@ def arm_smart_routing_session(
     Never raises: a create the server rejects yields no session and one notice,
     and the caller launches a fresh wrapper session instead.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param harness: Canonical native harness to bind, e.g. ``"claude-native"``.
     :param host_id: Host this session will run on, e.g. ``"host_abc123"``.
         Binding it lets the server resolve the pane's model catalog for the
@@ -287,7 +287,7 @@ def known_host_id(*, base_url: str, host_id: str | None) -> str | None:
     the create and cost us the verdict, so an unregistered host degrades to a
     hostless route instead.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param host_id: This machine's host id, or ``None``.
     :returns: *host_id* when it appears in ``GET /v1/hosts``, else ``None``.
     """
@@ -307,7 +307,7 @@ def _gateway_inference_for_host(*, base_url: str, host_id: str) -> dict[str, Any
     """
     Read this host's ``gateway_inference`` map from ``GET /v1/hosts``.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param host_id: Host id to match, e.g. ``"host_abc123"``.
     :returns: The map, or ``None`` when the host, the field, or the request is
         unavailable (all of which mean "unknown", which does not gate).
@@ -348,7 +348,7 @@ def _headers(base_url: str, *, host_id: str | None) -> dict[str, str]:
     """
     Auth headers for *base_url*, matching every other CLI server call.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param host_id: This machine's host id for the slice-key header, or
         ``None``. Required kwarg because ``_remote_headers`` makes it required
         (host_id sharding, commit 615383a) — a preflight read that omitted it
@@ -369,7 +369,7 @@ def _get_json(*, base_url: str, path: str, host_id: str | None = None) -> dict[s
     of those unreadable answers, which is why the budget is
     :data:`_PREFLIGHT_TIMEOUT` rather than the create's.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param path: Request path, e.g. ``"/v1/info"``.
     :param host_id: This machine's host id for the slice-key header, or
         ``None`` (the ``/v1/info`` availability probe needs no host routing).

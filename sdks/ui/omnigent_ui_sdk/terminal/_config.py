@@ -1,7 +1,7 @@
 """Persistent user configuration for terminal UI frontends.
 
 The UI SDK keeps this intentionally small: TUI preferences are persisted
-under the ``tui:`` table of the shared Omnigent YAML config file
+under the ``tui:`` table of the shared tesseract YAML config file
 (``$OMNIGENT_CONFIG_HOME/config.yaml`` when configured, otherwise
 ``$HOME/.omnigent/config.yaml``). Today that means the persisted light/dark
 theme selection.
@@ -51,7 +51,7 @@ DEFAULT_USER_CONFIG = UserConfig()
 
 
 def state_dir() -> pathlib.Path:
-    """Return the shared Omnigent per-user state directory.
+    """Return the shared tesseract per-user state directory.
 
     Honors ``OMNIGENT_DATA_DIR`` so worktrees and dev pods can isolate runtime
     state without replacing ``HOME``. Callers that only compute a path cause
@@ -281,7 +281,7 @@ def _dump_user_config(data: Mapping[str, Any]) -> str:
     :returns: YAML text ready to write.
     """
 
-    header = "# Omnigent user configuration\n"
+    header = "# tesseract user configuration\n"
     if not data:
         return header
     body = yaml.safe_dump(dict(data), default_flow_style=False, sort_keys=True)

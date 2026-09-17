@@ -10,7 +10,7 @@ prompt_toolkit's ``Unhandled exception in event loop`` /
 ``Press ENTER to continue...`` pause.
 
 The fault is injected with a transparent TCP proxy between the REPL and
-the Omnigent server that aborts exactly ONE connection: the first one
+the tesseract server that aborts exactly ONE connection: the first one
 carrying an elicitation ``/resolve`` request, before any response bytes
 are sent. Every other request (including a retry of the same resolve)
 passes through untouched — the server and runner stay healthy the whole
@@ -61,7 +61,7 @@ def _strip_ansi(text: str) -> str:
 class _FaultProxy:
     """Transparent TCP proxy that aborts ONE elicitation-resolve request.
 
-    Forwards all bytes between clients and the upstream Omnigent server.
+    Forwards all bytes between clients and the upstream tesseract server.
     The first client connection whose bytes carry an elicitation
     ``/resolve`` HTTP request is aborted (RST, no response) — a transient
     transport interruption exactly at the verdict POST. Everything else,

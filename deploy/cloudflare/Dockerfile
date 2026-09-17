@@ -1,4 +1,4 @@
-# Omnigent server on Cloudflare Containers, backed by D1 (database) and R2
+# tesseract server on Cloudflare Containers, backed by D1 (database) and R2
 # (artifact store via omnigent's native S3 backend). Derived from the official
 # server image; adds the Cloudflare D1 SQLAlchemy dialect + a behavior shim, and
 # boto3 for the S3/R2 artifact store.

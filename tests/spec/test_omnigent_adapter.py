@@ -1,5 +1,5 @@
 """
-Unit tests for the Omnigent YAML spec adapter.
+Unit tests for the tesseract YAML spec adapter.
 
 Covers:
 
@@ -63,7 +63,7 @@ def hello_world_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def executor_block_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML with an ``executor:`` block declaring
+    tesseract YAML with an ``executor:`` block declaring
     model, harness, and profile.
     """
     config = {
@@ -83,7 +83,7 @@ def executor_block_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def function_tools_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML with one function-type tool whose
+    tesseract YAML with one function-type tool whose
     ``callable:`` points at a real, importable Python function
     (``tests.resources.examples._shared.tool_functions.get_current_time``). The adapter
     recovers the dotted path from the resolved callable's
@@ -109,7 +109,7 @@ def function_tools_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def policies_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML declaring a ``policies:`` block. The adapter
+    tesseract YAML declaring a ``policies:`` block. The adapter
     lifts this into ``AgentSpec.guardrails.policies`` so the
     omnigent workflow enforces it at the configured phases.
 
@@ -140,7 +140,7 @@ def policies_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def os_env_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML declaring a top-level ``os_env:`` block. The
+    tesseract YAML declaring a top-level ``os_env:`` block. The
     adapter carries it through the top-level ``AgentSpec.os_env`` field as an
     :class:`OSEnvSpec` dataclass so sub-agents that declare
     ``os_env: inherit`` can resolve to it at translation time.
@@ -169,7 +169,7 @@ def os_env_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def mcp_tool_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML with a stdio MCP-type tool.
+    tesseract YAML with a stdio MCP-type tool.
 
     Translated to an ``MCPServerConfig(transport="stdio",
     command=..., args=...)`` by the adapter — the
@@ -201,7 +201,7 @@ def mcp_tool_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def mcp_http_tool_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML with an HTTP MCP-type tool (``url`` + headers).
+    tesseract YAML with an HTTP MCP-type tool (``url`` + headers).
 
     Translated to an ``MCPServerConfig(transport="http", url=...,
     headers=...)`` by the adapter. Covers the non-stdio
@@ -227,7 +227,7 @@ def mcp_http_tool_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def mcp_databricks_server_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML with the ``databricks_server`` MCP shape —
+    tesseract YAML with the ``databricks_server`` MCP shape —
     omnigent has no resolver for it, so the adapter rejects.
     """
     config = {
@@ -250,7 +250,7 @@ def mcp_databricks_server_yaml(tmp_path: Path) -> Path:
 @pytest.fixture()
 def cancellable_tool_yaml(tmp_path: Path) -> Path:
     """
-    Omnigent YAML declaring a legacy ``cancellable_function``
+    tesseract YAML declaring a legacy ``cancellable_function``
     tool. Used to verify the adapter REJECTS this shape post-step
     (c) — the runner protocol was retired in favor of plain
     callables dispatched via ``sys_call_async``.
@@ -332,7 +332,7 @@ def test_agent_def_to_agent_spec_hello_world(
 
 
 def test_agent_def_to_agent_spec_accepts_claude_harness_alias(tmp_path: Path) -> None:
-    """Omnigent YAML may use ``harness: claude`` as a spec-level alias."""
+    """tesseract YAML may use ``harness: claude`` as a spec-level alias."""
     yaml_path = tmp_path / "agent.yaml"
     yaml_path.write_text(
         yaml.dump(
@@ -497,7 +497,7 @@ def test_function_tool_parameters_derived_from_callable_signature(
 ) -> None:
     """
     When the YAML's function tool declares no ``input_schema:``,
-    the Omnigent adapter introspects the resolved Python callable's
+    the tesseract adapter introspects the resolved Python callable's
     signature and exposes that as the LLM-facing JSON-Schema
     ``parameters`` block. Without this fallback, omnigent
     YAMLs that point at plain Python functions ship to the LLM
@@ -514,7 +514,7 @@ def test_function_tool_parameters_derived_from_callable_signature(
       - The adapter reverts to forwarding only an explicit
         ``input_schema:`` block from YAML (the prior buggy
         behaviour); plain Python tools become unusable under
-        Omnigent mode.
+        tesseract mode.
       - The schema-derivation helper changes its output shape —
         e.g. drops ``required`` for keyword-only-with-default
         params, or starts emitting required entries for
@@ -623,7 +623,7 @@ def test_load_omnigent_yaml_missing_package_raises_with_install_hint(
 
 def test_load_policies_yaml_lifts_into_guardrails(policies_yaml: Path) -> None:
     """
-    Omnigent YAMLs with a ``policies:`` block produce an
+    tesseract YAMLs with a ``policies:`` block produce an
     AgentSpec whose ``guardrails.policies`` carries the
     translated policy, preserving ``name``, the dotted callable
     path, and the phase. The omnigent workflow then enforces
@@ -695,7 +695,7 @@ def test_load_os_env_yaml_carries_through_top_level_field(
 
 def test_load_mcp_stdio_yaml_translates_to_mcp_server(mcp_tool_yaml: Path) -> None:
     """
-    Omnigent YAMLs declaring a subprocess MCP tool translate to
+    tesseract YAMLs declaring a subprocess MCP tool translate to
     a native ``MCPServerConfig(transport="stdio", ...)`` entry on
     ``AgentSpec.mcp_servers``. At runtime
     :class:`~omnigent.tools.mcp.McpServerConnection` spawns the
@@ -704,7 +704,7 @@ def test_load_mcp_stdio_yaml_translates_to_mcp_server(mcp_tool_yaml: Path) -> No
     What breaks if this fails: the adapter regresses to the
     old fail-loud rejection, making agents with MCPs
     (e.g. databricks_coding_agent's glean/google) unusable
-    under the Omnigent integration path.
+    under the tesseract integration path.
     """
     spec = load(mcp_tool_yaml)
     assert len(spec.mcp_servers) == 1
@@ -723,13 +723,13 @@ def test_load_mcp_stdio_yaml_translates_to_mcp_server(mcp_tool_yaml: Path) -> No
 
 def test_load_mcp_http_yaml_translates_to_mcp_server(mcp_http_tool_yaml: Path) -> None:
     """
-    Omnigent YAMLs with an HTTP MCP (``url`` + headers)
+    tesseract YAMLs with an HTTP MCP (``url`` + headers)
     translate to an ``MCPServerConfig(transport="http", ...)``
     entry. Covers the non-stdio branch of
     :func:`_translate_mcp_tool_from_def`.
 
     What breaks if this fails: users migrating HTTP MCPs from
-    omnigent-legacy to Omnigent mode get either a translator crash
+    omnigent-legacy to tesseract mode get either a translator crash
     (``None`` command) or a silently dropped tool.
     """
     spec = load(mcp_http_tool_yaml)
@@ -756,7 +756,7 @@ def test_mcp_stdio_yaml_reverse_trip_recovers_mcp_tool(mcp_tool_yaml: Path) -> N
     harness; a missing reverse translation drops every MCP
     tool from the AgentDef the harness sees.
 
-    What breaks if this fails: a live Omnigent mode run with a
+    What breaks if this fails: a live tesseract mode run with a
     stdio MCP either crashes (reverse path raises
     ``unsupported concept``) or silently drops the MCP tool
     (LLM sees no MCP tool, never calls it, agent returns
@@ -783,8 +783,8 @@ def test_mcp_stdio_yaml_reverse_trip_recovers_mcp_tool(mcp_tool_yaml: Path) -> N
 
 def test_load_mcp_databricks_server_yaml_raises(mcp_databricks_server_yaml: Path) -> None:
     """
-    Omnigent MCP tools using the ``databricks_server=<name>``
-    shape fail loud — Omnigent' MCPServerConfig doesn't
+    tesseract MCP tools using the ``databricks_server=<name>``
+    shape fail loud — tesseract' MCPServerConfig doesn't
     resolve named Databricks servers. The translator needs a
     concrete ``url`` or ``command`` to emit a functional config.
 
@@ -802,14 +802,14 @@ def test_load_cancellable_function_yaml_rejected_post_step_c(
     cancellable_tool_yaml: Path,
 ) -> None:
     """
-    Omnigent YAMLs declaring ``type: cancellable_function``
-    are rejected by the Omnigent adapter with a clear migration hint.
+    tesseract YAMLs declaring ``type: cancellable_function``
+    are rejected by the tesseract adapter with a clear migration hint.
 
     Step (c) retired the runner-protocol shape (``runner:`` +
     ``CancellableFunctionTool``) in favor of plain callables
     dispatched via ``sys_call_async``. The adapter fails loud
     rather than silently translating, so anyone porting an old
-    inner-stack YAML to Omnigent mode gets pointed at the new shape.
+    inner-stack YAML to tesseract mode gets pointed at the new shape.
 
     What breaks if this fails: either the adapter regresses to
     silently accept runner instances (the bug that motivated
@@ -964,7 +964,7 @@ def test_function_tool_parameters_round_trip_preserves_input_schema(
     translation and back without losing the schema.
 
     Step (c) made plain callables the only supported function-tool
-    shape on the Omnigent path. Schema preservation matters because the
+    shape on the tesseract path. Schema preservation matters because the
     inner harness's ``tool_schema()`` falls back to introspecting
     the callable when ``input_schema`` is absent — fine for
     well-typed functions, but fragile for tools with non-trivial
@@ -1351,7 +1351,7 @@ def test_instructions_field_falls_back_to_prompt_when_unset() -> None:
 def test_instructions_yaml_loads_through_full_pipeline(tmp_path: Path) -> None:
     """
     End-to-end through ``load_omnigent_yaml`` (the integration
-    path the Omnigent server hits when registering an omnigent
+    path the tesseract server hits when registering an omnigent
     bundle): YAML with ``instructions: AGENTS.md`` produces a
     spec whose ``instructions`` field carries the file's
     contents.
@@ -1384,7 +1384,7 @@ def test_terminals_thread_through_translator() -> None:
     ``designs/OMNIGENT_TERMINAL_BRIDGE.md`` collapses if this breaks.
 
     What breaks if this fails: omnigent YAMLs that declare
-    ``terminals:`` boot under Omnigent mode with
+    ``terminals:`` boot under tesseract mode with
     ``AgentSpec.terminals=None``. The AP-side ToolManager doesn't
     register ``sys_terminal_*``, and the LLM gets a "tool not
     available" error mid-conversation.
@@ -1576,12 +1576,12 @@ def test_harness_auto_picks_from_model_prefix(
     Mirrors the auto-pick pure omnigent' CLI does at
     ``create_executor`` time, so YAMLs that relied on the
     implicit behavior don't need to be touched to work under
-    Omnigent mode.
+    tesseract mode.
 
     What breaks if this fails: every YAML lacking an explicit
     ``harness:`` field trips the validator's
     ``executor.config.harness: required`` error at spec-load,
-    blocking the entire Omnigent path.
+    blocking the entire tesseract path.
     """
     from omnigent.inner.datamodel import AgentDef
     from omnigent.inner.datamodel import ExecutorSpec as OmniExecutorSpec
@@ -1862,7 +1862,7 @@ def test_function_policy_routes_callable_through_legacy_shim() -> None:
 
     The indirection exists so author callables written with the
     legacy omnigent ``(content, phase)`` convention keep
-    working under Omnigent' ``(ctx, context)`` convention —
+    working under tesseract' ``(ctx, context)`` convention —
     see ``omnigent.spec._omnigent_legacy_shim``. The shim
     is a runtime no-op for omnigent-native callables, so
     routing everything through it is safe.
@@ -2055,7 +2055,7 @@ def test_databricks_slash_model_without_profile_leaves_connection_none() -> None
 def test_labels_and_schema_merge() -> None:
     """
     Top-level ``labels:`` (initial values) and ``label_schema:``
-    (values) merge into Omnigent's
+    (values) merge into tesseract's
     :attr:`GuardrailsSpec.labels` as :class:`LabelDef` entries.
 
     What breaks if this fails: the workflow runs with the wrong
@@ -2134,9 +2134,9 @@ def test_executor_extra_field_propagates_to_llm_config() -> None:
 
     What breaks if this fails: agent authors lose the ability to
     override per-harness knobs (``max_turns``, ``temperature``,
-    ``parallel_tool_calls``, etc.) through the Omnigent path, even
+    ``parallel_tool_calls``, etc.) through the tesseract path, even
     though those knobs work fine via legacy omnigent. Makes
-    Omnigent mode a downgrade rather than a compatible integration.
+    tesseract mode a downgrade rather than a compatible integration.
     """
     agent_def, raw_yaml = _build_agent_def_with_raw_yaml()
     raw_yaml["executor"] = {

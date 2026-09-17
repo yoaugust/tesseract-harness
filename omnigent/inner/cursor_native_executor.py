@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent web-chat turns into the native Cursor TUI.
+"""Executor that bridges tesseract web-chat turns into the native Cursor TUI.
 
 It does not launch cursor-agent — the ``omnigent cursor`` wrapper already
 launched the interactive TUI in the session terminal. Each web-UI turn injects
@@ -98,7 +98,7 @@ class CursorNativeExecutor(Executor):
         # forked history permanently if this injection fails (e.g. the TUI
         # exited) and the turn is retried. The forwarder strips the sentinel
         # block when mirroring this turn back, so the copied history isn't
-        # duplicated in the Omnigent timeline.
+        # duplicated in the tesseract timeline.
         preamble = read_fork_preamble(self._bridge_dir)
         if preamble:
             text = wrap_fork_preamble(preamble, text)

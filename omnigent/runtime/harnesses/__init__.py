@@ -1,6 +1,6 @@
 """
 Harness package — per-conversation subprocesses that implement a
-subset of the Omnigent REST API.
+subset of the tesseract REST API.
 
 See ``designs/SERVER_HARNESS_CONTRACT.md`` for the full contract.
 The harness IS an HTTP service speaking the same Pydantic models AP

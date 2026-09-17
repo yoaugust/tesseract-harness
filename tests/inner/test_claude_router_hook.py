@@ -247,7 +247,7 @@ def test_redirect_denies_with_mcp_prefixed_session_create_instruction(
     reason = _redirect_reason(tmp_path, monkeypatch)
 
     # The instruction must name the tool the way Claude advertises it. Claude
-    # exposes Omnigent's MCP tools as ``mcp__omnigent__<tool>``, so the bare
+    # exposes tesseract's MCP tools as ``mcp__omnigent__<tool>``, so the bare
     # name it used to quote made the model report the tool as nonexistent and
     # abandon the sub-task (live: session e26d94b2).
     assert "mcp__omnigent__sys_session_create" in reason

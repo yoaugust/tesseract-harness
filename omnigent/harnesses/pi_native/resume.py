@@ -1,4 +1,4 @@
-"""Rebuild a native Pi session JSONL from committed Omnigent items.
+"""Rebuild a native Pi session JSONL from committed tesseract items.
 
 Pi-native fork/resume parity with claude-native / codex-native.
 
@@ -14,7 +14,7 @@ Pi's CLI exposes this directly:
   ``@earendil-works/pi-coding-agent/docs/session-format.md``.
 
 So pi-native CAN carry chat history into a fork/resume after all: synthesize
-the session JSONL from Omnigent items and write it where ``--session`` looks.
+the session JSONL from tesseract items and write it where ``--session`` looks.
 This is the same "rebuild the native session file the CLI expects, write it
 before launch, let the CLI discover it on startup" mechanism claude-native and
 codex-native use.
@@ -22,9 +22,9 @@ codex-native use.
 Critically, Pi only fires ``message_start`` / ``message_end`` / ``tool_call``
 events for messages produced *inside a live agent loop* (after ``agent_start``)
 — NOT for entries loaded from a session file on ``session_start`` (see the
-lifecycle in ``docs/extensions.md``). So the Omnigent Pi extension does not
+lifecycle in ``docs/extensions.md``). So the tesseract Pi extension does not
 re-post the rebuilt history to the server, and the carried turns are not
-duplicated in the Omnigent transcript. This is the same guarantee claude /
+duplicated in the tesseract transcript. This is the same guarantee claude /
 codex get from seeding their forwarder cursor to start-at-end; pi-native gets
 it for free from Pi's event semantics.
 """
@@ -80,7 +80,7 @@ def mint_pi_session_id() -> str:
 
     Pi mints UUIDv7 ids; a UUIDv4 has the same textual shape and is accepted by
     ``--session`` (which matches on the literal id), so a v4 is sufficient for a
-    synthesized session that Omnigent owns.
+    synthesized session that tesseract owns.
 
     :returns: A new session id, e.g.
         ``"02857840-6362-408f-b41f-309e396ed7c6"``.
@@ -109,9 +109,9 @@ def _synthetic_pi_entry_id(
     Deterministic so a re-synthesis of the same conversation yields a stable
     tree (matching how claude-native / codex-native derive synthetic ids).
 
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param external_session_id: Pi session id for the rebuilt file.
-    :param item: Omnigent item dict. Its ``id`` is used when present.
+    :param item: tesseract item dict. Its ``id`` is used when present.
     :param index: Zero-based fallback index in the item list.
     :param suffix: Discriminator when one item maps to multiple entries
         (e.g. an assistant text entry plus a tool-call entry).
@@ -127,11 +127,11 @@ def _synthetic_pi_entry_id(
 
 
 def _pi_text_blocks_from_api_content(content: object, *, api_type: str) -> list[_JsonObject]:
-    """Extract Pi text content blocks from an Omnigent content array.
+    """Extract Pi text content blocks from an tesseract content array.
 
-    :param content: Omnigent content array, e.g.
+    :param content: tesseract content array, e.g.
         ``[{"type": "input_text", "text": "hello"}]``.
-    :param api_type: Omnigent block type to include, ``"input_text"`` or
+    :param api_type: tesseract block type to include, ``"input_text"`` or
         ``"output_text"``.
     :returns: Pi ``{"type": "text", "text": ...}`` blocks.
     """
@@ -148,12 +148,12 @@ def _pi_text_blocks_from_api_content(content: object, *, api_type: str) -> list[
 
 
 def _pi_tool_arguments(value: object) -> _JsonObject:
-    """Parse an Omnigent function-call ``arguments`` string into a Pi object.
+    """Parse an tesseract function-call ``arguments`` string into a Pi object.
 
-    Pi's ``toolCall.arguments`` is a structured object, whereas Omnigent stores
+    Pi's ``toolCall.arguments`` is a structured object, whereas tesseract stores
     the JSON-encoded string the model emitted.
 
-    :param value: Omnigent ``arguments`` value, e.g. ``'{"path": "a.txt"}'``.
+    :param value: tesseract ``arguments`` value, e.g. ``'{"path": "a.txt"}'``.
     :returns: Parsed arguments object, or ``{}`` for non-object / unparseable
         input.
     """
@@ -167,13 +167,13 @@ def _pi_tool_arguments(value: object) -> _JsonObject:
 
 
 def _is_interrupted_assistant_item(item: _JsonObject) -> bool:
-    """Return whether an Omnigent item is an interrupted assistant partial.
+    """Return whether an tesseract item is an interrupted assistant partial.
 
-    Omnigent persists these so the web transcript can show the partial text and
+    tesseract persists these so the web transcript can show the partial text and
     the interrupted label after refresh. They must not be replayed into Pi's
     rebuilt session, or Pi would treat a cancelled answer as completed history.
 
-    :param item: Flat Omnigent item dict.
+    :param item: Flat tesseract item dict.
     :returns: ``True`` for interrupted assistant messages.
     """
     return (
@@ -184,9 +184,9 @@ def _is_interrupted_assistant_item(item: _JsonObject) -> bool:
 
 
 def _interrupted_response_ids(items: list[_JsonObject]) -> set[str]:
-    """Return response ids for Omnigent turns that ended interrupted.
+    """Return response ids for tesseract turns that ended interrupted.
 
-    :param items: Flat Omnigent item dicts in chronological order.
+    :param items: Flat tesseract item dicts in chronological order.
     :returns: Response ids to exclude from the rebuilt Pi session.
     """
     response_ids: set[str] = set()
@@ -208,10 +208,10 @@ def pi_session_records_from_session_items(
     provider: str = "omnigent",
     model: str = "",
 ) -> list[_JsonObject]:
-    """Convert Omnigent session items into Pi session JSONL records.
+    """Convert tesseract session items into Pi session JSONL records.
 
     The generated records follow Pi's v3 session format: one ``session``
-    header, then ``message`` entries linked by ``id`` / ``parentId``. Omnigent
+    header, then ``message`` entries linked by ``id`` / ``parentId``. tesseract
     items map as:
 
     - user ``message`` -> Pi ``message`` with ``role: "user"``.
@@ -224,9 +224,9 @@ def pi_session_records_from_session_items(
     Interrupted assistant turns (and the rest of their response group) are
     skipped so a cancelled turn isn't restored as completed history.
 
-    :param items: Flat Omnigent item dicts in chronological order, e.g.
+    :param items: Flat tesseract item dicts in chronological order, e.g.
         ``{"type": "message", "role": "user", "content": [...]}``.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``. Used
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``. Used
         for deterministic synthetic entry ids.
     :param external_session_id: Pi session id for the rebuilt file's header.
     :param cwd: Working directory written into the session header.
@@ -279,10 +279,10 @@ def _pi_entries_from_session_item(
     provider: str,
     model: str,
 ) -> list[_JsonObject]:
-    """Convert one Omnigent item into zero or more Pi session entries.
+    """Convert one tesseract item into zero or more Pi session entries.
 
-    :param item: Flat Omnigent item dict.
-    :param session_id: Omnigent conversation id (for synthetic ids).
+    :param item: Flat tesseract item dict.
+    :param session_id: tesseract conversation id (for synthetic ids).
     :param external_session_id: Pi session id (for synthetic ids).
     :param index: Zero-based index of *item* in the source list.
     :param timestamp: ISO timestamp to stamp on each entry.
@@ -432,7 +432,7 @@ def pi_resume_session_path(session_dir: Path, external_session_id: str) -> Path:
 
     Reuses an existing on-disk file for the id when present (Pi appends to a
     session file as a conversation grows, so an existing file is live runtime
-    state Omnigent should not clobber). Otherwise builds a timestamped path
+    state tesseract should not clobber). Otherwise builds a timestamped path
     matching Pi's ``<timestamp>_<uuid>.jsonl`` naming under the session dir.
 
     :param session_dir: Directory passed to ``pi --session-dir``.
@@ -468,10 +468,10 @@ async def fetch_all_session_items_for_pi_resume(
     client: httpx.AsyncClient,
     session_id: str,
 ) -> list[_JsonObject]:
-    """Fetch committed Omnigent session items in chronological order.
+    """Fetch committed tesseract session items in chronological order.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :returns: Flat API item dicts from ``GET /v1/sessions/{id}/items``.
     :raises RuntimeError: If an item page cannot be fetched or parsed.
     """
@@ -543,7 +543,7 @@ async def ensure_local_pi_resume_session(
 ) -> Path | None:
     """Ensure Pi has a local session JSONL to resume with prior history.
 
-    Synthesizes the Pi session file from committed Omnigent items so a
+    Synthesizes the Pi session file from committed tesseract items so a
     cold-resume (no local file — cross-machine, fresh runner, or cleared
     bridge dir) or a fork (a freshly minted session id) opens with the prior
     conversation as Pi context. Mirrors
@@ -556,8 +556,8 @@ async def ensure_local_pi_resume_session(
     caller should launch fresh) or when *external_session_id* is unsafe for a
     filename.
 
-    :param client: HTTP client pointed at the Omnigent server.
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param client: HTTP client pointed at the tesseract server.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param external_session_id: Pi session id for the rebuilt file.
     :param session_dir: Directory passed to ``pi --session-dir``.
     :param workspace: Resolved cwd Pi will run in (written into the header).
@@ -565,7 +565,7 @@ async def ensure_local_pi_resume_session(
     :param model: Default model id for synthesized assistant messages.
     :returns: Path to the existing or written session file, or ``None`` when
         nothing resumable was produced.
-    :raises RuntimeError: If Omnigent history cannot be fetched or the session
+    :raises RuntimeError: If tesseract history cannot be fetched or the session
         cannot be written.
     """
     if not is_safe_pi_session_id(external_session_id):

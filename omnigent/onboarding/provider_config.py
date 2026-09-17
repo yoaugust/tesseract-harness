@@ -184,7 +184,7 @@ _HARNESS_FAMILY: dict[str, str] = {
     "antigravity": OPENAI_FAMILY,
     "agy": OPENAI_FAMILY,
     # NB: ``kimi`` is intentionally absent. Upstream Kimi Code CLI has no
-    # per-spawn provider override flag, so Omnigent cannot thread a generic
+    # per-spawn provider override flag, so tesseract cannot thread a generic
     # provider through. Provider routing for kimi lives in ``~/.kimi-code/config.toml``
     # and is managed out-of-band via ``kimi provider add``.
     # Qwen Code is OpenAI-compatible; the native TUI keys both spellings (mirroring
@@ -1502,11 +1502,11 @@ def _source_descriptor(family: FamilyConfig) -> str:
 
 
 def harness_owns_its_credential(harness: str) -> bool:
-    """Whether *harness* carries its own auth, so Omnigent resolves none.
+    """Whether *harness* carries its own auth, so tesseract resolves none.
 
-    True for ACP-backed harnesses whose spawn wires no Omnigent provider
+    True for ACP-backed harnesses whose spawn wires no tesseract provider
     (``acp``/``acp:<slug>``, goose, and unmapped community ACP plugins):
-    the external agent authenticates itself, so describing an Omnigent
+    the external agent authenticates itself, so describing an tesseract
     provider for one would name a credential the session never uses.
 
     A harness mapped in :data:`_HARNESS_FAMILY` is provider-routed at spawn

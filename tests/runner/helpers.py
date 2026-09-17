@@ -10,12 +10,12 @@ from omnigent.inner.terminal import TerminalInstance
 
 
 class NullServerClient:
-    """Minimal fake Omnigent server client for tests that do not exercise Omnigent interactions.
+    """Minimal fake tesseract server client for tests that do not exercise tesseract interactions.
 
-    Returns empty/204 responses to all requests so the runner's Omnigent calls
+    Returns empty/204 responses to all requests so the runner's tesseract calls
     (session fetch, label patch, history load, etc.) succeed silently.
     Used wherever ``create_runner_app`` is called in tests that only
-    exercise runner-local behavior with no real Omnigent server.
+    exercise runner-local behavior with no real tesseract server.
     """
 
     class _Response:

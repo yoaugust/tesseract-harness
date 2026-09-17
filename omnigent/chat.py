@@ -1,6 +1,6 @@
 """Implementation of the ``omnigent chat`` command.
 
-The CLI always ends by connecting an Omnigent client to a server URL. For
+The CLI always ends by connecting an tesseract client to a server URL. For
 path targets it first ensures the agent is registered on that server
 (a local subprocess by default, or ``--server`` when supplied). URL
 targets skip setup and use the existing server's registered agents.
@@ -274,10 +274,10 @@ def _on_session_known(
 
     Called the moment the session id is known — before the turn runs — so a
     headless wrapper can surface the session link immediately. Always prints
-    the stable ``Omnigent session: <url>`` line; additionally opens the
+    the stable ``tesseract session: <url>`` line; additionally opens the
     browser when the user opted in.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param session_id: The freshly created/resumed conversation id.
     :param auto_open_conversation: Whether to also open the browser link.
     """
@@ -372,7 +372,7 @@ def run_chat(
         conversation to ``~/.omnigent/logs/`` on REPL exit.
         Maps to ``--log`` on the CLI (default-on for the legacy
         path, default-off here so it stays explicit on
-        Omnigent mode). See ``omnigent.repl._session_log`` for the
+        tesseract mode). See ``omnigent.repl._session_log`` for the
         schema. Local-mode only — passing this with a remote
         URL target raises :class:`click.ClickException`
         (no client-side conversation hand-off to dump).
@@ -468,7 +468,7 @@ def run_chat(
     else:
         # Non-URL target → the host daemon is the backend. It connects to
         # the given ``--server`` URL, or starts (and connects to) a persistent
-        # local Omnigent server when none is provided; this returns that concrete
+        # local tesseract server when none is provided; this returns that concrete
         # URL. The agent is uploaded as a session and the daemon spawns +
         # *owns* the runner (the CLI only attaches the REPL), matching
         # claude-native.
@@ -574,7 +574,7 @@ def run_attach(
     confirms the session's host runner is online (``attach`` can't start one),
     failing loud otherwise.
 
-    :param base_url: Omnigent server hosting the session, e.g.
+    :param base_url: tesseract server hosting the session, e.g.
         ``"http://127.0.0.1:6767"``.
     :param conversation_id: Live conversation/session id to join, e.g.
         ``"conv_abc123"``.
@@ -940,7 +940,7 @@ def _server_headers(
     runner_id: str | None = None,
 ) -> dict[str, str]:
     """
-    Build non-auth HTTP headers for an Omnigent server client.
+    Build non-auth HTTP headers for an tesseract server client.
 
     Auth is handled separately via :func:`_server_auth` which
     returns an ``httpx.Auth`` that refreshes the Databricks OAuth
@@ -963,7 +963,7 @@ def _server_auth(
     session_id: str | None,
 ) -> httpx.Auth | None:
     """
-    Build an httpx Auth for a remote Omnigent server client.
+    Build an httpx Auth for a remote tesseract server client.
 
     Returns a :class:`_DatabricksTokenAuth` when any credential
     source is available (env var, stored ``omnigent login`` record,
@@ -1165,8 +1165,8 @@ def _is_claude_native_conversation(
     """
     Return whether *conversation_id* is a claude-native wrapper session.
 
-    :param base_url: Omnigent server base URL.
-    :param conversation_id: Omnigent conversation id.
+    :param base_url: tesseract server base URL.
+    :param conversation_id: tesseract conversation id.
     :returns: ``True`` only when the wrapper label matches Claude native.
     """
     return (
@@ -1186,10 +1186,10 @@ def _redirect_native_resume_if_needed(
     progress: RunnerStartupProgress | None = None,
 ) -> bool:
     """
-    Redirect a terminal-native resume before Omnigent attach liveness runs.
+    Redirect a terminal-native resume before tesseract attach liveness runs.
 
-    :param base_url: Omnigent server base URL, e.g. ``"https://example.com"``.
-    :param conversation_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param base_url: tesseract server base URL, e.g. ``"https://example.com"``.
+    :param conversation_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param auto_open_conversation: Browser-open preference for the wrapper.
     :param progress: Optional startup spinner to finish before redirect.
     :returns: ``True`` when a native wrapper handled the resume.
@@ -1203,8 +1203,8 @@ def _redirect_native_resume_if_needed(
     run_native = resolve_hook_for_key(native_agent.key, "run_native")
     if run_native is None:
         return False
-    # The native TUI owns the turns; resuming through the Omnigent REPL would run
-    # an Omnigent turn per message *and* let the transcript forwarder mirror the
+    # The native TUI owns the turns; resuming through the tesseract REPL would run
+    # an tesseract turn per message *and* let the transcript forwarder mirror the
     # same message from the native store, double-posting each user turn. Redirect
     # to `omnigent <key> --resume`'s direct tmux attach instead — the wrapper
     # label is `<key>-native` and the CLI command is `<key>`.
@@ -1231,10 +1231,10 @@ def _finish_native_redirect_progress(
     native_command: str,
 ) -> None:
     """
-    Finish any Omnigent startup progress and print the native redirect notice.
+    Finish any tesseract startup progress and print the native redirect notice.
 
     :param progress: Optional startup spinner to finish before writing.
-    :param conversation_id: Omnigent conversation id, e.g.
+    :param conversation_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param wrapper_name: Wrapper label for display, e.g. ``"codex-native"``.
     :param native_command: Native command to show, e.g. ``"codex"``.
@@ -1282,11 +1282,11 @@ def _wrapper_label_for_conversation(
     Single-shot ``GET /v1/sessions/{id}`` against *base_url*, inspecting
     the response's ``labels.omnigent.wrapper`` field. ``None`` on any
     transport / parse error so a flaky server doesn't silently misroute
-    the resume — the caller falls back to the normal Omnigent REPL path and
+    the resume — the caller falls back to the normal tesseract REPL path and
     surfaces a clear failure there.
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:6767"``.
-    :param conversation_id: Omnigent conversation id,
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:6767"``.
+    :param conversation_id: tesseract conversation id,
         e.g. ``"conv_abc123"``.
     :returns: Wrapper label value, or ``None``.
     """
@@ -1374,7 +1374,7 @@ def _attach_session_info(
     A missing/unreachable session yields all-empty facts and the caller fails
     loud.
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:6767"``.
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:6767"``.
     :param conversation_id: Conversation/session id, e.g. ``"conv_abc123"``.
     :returns: The session facts; ``runner_online=False`` on any failure.
     """
@@ -1525,7 +1525,7 @@ def _await_accounts_first_run_setup(
 ) -> None:
     """Block until a fresh accounts-mode local server has its first admin.
 
-    When ``omnigent run`` (re)spawns the local Omnigent server in accounts mode on
+    When ``omnigent run`` (re)spawns the local tesseract server in accounts mode on
     a machine with no admin yet, the server reports ``needs_setup`` and (by
     default) opens a browser to its Create-admin form. Until an admin is
     claimed there is no CLI credential, so the first authenticated call would
@@ -1538,7 +1538,7 @@ def _await_accounts_first_run_setup(
     a token for *base_url*, or when an admin already exists (the server mints
     our token at boot in that case).
 
-    :param base_url: Resolved local Omnigent server URL, e.g.
+    :param base_url: Resolved local tesseract server URL, e.g.
         ``"http://127.0.0.1:6767"``.
     :param timeout_s: Max seconds to wait for setup, e.g. ``600.0``.
     :param progress: Active startup spinner, if any. Cleared before the
@@ -1599,14 +1599,14 @@ def _unreachable_server_message(base_url: str) -> str:
     """
     if is_loopback_url(base_url):
         return (
-            f"Could not connect to the local Omnigent server at {base_url}. "
+            f"Could not connect to the local tesseract server at {base_url}. "
             f"It may have stopped — run `{cli_invocation()} stop`, then try again. "
             f"Server logs are under {process_log_dir_reference('server')}."
         )
     from omnigent.util.server_url import display_server_url
 
     return (
-        f"Could not connect to the Omnigent server at {display_server_url(base_url)}. "
+        f"Could not connect to the tesseract server at {display_server_url(base_url)}. "
         "Check the URL, your network connection, and any HTTP proxy settings."
     )
 
@@ -1663,7 +1663,7 @@ async def _prepare_chat_session_via_daemon(
     the CLI only attaches the REPL afterward). Mirrors claude-native's
     ``_prepare_claude_terminal_via_daemon`` minus the terminal bring-up.
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:8123"``.
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:8123"``.
     :param headers: Static HTTP auth headers (empty for a loopback server).
     :param auth: Per-request ``httpx.Auth`` for token refresh on the SDK
         client, or ``None`` for a loopback server.
@@ -1781,7 +1781,7 @@ def _stop_headless_session(*, base_url: str, session_id: str) -> None:
     the daemon only tears a runner down on an explicit stop; otherwise it lives
     until the runner's own idle self-exit, holding its harness subtree open.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param session_id: The finished session's id, e.g. ``"conv_abc123"``.
     """
     from omnigent.cli import _stop_session_on_server
@@ -1819,7 +1819,7 @@ def _chat_via_daemon(
     server relaunches it (host-bound auto-relaunch).
 
     :param agent_path: Local YAML path or directory.
-    :param base_url: Resolved Omnigent server base URL (the daemon is already
+    :param base_url: Resolved tesseract server base URL (the daemon is already
         ensured for it), e.g. ``"http://127.0.0.1:8123"``.
     :param tool_handler: Optional client-side tool handler.
     :param overrides: CLI overrides to bake into the uploaded spec.
@@ -2661,7 +2661,7 @@ _ResponseOutput: TypeAlias = list[dict[str, Any]]  # type: ignore[explicit-any]
 
 
 def _response_output_text(output: _ResponseOutput) -> str | None:
-    """Extract assistant text from an Omnigent response ``output`` list."""
+    """Extract assistant text from an tesseract response ``output`` list."""
     parts: list[str] = []
     for item in output:
         if not isinstance(item, dict) or item.get("type") != "message":
@@ -3559,7 +3559,7 @@ def _find_free_port() -> int:
 
 def _omnigent_log_dir() -> Path:
     """
-    Resolve the shared Omnigent process log directory.
+    Resolve the shared tesseract process log directory.
 
     Server and captured runner stdout/stderr logs live under the
     same per-user state root as session transcripts and CLI
@@ -3606,10 +3606,10 @@ def _start_local_server(
     ephemeral: bool = False,
 ) -> LocalServer:
     """
-    Launch a local Omnigent server.
+    Launch a local tesseract server.
 
     Server stdout/stderr are routed to ``server.log`` in a
-    per-run directory under ``~/.omnigent/logs`` so concurrent Omnigent sessions don't
+    per-run directory under ``~/.omnigent/logs`` so concurrent tesseract sessions don't
     interleave. The log path is returned to the caller (via
     :class:`LocalServer`) so :func:`_raise_server_failed`
     can surface it in its error message — critical because
@@ -3702,7 +3702,7 @@ def _start_local_server(
     # Propagate executor.profile from the spec as DATABRICKS_CONFIG_PROFILE
     # (spec self-containment: the YAML's own declaration is the only thing
     # that selects a Databricks workspace here — there is no CLI override).
-    # This ensures the Omnigent server and its runner subprocess resolve credentials
+    # This ensures the tesseract server and its runner subprocess resolve credentials
     # for the right Databricks workspace (LLM calls, compaction, etc.).
     if "DATABRICKS_CONFIG_PROFILE" not in child_env:
         _spec = load_spec(agent_path)

@@ -1,4 +1,4 @@
-"""Namespace package for optional Omnigent community extensions."""
+"""Namespace package for optional tesseract community extensions."""
 
 from __future__ import annotations
 

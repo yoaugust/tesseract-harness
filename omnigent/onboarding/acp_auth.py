@@ -14,7 +14,7 @@ commands in a dedicated top-level ``acp:`` block of ``~/.omnigent/config.yaml``:
 
 Each agent gets a stable ``slug`` derived from its name; a picked
 ``acp:<slug>`` (carried in the spec, resolved at spawn) looks the command back up
-here. Auth is each agent's own — Omnigent stores no credential, so unlike the
+here. Auth is each agent's own — tesseract stores no credential, so unlike the
 ``providers:`` / ``cursor:`` blocks there is no secret reference. An agent that
 authenticates from an environment variable names it in ``env_passthrough``
 (names only, never values): the spawn env is deny-by-default, so an undeclared
@@ -53,8 +53,8 @@ class AcpAgentEntry:
         in ``session/new``; see :class:`omnigent.inner.acp_executor.AcpAgentConfig`).
     :param session_id_mode: ``"server"`` (default) or ``"client"``.
     :param send_model: Send the model in ``session/new`` (Qwen-shaped agents).
-    :param omnigent_mcp: Lend Omnigent's builtin MCP relay in ``session/new``.
-    :param inject_system_prompt: Fold the Omnigent system prompt into the first
+    :param omnigent_mcp: Lend tesseract's builtin MCP relay in ``session/new``.
+    :param inject_system_prompt: Fold the tesseract system prompt into the first
         ACP turn. Disable for agents that fully own their own system prompt (e.g.
         Pi forks like ``omp``) to prevent XML tool-call fragments from leaking
         into their responses when no MCP relay is active. See

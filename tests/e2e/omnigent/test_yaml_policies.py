@@ -11,7 +11,7 @@ policy, and the base model is passed via ``--model``. We configure
 separate keyed queues so each model gets its own response.
 
 **What breaks if this fails:**
-- Omnigent' policy engine regresses.
+- tesseract' policy engine regresses.
 - YAML spec parsing regresses on the ``policies:`` block.
 - The prompt-policy evaluator drops the ``reason`` field.
 """

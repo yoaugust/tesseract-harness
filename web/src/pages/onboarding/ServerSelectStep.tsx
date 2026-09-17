@@ -138,7 +138,7 @@ export function ServerSelectStep({
     error && initialUrl && initialUrl !== DEFAULT_LOCAL ? initialUrl : "",
   );
   const [invalid, setInvalid] = useState(false);
-  // The URL the shell flagged as "doesn't look like Omnigent" — a second
+  // The URL the shell flagged as "doesn't look like tesseract" — a second
   // connect on the same URL proceeds (force); editing the input clears it.
   const [unconfirmedUrl, setUnconfirmedUrl] = useState<string | null>(null);
   // Message from a rejected connect, so a failed Join shows something.
@@ -222,7 +222,7 @@ export function ServerSelectStep({
               {connectError}
             </>
           ) : unconfirmedUrl ? (
-            "This doesn't look like an Omnigent server. Click Join again to connect anyway."
+            "This doesn't look like an tesseract server. Click Join again to connect anyway."
           ) : (
             <>
               <span className="font-medium">Couldn&apos;t connect to the server: </span>
@@ -262,7 +262,7 @@ export function ServerSelectStep({
           onKeyDown={(e) => {
             if (e.key === "Enter") addServer();
           }}
-          placeholder="Enter Omnigent server URL"
+          placeholder="Enter tesseract server URL"
           className="border-0 px-0 shadow-none focus-visible:ring-0"
           aria-label="Server URL"
         />
@@ -293,7 +293,7 @@ export function ServerSelectStep({
             className="flex items-center gap-2 text-base text-foreground underline underline-offset-2"
           >
             <Plus className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-            Create your own Omnigent server
+            Create your own tesseract server
             <SquareArrowOutUpRight className="size-3.5 shrink-0" aria-hidden />
           </a>
         </div>
@@ -350,7 +350,7 @@ export function ServerSelectStep({
                           {check === "checking"
                             ? "Checking…"
                             : check === "ok"
-                              ? "Omnigent server"
+                              ? "tesseract server"
                               : check === "reachable"
                                 ? "Reachable"
                                 : "Can't reach"}
@@ -406,7 +406,7 @@ export function ServerSelectStep({
 }
 
 /**
- * "Omnigent server info" dialog. Shows only what the shell actually knows about
+ * "tesseract server info" dialog. Shows only what the shell actually knows about
  * a saved server — its URL and whether it's local. The design mock also lists
  * admin / participants / last-used, but the setup bridge exposes none of that,
  * so we don't fabricate it.
@@ -424,7 +424,7 @@ function ServerInfoDialog({
     <Dialog open={url !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[420px]">
         <DialogHeader>
-          <DialogTitle>Omnigent server info</DialogTitle>
+          <DialogTitle>tesseract server info</DialogTitle>
         </DialogHeader>
         {url !== null && (
           <div className="flex flex-col gap-4 overflow-hidden">

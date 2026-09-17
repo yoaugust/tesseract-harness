@@ -1,4 +1,4 @@
-"""Shared process logging setup for Omnigent entrypoints."""
+"""Shared process logging setup for tesseract entrypoints."""
 
 from __future__ import annotations
 
@@ -214,7 +214,7 @@ def log_record_display_fields(
     use_colors: bool,
     format_level: bool = True,
 ) -> Iterator[None]:
-    """Temporarily add Omnigent display columns to a log record."""
+    """Temporarily add tesseract display columns to a log record."""
     original_levelname = record.levelname
     display_fields = ("source_name", "func_name")
     originals = {
@@ -426,7 +426,7 @@ def _terminal_stream() -> TextIO | None:
 
 def terminal_supports_color() -> bool:
     """Return whether the requested terminal mirror can render ANSI colors."""
-    # Omnigent-owned mirrors (omnidev panes) may force ANSI; otherwise NO_COLOR wins.
+    # tesseract-owned mirrors (omnidev panes) may force ANSI; otherwise NO_COLOR wins.
     if env_truthy(os.environ.get(LOG_FORCE_COLOR_ENV_VAR)):
         return True
     if os.environ.get("NO_COLOR") is not None:

@@ -1,6 +1,6 @@
 # ArgoCD overlay
 
-Deploy Omnigent with the kubernetes sandbox provider via ArgoCD. This overlay
+Deploy tesseract with the kubernetes sandbox provider via ArgoCD. This overlay
 adds safety annotations onto the
 [`sandbox-runners`](../sandbox-runners/README.md) overlay:
 

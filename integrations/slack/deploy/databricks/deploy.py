@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy the Omnigent Slack bot to a Databricks App via Asset Bundles.
+"""Deploy the tesseract Slack bot to a Databricks App via Asset Bundles.
 
 Builds a wheel for the ``omnigent-slack`` package, generates an app-level
 ``pyproject.toml`` that depends on that wheel (with the bot's runtime deps
@@ -239,7 +239,7 @@ def main() -> None:
     parser.add_argument(
         "--server-url",
         required=True,
-        help="Base URL of the Omnigent server app the bot talks to.",
+        help="Base URL of the tesseract server app the bot talks to.",
     )
     parser.add_argument(
         "--oauth-client-id",

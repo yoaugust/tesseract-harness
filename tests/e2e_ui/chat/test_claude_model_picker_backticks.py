@@ -18,7 +18,7 @@ The catalog is produced by the REAL probe pipeline
 CLI whose stream-json output is byte-identical to what a real Claude Code
 2.1.250 ``claude -p "/model"`` run printed when captured live — so the test
 is deterministic regardless of which CLI version this machine has installed,
-while every line of Omnigent's parsing/composition code still runs for real.
+while every line of tesseract's parsing/composition code still runs for real.
 """
 
 from __future__ import annotations

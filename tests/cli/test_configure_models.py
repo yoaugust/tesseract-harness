@@ -2390,7 +2390,7 @@ def test_pi_add_menu_offers_keys_gateway_databricks_but_no_subscription() -> Non
     options = add_menu_options_for_family(PI_SURFACE)
     kinds = {o.kind for o in options}
     # The pi subscription ("Pi — original auth") IS offered for pi — it lets
-    # users bypass Omnigent-managed auth and use Pi's own credentials.
+    # users bypass tesseract-managed auth and use Pi's own credentials.
     assert any(o.kind == "subscription" and o.cli == "pi" for o in options)
     # claude/codex subscriptions must NOT appear — a CLI login is unusable
     # outside its own CLI, so offering one would configure a broken credential.

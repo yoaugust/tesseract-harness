@@ -3,7 +3,7 @@
 
 Exercises the full pipeline that was failing in user-reported bugs:
 
-1. Omnigent YAML with ``async: true``, ``cancellable: true``, and
+1. tesseract YAML with ``async: true``, ``cancellable: true``, and
    inline ``AgentTool`` declarations (``claude_worker``,
    ``codex_worker``) — previously the adapter fail-loud-rejected
    these as "AgentTool: expected FunctionTool after fail-loud
@@ -29,7 +29,7 @@ Two test scenarios:
 **What breaks if this fails:**
 - Someone reintroduces a fail-loud for ``AgentTool`` in the
   translator — coding-supervisor-shaped YAMLs with inline
-  sub-agent-as-tool declarations stop loading under Omnigent mode.
+  sub-agent-as-tool declarations stop loading under tesseract mode.
 - ``_run_agent_via_omnigent`` regresses to the "requires a prompt"
   hard-error path — interactive ``omnigent run <yaml>``
   starts exiting non-zero instead of opening the REPL.
@@ -79,19 +79,19 @@ _HARNESS = "openai-agents"
 _MIN_STDOUT_CHARS = 10
 
 # Subprocess timeouts. Measured on a warm macOS box,
-# Omnigent mode boot (FastAPI + uvicorn + DBOS + alembic) completes
+# tesseract mode boot (FastAPI + uvicorn + DBOS + alembic) completes
 # in ~5s; one full turn (boot + LLM roundtrip) runs in ~10-15s.
 # Budgets below are ~3-4x the observed ceiling so genuine
 # regressions show up as timeouts instead of false-positive
 # flakes on loaded boxes. Increase only if you have a specific
 # reproducible slowdown to investigate.
 _ONESHOT_TIMEOUT_SEC = 60
-# Cold-boot of ``coding_supervisor.yaml`` under Omnigent mode —
-# spawns the in-process Omnigent server and registers supervisor +
-# two sub-agents. Without Omnigent mode boot is <10s; with Omnigent mode
+# Cold-boot of ``coding_supervisor.yaml`` under tesseract mode —
+# spawns the in-process tesseract server and registers supervisor +
+# two sub-agents. Without tesseract mode boot is <10s; with tesseract mode
 # the in-process FastAPI + uvicorn + DBOS + alembic stack adds
 # ~30-60s on a cold DBOS db. 120s keeps the test from flaking
-# on cold starts. (Genuine regressions in Omnigent mode boot would
+# on cold starts. (Genuine regressions in tesseract mode boot would
 # manifest as either an EOF or the legacy hard-error string,
 # both of which short-circuit before the timeout fires.)
 _REPL_BOOT_TIMEOUT = 120.0
@@ -142,7 +142,7 @@ def test_run_omnigent_coding_supervisor_oneshot(
 
     :param omnigent_python: Interpreter with both omnigent and
         omnigent installed (from the shared conftest).
-    :param omnigent_repo_root: Omnigent repo root. Used as cwd
+    :param omnigent_repo_root: tesseract repo root. Used as cwd
         so relative YAML paths resolve.
     :param mock_credentials_env: Mock-LLM env vars pointing at the
         mock server.
@@ -237,7 +237,7 @@ def test_run_omnigent_coding_supervisor_exposes_subagent_tools(
 
     :param omnigent_python: Interpreter with omnigent +
         omnigent installed.
-    :param omnigent_repo_root: Omnigent repo root.
+    :param omnigent_repo_root: tesseract repo root.
     :param mock_credentials_env: Mock-LLM env vars pointing at the
         mock server.
     :param mock_llm_server_url: Mock server URL for configuring
@@ -307,14 +307,14 @@ def test_run_omnigent_coding_supervisor_spawns_codex_worker_to_list_files(
 ) -> None:
     """
     Infrastructure smoke test: ``omnigent run`` on
-    coding_supervisor.yaml boots the Omnigent stack, the mock
+    coding_supervisor.yaml boots the tesseract stack, the mock
     supervisor LLM responds with a file listing, and that listing
     flows through stdout without error.
 
     This is **not** a regression test — the mock LLM returns the
     expected root entries directly; the real codex binary (if
     present) is not asked to list files. What this test validates
-    is that the Omnigent boot path, sub-agent tool registration,
+    is that the tesseract boot path, sub-agent tool registration,
     and subprocess I/O pipeline all work together so that a mock
     response containing filenames appears in stdout.
 
@@ -328,7 +328,7 @@ def test_run_omnigent_coding_supervisor_spawns_codex_worker_to_list_files(
 
     :param omnigent_python: Shared session fixture pointing at
         the repo's ``.venv`` Python.
-    :param omnigent_repo_root: Omnigent repo root — used as
+    :param omnigent_repo_root: tesseract repo root — used as
         cwd so ``examples/coding_supervisor.yaml`` resolves.
     :param mock_credentials_env: Mock-LLM env vars pointing at the
         mock server.
@@ -516,20 +516,20 @@ def test_run_omnigent_coding_supervisor_codex_shell_not_disabled(
     mock_llm_server_url: str,
 ) -> None:
     """
-    Infrastructure smoke test: under Omnigent mode, the codex
+    Infrastructure smoke test: under tesseract mode, the codex
     sub-agent boots and the output pipeline delivers its response
     without emitting the ``/nonexistent`` workspace-hydration error.
 
     This is **not** a regression test — the mock LLM returns the
     sentinel content directly; the real codex binary (if present)
     is never asked to read the fixture file. What this test
-    validates is that the infrastructure plumbing (Omnigent mode
+    validates is that the infrastructure plumbing (tesseract mode
     boot, ``codex_executor`` tool injection, subprocess I/O
     capture) does not crash and that the mock supervisor response
     surfaces in stdout.
 
     Background: ``codex_executor`` historically disabled
-    ``shell_tool`` whenever any tools were passed. Under Omnigent
+    ``shell_tool`` whenever any tools were passed. Under tesseract
     mode, :class:`OmnigentExecutor` always injects omnigent
     builtins (``check_task``, ``sys_session_send``, etc.) into the
     tools list — even for codex sub-agents whose YAML declares no
@@ -539,7 +539,7 @@ def test_run_omnigent_coding_supervisor_codex_shell_not_disabled(
 
     :param omnigent_python: Interpreter with omnigent +
         omnigent installed.
-    :param omnigent_repo_root: Omnigent repo root — also the
+    :param omnigent_repo_root: tesseract repo root — also the
         cwd the supervisor YAML's ``os_env: {cwd: .}`` resolves
         to.
     :param mock_credentials_env: Mock-LLM env vars pointing at the

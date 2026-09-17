@@ -43,8 +43,8 @@ _DEFAULT_KEENABLE_URL = "https://api.keenable.ai"
 _DEFAULT_MAX_RESULTS: int = 5
 
 # Identifies this integration to Keenable via the ``X-Keenable-Title`` header
-# so traffic from the Omnigent provider is attributable.
-_CLIENT_TITLE = "Omnigent"
+# so traffic from the tesseract provider is attributable.
+_CLIENT_TITLE = "tesseract"
 
 
 def _keenable_base_url() -> str:

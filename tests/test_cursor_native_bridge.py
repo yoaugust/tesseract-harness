@@ -385,7 +385,7 @@ class TestHooksConfig:
         assert payload["hooks"]["preToolUse"] == [{"command": "./scripts/pre-tool-guard.sh"}]
         stop_commands = [entry["command"] for entry in payload["hooks"]["stop"]]
         assert "./scripts/notify-done.sh" in stop_commands
-        # ...and Omnigent's usage stop hook is registered alongside them.
+        # ...and tesseract's usage stop hook is registered alongside them.
         assert any(
             "omnigent.harnesses.cursor_native.usage" in command for command in stop_commands
         )

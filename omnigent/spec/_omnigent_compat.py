@@ -1,14 +1,14 @@
-"""Omnigent compatibility surface — bundled for surgical removal.
+"""tesseract compatibility surface — bundled for surgical removal.
 
 🚨 **TECH DEBT — REMOVE WHEN OMNIGENT COMPAT WORKSTREAM ENDS.**
-This entire module exists *only* to support the Omnigent
+This entire module exists *only* to support the tesseract
 integration (see ``designs/OMNIGENT_INTEGRATION.md``). It
 consolidates every omnigent-specific addition that would otherwise
 be scattered across ``validator.py``, ``spec/__init__.py``, and
 ``runtime/workflow.py``.
 
-When Omnigent is consolidated (phase 6 of the integration design),
-deleting Omnigent support means:
+When tesseract is consolidated (phase 6 of the integration design),
+deleting tesseract support means:
 
 1. Delete this file.
 2. Remove the few lines in ``validator.py``,
@@ -17,7 +17,7 @@ deleting Omnigent support means:
    grep for ``_omnigent_compat`` to find them).
 3. Delete ``omnigent/spec/omnigent.py`` (the bidirectional
    translator).
-4. The Omnigent executor module is already gone (it held an
+4. The tesseract executor module is already gone (it held an
    experimental executor ABC that has since been removed), so
    there is nothing left to delete here.
 5. Remove ``ExecutorSpec.config`` from
@@ -412,7 +412,7 @@ def load_omnigent_yaml(
             for e in result.errors
         ):
             message += (
-                "\n\nNote: if this harness is valid on a newer Omnigent server, "
+                "\n\nNote: if this harness is valid on a newer tesseract server, "
                 "this client (runner) may be older than the server that produced "
                 "the spec — upgrade the runner to pick up newer harnesses."
             )

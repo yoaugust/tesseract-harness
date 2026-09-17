@@ -766,7 +766,7 @@ class TestConstructor(unittest.TestCase):
         """Neutral gateway (base URL supplied directly) + no model → ``None``.
 
         The neutral generic-provider gateway transport never falls back to a
-        ``databricks-*`` model: the Omnigent producer resolves a concrete model
+        ``databricks-*`` model: the tesseract producer resolves a concrete model
         before spawning, so the executor passes ``None`` through to the SDK.
         """
         from omnigent.inner.claude_sdk_executor import ClaudeSDKExecutor
@@ -4482,7 +4482,7 @@ class TestToolCallPolicyGate(unittest.TestCase):
         _run(_t())
 
     def test_ask_verdict_prompts_even_under_bypass(self):
-        """A raw ASK verdict is supported by routing to Omnigent
+        """A raw ASK verdict is supported by routing to tesseract
         elicitation, even under bypassPermissions."""
         from claude_agent_sdk import PermissionResultAllow
 
@@ -4584,7 +4584,7 @@ class TestToolCallPolicyGate(unittest.TestCase):
             )
 
             self.assertIsInstance(result, PermissionResultDeny)
-            self.assertIn("Unexpected Omnigent TOOL_CALL policy verdict", result.message)
+            self.assertIn("Unexpected tesseract TOOL_CALL policy verdict", result.message)
 
         _run(_t())
 

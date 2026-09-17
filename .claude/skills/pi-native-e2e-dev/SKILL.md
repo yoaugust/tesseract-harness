@@ -1,6 +1,6 @@
 ---
 name: pi-native-e2e-dev
-description: Spin up a live local Omnigent server + runner and exercise the native Pi TUI harness (pi-native) end-to-end — launch the real `pi` CLI via `omnigent pi`, drive turns through the web/bridge, smoke-test, and bug-bash. Load when developing, testing, or debugging the pi-native harness (omnigent/inner/pi_native_executor.py, pi_native_harness.py, omnigent/pi_native.py, pi_native_bridge.py, pi_native_credentials.py) or its bridge / extension / auth / model behavior.
+description: Spin up a live local tesseract server + runner and exercise the native Pi TUI harness (pi-native) end-to-end — launch the real `pi` CLI via `omnigent pi`, drive turns through the web/bridge, smoke-test, and bug-bash. Load when developing, testing, or debugging the pi-native harness (omnigent/inner/pi_native_executor.py, pi_native_harness.py, omnigent/pi_native.py, pi_native_bridge.py, pi_native_credentials.py) or its bridge / extension / auth / model behavior.
 ---
 
 # Pi native harness: end-to-end dev & testing (local server/runner)
@@ -9,7 +9,7 @@ The `pi-native` harness wraps the **real Pi coding-agent TUI**
 (`@earendil-works/pi-coding-agent`, the `pi` CLI). Unlike the SDK harnesses
 (cursor / copilot / antigravity), it does **not** run in-process: `omnigent pi`
 ensures a host daemon, the daemon spawns a **runner** that launches `pi` inside a
-runner-owned **tmux** terminal, and your TTY attaches to it. Omnigent's web-UI
+runner-owned **tmux** terminal, and your TTY attaches to it. tesseract's web-UI
 turns are forwarded into that live `pi` process through a **file-inbox bridge** +
 a packaged **JS extension** (`pi.sendUserMessage`). This skill is the proven
 recipe for running it **for real against a live local server + runner** — not
@@ -25,7 +25,7 @@ just the unit tests.
 your TTY ── (attach / pexpect) ──► omnigent pi (CLI, local)
                                         │ ensures
                                         ▼
-                                  host daemon ──► local Omnigent server (AP)
+                                  host daemon ──► local tesseract server (AP)
                                         │ spawns                      ▲
                                         ▼                             │ HTTP
                                   runner ── launches ──► pi (TUI, in tmux)
@@ -59,7 +59,7 @@ Two ways a turn reaches Pi — test both:
 4. **`node` is on PATH.** The extension is JS executed inside Pi (also required
    by the e2e extension tests). `node --version`.
 5. **Auth is resolvable (booleans/ids only — never print keys).** Native Pi
-   normally logs in from its own `~/.pi/agent`. Omnigent bridges the provider you
+   normally logs in from its own `~/.pi/agent`. tesseract bridges the provider you
    set with `omnigent setup` instead, writing a managed per-session `models.json`
    and passing `--provider omnigent --model <resolved>`. Verify what it will use:
    ```bash
@@ -235,7 +235,7 @@ can leave the TUI empty while the session records an error.
   by the extension's `POST …/policies/evaluate`; if the extension's `config.json`
   lacks `serverUrl`/`authHeaders`, gating silently no-ops.
 - **History on a rebuilt session** depends on Pi's own `--session-dir` state under
-  the bridge dir, not on Omnigent re-injecting transcript.
+  the bridge dir, not on tesseract re-injecting transcript.
 
 ## Teardown — non-negotiable
 

@@ -69,7 +69,7 @@ def _extract_args(content: object) -> dict[str, object]:
 
     The workflow builds TOOL_CALL events with data shaped as
     ``{"name": name, "arguments": <args>}``. Args may be either
-    already-parsed dicts or JSON-encoded strings (Omnigent'
+    already-parsed dicts or JSON-encoded strings (tesseract'
     ToolManager passes strings before JSON-decode for some
     paths).
 

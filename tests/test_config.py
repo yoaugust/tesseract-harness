@@ -1,4 +1,4 @@
-"""Tests for shared Omnigent config loading."""
+"""Tests for shared tesseract config loading."""
 
 from __future__ import annotations
 

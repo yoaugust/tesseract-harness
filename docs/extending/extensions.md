@@ -1,13 +1,13 @@
 # Extensions
 
-Omnigent extensions are operator-installed Python distributions that contribute
+tesseract extensions are operator-installed Python distributions that contribute
 validated application metadata. V1 supports namespaced browser pages and links
 in the primary sidebar.
 
 ## Trust model
 
 Installing a Python distribution is a full-code-trust operation: Python entry
-points execute in the Omnigent server process while their manifests are loaded.
+points execute in the tesseract server process while their manifests are loaded.
 Only administrators should install extension packages.
 
 Browser UI receives a separate boundary. It runs in an opaque-origin sandboxed

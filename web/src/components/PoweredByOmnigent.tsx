@@ -1,8 +1,7 @@
-import { OttoEyes } from "@/components/OttoEyes";
+import tesseractLogo from "@/assets/tesseract-logo.png";
 
 /**
- * Understated "Powered by Omnigent" mark for the landing footer. Always uses
- * the real Otto mascot (not the operator's logo), since it credits the product.
+ * Understated tesseract credit for the landing footer.
  */
 export function PoweredByOmnigent() {
   return (
@@ -11,8 +10,13 @@ export function PoweredByOmnigent() {
       data-testid="powered-by-omnigent"
     >
       <span>Powered by</span>
-      <OttoEyes className="h-3.5 w-auto opacity-60 transition-opacity duration-300 ease-out group-hover:opacity-100" />
-      <span>Omnigent</span>
+      <img
+        src={tesseractLogo}
+        alt=""
+        aria-hidden="true"
+        className="size-3.5 object-contain opacity-60 transition-opacity duration-300 ease-out group-hover:opacity-100"
+      />
+      <span>tesseract</span>
     </div>
   );
 }

@@ -131,7 +131,7 @@ class _GenerateBuildInfo(build_py):
         - Otherwise the build MUST succeed: a Node.js older than 22.13
           (or absent), a missing pnpm, or a failing ``pnpm install`` /
           ``pnpm --filter web run build`` aborts the install with an
-          actionable error. Omnigent needs Node 22 LTS + pnpm at
+          actionable error. tesseract needs Node 22 LTS + pnpm at
           runtime anyway (the Claude / Codex / Pi harness CLIs are
           npm packages, and the web UI is a pnpm workspace), so a
           node-less machine would get a broken install either way —
@@ -189,7 +189,7 @@ class _GenerateBuildInfo(build_py):
         if pnpm_cmd is None:
             raise SystemExit(
                 "omnigent build: pnpm not found on PATH, so the web UI "
-                "cannot be built. Omnigent requires Node.js 22 LTS or "
+                "cannot be built. tesseract requires Node.js 22 LTS or "
                 "newer with pnpm (the web UI is a pnpm workspace; the "
                 "Claude / Codex / Pi harness CLIs are npm packages). "
                 "Install Node from https://nodejs.org/en/download and "

@@ -1,13 +1,13 @@
 ---
 name: copilot-sdk-e2e-dev
-description: Spin up a live local Omnigent server and exercise the GitHub Copilot SDK harness end-to-end — build copilot agents, run real turns, smoke-test, and bug-bash. Load when developing, testing, or debugging the copilot harness (omnigent/inner/copilot_executor.py, copilot_harness.py, omnigent/onboarding/copilot_auth.py) or its auth / model / tool-bridge behavior.
+description: Spin up a live local tesseract server and exercise the GitHub Copilot SDK harness end-to-end — build copilot agents, run real turns, smoke-test, and bug-bash. Load when developing, testing, or debugging the copilot harness (omnigent/inner/copilot_executor.py, copilot_harness.py, omnigent/onboarding/copilot_auth.py) or its auth / model / tool-bridge behavior.
 ---
 
 # Copilot SDK harness: end-to-end dev & testing
 
 The `copilot` harness drives the **GitHub Copilot SDK** (`github-copilot-sdk`,
 imported as `copilot`) — a persistent `CopilotClient` + `CopilotSession` per
-Omnigent conversation — and bridges Omnigent's `sys_*` tools into Copilot as SDK
+tesseract conversation — and bridges tesseract's `sys_*` tools into Copilot as SDK
 `Tool`s. The Python SDK **bundles the Copilot CLI binary it drives** as a backing
 server, so there is no separate `@github/copilot` install. This skill is the
 proven recipe for running it **for real** against a live local server — not just

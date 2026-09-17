@@ -413,7 +413,7 @@ describe("desktop_updater — IPC trust + consent", () => {
     h.updater.registerIpc();
     await h.ipcHandlers.get("omnigent:update-download")(h.event);
     assert.equal(h.calls.showMessageBox.length, 1);
-    assert.equal(h.calls.showMessageBox[0].options.message, "Download an Omnigent update?");
+    assert.equal(h.calls.showMessageBox[0].options.message, "Download an tesseract update?");
     assert.equal(h.calls.downloadUpdate, 1);
 
     // set-config
@@ -421,7 +421,7 @@ describe("desktop_updater — IPC trust + consent", () => {
     h.updater.init();
     h.updater.registerIpc();
     await h.ipcHandlers.get("omnigent:set-update-config")(h.event, { mode: "manual" });
-    assert.equal(h.calls.showMessageBox[0].options.message, "Change Omnigent update settings?");
+    assert.equal(h.calls.showMessageBox[0].options.message, "Change tesseract update settings?");
     assert.equal(h.readSettings().update_mode, "manual");
   });
 

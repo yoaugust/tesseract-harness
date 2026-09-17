@@ -29,7 +29,7 @@ class DeviceGrant:
     :param client_id: RFC 8628 client identifier — a public string naming
         the requesting application (e.g. ``"slack"``); display + audit
         only, not an authorization key.
-    :param user_id: Omnigent identity that approved it; ``None`` while
+    :param user_id: tesseract identity that approved it; ``None`` while
         pending.
     :param created_at: Unix epoch seconds when created.
     :param expires_at: Unix epoch seconds when the device_code stops

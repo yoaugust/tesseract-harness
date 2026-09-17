@@ -1,7 +1,7 @@
 """E2E regression: agents default to their own web tooling because the
-composed system prompt never steers them to the Omnigent embedded browser.
+composed system prompt never steers them to the tesseract embedded browser.
 
-Reported journey: a user on the Omnigent desktop app (embedded Browser pane
+Reported journey: a user on the tesseract desktop app (embedded Browser pane
 available) asks their agent to look at a web page with a neutral prompt — no
 "use the browser pane" coaching. The agent answers via its OWN web tooling
 (Claude Code's WebFetch, a shell ``curl``, launching chrome) and the embedded
@@ -10,7 +10,7 @@ are advertised to every agent (``ToolManager._register_browser_tools``).
 
 The reporter's named mechanism — and the requested fix — is the system
 prompt: nothing in the composed instructions steers the model toward the
-Omnigent embedded browser, so models default to their native web tooling.
+tesseract embedded browser, so models default to their native web tooling.
 
 Two guards, one per facet:
 
@@ -74,8 +74,8 @@ _NATIVE_TURN_TIMEOUT_MS = 240_000
 _NEUTRAL_BROWSE_ASK = "Look at https://example.com and tell me the exact text of its main heading."
 
 # What the fix must inject: composed instructions that steer the
-# model toward the Omnigent embedded browser. Matched loosely (any of the
-# browser tool names, or the embedded/Omnigent browser named in prose) so a
+# model toward the tesseract embedded browser. Matched loosely (any of the
+# browser tool names, or the embedded/tesseract browser named in prose) so a
 # reasonably-worded fix passes without pinning its exact phrasing.
 _BROWSER_GUIDANCE_RE = re.compile(
     r"browser_navigate|browser_snapshot|browser_click|browser_type|"
@@ -201,7 +201,7 @@ def test_instructions_steer_model_to_embedded_browser(
     - the framework-owned ``browser_*`` tools are advertised (precondition —
       the embedded-browser surface exists for this agent), and
     - the composed instructions carry guidance steering the model to the
-      Omnigent embedded browser (the fix; FAILS until it lands — today the
+      tesseract embedded browser (the fix; FAILS until it lands — today the
       instructions never mention the browser at all, which is exactly why
       agents default to their own web tooling).
 
@@ -243,7 +243,7 @@ def test_instructions_steer_model_to_embedded_browser(
     instruction_text = _request_instruction_text(request)
     assert _BROWSER_GUIDANCE_RE.search(instruction_text), (
         "browser_* tools are advertised but the composed system "
-        "prompt carries no guidance prioritizing the Omnigent embedded "
+        "prompt carries no guidance prioritizing the tesseract embedded "
         "browser, so models default to their own web tooling. Instructions "
         f"received by the model were:\n---\n{instruction_text}\n---"
     )
@@ -346,7 +346,7 @@ def test_agent_reaches_for_embedded_browser_on_neutral_browse_ask(
 
         assert "browser_navigate" in call_names, (
             "asked to look at a web page, the agent never reached "
-            "for the Omnigent embedded browser (no browser_navigate call in "
+            "for the tesseract embedded browser (no browser_navigate call in "
             "the transcript) — it used its own web tooling instead. Tool "
             f"calls this turn were: {call_names!r}"
         )

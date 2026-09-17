@@ -1,4 +1,4 @@
-"""Tests for mirroring Kiro's persisted CLI session into Omnigent."""
+"""Tests for mirroring Kiro's persisted CLI session into tesseract."""
 
 from __future__ import annotations
 

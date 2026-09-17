@@ -173,7 +173,7 @@ def test_missing_psycopg_surfaces_actionable_error_on_terminal(tmp_path: Path) -
 
     The daemon-owned local server crashes at boot on ``import psycopg``;
     the terminal must surface an actionable driver-install message, not
-    only the generic "daemon exited before its Omnigent server became
+    only the generic "daemon exited before its tesseract server became
     ready" pointer at two log directories.
     """
     home = tmp_path / "home"

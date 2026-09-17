@@ -1,7 +1,7 @@
 """OpenResponsesExecutor: OpenAI Responses API execution.
 
 Uses the OpenAI Python SDK's Responses API with custom function tools.
-This maps Omnigent tool schemas onto OpenAI function tools and keeps the
+This maps tesseract tool schemas onto OpenAI function tools and keeps the
 existing Session-managed tool loop intact.
 
 Environment:
@@ -161,7 +161,7 @@ def _get_openai_client(
 
 
 def _convert_tools_to_responses(tools: list[ToolSpec]) -> list[ResponsesItem]:
-    """Convert Omnigent tool schemas to Responses API function tools."""
+    """Convert tesseract tool schemas to Responses API function tools."""
     result: list[ResponsesItem] = []
     for tool in tools:
         raw_name = tool.get("name")
@@ -582,7 +582,7 @@ class OpenResponsesExecutor(Executor):
 
         # ── LLM_REQUEST policy evaluation ────────────────────────
         # If the executor adapter installed a ``_policy_evaluator``
-        # callback, call it with the request data so the Omnigent server
+        # callback, call it with the request data so the tesseract server
         # can evaluate LLM_REQUEST policies before the LLM call.
         _policy_eval = getattr(self, "_policy_evaluator", None)
         if _policy_eval is not None:

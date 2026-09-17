@@ -10,10 +10,10 @@ injects web-UI messages into the running ``goose session`` TUI (launched by
 ``omnigent goose`` in the session terminal) via tmux. The bridge dir is read from
 :data:`~omnigent.harnesses.goose_native.bridge.BRIDGE_DIR_ENV_VAR` in the spawn env.
 
-Tool policies: Omnigent's PreToolUse/PostToolUse policy gates (which claude- and
+Tool policies: tesseract's PreToolUse/PostToolUse policy gates (which claude- and
 codex-native enforce via hooks) do NOT apply to goose-native — ``goose`` runs its
 tools inside its own TUI and gates them with its own approval mode
-(``GOOSE_MODE`` / in-terminal prompts), which Omnigent does not intercept. Treat
+(``GOOSE_MODE`` / in-terminal prompts), which tesseract does not intercept. Treat
 the Goose TUI's own approval as the sole tool gate.
 """
 

@@ -18,7 +18,7 @@ class SessionCreatedEvent:
 
     :param installation_id: Server-side installation ID (top-level in wire
         format; see :mod:`omnigent.telemetry.client`).
-    :param session_id: Omnigent conversation/session identifier (goes into
+    :param session_id: tesseract conversation/session identifier (goes into
         ``params``).
     :param agent_id: The agent bound to this session.
     :param harness: Harness kind, e.g. ``"claude-native"`` or ``"pi"``.
@@ -54,7 +54,7 @@ class SessionStoppedEvent:
     """Fired after a session is successfully stopped via the runner.
 
     :param installation_id: Server-side installation ID.
-    :param session_id: Omnigent conversation/session identifier.
+    :param session_id: tesseract conversation/session identifier.
     :param anon_user_id: First 16 hex chars of ``sha256("<installation_id>:<user_id>")``.
     """
 
@@ -68,7 +68,7 @@ class SessionDeletedEvent:
     """Fired after a session row is deleted from the store.
 
     :param installation_id: Server-side installation ID.
-    :param session_id: Omnigent conversation/session identifier.
+    :param session_id: tesseract conversation/session identifier.
     :param anon_user_id: First 16 hex chars of ``sha256("<installation_id>:<user_id>")``.
     :param duration_seconds: Wall-clock lifetime of the session.
     :param input_tokens: Cumulative input tokens from ``session_usage``.
@@ -104,7 +104,7 @@ class TurnEndEvent:
     they are ``None`` for all other statuses and for the native path.
 
     :param installation_id: Server-side installation ID.
-    :param session_id: Omnigent conversation/session identifier.
+    :param session_id: tesseract conversation/session identifier.
     :param status: Terminal status of the turn: ``"completed"``,
         ``"failed"``, ``"cancelled"``, or ``"incomplete"``.
     :param latency_ms: Wall-clock turn duration in milliseconds from
@@ -141,7 +141,7 @@ class NativeSessionUsageEvent:
     between consecutive events) to derive per-turn spend.
 
     :param installation_id: Server-side installation ID.
-    :param session_id: Omnigent conversation/session identifier.
+    :param session_id: tesseract conversation/session identifier.
     :param input_tokens: Cumulative input tokens at time of flush.
         ``None`` when not reported in this flush.
     :param output_tokens: Cumulative output tokens at time of flush.

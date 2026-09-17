@@ -16,7 +16,7 @@ export function LandingStep({
     <div className="mt-auto flex flex-col gap-2 px-2 pb-1">
       <div className="mb-2 text-center">
         <h1 className="text-[32px] font-normal leading-9 tracking-[-0.03em] text-foreground">
-          Meet Omnigent
+          Meet tesseract
         </h1>
         <p className="mt-1 text-base text-muted-foreground">One harness for every AI agent</p>
       </div>

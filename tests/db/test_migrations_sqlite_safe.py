@@ -1,6 +1,6 @@
 """Guard that every Alembic migration is SQLite-compatible.
 
-Omnigent runs the same migration chain against Postgres/Lakebase (the
+tesseract runs the same migration chain against Postgres/Lakebase (the
 server) and a local SQLite ``chat.db`` (the machine-global default). SQLite's
 ``ALTER TABLE`` is far more limited than Postgres': it cannot ``DROP COLUMN``
 (before SQLite 3.35), ``ALTER COLUMN``, or add/drop most constraints. Alembic's

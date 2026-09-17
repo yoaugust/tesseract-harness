@@ -15,7 +15,7 @@
 - `icon.ico` / `icon.png` — Windows installer icon, and the PNG used at
   runtime for Electron windows/dialogs.
 - `icon.svg` — Linux launcher icon (`linux.icon` in `package.json`), a
-  copy of the square `docs/images/omnigent-logo.svg`. electron-builder
+  copy of the square `docs/images/tesseract-logo.svg`. electron-builder
   installs it as
   `/usr/share/icons/hicolor/scalable/apps/<executableName>.svg` so
   desktop environments that ignore a lone 1024×1024 PNG still resolve

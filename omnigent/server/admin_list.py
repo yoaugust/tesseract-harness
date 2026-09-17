@@ -29,7 +29,7 @@ Design decisions (locked with the product owner):
 File format: one identity per line, lowercased on read. ``#`` starts a
 comment (inline or whole-line); blank lines are ignored. Example::
 
-    # Omnigent admins
+    # tesseract admins
     alice@example.com
     bob@example.com   # founder
 

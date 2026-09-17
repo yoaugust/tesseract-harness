@@ -1,6 +1,6 @@
 """Claude Code's model vocabulary, and how to speak it.
 
-Omnigent routes to servable catalog ids (``databricks-claude-sonnet-5``),
+tesseract routes to servable catalog ids (``databricks-claude-sonnet-5``),
 but two Claude Code surfaces accept only the family *aliases*:
 
 * the ``Agent`` / ``Task`` tool's ``model`` parameter — a closed enum
@@ -55,7 +55,7 @@ CUSTOM_MODEL_OPTION_ENV_VAR = "ANTHROPIC_CUSTOM_MODEL_OPTION"
 #: takes — so it is not part of the vocabulary below.
 CUSTOM_MODEL_OPTION_NAME_ENV_VAR = "ANTHROPIC_CUSTOM_MODEL_OPTION_NAME"
 
-#: BACK-COMPAT. Omnigent's picker-row id for the custom slot. Named for the
+#: BACK-COMPAT. tesseract's picker-row id for the custom slot. Named for the
 #: model the slot first carried (Sonnet 5, which had no family alias of its
 #: own), but a Smart Routing launch pins ITS model there, so the id does not
 #: describe the contents — read the slot, never this name. Sessions persist
@@ -318,7 +318,7 @@ def served_canonical_overrides(model_ids: Iterable[str]) -> dict[str, str]:
     — it rewrites a canonical id to the provider's spelling on the way out.
 
     Deriving the map from the gateway's own listing keeps model ids out of
-    Omnigent entirely: whichever model the CLI's table names, and whichever
+    tesseract entirely: whichever model the CLI's table names, and whichever
     generation it moves to next, the rewrite covers it as long as the gateway
     serves that model.
 

@@ -288,7 +288,7 @@ def _wait_for_codex_turn_idle(
     bridge_dir: Path,
     timeout: float,
 ) -> None:
-    """Wait until both Omnigent and the native bridge agree the turn ended."""
+    """Wait until both tesseract and the native bridge agree the turn ended."""
     deadline = time.monotonic() + timeout
     last_status: object = None
     last_active_turn: str | None = None
@@ -764,7 +764,7 @@ def test_codex_native_spawn_creates_child_session(
     http_client: httpx.Client,
     tmp_path: Path,
 ) -> None:
-    """A real Codex native spawn appears as an Omnigent child session."""
+    """A real Codex native spawn appears as an tesseract child session."""
     workspace = tmp_path / "codex_subagent_ws"
     workspace.mkdir()
     child_marker = f"CHILD_{uuid.uuid4().hex[:6].upper()}"
@@ -1413,7 +1413,7 @@ def test_codex_native_web_model_effort_override_survives_turn(
     A web model/effort pick applied mid-session does not break the turn.
 
     A model or reasoning-effort change
-    made in the Omnigent web picker reaches the runner as
+    made in the tesseract web picker reaches the runner as
     ``ExecutorConfig.model`` / ``extra["reasoning_effort"]``, and
     ``CodexNativeExecutor.run_turn`` now applies it via a
     ``thread/settings/update`` request (whose ``ThreadSettingsUpdateParams``
@@ -1593,7 +1593,7 @@ def test_codex_native_stale_completed_turn_recovers_with_new_turn(
             item.get("id") for item in before.json().get("data", []) if item.get("type") == "error"
         }
 
-        # Recreate the production race: Omnigent still believes completed
+        # Recreate the production race: tesseract still believes completed
         # turn A is active while Codex already considers the thread idle.
         update_active_turn_id(bridge_dir, completed_turn_id)
         stale_state = read_bridge_state(bridge_dir)

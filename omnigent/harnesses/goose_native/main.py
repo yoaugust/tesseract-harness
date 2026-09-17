@@ -1,7 +1,7 @@
-"""Native Goose TUI wrapper for the Omnigent CLI.
+"""Native Goose TUI wrapper for the tesseract CLI.
 
 ``omnigent goose`` launches Block's Goose CLI interactive TUI (``goose session``)
-inside an Omnigent-runner-owned tmux terminal and attaches the local TTY — the
+inside an tesseract-runner-owned tmux terminal and attaches the local TTY — the
 goose analog of ``omnigent cursor`` / ``omnigent codex`` / ``omnigent pi``. The
 runner spawns the process (see
 :func:`omnigent.runner.app._auto_create_goose_terminal`); this module owns the
@@ -9,7 +9,7 @@ CLI-side orchestration: session create/resume, daemon runner bind, terminal-read
 poll, and the direct tmux attach.
 
 Auth is Goose's own configuration (``goose configure`` →
-``~/.config/goose/config.yaml`` + keyring); no Omnigent-managed key is required.
+``~/.config/goose/config.yaml`` + keyring); no tesseract-managed key is required.
 Like cursor there is no extension bridge — the runner sets up the terminal
 environment directly (forcing ``GOOSE_CLI_THEME=ansi`` so the pane scrapes
 cleanly).
@@ -85,7 +85,7 @@ class NativeGooseLaunch:
 
 @dataclass(frozen=True)
 class LaunchedGooseTerminal:
-    """Terminal resource returned by the Omnigent runner launch path."""
+    """Terminal resource returned by the tesseract runner launch path."""
 
     terminal_id: str
     tmux_socket: Path | None
@@ -98,7 +98,7 @@ class PreparedGooseTerminal:
 
     :param reattached: ``True`` when an existing, still-running session terminal
         was reused (the live-reattach path: prior session intact).
-    :param cold_resumed: ``True`` when resuming an existing Omnigent session whose
+    :param cold_resumed: ``True`` when resuming an existing tesseract session whose
         terminal had already exited, so a *fresh* ``goose session`` TUI was
         launched. Mirrors cursor-native: ``cold_resumed`` and ``reattached`` are
         mutually exclusive (the cold-resume path leaves ``reattached`` False).
@@ -167,10 +167,10 @@ def run_goose_native(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch the Goose TUI in an Omnigent terminal.
+    Launch the Goose TUI in an tesseract terminal.
 
-    :param server: Resolved Omnigent server URL.
-    :param session_id: Optional existing Omnigent conversation id.
+    :param server: Resolved tesseract server URL.
+    :param session_id: Optional existing tesseract conversation id.
     :param goose_args: Raw goose CLI args to persist for the runner-owned TUI.
     :param resume_picker: ``True`` runs the goose-native picker.
     :param auto_open_conversation: When ``True``, open the browser conversation
@@ -183,7 +183,7 @@ def run_goose_native(
     _preflight_local_tools()
     if server is None:
         raise click.ClickException(
-            "Goose requires a resolved Omnigent server URL. The CLI should call "
+            "Goose requires a resolved tesseract server URL. The CLI should call "
             "_ensure_backend before run_goose_native."
         )
     with TemporaryDirectory(prefix="omnigent-goose-native-") as tmpdir:
@@ -237,11 +237,11 @@ def _run_with_remote_server(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch Goose on an Omnigent server via a daemon-spawned runner.
+    Launch Goose on an tesseract server via a daemon-spawned runner.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param spec_path: Generated Goose wrapper agent spec.
-    :param session_id: Optional existing Omnigent session id.
+    :param session_id: Optional existing tesseract session id.
     :param resume_picker: When ``True``, run the goose-native picker.
     :param goose_args: Raw goose CLI args.
     :param auto_open_conversation: Whether to open the web conversation URL.
@@ -437,7 +437,7 @@ async def _create_goose_session(
 
 
 async def _fetch_goose_session(client: httpx.AsyncClient, session_id: str) -> _JsonObject:
-    """Fetch an existing Omnigent session."""
+    """Fetch an existing tesseract session."""
     resp = await client.get(f"/v1/sessions/{url_component(session_id)}")
     if resp.status_code == 404:
         raise click.ClickException(f"Conversation {session_id!r} not found on the server.")

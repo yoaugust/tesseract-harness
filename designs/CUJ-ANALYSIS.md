@@ -1,4 +1,4 @@
-# Omnigent CUJ Analysis (answers)
+# tesseract CUJ Analysis (answers)
 
 **This is the answers/findings companion to [`CUJ-MAP.md`](./CUJ-MAP.md).** `CUJ-MAP.md` is the
 team-editable *list* of CUJs + open questions; **this file is how each one actually works** — code
@@ -107,8 +107,8 @@ runner binding via atomic CAS (`set_runner_id`, `WHERE runner_id IS NULL`).
 ### 2.B  Harnesses & per-harness features ✅
 
 **Taxonomy — two families** (this split explains most behavior differences). *In scope: claude + codex only.*
-- **SDK harnesses** — in-process agent loop; Omnigent owns prompt + tool set + turn loop;
-  user sees only the Omnigent WebUI; transcript is 100% Omnigent. Base `omnigent/inner/executor.py`.
+- **SDK harnesses** — in-process agent loop; tesseract owns prompt + tool set + turn loop;
+  user sees only the tesseract WebUI; transcript is 100% tesseract. Base `omnigent/inner/executor.py`.
   (in scope: **claude-sdk**, **codex** — headless. **Polly / custom agents** run here too, typically on claude-sdk.)
 - **Native harnesses** — drive a resident vendor CLI/TUI in a tmux pane and **mirror** its
   transcript back; the *vendor* owns the system prompt + tool set; transcript lives in the
@@ -144,9 +144,9 @@ Failure branches: unsupported harness; native+agent combo; invalid model → rej
 user-config vs omni-managed credential mismatch; MCP relay missing → native can't reach `sys_*`
 (hooks still fire). [→ matrix §4]
 
-### 2.C  Tools, Omnigent MCP, custom MCP, shells, files, timers ✅
+### 2.C  Tools, tesseract MCP, custom MCP, shells, files, timers ✅
 
-**Omnigent MCP server (the `sys_*` surface)** — exposed via the `serve-mcp` subcommand;
+**tesseract MCP server (the `sys_*` surface)** — exposed via the `serve-mcp` subcommand;
 all tools registered in `omnigent/tools/manager.py`. Grouped (gating in parens):
 - **File/shell:** `sys_os_read/write/edit/shell` — `tools/builtins/os_env.py` (reg `manager.py:519`);
   run inside an OSEnvironment (cwd + sandbox).
@@ -290,7 +290,7 @@ React app under `web/src/` (note: renamed from `ap-web/` upstream). TUI/REPL und
   completer, resume picker (`_resume_picker.py`), theme picker, event tape (`_event_tape.py`); open-in-browser link
   `conversation_browser.py`.
 
-**OmniBox is *not* a web component** — it's Omnigent's **OS-level sandbox** (bubblewrap+seccomp / Seatbelt)
+**OmniBox is *not* a web component** — it's tesseract's **OS-level sandbox** (bubblewrap+seccomp / Seatbelt)
 that wraps any agent for unattended/YOLO runs: filesystem isolation + default-deny network egress + credential
 injection (agent holds a placeholder, proxy swaps the real secret). Mapped under §2.C (sandbox) and §2.G
 (credential proxy). Ref: omnigent-site `docs/omnibox`.
@@ -301,7 +301,7 @@ injection (agent holds a placeholder, proxy swaps the real secret). Mapped under
   `runtime/workflow.py` orchestrates: config resolve (model/harness/auth) → agent-cache load → prompt build →
   executor instantiate (`inner/*_executor.py`) → consume streaming `ExecutorEvent`s (TextChunk, ReasoningChunk,
   ToolCallRequest, ToolCallComplete, TurnComplete, CompactionComplete, ExecutorError) → runner dispatches tools,
-  persists, forwards. `inner/executor.py:70` ExecutorConfig, `:97` event hierarchy. It translates Omnigent's abstract
+  persists, forwards. `inner/executor.py:70` ExecutorConfig, `:97` event hierarchy. It translates tesseract's abstract
   event model ↔ each vendor SDK.
 - **Subagent spawning** — `AgentTool` / `SelfAgentTool` (`inner/tools.py:267,298`). LLM calls a sub-agent tool →
   mints a child Conversation (parent link + labels) → child runs the same loop → results drain to parent via

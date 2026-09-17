@@ -2,7 +2,7 @@
 
 These cover the pi-native happy path WITHOUT a real LLM or a live Pi TUI.
 The pi-native executor never drives a model: a native Pi process is already
-running in the session terminal with the Omnigent extension loaded, and each
+running in the session terminal with the tesseract extension loaded, and each
 turn merely queues the latest user message into the bridge inbox for that
 extension to consume. The "LLM" is the out-of-process Pi TUI, so the happy
 path is verified by mocking the bridge sink (``enqueue_user_message``) and

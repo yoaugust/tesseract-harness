@@ -191,14 +191,14 @@ def _resolve_instructions(
     Resolve the ``instructions:`` field to a system-prompt string.
 
     Mirrors :func:`omnigent.spec.parser._resolve_instructions`
-    so omnigent-flavored YAMLs and native Omnigent YAMLs treat the
+    so omnigent-flavored YAMLs and native tesseract YAMLs treat the
     field identically:
 
     - Single-line value that names an existing file relative to
       *instructions_root*: the file's contents are read.
     - Multi-line value (contains ``\\n``): treated as inline text.
     - File-path-shaped value that doesn't resolve: silently
-      treated as inline text. Matches native Omnigent behavior so users
+      treated as inline text. Matches native tesseract behavior so users
       who type ``instructions: AGENTS.md`` and forget the file
       get the literal string back rather than a misleading error.
     - ``None`` / non-string raw values return ``None``.
@@ -667,13 +667,13 @@ def _parse_os_env_spec(data: YamlData | str | bool | None) -> OSEnvSpec | None:
         sandbox = _parse_os_env_sandbox_spec(sandbox_data)
     fork = bool(data.get("fork", False))
     start_in_scratch = bool(data.get("start_in_scratch", False))
-    # Mirror the Omnigent YAML parser's cross-field validation
+    # Mirror the tesseract YAML parser's cross-field validation
     # (omnigent/spec/parser.py:_parse_os_env). Keeping the two
     # loaders in lockstep prevents a class of "silently weakens
     # the sandbox on the legacy path" bug — an operator who used
     # ``load_agent_def`` would otherwise get past parse time with
     # a spec that ``create_os_environment`` later rejects (or, worse,
-    # accepts with weaker semantics than the Omnigent parser would have
+    # accepts with weaker semantics than the tesseract parser would have
     # allowed).
     if start_in_scratch and fork:
         raise ValueError(
@@ -763,7 +763,7 @@ def _parse_os_env_sandbox_spec(data: YamlData | str | bool | None) -> OSEnvSandb
             raise TypeError("os_env.sandbox.type must be a string or null")
         sandbox_type = _resolve_sandbox_type(raw_type)
     egress_rules = data.get("egress_rules")
-    # Mirror the Omnigent parser's hard reject of ``egress_rules`` paired with
+    # Mirror the tesseract parser's hard reject of ``egress_rules`` paired with
     # a backend that cannot enforce them at spawn time. Without this
     # check the loader would happily accept a YAML that declares an
     # egress allow-list on ``none``, where the

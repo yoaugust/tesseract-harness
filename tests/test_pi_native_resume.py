@@ -1,8 +1,8 @@
 """Tests for pi-native fork/resume session rebuild.
 
-Covers the Omnigent-items -> Pi session JSONL converter, the safe-id guard,
+Covers the tesseract-items -> Pi session JSONL converter, the safe-id guard,
 the resume-file path resolution, and the end-to-end
-``ensure_local_pi_resume_session`` (mocked Omnigent items endpoint).
+``ensure_local_pi_resume_session`` (mocked tesseract items endpoint).
 """
 
 from __future__ import annotations

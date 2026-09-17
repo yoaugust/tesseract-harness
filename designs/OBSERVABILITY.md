@@ -1,7 +1,7 @@
-# Holistic Distributed Tracing for Omnigent
+# Holistic Distributed Tracing for tesseract
 
 **Status:** Proposed
-**Scope:** End-to-end visibility into all data flowing between Omnigent's distributed
+**Scope:** End-to-end visibility into all data flowing between tesseract's distributed
 components, using the official OpenTelemetry clients with real W3C trace-context
 propagation across every transport boundary.
 
@@ -9,7 +9,7 @@ propagation across every transport boundary.
 
 ## 1. Motivation
 
-Omnigent is a distributed, multi-process system (host daemon, runners/harnesses,
+tesseract is a distributed, multi-process system (host daemon, runners/harnesses,
 server, clients, database). It is heavily vibe-coded and lacks a clear mental map,
 which makes stability and reliability work hard. Static analysis alone has proven
 unreliable; we want to incorporate signal from **real usage** by tracing every RPC,
@@ -186,7 +186,7 @@ Server, Policy Server, Server database.** Choke points below are from the codeba
   **opt-in by configuration** — active only when `VITE_OTEL_EXPORTER_OTLP_ENDPOINT` is
   set (mirroring the server's "on when a backend is configured" rule); otherwise it is a
   no-op with zero overhead. The browser exports over OTLP/HTTP to `${endpoint}/v1/traces`.
-  Service name `omni-web` (override via `VITE_OTEL_SERVICE_NAME`). **CORS:** Omnigent is a
+  Service name `omni-web` (override via `VITE_OTEL_SERVICE_NAME`). **CORS:** tesseract is a
   same-origin deployment — the server serves the SPA and the API from one origin (vite
   proxies in dev), and there is **no `CORSMiddleware`** — so `traceparent` propagates to
   same-origin API calls with no server change. `propagateTraceHeaderCorsUrls` is scoped to
@@ -301,7 +301,7 @@ telemetry it didn't ask for. Opt in first, then point `OTEL_EXPORTER_OTLP_ENDPOI
 backend.
 
 **Session correlation (`session.id`).** Every span that originates from a session is
-tagged with the Omnigent session (conversation) id (`conv_…`) under the `session.id`
+tagged with the tesseract session (conversation) id (`conv_…`) under the `session.id`
 attribute: the FastAPI server span (parsed from the `/sessions/<conv_…>/` request path —
 covers REST/SSE on **both** server and runner), the agent/LLM/tool/policy spans (from the
 runner's `TracingContext`), the in-process `policy.evaluate` span, and `terminal.attach`.
@@ -324,7 +324,7 @@ the HTTP/WS auto-instrumentors never record bodies.
 
 When an operator needs to see the literal contents flowing between services, set
 `OMNIGENT_OTEL_CAPTURE_CONTENT=true`. This wires `should_capture_content()` (previously a
-dormant flag) into the boundaries Omnigent controls:
+dormant flag) into the boundaries tesseract controls:
 
 - **Host-tunnel frames** — inbound on the consumer span (`consume_frame_span`) and
   outbound at `encode_host_frame`; recorded as `omnigent.message.payload`.
@@ -450,7 +450,7 @@ replay/diff tooling for transcript reconstruction, fork, and resume.
   ratio sampling so the cross-boundary parent decision is honored consistently.
 - **Browser-side propagation (implemented).** OTel web SDK with fetch/XHR
   instrumentation, opt-in via `VITE_OTEL_EXPORTER_OTLP_ENDPOINT`, exporting over OTLP/HTTP
-  (`:4318`). Omnigent is same-origin with no `CORSMiddleware`, so same-origin `traceparent`
+  (`:4318`). tesseract is same-origin with no `CORSMiddleware`, so same-origin `traceparent`
   propagation needs no server change; `propagateTraceHeaderCorsUrls` is scoped to the
   app's own origin. A future cross-origin deployment that introduces CORS must allow the
   `traceparent`/`tracestate` request headers (server and any reverse proxy) or the header

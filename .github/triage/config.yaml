@@ -59,7 +59,7 @@ prompt: |
   for docs-only issues.
 
   **components** — list of affected subsystems (one or more):
-  - `comp:server` — the Omnigent server, API, session management
+  - `comp:server` — the tesseract server, API, session management
   - `comp:runner` — the agent runner, execution engine
   - `comp:repr` — serialization, representation layer
   - `comp:web-ui` — the web frontend (web)

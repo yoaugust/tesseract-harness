@@ -1,4 +1,4 @@
-// Auto-generated Omnigent bridge extension for native Pi sessions.
+// Auto-generated tesseract bridge extension for native Pi sessions.
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
@@ -59,7 +59,7 @@ const _MAX_RAW_ASK_ROUNDS = 50;
 // omnigent.policies.types.FAIL_CLOSED_PHASES and the Python native hook's
 // fail_closed_hook_output(PreToolUse) → deny.
 const _FAIL_CLOSED_REASON =
-  "blocked: Omnigent policy server unreachable — failing closed (PHASE_TOOL_CALL)";
+  "blocked: tesseract policy server unreachable — failing closed (PHASE_TOOL_CALL)";
 
 function failClosedVerdict() {
   return { block: true, reason: _FAIL_CLOSED_REASON };
@@ -116,11 +116,11 @@ function relayCredentials() {
 }
 
 /**
- * Evaluate a TOOL_CALL policy for a native Pi tool via the Omnigent server's
+ * Evaluate a TOOL_CALL policy for a native Pi tool via the tesseract server's
  * session-level HTTP endpoint (POST /v1/sessions/{sessionId}/policies/evaluate).
  *
  * This is the same endpoint used by the Claude Code, Codex, and Cursor native
- * hooks. It does NOT require an active Omnigent turn context on the harness
+ * hooks. It does NOT require an active tesseract turn context on the harness
  * side — the endpoint evaluates against the session's full policy set directly.
  *
  * Verdict handling (parity with the native hooks):
@@ -304,7 +304,7 @@ async function evalNativePolicyHttp(config, toolName, args) {
     if (result === "POLICY_ACTION_DENY") {
       return {
         block: true,
-        reason: json.reason || "blocked by Omnigent policy",
+        reason: json.reason || "blocked by tesseract policy",
       };
     }
     if (result === "POLICY_ACTION_ASK") {
@@ -336,7 +336,7 @@ async function evalNativePolicyHttp(config, toolName, args) {
 /**
  * Build a Pi tool-result object from an MCP ``tools/call`` JSON-RPC response.
  *
- * Pi expects ``{ content: [{ type: "text", text }], isError }``. The Omnigent
+ * Pi expects ``{ content: [{ type: "text", text }], isError }``. The tesseract
  * MCP proxy returns a JSON-RPC envelope whose ``result`` carries an MCP
  * content array (``[{ type: "text", text }]``) on success, or a JSON-RPC
  * ``error`` object (with the MCP convention code -32000 for tool denials /
@@ -347,7 +347,7 @@ async function evalNativePolicyHttp(config, toolName, args) {
 function piResultFromMcpResponse(json) {
   if (json && typeof json === "object" && json.error) {
     const msg =
-      (json.error && json.error.message) || "Omnigent tool call failed";
+      (json.error && json.error.message) || "tesseract tool call failed";
     return { content: [{ type: "text", text: String(msg) }], isError: true };
   }
   const result = json && typeof json === "object" ? json.result : undefined;
@@ -366,7 +366,7 @@ function piResultFromMcpResponse(json) {
       content: [
         {
           type: "text",
-          text: "Omnigent tool call requires approval that was not resolved",
+          text: "tesseract tool call requires approval that was not resolved",
         },
       ],
       isError: true,
@@ -401,7 +401,7 @@ function piResultFromMcpResponse(json) {
  * ``input_required`` (MRTR) envelope, or ``null`` when the response is not an
  * ``input_required`` result.
  *
- * The Omnigent server keys ``inputRequests`` by the server-minted elicitation
+ * The tesseract server keys ``inputRequests`` by the server-minted elicitation
  * id (the MRTR spec lets the client read those keys; only ``requestState`` is
  * opaque), so the first key is the id the retry must echo back inside
  * ``inputResponses``.
@@ -440,9 +440,9 @@ function nonJsonMcpPiResult() {
       {
         type: "text",
         text:
-          "Omnigent tool call failed: the server answered 2xx with a non-JSON " +
+          "tesseract tool call failed: the server answered 2xx with a non-JSON " +
           "body, which usually means an authenticating proxy or sign-in page " +
-          "answered instead of Omnigent. Re-authenticate and retry.",
+          "answered instead of tesseract. Re-authenticate and retry.",
       },
     ],
     isError: true,
@@ -509,7 +509,7 @@ async function postMcpToolsCall(config, toolName, args, rpcId, extraParams) {
           content: [
             {
               type: "text",
-              text: `Omnigent tool call failed: HTTP ${resp.status}`,
+              text: `tesseract tool call failed: HTTP ${resp.status}`,
             },
           ],
           isError: true,
@@ -532,7 +532,7 @@ async function postMcpToolsCall(config, toolName, args, rpcId, extraParams) {
         content: [
           {
             type: "text",
-            text: `Omnigent tool call failed: ${err && err.message ? err.message : String(err)}`,
+            text: `tesseract tool call failed: ${err && err.message ? err.message : String(err)}`,
           },
         ],
         isError: true,
@@ -542,11 +542,11 @@ async function postMcpToolsCall(config, toolName, args, rpcId, extraParams) {
 }
 
 /**
- * Execute an Omnigent tool by POSTing a JSON-RPC ``tools/call`` request to the
+ * Execute an tesseract tool by POSTing a JSON-RPC ``tools/call`` request to the
  * server's per-session MCP proxy endpoint
  * (``POST /v1/sessions/{sessionId}/mcp``).
  *
- * This is the SAME endpoint the runner's ``ProxyMcpManager`` uses: the Omnigent
+ * This is the SAME endpoint the runner's ``ProxyMcpManager`` uses: the tesseract
  * server evaluates TOOL_CALL / TOOL_RESULT policy and then forwards execution
  * to the runner's ``/mcp/execute`` (which dispatches the real ``sys_*`` tool on
  * the correct machine with the session's terminal/workspace). The extension
@@ -591,7 +591,7 @@ async function callOmnigentTool(config, toolName, args) {
   ) {
     return {
       content: [
-        { type: "text", text: "Omnigent tool bridge is not configured" },
+        { type: "text", text: "tesseract tool bridge is not configured" },
       ],
       isError: true,
     };
@@ -612,7 +612,7 @@ async function callOmnigentTool(config, toolName, args) {
       content: [
         {
           type: "text",
-          text: "Omnigent tool call requires approval but the server sent no resolvable elicitation",
+          text: "tesseract tool call requires approval but the server sent no resolvable elicitation",
         },
       ],
       isError: true,
@@ -627,7 +627,7 @@ async function callOmnigentTool(config, toolName, args) {
       content: [
         {
           type: "text",
-          text: "Omnigent tool call requires approval but the policy server was unreachable",
+          text: "tesseract tool call requires approval but the policy server was unreachable",
         },
       ],
       isError: true,
@@ -646,7 +646,7 @@ async function callOmnigentTool(config, toolName, args) {
       content: [
         {
           type: "text",
-          text: "Omnigent tool call still requires approval after one round — not retrying",
+          text: "tesseract tool call still requires approval after one round — not retrying",
         },
       ],
       isError: true,
@@ -795,7 +795,7 @@ async function postEvent(config, body) {
       body: JSON.stringify(body),
     });
   } catch (_err) {
-    // Keep Pi responsive even if Omnigent is temporarily unavailable.
+    // Keep Pi responsive even if tesseract is temporarily unavailable.
   }
 }
 
@@ -820,11 +820,11 @@ async function patchExternalSessionId(config, nativeSessionId) {
 function setOmnigentStatus(config, ctx, state) {
   if (!ctx || !ctx.ui || !config) return;
   const urlLabel = config.conversationUrl
-    ? `Omnigent: ${config.conversationUrl}`
-    : "Omnigent";
+    ? `tesseract: ${config.conversationUrl}`
+    : "tesseract";
   const label = state ? `${urlLabel} · ${state}` : urlLabel;
   try {
-    ctx.ui.setTitle(`Omnigent: ${config.sessionId}`);
+    ctx.ui.setTitle(`tesseract: ${config.sessionId}`);
     ctx.ui.setStatus("omnigent", label);
     ctx.ui.setStatus("omnigent_state", undefined);
   } catch (_err) {}
@@ -844,7 +844,7 @@ function interruptActiveContext(ctx) {
  * Trigger Pi's own context compaction on the resident ExtensionContext.
  *
  * Pi owns its context window inside this TUI process, so explicit /compact
- * must run here (the Omnigent server's AP-side compaction would only
+ * must run here (the tesseract server's AP-side compaction would only
  * summarise the transcript mirror and desync the two). ctx.compact() is
  * fire-and-forget (returns void); Pi summarises older messages and appends a
  * CompactionEntry to the session. We bracket it with external_compaction_status
@@ -879,7 +879,7 @@ async function triggerCompaction(config, ctx, customInstructions) {
           source: "execution",
           code: "pi_compact_unavailable",
           message:
-            "Omnigent: /compact is unavailable for this Pi session. The " +
+            "tesseract: /compact is unavailable for this Pi session. The " +
             "resident Pi context exposes no compaction API, so the model or " +
             "Pi version may not support it.",
         },
@@ -924,7 +924,7 @@ async function triggerCompaction(config, ctx, customInstructions) {
  * Apply a web-picked model switch to the resident Pi process.
  *
  * Pi owns the active model inside this TUI process, so a model picked in the
- * Omnigent web UI must be applied here (the ``--model`` launch arg is baked in
+ * tesseract web UI must be applied here (the ``--model`` launch arg is baked in
  * at spawn). Resolves *modelId* against the session's ``modelRegistry`` (the
  * same catalog Pi's own ``/model`` picker uses, sourced from the generated
  * models.json) and calls Pi's ``setModel`` — immediate, no ``/reload``.
@@ -937,7 +937,7 @@ async function triggerCompaction(config, ctx, customInstructions) {
  *   - setModel returned false (no API key for the model): post an error item,
  *     return false.
  *   - Applied: return true. The paired ``model_select`` handler mirrors the
- *     resulting model back to Omnigent, so the web pill reflects the switch.
+ *     resulting model back to tesseract, so the web pill reflects the switch.
  */
 async function applyModelChange(pi, config, ctx, modelId) {
   const id = typeof modelId === "string" ? modelId.trim() : "";
@@ -958,7 +958,7 @@ async function applyModelChange(pi, config, ctx, modelId) {
   if (!pi || typeof pi.setModel !== "function" || !listModels) {
     await postModelChangeError(
       config,
-      `Omnigent: could not switch to model "${id}" — this Pi session exposes ` +
+      `tesseract: could not switch to model "${id}" — this Pi session exposes ` +
         "no model-switch API (the model or Pi version may not support it).",
     );
     return false;
@@ -992,7 +992,7 @@ async function applyModelChange(pi, config, ctx, modelId) {
   if (!model) {
     await postModelChangeError(
       config,
-      `Omnigent: model "${id}" is not available in this Pi session.`,
+      `tesseract: model "${id}" is not available in this Pi session.`,
     );
     return false;
   }
@@ -1001,7 +1001,7 @@ async function applyModelChange(pi, config, ctx, modelId) {
     if (applied === false) {
       await postModelChangeError(
         config,
-        `Omnigent: could not switch to model "${id}" — no API key is ` +
+        `tesseract: could not switch to model "${id}" — no API key is ` +
           "configured for it.",
       );
       return false;
@@ -1010,7 +1010,7 @@ async function applyModelChange(pi, config, ctx, modelId) {
   } catch (_err) {
     await postModelChangeError(
       config,
-      `Omnigent: switching to model "${id}" failed inside Pi.`,
+      `tesseract: switching to model "${id}" failed inside Pi.`,
     );
     return false;
   }
@@ -1039,13 +1039,13 @@ function modelReference(model) {
 }
 
 /**
- * Report Pi's live model catalog to Omnigent for the Web UI model picker.
+ * Report Pi's live model catalog to tesseract for the Web UI model picker.
  *
  * Sourced from Pi's model registry — the models Pi actually loaded for THIS
- * session, whatever their origin: an Omnigent-configured provider's generated
+ * session, whatever their origin: an tesseract-configured provider's generated
  * models.json, or Pi's own ``/login`` / ``~/.pi`` config. Posting the live
  * registry (rather than the server reading a launch-written file) means the
- * picker populates in every auth path, including ``/login`` where no Omnigent
+ * picker populates in every auth path, including ``/login`` where no tesseract
  * models.json exists.
  *
  * Prefers ``getAvailable()`` — only models with configured auth — over
@@ -1175,7 +1175,7 @@ function startInboxPoller(
                 source: "execution",
                 code: "pi_followup_delivery_dropped",
                 message:
-                  `Omnigent: a queued follow-up message (id ${droppedId}) could ` +
+                  `tesseract: a queued follow-up message (id ${droppedId}) could ` +
                   `not be delivered to Pi after ${MAX_DELIVER_ATTEMPTS} attempts ` +
                   `and was dropped. Content preview: ${JSON.stringify(preview)}`,
               },
@@ -1305,7 +1305,7 @@ module.exports = function (pi) {
   // or double-finalize the preview.
   const finalizedTextBlocks = new Set();
 
-  // Names of the Omnigent tools registered via pi.registerTool below. Bridged
+  // Names of the tesseract tools registered via pi.registerTool below. Bridged
   // tools are policy-evaluated server-side inside the /mcp proxy (TOOL_CALL +
   // TOOL_RESULT), so the tool_call hook must NOT also call
   // evalNativePolicyHttp for them — that would double-evaluate and, for ASK
@@ -1325,8 +1325,8 @@ module.exports = function (pi) {
           ? tool.parameters
           : { type: "object", properties: {} };
       // Pi passes tool.parameters straight to the LLM as JSON Schema, so the
-      // Omnigent schema is usable as-is. execute() round-trips the call to the
-      // Omnigent server's MCP proxy and returns the result to Pi.
+      // tesseract schema is usable as-is. execute() round-trips the call to the
+      // tesseract server's MCP proxy and returns the result to Pi.
       if (typeof pi.registerTool === "function") {
         pi.registerTool({
           name,
@@ -1422,7 +1422,7 @@ module.exports = function (pi) {
       name: "manage_todo_list",
       label: "Task Plan",
       description:
-        "Read or replace the task plan shown in the Omnigent Tasks panel.",
+        "Read or replace the task plan shown in the tesseract Tasks panel.",
       promptSnippet: "Read or replace the current task plan",
       promptGuidelines: [
         "For every multi-step task, you must call manage_todo_list before using other tools to create a plan, then update it after each step until all tasks are completed.",
@@ -1804,11 +1804,11 @@ module.exports = function (pi) {
   }
 
   pi.registerCommand("omnigent", {
-    description: "Show the Omnigent conversation URL",
+    description: "Show the tesseract conversation URL",
     async handler(_args, ctx) {
       setOmnigentStatus(config, ctx, "linked");
       if (ctx && ctx.ui && config && config.conversationUrl) {
-        ctx.ui.notify(`Omnigent: ${config.conversationUrl}`, "info");
+        ctx.ui.notify(`tesseract: ${config.conversationUrl}`, "info");
       }
     },
   });
@@ -1838,7 +1838,7 @@ module.exports = function (pi) {
     await postModelOptions(config, ctx);
     // Report the model Pi launched with so the composer pill and the picker's
     // active row reflect the current model from the start. Without this, a
-    // ``/login`` session (no Omnigent ``model_override``, no ``llm_model``)
+    // ``/login`` session (no tesseract ``model_override``, no ``llm_model``)
     // shows no active model until the user switches. Mirrors the
     // ``model_select`` handler, but for the startup value ``ctx.model``.
     const startupModel = modelReference(ctx ? ctx.model : undefined);
@@ -1862,7 +1862,7 @@ module.exports = function (pi) {
   pi.on("model_select", async (event, ctx) => {
     rememberContext(ctx);
     // Mirror a model switch made inside the Pi TUI (the ``/model`` command or
-    // Ctrl+P cycling) back to Omnigent so the web picker reflects it. Skip
+    // Ctrl+P cycling) back to tesseract so the web picker reflects it. Skip
     // ``restore`` — that is Pi re-applying the session's saved model at
     // startup, not a user switch, and posting it could clobber a pending
     // web-side override. The server dedups against ``model_override``, so a
@@ -2004,7 +2004,7 @@ module.exports = function (pi) {
     if (blocked) {
       return { block: true, reason: "Interrupted by user" };
     }
-    // Bridged Omnigent tools (registered via pi.registerTool above) are
+    // Bridged tesseract tools (registered via pi.registerTool above) are
     // policy-evaluated server-side inside the /mcp proxy when execute() runs,
     // so skip the hook-level eval for them to avoid double-evaluation and, for
     // ASK policies, a double prompt. Pi's own built-in tools (read/shell/etc)
@@ -2012,11 +2012,11 @@ module.exports = function (pi) {
     if (bridgedTools.has((event && event.toolName) || "")) {
       return;
     }
-    // Evaluate TOOL_CALL policy via the Omnigent server's session-level HTTP
+    // Evaluate TOOL_CALL policy via the tesseract server's session-level HTTP
     // endpoint. This works even after the harness turn has completed (which
     // happens immediately for pi-native — just enqueue + TurnComplete), so
     // the verdict is always evaluated against live session policies regardless
-    // of whether an Omnigent turn is currently in flight.
+    // of whether an tesseract turn is currently in flight.
     const verdict = await evalNativePolicyHttp(
       config,
       (event && event.toolName) || "",
@@ -2025,7 +2025,7 @@ module.exports = function (pi) {
     if (verdict && verdict.block) {
       return {
         block: true,
-        reason: verdict.reason || "blocked by Omnigent policy",
+        reason: verdict.reason || "blocked by tesseract policy",
       };
     }
   });

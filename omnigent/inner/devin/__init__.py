@@ -1,6 +1,6 @@
 """Devin harness — ACP-driven, layered on the generic ACP executor.
 
-Devin (Cognition's ``devin`` CLI) runs through Omnigent's generic ACP executor,
+Devin (Cognition's ``devin`` CLI) runs through tesseract's generic ACP executor,
 so this package holds only what is genuinely Devin's: its sub-agent dialect
 (:mod:`.subagents`), the extension that declares it (:data:`DEVIN_ACP_EXTENSION`,
 composed below), and the harness wrap that injects it (:mod:`.harness`). Nothing

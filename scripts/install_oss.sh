@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Omnigent installer.
+# tesseract installer.
 #
 # Installs the published `omnigent` wheel from PyPI with uv, wires up PATH,
 # and points you at first-run. The wheel bundles the prebuilt web UI, so the
@@ -504,13 +504,13 @@ install_omnigent() {
     else
       target="$INSTALL_URL"
     fi
-    step "Installing Omnigent from source${extras_suffix:+ $extras_suffix} (Python $PYTHON_VERSION)"
+    step "Installing tesseract from source${extras_suffix:+ $extras_suffix} (Python $PYTHON_VERSION)"
   elif [ -n "$VERSION" ]; then
     target="${PACKAGE_NAME}${extras_suffix}==${VERSION}"
-    step "Installing Omnigent $VERSION${extras_suffix:+ $extras_suffix} (Python $PYTHON_VERSION)"
+    step "Installing tesseract $VERSION${extras_suffix:+ $extras_suffix} (Python $PYTHON_VERSION)"
   else
     target="${PACKAGE_NAME}${extras_suffix}"
-    step "Installing Omnigent${extras_suffix:+ $extras_suffix} (Python $PYTHON_VERSION)"
+    step "Installing tesseract${extras_suffix:+ $extras_suffix} (Python $PYTHON_VERSION)"
   fi
   # --force so re-running upgrades instead of no-op'ing; -q hides uv's
   # "Installed N executables" summary (the package also ships an `omni` alias).
@@ -564,8 +564,8 @@ maybe_add_bin_to_path() {
 
   path_line="export PATH=\"$bin_dir:\$PATH\""
   profile="$(pick_profile)"
-  begin_marker="# >>> Omnigent installer >>>"
-  end_marker="# <<< Omnigent installer <<<"
+  begin_marker="# >>> tesseract installer >>>"
+  end_marker="# <<< tesseract installer <<<"
 
   warn "$bin_dir is not on PATH."
   if [ "$NON_INTERACTIVE" = true ]; then
@@ -579,7 +579,7 @@ maybe_add_bin_to_path() {
       step "PATH is already configured in $profile"
       return
     fi
-    fail "$profile already has an Omnigent installer block. Update it manually to: $path_line"
+    fail "$profile already has an tesseract installer block. Update it manually to: $path_line"
   fi
 
   if ! prompt_yes_no "Add $bin_dir to PATH in $profile?"; then
@@ -627,7 +627,7 @@ verify_omnigent() {
   fi
 
   if [ -z "$cli_path" ]; then
-    fail "Omnigent installed, but the omnigent command was not found."
+    fail "tesseract installed, but the omnigent command was not found."
   fi
 
   "$cli_path" --help >/dev/null

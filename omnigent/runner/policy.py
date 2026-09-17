@@ -1,6 +1,6 @@
 """Runner-side enforcement of function-type tool-call/tool-result policies.
 
-Pre-refactor the Omnigent server's :class:`PolicyEngine` enforced
+Pre-refactor the tesseract server's :class:`PolicyEngine` enforced
 ``function``-type policies (POLICIES.md §9.1) on every tool dispatch.
 Post designs/RUNNER_MCP.md the runner owns MCP dispatch, so the
 runner has to run these policies itself to keep parity.
@@ -20,7 +20,7 @@ Scope:
 ASK verdicts: the gate itself doesn't own an elicitation channel —
 it just surfaces ASK to the caller. The caller (typically
 ``runner.tool_dispatch.execute_tool``) escalates by POSTing
-``evaluate_policy=True`` to the Omnigent server, which independently
+``evaluate_policy=True`` to the tesseract server, which independently
 re-evaluates and parks an elicitation; the runner then awaits the
 verdict via :mod:`omnigent.runner.pending_approvals`. The dual
 evaluation (runner + server) is by design — the runner needs the
@@ -69,13 +69,13 @@ class PolicyVerdict:
     Typed verdict the runner-side gate returns to its caller.
 
     Replaces the prior ``str | None`` shape so callers can branch
-    on ASK (and escalate to the Omnigent server) rather than treating
+    on ASK (and escalate to the tesseract server) rather than treating
     every non-ALLOW outcome as DENY.
 
     :param action: ``"allow"`` (tool may proceed), ``"deny"`` (tool
         is blocked; ``deny_text`` carries the refusal to feed back
         to the harness), or ``"ask"`` (caller should escalate to
-        the Omnigent server for a user verdict; ``policy_name`` and
+        the tesseract server for a user verdict; ``policy_name`` and
         ``reason`` describe the prompt).
     :param deny_text: The full refusal payload (already wrapped via
         :func:`format_deny_text`) to feed back as the tool output when

@@ -208,7 +208,7 @@ def test_spawn_env_mirrors_row_omnigent_mcp(monkeypatch: pytest.MonkeyPatch) -> 
     """Rows that opt out of MCP injection must propagate that to the wrap.
 
     A vendor CLI that rejects ``session/new`` mcpServers (jcode) fails every
-    session if the Omnigent MCP server is advertised, so the row flag has to
+    session if the tesseract MCP server is advertised, so the row flag has to
     reach ``HARNESS_ACP_OMNIGENT_MCP`` rather than relying on the wrap's
     default-on.
     """

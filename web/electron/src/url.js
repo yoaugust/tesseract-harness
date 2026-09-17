@@ -159,7 +159,7 @@
     return url.protocol === "http:" && !LOCAL_HOSTS.has(url.hostname);
   }
 
-  /** Path where the Omnigent SPA is mounted in a Databricks workspace. */
+  /** Path where the tesseract SPA is mounted in a Databricks workspace. */
   const WORKSPACE_UI_PATH = "/omnigent";
 
   /**
@@ -234,7 +234,7 @@
 
   /**
    * True when a server URL is hosted by Databricks — a workspace domain
-   * (workspace-mounted Omnigent) or a Databricks App. Https-only: a local or
+   * (workspace-mounted tesseract) or a Databricks App. Https-only: a local or
    * self-hosted server is never "Databricks-managed", whatever its hostname
    * claims. Used to scope Databricks-internal desktop features (e.g. the Arca
    * host option) to Databricks-managed servers.
@@ -265,7 +265,7 @@
   const WORKSPACE_PROBE_TIMEOUT_MS = 8000;
 
   /**
-   * Expand a bare Databricks workspace URL to its Omnigent web-UI mount.
+   * Expand a bare Databricks workspace URL to its tesseract web-UI mount.
    *
    * Mirrors the omni CLI's behavioral detection
    * (``omnigent/cli.py:_workspace_api_server_url``): rather than match

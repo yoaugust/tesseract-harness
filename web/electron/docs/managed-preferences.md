@@ -1,7 +1,7 @@
 # Managed Preferences (macOS)
 
 Administrators can use macOS MDM Managed Preferences to provide server URLs to
-Omnigent Desktop. People can then choose their organization’s server instead of
+tesseract Desktop. People can then choose their organization’s server instead of
 typing it.
 
 The preference domain is the desktop bundle identifier:
@@ -32,7 +32,7 @@ an insecure or malformed entry, or more than 10 entries rejects the whole list.
 Managed servers appear under **Provided by your organization** on the connect
 screen and in the in-app server switcher. They are offered, not enforced:
 
-- Omnigent does not connect automatically.
+- tesseract does not connect automatically.
 - People can still enter another server URL.
 - Managed values are read from macOS on demand rather than copied wholesale
   into `settings.json`.
@@ -99,7 +99,7 @@ this as a custom settings or managed preferences payload.
         </dict>
       </dict>
       <key>PayloadDisplayName</key>
-      <string>Omnigent Desktop Managed Preferences</string>
+      <string>tesseract Desktop Managed Preferences</string>
       <key>PayloadIdentifier</key>
       <string>com.example.omnigent.preferences</string>
       <key>PayloadType</key>
@@ -111,7 +111,7 @@ this as a custom settings or managed preferences payload.
     </dict>
   </array>
   <key>PayloadDisplayName</key>
-  <string>Omnigent Desktop</string>
+  <string>tesseract Desktop</string>
   <key>PayloadIdentifier</key>
   <string>com.example.omnigent</string>
   <key>PayloadScope</key>
@@ -131,7 +131,7 @@ Replace the example organization identifiers and UUIDs before deployment.
 ## Local verification
 
 For development only, the effective preference can be simulated with
-`defaults` while a **packaged Omnigent app** is closed. An unpackaged
+`defaults` while a **packaged tesseract app** is closed. An unpackaged
 `electron .` / `just electron-dev` process uses Electron's development bundle
 identifier, not `ai.omnigent.desktop`, so it will not see this value:
 

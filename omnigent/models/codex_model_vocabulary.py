@@ -1,6 +1,6 @@
 """Codex's model vocabulary, and how to speak it.
 
-Omnigent routes to servable catalog ids (``databricks-gpt-5-6-luna``), but
+tesseract routes to servable catalog ids (``databricks-gpt-5-6-luna``), but
 codex names the same model ``gpt-5.6-luna`` — the version segment is dotted
 where the catalog hyphenates it. Two paths need the translation, and they need
 it from opposite directions:

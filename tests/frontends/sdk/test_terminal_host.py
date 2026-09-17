@@ -526,7 +526,7 @@ def test_default_history_file_matches_legacy_omnigent_path() -> None:
     default drifts (e.g. back to ``~/.omnigent-history``,
     or to a fresh location), this test fails loud at the SDK
     boundary so the divergence doesn't ship silently. The
-    history file's location is part of the Omnigent mode-vs-legacy
+    history file's location is part of the tesseract mode-vs-legacy
     parity contract documented in
     ``designs/RUN_OMNIGENT_REPL_PARITY.md``.
     """

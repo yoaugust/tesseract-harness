@@ -6,11 +6,11 @@ server and snapshots structural observations (exit code, stderr
 cleanliness, assistant text length).
 
 **What breaks if this fails:**
-- Omnigent' ``PiExecutor`` regresses (the ``pi --mode rpc``
+- tesseract' ``PiExecutor`` regresses (the ``pi --mode rpc``
   subprocess lifecycle, the JSONL event protocol, the TCP
   ``_ToolServer`` that proxies tool calls back to Python, or
   the generated JavaScript extension that registers
-  Omnigent tools with ``pi.registerTool()``).
+  tesseract tools with ``pi.registerTool()``).
 - The ``pi`` CLI binary disappears from PATH or its
   ``--mode rpc`` subcommand changes its startup contract.
 - ``omnigent.cli._run_agent`` for the ``-p`` one-shot path

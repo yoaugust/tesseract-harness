@@ -2,7 +2,7 @@
 
 Drives GitHub Copilot via :mod:`copilot` (the ``github-copilot-sdk`` package) —
 one persistent :class:`copilot.CopilotClient` + :class:`copilot.CopilotSession`
-per Omnigent conversation, created once and reused turn to turn. Each
+per tesseract conversation, created once and reused turn to turn. Each
 ``run_turn`` issues one ``session.send_and_wait`` and translates the session's
 streamed :class:`copilot.SessionEvent` objects into ExecutorEvents:
 assistant text deltas → :class:`TextChunk`, reasoning deltas →
@@ -10,7 +10,7 @@ assistant text deltas → :class:`TextChunk`, reasoning deltas →
 :class:`ToolCallComplete`, completing on ``ASSISTANT_TURN_END`` /
 ``SESSION_IDLE`` (when ``send_and_wait`` returns).
 
-Crucially, Omnigent's spec-declared tools (``sys_session_send`` et al.) are
+Crucially, tesseract's spec-declared tools (``sys_session_send`` et al.) are
 bridged into Copilot **in-process** via the SDK's ``tools``: each
 :class:`~omnigent.inner.executor.ToolSpec` becomes a :class:`copilot.Tool`
 whose async ``handler`` routes back to the executor's ``_tool_executor`` — the
@@ -22,7 +22,7 @@ so the bridged handler is a plain coroutine that ``await``\\s ``_tool_executor``
 directly — no ``run_coroutine_threadsafe`` hop.
 
 Native tools — Copilot's built-in ``create`` / ``view`` / ``edit`` / ``bash`` run
-*inside* the SDK rather than through Omnigent's bridged-tool dispatch. They are
+*inside* the SDK rather than through tesseract's bridged-tool dispatch. They are
 gated through a two-stage check inside the SDK ``on_permission_request`` handler
 (:meth:`CopilotExecutor._on_permission_request`, parity with the cursor harness):
 
@@ -88,7 +88,7 @@ from .executor import (
 
 logger = logging.getLogger(__name__)
 
-# Omnigent's bridged-tool callback: (tool_name, args) -> awaitable result.
+# tesseract's bridged-tool callback: (tool_name, args) -> awaitable result.
 # Installed by the runtime adapter (see ``_executor_adapter``); mirrors the
 # claude-sdk / cursor executors' ``ToolExecutor``.
 ToolExecutor: TypeAlias = Callable[[str, dict[str, Any]], Awaitable[Any]]  # type: ignore[explicit-any]
@@ -216,7 +216,7 @@ def _build_copilot_prompt(messages: list[Message], *, is_first_turn: bool) -> st
     """Build the prompt text for a ``send_and_wait``.
 
     The SDK session persists conversation history across ``send`` calls and the
-    Omnigent system prompt is delivered separately (``system_message``), so on
+    tesseract system prompt is delivered separately (``system_message``), so on
     the first turn any prior history (e.g. a ``pass_history=True`` sub-agent that
     handed a single user message plus assistant / tool context) is serialized for
     context. On subsequent turns the session already holds the history, so only
@@ -285,7 +285,7 @@ class _CopilotSession(Protocol):
 
 @dataclass
 class _CopilotSessionState:
-    """Per-Omnigent-conversation SDK session state."""
+    """Per-tesseract-conversation SDK session state."""
 
     client: object | None = None
     session: _CopilotSession | None = None
@@ -344,7 +344,7 @@ class CopilotExecutor(Executor):
         self._skills_filter = skills_filter
         self._session_states: dict[str, _CopilotSessionState] = {}
         # Installed by the runtime adapter; routes a bridged-tool call back into
-        # Omnigent's session (policy gating, sub-agent dispatch, logging).
+        # tesseract's session (policy gating, sub-agent dispatch, logging).
         self._tool_executor: ToolExecutor | None = None
         # Installed by the runtime adapter; evaluates PHASE_LLM_REQUEST /
         # PHASE_LLM_RESPONSE policies (the same round-trip pi / claude-sdk /
@@ -387,11 +387,11 @@ class CopilotExecutor(Executor):
     # -- tool bridge --------------------------------------------------------
 
     def _make_tools(self, tools: list[ToolSpec]) -> list[Any]:  # type: ignore[explicit-any]
-        """Build the SDK ``tools`` list from Omnigent ToolSpecs.
+        """Build the SDK ``tools`` list from tesseract ToolSpecs.
 
         Each tool's async ``handler`` is awaited by the SDK in its own event
         loop, so it bridges straight into ``_tool_executor`` — no thread hop.
-        ``skip_permission=True`` because Omnigent's policy layer (and the
+        ``skip_permission=True`` because tesseract's policy layer (and the
         ``_tool_executor`` round-trip) already governs these tools; the SDK
         permission prompt would be redundant and would stall a headless turn.
         """
@@ -417,7 +417,7 @@ class CopilotExecutor(Executor):
         return built
 
     def _make_handler(self, tool_name: str) -> Callable[[Any], Awaitable[Any]]:  # type: ignore[explicit-any]
-        """Build an async ``handler`` that bridges a Copilot tool call to Omnigent.
+        """Build an async ``handler`` that bridges a Copilot tool call to tesseract.
 
         Awaited by the SDK in its event loop, so it ``await``\\s the main-loop
         ``_tool_executor`` directly. Any exception becomes a tool *failure*
@@ -492,14 +492,14 @@ class CopilotExecutor(Executor):
             verdict = await evaluator("PHASE_TOOL_CALL", {"name": name, "arguments": args})
             if getattr(verdict, "action", "") == "POLICY_ACTION_DENY":
                 reason = getattr(verdict, "reason", "") or "blocked by policy"
-                return PermissionDecisionReject(feedback=f"Denied by Omnigent policy: {reason}")
+                return PermissionDecisionReject(feedback=f"Denied by tesseract policy: {reason}")
 
         # Stage 2 — user elicitation: surface an approval card.
         handler = self._elicitation_handler
         if handler is not None:
             approved = await handler(name, args)
             if not approved:
-                return PermissionDecisionReject(feedback="Denied via Omnigent approval UI")
+                return PermissionDecisionReject(feedback="Denied via tesseract approval UI")
 
         return PermissionDecisionApproveOnce()
 
@@ -557,7 +557,7 @@ class CopilotExecutor(Executor):
             # skew) must still hit ``_safe_stop`` below, or it orphans the CLI.
             await client.start()
             # ``append`` keeps Copilot's own operating instructions (how to use
-            # its built-in tools) and layers the Omnigent agent's system prompt
+            # its built-in tools) and layers the tesseract agent's system prompt
             # on top — a ``replace`` would strip the tool-use guidance the model
             # relies on. ``None`` when the spec carries no system prompt.
             system_message = (
@@ -974,7 +974,7 @@ def _unwrap_tool_result(raw: Any) -> Any:  # type: ignore[explicit-any]
     content downstream (classification, tracing, the persisted ``ToolCallComplete``
     result) rather than the wrapper — matching the bare-payload convention the
     peer executors use. Only a recognized wrapper shape is unwrapped, so an
-    Omnigent-convention result (e.g. ``{"blocked": True}``) passes through
+    tesseract-convention result (e.g. ``{"blocked": True}``) passes through
     untouched for :func:`classify_tool_result`.
     """
     if isinstance(raw, dict) and any(k in raw for k in _TOOL_RESULT_WRAPPER_KEYS):

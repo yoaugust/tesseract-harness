@@ -494,7 +494,7 @@ def test_cwd_resolution_uses_workspace_when_spec_cwd_is_dot(
     """
     Per §4.6: when the spec's ``os_env.cwd`` is the bare ``"."``
     placeholder, the launch falls through to ``ctx.workspace``.
-    This is the load-bearing fix — under Omnigent mode, AP's process
+    This is the load-bearing fix — under tesseract mode, AP's process
     cwd is meaningless to the agent.
 
     Tests the resolver in isolation by inspecting the resolved

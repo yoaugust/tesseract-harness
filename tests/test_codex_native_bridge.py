@@ -207,7 +207,7 @@ def test_read_codex_config_effort_none_when_unparsable(bridge_dir: Path) -> None
 def test_write_codex_config_model_replaces_top_level_key(bridge_dir: Path) -> None:
     """The existing top-level ``model`` line is replaced, sections untouched.
 
-    An Omnigent-initiated switch (routing / web picker) must land on the same
+    An tesseract-initiated switch (routing / web picker) must land on the same
     key an in-TUI ``/model`` writes, or the forwarder's next config re-read
     mirrors the stale launch model back and reverts the switch.
     """
@@ -243,7 +243,7 @@ def test_write_codex_config_model_creates_missing_file(bridge_dir: Path) -> None
 def test_write_codex_config_effort_replaces_top_level_key(bridge_dir: Path) -> None:
     """The existing top-level ``model_reasoning_effort`` line is replaced.
 
-    An Omnigent-initiated effort change (web composer gear) must land on the
+    An tesseract-initiated effort change (web composer gear) must land on the
     same key an in-TUI ``/model`` writes, or a fresh forwarder state (thread
     resume / reconnect) re-reads the stale launch effort and mirrors it back,
     silently reverting the composer's pick.
@@ -381,10 +381,10 @@ def test_write_codex_config_effort_false_on_undecodable_or_malformed_file(
 
 def test_policy_hook_config_round_trips(bridge_dir: Path) -> None:
     """
-    Written Omnigent coordinates read back verbatim for the policy hook.
+    Written tesseract coordinates read back verbatim for the policy hook.
 
     The codex hook subprocess depends on this exact payload to reach the
-    Omnigent server. A failure (dropped/renamed field) would leave the hook
+    tesseract server. A failure (dropped/renamed field) would leave the hook
     unable to POST, silently disabling enforcement.
     """
     write_policy_hook_config(
@@ -401,7 +401,7 @@ def test_policy_hook_config_round_trips(bridge_dir: Path) -> None:
 
 def test_policy_hook_config_absent_returns_none(bridge_dir: Path) -> None:
     """
-    Reading before any write returns None (no Omnigent server configured).
+    Reading before any write returns None (no tesseract server configured).
 
     The hook treats None as "nothing to enforce" and no-ops. A failure
     (e.g. raising, or returning a partial dict) would crash the hook or
@@ -605,7 +605,7 @@ def test_settle_pending_mcp_startup_drops_only_starting(bridge_dir: Path) -> Non
     """
     Settling drops unresolved ``starting`` entries and keeps terminal ones.
 
-    Codex never delivers per-server outcomes to Omnigent's observer
+    Codex never delivers per-server outcomes to tesseract's observer
     connection, so at settle the unresolved entries are removed rather
     than guessed; a locally-cancelled server must survive so the web band
     can keep saying it was cancelled. A second settle is a no-op.

@@ -2,7 +2,7 @@
 
 A machine with an HTTP proxy configured — via ``HTTP_PROXY``/``ALL_PROXY``,
 or on Windows via the system registry, which ``getproxies()`` also reads —
-cannot reach its own local Omnigent server through that proxy: the proxy
+cannot reach its own local tesseract server through that proxy: the proxy
 resolves ``127.0.0.1`` against itself. httpx trusts the environment by
 default, so a client built without ``trust_env=False`` fails with
 ``httpx.ConnectError: All connection attempts failed`` even though the

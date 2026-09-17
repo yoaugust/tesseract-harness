@@ -73,7 +73,7 @@ def build_prompt_payload(prompt: NativePrompt) -> _JsonObject:
 
 def _attachment_to_part(attachment: _JsonMapping) -> _JsonObject | None:
     """
-    Convert an Omnigent attachment block into an OpenCode file part.
+    Convert an tesseract attachment block into an OpenCode file part.
 
     :param attachment: An ``input_image`` / ``input_file`` content block.
     :returns: A ``FilePartInput`` dict, or ``None`` when unconvertible.

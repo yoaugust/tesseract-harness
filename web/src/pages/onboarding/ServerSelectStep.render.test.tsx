@@ -56,7 +56,7 @@ describe("ServerSelectStep", () => {
     expect(onCheckServer).toHaveBeenCalledWith(normalized);
     expect(screen.getByRole("button", { name: "Join" })).toBeEnabled();
     // The probe result surfaces on the card.
-    await waitFor(() => expect(screen.getByText("Omnigent server")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("tesseract server")).toBeInTheDocument());
   });
 
   it("Add shows an error for an invalid URL and adds nothing", () => {
@@ -85,7 +85,7 @@ describe("ServerSelectStep", () => {
     const join = screen.getByRole("button", { name: "Join" });
     fireEvent.click(join);
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      /doesn't look like an Omnigent server/i,
+      /doesn't look like an tesseract server/i,
     );
     fireEvent.click(join);
     expect(onConnect).toHaveBeenNthCalledWith(2, "https://amazon.com/", true);

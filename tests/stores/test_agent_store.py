@@ -472,7 +472,7 @@ def test_session_scoped_agent_resolves_to_root_split_db(tmp_path: Path) -> None:
     """Split-DB: the lookup resolves the root when conversations live in the AP DB.
 
     ``conversations`` (agent_id + root_conversation_id) is on the AP DB while the
-    agent row is on the Omnigent DB; the reverse lookup must target the AP engine.
+    agent row is on the tesseract DB; the reverse lookup must target the AP engine.
     """
     omnigent_uri = f"sqlite:///{tmp_path}/omnigent.db"
     conv_uri = f"sqlite:///{tmp_path}/conversations.db"

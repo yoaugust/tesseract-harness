@@ -6,7 +6,7 @@ TUI in a runner-owned tmux pane, and each web-UI turn is injected into that pane
 (bracketed paste + Enter) by
 :class:`omnigent.inner.goose_native_executor.GooseNativeExecutor`. The TUI's own
 SQLite session store is tailed by :mod:`omnigent.harnesses.goose_native.forwarder`, which
-mirrors Goose's replies back onto the Omnigent conversation as assistant items.
+mirrors Goose's replies back onto the tesseract conversation as assistant items.
 
 These tests drive the full stack the way a user does — spawn ``omnigent goose``,
 then talk to the session **through the server** (``POST /v1/sessions/{id}/events``,

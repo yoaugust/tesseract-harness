@@ -1,5 +1,5 @@
 """
-Tunnel three-layer integration test: Omnigent → WS tunnel → runner → harness.
+Tunnel three-layer integration test: tesseract → WS tunnel → runner → harness.
 
 Production-shaped variant of ``test_sessions_three_layer.py``. The
 prior test wired the AP's ``_runner_client`` directly to the runner
@@ -19,7 +19,7 @@ encode/decode regressions, tunnel registry leak/registration races,
 reaches for ``app.state.tunnel_registry`` / ``get_runner_router()``.
 
 Layers:
-    Omnigent server ──HTTP──> RunnerRouter ──WSTunnelTransport──>
+    tesseract server ──HTTP──> RunnerRouter ──WSTunnelTransport──>
         TunnelRegistry ──tunnel WS route──> ApplicationCommunicator ──>
         forwarder task ──> create_runner_app ──> FakeProcessManager ──>
         EchoHarness ASGI app
@@ -329,7 +329,7 @@ async def _forward_requests_to_runner(
                 await task
 
 
-# ── Fixture: Omnigent app + tunnel WS + runner app + EchoHarness ────
+# ── Fixture: tesseract app + tunnel WS + runner app + EchoHarness ────
 
 
 @dataclass
@@ -341,10 +341,10 @@ class _TunnelStack:
 
 @pytest_asyncio.fixture()
 async def tunnel_three_layer_stack(tmp_path: Path) -> AsyncIterator[_TunnelStack]:
-    """Wire Omnigent server + WS-tunneled runner + EchoHarness in-process.
+    """Wire tesseract server + WS-tunneled runner + EchoHarness in-process.
 
     Lifecycle: build stores, init runtime, override the test harness
-    module entry, build Omnigent app + runner app, open the WS tunnel via
+    module entry, build tesseract app + runner app, open the WS tunnel via
     ``ApplicationCommunicator``, send hello, start the forwarder
     task, register the runner in the AP-side ``set_runner_router``
     so resource paths can resolve it, then yield an
@@ -395,7 +395,7 @@ async def tunnel_three_layer_stack(tmp_path: Path) -> AsyncIterator[_TunnelStack
         server_client=NullServerClient(),  # type: ignore[arg-type]
     )
 
-    # Build the Omnigent server. ``create_app`` constructs the
+    # Build the tesseract server. ``create_app`` constructs the
     # ``TunnelRegistry`` + ``RunnerRouter`` synchronously (before
     # lifespan) and threads ``runner_router`` into every router as a
     # closure, so the WS route + the sessions route share the same
@@ -495,13 +495,13 @@ def _fake_client(ap_client: httpx.AsyncClient) -> object:
     the real namespace classes keeps request/response parsing on the
     production client path while avoiding an actual network client.
 
-    :param ap_client: ASGI-backed client pointed at the Omnigent app.
+    :param ap_client: ASGI-backed client pointed at the tesseract app.
     :returns: Duck-typed client with the namespaces the adapter uses.
     """
     base = str(ap_client.base_url).rstrip("/")
 
     class _FakeClient:
-        """Duck-typed Omnigent client backed by the tunnel-stack httpx client."""
+        """Duck-typed tesseract client backed by the tunnel-stack httpx client."""
 
         def __init__(self) -> None:
             self.sessions = SessionsNamespace(ap_client, base)
@@ -518,9 +518,9 @@ def _new_repl_adapter(
     runner_id: str = _RUNNER_ID,
     runner_recover: Any | None = None,
 ) -> _SessionsChatReplAdapter:
-    """Create a sessions REPL adapter over the tunneled Omnigent stack.
+    """Create a sessions REPL adapter over the tunneled tesseract stack.
 
-    :param ap_client: ASGI-backed client pointed at the Omnigent app.
+    :param ap_client: ASGI-backed client pointed at the tesseract app.
     :param agent_name: Human-readable agent display name.
     :param session_id: Optional existing session to resume.
     :param runner_id: Runner id the adapter should bind before send.

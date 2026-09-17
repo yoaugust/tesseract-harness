@@ -31,7 +31,7 @@ _REQUIRES_UDS = pytest.mark.skipif(
 )
 
 # ``_entry:create_app`` requires RUNNER_SERVER_URL in the subprocess
-# environment. Tests don't need a real Omnigent server — the env var only
+# environment. Tests don't need a real tesseract server — the env var only
 # needs to satisfy the non-empty check so the factory can build the
 # httpx client. The actual URL is never dialled during these transport
 # smoke tests.

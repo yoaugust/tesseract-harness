@@ -64,7 +64,7 @@ from tests.e2e.helpers import POLL_INTERVAL_S
 # (with the fix), not the editable install in the shared .venv.
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# Generous PTY width so the CLI's "Omnigent: <url>/c/<conv_id>" and
+# Generous PTY width so the CLI's "tesseract: <url>/c/<conv_id>" and
 # "Resume with: … --resume <conv_id>" lines (which carry the full id) are not
 # wrapped/truncated by the terminal.
 _PTY_ROWS = 60
@@ -310,7 +310,7 @@ def wait_for_conversation_id(handle: PtyHandle, *, timeout: float) -> str:
     """
     Poll a backgrounded session's output until it prints its conversation id.
 
-    Both CLIs print ``Omnigent: <url>/c/conv_<hex>`` shortly after creating
+    Both CLIs print ``tesseract: <url>/c/conv_<hex>`` shortly after creating
     the session. The wide PTY geometry keeps the id from wrapping.
 
     :param handle: The backgrounded session from :func:`spawn_cli_background`.
@@ -648,7 +648,7 @@ def assert_native_cli_resume_restores_history(
     :param force_cold_resume: When ``True``, delete the harness's local
         transcript for the captured native session id between the fresh and
         resume legs, so the resume cannot reuse the harness's own on-disk
-        transcript and must instead go through Omnigent' cold-resume
+        transcript and must instead go through tesseract' cold-resume
         *synthesis* (rebuild the transcript from server-side items). This is
         the cross-context scenario a real user hits when resuming a
         conversation created elsewhere / in another cwd / on another machine —

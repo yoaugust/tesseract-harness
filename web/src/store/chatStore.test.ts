@@ -1064,7 +1064,7 @@ describe("chatStore — switchTo", () => {
   // ``isNativeTerminalSession`` gates the optimistic-bubble clear; the companion
   // ``nativeVendorOwnsModel`` hides the composer model/effort chip for native
   // wrappers whose model is chosen inside the vendor TUI (qwen/goose/pi/cursor/
-  // opencode) — claude/codex keep it (they expose an Omnigent model picker).
+  // opencode) — claude/codex keep it (they expose an tesseract model picker).
   it.each([
     ["claude-code-native-ui", true, false],
     ["codex-native-ui", true, false],
@@ -11363,7 +11363,7 @@ describe("chatStore — live delta streaming (claude-native)", () => {
   it("does not double-render pi-native text when the harness response completes before the deltas", async () => {
     // Faithful replay of a real pi-native turn (captured from a live
     // `omnigent pi` server). The harness PiNativeExecutor completes its
-    // Omnigent response the instant it enqueues the user message — so
+    // tesseract response the instant it enqueues the user message — so
     // `response.in_progress` + `response.completed` arrive BEFORE Pi's
     // extension streams the assistant text deltas and the authoritative
     // item. The early `response.completed` (response_end) is the missing

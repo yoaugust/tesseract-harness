@@ -528,24 +528,24 @@ def register_events_routes(
         - ``"approval"`` resolves an outstanding elicitation
           in-band (see :func:`_dispatch_approval`).
         - ``"external_assistant_message"`` appends and streams an
-          assistant message observed outside the Omnigent task runtime,
+          assistant message observed outside the tesseract task runtime,
           without starting or steering a task.
         - ``"external_conversation_item"`` appends and streams a
-          completed item observed outside the Omnigent task runtime,
+          completed item observed outside the tesseract task runtime,
           without starting or steering a task.
         - ``"external_output_text_delta"`` publishes a transient
           ``response.output_text.delta`` event observed outside the
-          Omnigent task runtime, without persisting an item or starting /
+          tesseract task runtime, without persisting an item or starting /
           steering a task.
         - ``"external_tool_output_delta"`` publishes transient output for
           an in-progress function call without persisting an item.
         - ``"external_output_reasoning_delta"`` publishes a transient
           ``response.reasoning_text.delta`` event (preceded by one
           ``response.reasoning.started`` when ``data.started`` is true)
-          observed outside the Omnigent task runtime, without persisting an
+          observed outside the tesseract task runtime, without persisting an
           item or starting / steering a task.
         - ``"external_session_interrupted"`` publishes a
-          ``session.interrupted`` event observed outside the Omnigent task
+          ``session.interrupted`` event observed outside the tesseract task
           runtime, without persisting an item or starting / steering a
           task.
         - ``"external_elicitation_resolved"`` marks a native
@@ -1998,7 +1998,7 @@ def register_events_routes(
                     created_by=created_by,
                 )
                 return {"queued": True, "item_id": item_id}
-            # Raise so the Omnigent server doesn't persist an item the
+            # Raise so the tesseract server doesn't persist an item the
             # harness will never see. Other event paths (interrupt,
             # approval) are best-effort and silently skip when no
             # runner is bound — item events can't, because that

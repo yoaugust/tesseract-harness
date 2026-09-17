@@ -154,7 +154,7 @@ class ErrorCode:
     :cvar CONFLICT: Operation conflicts with current state (HTTP 409).
     :cvar INTERNAL_ERROR: Unexpected server error (HTTP 500).
     :cvar HARNESS_PROTOCOL_VIOLATION: A harness emitted an SSE
-        sequence that violates the Omnigent↔harness contract — e.g.
+        sequence that violates the tesseract↔harness contract — e.g.
         ``response.completed`` with outstanding elicitations or
         outstanding ``tool_results`` round-trips. Server bug in
         the harness implementation, not user input. Surfaces as

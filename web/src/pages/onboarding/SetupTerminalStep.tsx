@@ -67,10 +67,10 @@ export function SetupTerminalStep({
   const streamed = lines.length > 0;
   const phaseLabel =
     phase === "ready"
-      ? "Omnigent is ready"
+      ? "tesseract is ready"
       : phase === "failed"
-        ? "Couldn't start Omnigent"
-        : "Starting Omnigent";
+        ? "Couldn't start tesseract"
+        : "Starting tesseract";
 
   return (
     <div className="flex h-full flex-col px-2 pb-1 pt-1">

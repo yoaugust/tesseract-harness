@@ -216,7 +216,7 @@ def advertise_relay_tools(bridge_dir: pathlib.Path, *tool_names: str) -> pathlib
     constant so a rename fails these tests instead of silently reading nothing.
 
     :param bridge_dir: Bridge directory the hook is pointed at.
-    :param tool_names: Omnigent tool names to advertise; none writes an empty
+    :param tool_names: tesseract tool names to advertise; none writes an empty
         list, which is how "the session holds no spawn tool" is expressed.
     :returns: *bridge_dir*, for use as the hook's ``--bridge-dir``.
     """

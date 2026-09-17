@@ -734,7 +734,7 @@ async def test_auto_session_and_its_children_keep_cross_harness_picks(
     assert set(routing_client.offered[1]) == {"claude-native", "codex-native"}
 
 
-# ── 7. Omnigent child sessions stay in the parent's family ─────────
+# ── 7. tesseract child sessions stay in the parent's family ─────────
 
 
 async def _pinned_parent_and_child(

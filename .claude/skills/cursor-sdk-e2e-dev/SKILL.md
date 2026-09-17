@@ -1,12 +1,12 @@
 ---
 name: cursor-sdk-e2e-dev
-description: Spin up a live local Omnigent server and exercise the Cursor SDK harness end-to-end — build cursor agents, run real turns, smoke-test, and bug-bash. Load when developing, testing, or debugging the cursor harness (omnigent/inner/cursor_executor.py, cursor_harness.py, cursor_auth.py) or its auth / model / tool-bridge behavior.
+description: Spin up a live local tesseract server and exercise the Cursor SDK harness end-to-end — build cursor agents, run real turns, smoke-test, and bug-bash. Load when developing, testing, or debugging the cursor harness (omnigent/inner/cursor_executor.py, cursor_harness.py, cursor_auth.py) or its auth / model / tool-bridge behavior.
 ---
 
 # Cursor SDK harness: end-to-end dev & testing
 
 The `cursor` harness drives the **Cursor Python SDK** (`cursor_sdk`, an
-`AsyncAgent` over a local bridge) and bridges Omnigent's `sys_*` tools into
+`AsyncAgent` over a local bridge) and bridges tesseract's `sys_*` tools into
 Cursor as SDK `custom_tools`. This skill is the proven recipe for running it
 **for real** against a live local server — not just the unit tests.
 

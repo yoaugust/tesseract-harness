@@ -1,8 +1,8 @@
-# repro-agent (local) — reproduce a bug live in YOUR running Omnigent app and
+# repro-agent (local) — reproduce a bug live in YOUR running tesseract app and
 # capture it as a durable e2e test.
 #
 # This is the local-dev variant of the repro-agent: it runs against whatever
-# Omnigent server you already have (the local server `omnigent run` spins up, or
+# tesseract server you already have (the local server `omnigent run` spins up, or
 # one you pass with `--server`), driving the real user journey until the failure
 # happens, then authoring the reproduction as an e2e test in THIS checkout.
 #
@@ -31,7 +31,7 @@
 spec_version: 1
 name: repro_agent
 description: >-
-  Reproduces a bug live in a running Omnigent app and captures it as a durable
+  Reproduces a bug live in a running tesseract app and captures it as a durable
   end-to-end test. Given just the bug — a bug_url (a GitHub issue or Linear
   ticket link) — it reconstructs the user journey from the linked report, drives
   the app it is connected to (a local server, or one passed with --server)

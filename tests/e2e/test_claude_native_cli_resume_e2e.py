@@ -76,7 +76,7 @@ def test_claude_native_cli_resume_restores_history(
     via the config-home auth block from the pytest ``--profile``) to teach
     Claude a passphrase, **deletes Claude's local transcript** for that session,
     then resumes — so the resume cannot reuse Claude's own on-disk transcript
-    and must go through Omnigent' cold-resume *synthesis* (rebuild the
+    and must go through tesseract' cold-resume *synthesis* (rebuild the
     transcript from server-side items and hand it to ``claude --resume``). A
     recall message is sent through the server and Claude must reply with the
     passphrase, proving the resumed session loaded the prior turn.
@@ -87,7 +87,7 @@ def test_claude_native_cli_resume_restores_history(
     the runner re-creating the terminal on a reused daemon runner (the ensure
     path) and ``_ensure_local_claude_resume_transcript`` synthesizing the
     transcript. (We deliberately do NOT also test the same-machine fast path —
-    that only exercises Claude resuming its own file, not Omnigent' code, and
+    that only exercises Claude resuming its own file, not tesseract' code, and
     running a second back-to-back CLI flow thrashes the shared host daemon.)
 
     :param resume_test_server: Base URL of the allow-list-free test server.

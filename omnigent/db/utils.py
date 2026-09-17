@@ -265,7 +265,7 @@ def _create_engine(db_uri: str) -> Engine:
     SQLite engines enable WAL journal mode and a 20s
     ``busy_timeout`` on every connection (not just sessions
     created via :func:`make_managed_session_maker`). Without WAL,
-    multi-process workloads — REPL + Omnigent server + runner subprocess
+    multi-process workloads — REPL + tesseract server + runner subprocess
     all hitting the same ``chat.db`` — surface as spurious
     ``disk I/O error`` and ``database is locked`` failures because
     the default ``journal_mode=DELETE`` only permits one writer at
@@ -493,7 +493,7 @@ def get_or_create_conversation_engine(conv_uri: str) -> Engine:
     Unlike :func:`get_or_create_engine`, this does NOT run Alembic
     migrations — the AP DB is expected to be a fresh database that
     gets its tables created via ``ConversationBase.metadata.create_all()``.
-    For the common case where AP DB == Omnigent DB, callers should
+    For the common case where AP DB == tesseract DB, callers should
     use :func:`get_or_create_engine` directly and share the engine.
 
     :param conv_uri: SQLAlchemy database URI for the AP DB.
@@ -759,9 +759,9 @@ def _verify_db_revision_is_supported(
         script.get_revision(current)
     except CommandError as exc:
         raise RuntimeError(
-            "Omnigent database schema is newer than this version of Omnigent "
+            "tesseract database schema is newer than this version of tesseract "
             f"(found revision {current!r}, latest supported revision {head!r}). "
-            "Upgrade Omnigent before using this database."
+            "Upgrade tesseract before using this database."
         ) from exc
 
 
@@ -781,7 +781,7 @@ def _initialize_or_verify_schema(engine: Engine, db_uri: str) -> None:
       still terminates with an actionable error instead of continuing
       against an incompatible schema.
     - **Newer than this build** — stop without attempting a migration
-      and tell the operator to upgrade Omnigent.
+      and tell the operator to upgrade tesseract.
 
     :param engine: SQLAlchemy engine bound to the target database.
     :param db_uri: Database URL, used both for Alembic config and in
@@ -803,7 +803,7 @@ def _initialize_or_verify_schema(engine: Engine, db_uri: str) -> None:
 
     if current != head:
         _logger.warning(
-            "Omnigent database schema is out of date "
+            "tesseract database schema is out of date "
             "(found revision %r, expected %r); attempting automatic migration.",
             current,
             head,
@@ -812,7 +812,7 @@ def _initialize_or_verify_schema(engine: Engine, db_uri: str) -> None:
             _run_migrations(engine, db_uri)
         except Exception as exc:
             raise RuntimeError(
-                f"Omnigent database schema is out of date "
+                f"tesseract database schema is out of date "
                 f"(found revision {current!r}, expected {head!r}) "
                 f"and automatic migration failed. Take a backup of your database, then run\n"
                 f"\n"
@@ -824,7 +824,7 @@ def _initialize_or_verify_schema(engine: Engine, db_uri: str) -> None:
         migrated = _get_current_db_revision(engine)
         if migrated != head:
             raise RuntimeError(
-                f"Omnigent automatic database migration did not reach head "
+                f"tesseract automatic database migration did not reach head "
                 f"(started at {current!r}, now at {migrated!r}, expected {head!r}). "
                 f"Take a backup of your database, then run\n"
                 f"\n"

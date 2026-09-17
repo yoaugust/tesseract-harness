@@ -34,7 +34,7 @@ NATIVE_WRITE_TOOLS: frozenset[str] = frozenset({"Write", "Edit", "MultiEdit", "N
 
 # Claude Code and Codex native tool names surfaced via the PreToolUse /
 # PostToolUse hook contract (see ``omnigent.native.native_policy_hook``).
-# These bypass Omnigent' ``sys_os_*`` MCP tools and execute directly
+# These bypass tesseract' ``sys_os_*`` MCP tools and execute directly
 # inside the CLI subprocess.
 _NATIVE_OS_TOOLS = NATIVE_WRITE_TOOLS | {"Bash", "Read", "Glob", "Grep"}
 
@@ -49,7 +49,7 @@ _CURSOR_NATIVE_OS_TOOLS = frozenset({"Shell"})
 # Pi runs these in-process and routes them through the same TOOL_CALL
 # policy verdict — but under its own names, distinct from the
 # Claude/Codex-cased ``_NATIVE_OS_TOOLS``. Pi uses the same argument keys
-# as the Omnigent ``sys_os_*`` tools (``path`` / ``command``), so the
+# as the tesseract ``sys_os_*`` tools (``path`` / ``command``), so the
 # previews below resolve without a Pi-specific arg branch.
 _PI_NATIVE_OS_TOOLS = frozenset({"read", "bash", "write", "edit"})
 
@@ -240,7 +240,7 @@ def ask_on_os_tools(event: PolicyEvent) -> PolicyResponse:
 
     Covers six tool-name families:
 
-    - **Omnigent built-in OS tools** (``sys_os_read``,
+    - **tesseract built-in OS tools** (``sys_os_read``,
       ``sys_os_write``, ``sys_os_edit``, ``sys_os_shell``).
     - **Claude Code native tools** (``Bash``, ``Read``, ``Write``,
       ``Edit``, ``MultiEdit``, ``NotebookEdit``, ``Glob``, ``Grep``) —
@@ -306,7 +306,7 @@ def ask_on_os_tools(event: PolicyEvent) -> PolicyResponse:
             code = args.get("code") if isinstance(args, dict) else None
             preview = code[:80] if isinstance(code, str) else ""
         else:
-            # Omnigent tools use ``path``; Claude native tools use ``file_path``,
+            # tesseract tools use ``path``; Claude native tools use ``file_path``,
             # except NotebookEdit which uses ``notebook_path``.
             preview = (
                 (args.get("path") or args.get("file_path") or args.get("notebook_path") or "")
@@ -357,7 +357,7 @@ def ask_on_add_policy(event: PolicyEvent) -> PolicyResponse:
 
 # ── Skill blocking ──────────────────────────────────────────────────────────
 
-# Omnigent runner tools that load skills in non-native (SDK) harnesses.
+# tesseract runner tools that load skills in non-native (SDK) harnesses.
 _SKILL_TOOLS = frozenset({"load_skill", "read_skill_file"})
 
 # Claude Code's native ``Skill`` tool, fired via ``PreToolUse`` hook and
@@ -375,12 +375,12 @@ def block_skills(blocked: list[str]) -> PolicyCallable:
        calls dispatched by non-native (SDK) harnesses.
     2. **Native ``Skill`` tool** — Claude Code's built-in ``Skill`` tool,
        intercepted via the ``PreToolUse`` command hook which POSTs to
-       the Omnigent server's ``/policies/evaluate`` endpoint. This is how
+       the tesseract server's ``/policies/evaluate`` endpoint. This is how
        ``block_skills`` enforces on native Claude Code and Codex
        harnesses — there is no ``load_skill`` runner tool in native
        mode.
     3. **Slash commands** — ``/skill-name`` commands submitted by the
-       user (or UI). The Omnigent server evaluates these at the ``request``
+       user (or UI). The tesseract server evaluates these at the ``request``
        phase as synthetic ``"/<name> <args>"`` text via
        ``_build_skill_slash_command_policy_body``.
 
@@ -442,7 +442,7 @@ def block_skills(blocked: list[str]) -> PolicyCallable:
             if not isinstance(args, dict):
                 return _ALLOW
 
-            # Path 1: Omnigent runner tools (load_skill / read_skill_file).
+            # Path 1: tesseract runner tools (load_skill / read_skill_file).
             if tool in _SKILL_TOOLS:
                 # load_skill uses "name"; read_skill_file uses "skill_name"
                 skill_name = args.get("name") if tool == "load_skill" else args.get("skill_name")
@@ -454,7 +454,7 @@ def block_skills(blocked: list[str]) -> PolicyCallable:
                 return _ALLOW
 
             # Path 2: Claude Code / Codex native Skill tool.
-            # Fired via PreToolUse hook → Omnigent /policies/evaluate.
+            # Fired via PreToolUse hook → tesseract /policies/evaluate.
             if tool == _NATIVE_SKILL_TOOL:
                 skill_name = args.get("skill")
                 if skill_name and _is_blocked(skill_name):
@@ -467,7 +467,7 @@ def block_skills(blocked: list[str]) -> PolicyCallable:
             return _ALLOW
 
         # ── Path 3: request phase for slash-command skill loads ───────
-        # The Omnigent server converts ``/skill-name args`` into a synthetic
+        # The tesseract server converts ``/skill-name args`` into a synthetic
         # user message ``"/<name> <args>"`` and evaluates it at the
         # REQUEST phase.  Match ``/<blocked-name>`` at the start.
         if event_type == "request":
@@ -663,7 +663,7 @@ def deny_pii_in_llm_request(
         Fires on two phases so PII is caught regardless of harness:
 
         - ``request``: user message text, enforced universally on
-          the Omnigent server for every harness (including supervisor,
+          the tesseract server for every harness (including supervisor,
           native).
         - ``llm_request``: full LLM call metadata (system prompt +
           last user message), enforced via the harness callback
@@ -774,7 +774,7 @@ POLICY_REGISTRY: list[dict[str, object]] = [
         "kind": "callable",
         "name": "Require Approval for File & Shell Operations",
         "description": "Asks for user approval before any file or shell tool call — "
-        "covers Omnigent sys_os_* tools, Claude Code and Codex native tools "
+        "covers tesseract sys_os_* tools, Claude Code and Codex native tools "
         "(Bash, Read, Write, Edit, MultiEdit, NotebookEdit, Glob, Grep), "
         "Cursor native tools (Shell), Pi native tools (read, bash, write, edit), "
         "opencode native tools (bash, edit, read, grep, glob), "

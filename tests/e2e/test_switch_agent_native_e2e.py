@@ -3,9 +3,9 @@
 Companion to ``test_switch_agent_e2e.py`` (SDK→SDK). These exercise the two
 harness-crossing in-place switches, which hit code the SDK→SDK test does not:
 
-- **native → SDK**: the SDK target replays the Omnigent transcript as context
+- **native → SDK**: the SDK target replays the tesseract transcript as context
   (and the source's terminal-first presentation labels must be dropped).
-- **SDK → native**: the native CLI ignores the Omnigent transcript, so the
+- **SDK → native**: the native CLI ignores the tesseract transcript, so the
   runner must REBUILD the on-disk Claude transcript from the session's own AP
   items (``_ensure_local_claude_resume_transcript``) under a fresh uuid and
   ``--resume`` it — the same rebuild path the SDK→native *fork* uses, but

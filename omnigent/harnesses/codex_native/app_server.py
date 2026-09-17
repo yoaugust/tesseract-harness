@@ -89,7 +89,7 @@ _STDERR_CHUNK_LIMIT = 65536
 _UDS_WEBSOCKET_HANDSHAKE_URI = "ws://localhost/rpc"
 _MAX_WEBSOCKET_MESSAGE_SIZE_BYTES = 128 << 20
 # hooks.json filename written into the private CODEX_HOME registering the
-# Omnigent policy hook. Codex discovers it as a ``user``-layer hook
+# tesseract policy hook. Codex discovers it as a ``user``-layer hook
 # source on every config load (see codex hooks ``discover_handlers``).
 _CODEX_HOOKS_FILE = "hooks.json"
 # Module the codex policy command hook runs. Also the marker used to
@@ -196,7 +196,7 @@ def _remove_toml_table(text: str, table_name: str) -> str:
     Remove one TOML table and its subtables from a config document.
 
     Used for generated private Codex config before appending the
-    Omnigent MCP server table. This avoids accumulating duplicate
+    tesseract MCP server table. This avoids accumulating duplicate
     ``[mcp_servers.omnigent]`` sections across terminal relaunches.
 
     :param text: TOML document text.
@@ -215,7 +215,7 @@ def _remove_toml_table(text: str, table_name: str) -> str:
     return "".join(kept).rstrip()
 
 
-#: Omnigent tools the framework calls on every session's behalf, pre-approved
+#: tesseract tools the framework calls on every session's behalf, pre-approved
 #: so codex never raises an interactive prompt for them. The rename keeps a
 #: session's title current, which the framework does unprompted on any session.
 _FRAMEWORK_APPROVED_TOOLS: tuple[str, ...] = ("sys_session_rename",)
@@ -238,7 +238,7 @@ _ROUTED_SPAWN_APPROVED_TOOLS: tuple[str, ...] = (
 
 def framework_approved_tools(*, routed_spawns: bool) -> tuple[str, ...]:
     """
-    Name the Omnigent tools this session pre-approves in codex.
+    Name the tesseract tools this session pre-approves in codex.
 
     :param routed_spawns: ``True`` for an auto-harness Smart Routing session,
         which also needs the cross-harness redirect toolkit.
@@ -453,7 +453,7 @@ def _sync_codex_developer_instructions(
         base = base_path.read_text(encoding="utf-8")
     else:
         base = current.strip() if isinstance(current, str) else ""
-        # A previous Omnigent build may have appended the same instructions
+        # A previous tesseract build may have appended the same instructions
         # without writing the sidecar. Recover the user-authored
         # prefix instead of permanently capturing the combined value as base.
         if addition and base == addition:
@@ -514,7 +514,7 @@ def _inject_mcp_server_config(
     routed_spawns: bool = False,
 ) -> None:
     """
-    Upsert Omnigent MCP server config into ``config.toml``.
+    Upsert tesseract MCP server config into ``config.toml``.
 
     Writes a ``[mcp_servers.omnigent]`` section that points Codex
     at the ``serve-mcp`` subprocess. This supplements the ``-c``
@@ -750,7 +750,7 @@ class CodexAppServerClient:
 
         Codex app-server can send server-to-client requests on the
         same websocket, such as ``mcpServer/elicitation/request``.
-        The forwarder handles those requests through Omnigent and replies
+        The forwarder handles those requests through tesseract and replies
         with this method using Codex's original request id.
 
         :param request_id: JSON-RPC id from the Codex request, e.g.
@@ -1305,13 +1305,13 @@ class CodexNativeAppServer:
     :param bridge_dir: Native Codex bridge directory, e.g.
         ``Path("~/.omnigent/codex-native/<hash>")``. The policy hook
         subprocess is pointed at it via ``--bridge-dir`` and reads the
-        session id + Omnigent coordinates from it.
-    :param ap_server_url: Omnigent server base URL the policy hook POSTs tool
+        session id + tesseract coordinates from it.
+    :param ap_server_url: tesseract server base URL the policy hook POSTs tool
         calls to, e.g. ``"http://127.0.0.1:8787"``. ``None`` registers
-        and trusts the hook but writes no Omnigent coordinates, so the hook
+        and trusts the hook but writes no tesseract coordinates, so the hook
         no-ops (no enforcement) until coordinates exist.
     :param ap_auth_headers: Outbound auth headers for the policy hook's
-        Omnigent requests, e.g. ``{"Authorization": "Bearer <token>"}``.
+        tesseract requests, e.g. ``{"Authorization": "Bearer <token>"}``.
     :param python_executable: Python executable the policy hook command
         runs, e.g. ``"/path/to/.venv/bin/python"``. ``None`` uses
         :data:`sys.executable`.
@@ -1344,7 +1344,7 @@ class CodexNativeAppServer:
         sessions leave it disabled so a human reviews their own hooks.
     :param policy_notice_pending: One-shot flag: ``True`` once a degrade
         reason is recorded, until the runner's terminal-ensure handler
-        surfaces it to Omnigent (which posts a single durable banner). Prevents
+        surfaces it to tesseract (which posts a single durable banner). Prevents
         re-posting the same notice on every subsequent ensure. Not a
         constructor input.
     """
@@ -1475,9 +1475,9 @@ class CodexNativeAppServer:
                 "codex to enforce tool-call policies."
             )
         else:
-            # Register the Omnigent policy hook in this private CODEX_HOME
+            # Register the tesseract policy hook in this private CODEX_HOME
             # *before* launching the app-server so codex discovers it at
-            # config load. The Omnigent coordinates the hook subprocess
+            # config load. The tesseract coordinates the hook subprocess
             # needs go in the bridge dir's policy_hook.json; without
             # ap_server_url the hook is still registered + trusted but
             # no-ops.
@@ -1568,7 +1568,7 @@ class CodexNativeAppServer:
 
     async def _trust_policy_hooks(self) -> None:
         """
-        Mark the registered Omnigent policy hook as trusted.
+        Mark the registered tesseract policy hook as trusted.
 
         A freshly-written non-managed hook is ``untrusted`` and codex
         silently skips untrusted hooks — for a policy gate that is a
@@ -1691,7 +1691,7 @@ class CodexNativeAppServer:
         Called by :meth:`start` when it degrades the session to "no
         enforcement" — either codex is too old to trust the hook, or the
         trust handshake failed. The reason is in
-        :attr:`policy_hook_disabled_reason`. When Omnigent coordinates are
+        :attr:`policy_hook_disabled_reason`. When tesseract coordinates are
         present (``ap_server_url`` set) enforcement was intended, so this
         is a loud ``warning``; otherwise nothing would have been enforced
         anyway and it is an ``info``.
@@ -2013,7 +2013,7 @@ def _our_policy_hooks_from_list(listed: _JsonObject, cwd: str) -> list[_JsonObje
     :param listed: Parsed ``hooks/list`` response envelope.
     :param cwd: The cwd whose hook set to read, e.g.
         ``"/home/user/repo"``.
-    :returns: The matching Omnigent policy-hook metadata dicts.
+    :returns: The matching tesseract policy-hook metadata dicts.
     """
     return _our_hooks_from_list(listed, cwd, _POLICY_HOOK_MODULE)
 
@@ -2076,7 +2076,7 @@ def _untrusted_hook_detail(hooks: Sequence[_JsonObject]) -> str:
     requirement rejecting a user hook, or an old codex that omits
     ``trustStatus`` entirely.
 
-    :param hooks: Untrusted Omnigent hook metadata dicts from
+    :param hooks: Untrusted tesseract hook metadata dicts from
         ``hooks/list``.
     :returns: A semicolon-joined per-hook detail string.
     """
@@ -2194,7 +2194,7 @@ async def trust_all_codex_hooks(request: CodexRequestFn, *, cwd: str) -> list[st
     hook regardless of trust state. But codex only honors that flag for the
     interactive startup hook-review *screen* when the session is not a
     persistent resume: it computes ``bypass_hook_trust && !is_persistent_resume``,
-    and an Omnigent ``resume <thread_id> --remote`` attach is a persistent
+    and an tesseract ``resume <thread_id> --remote`` attach is a persistent
     resume. So a resumed web/headless session drops back to the interactive
     "Hooks need review" screen that nobody can answer, stranding the queued
     chat message. Persisting trust for the merged hooks (the same
@@ -2238,19 +2238,19 @@ async def trust_all_codex_hooks(request: CodexRequestFn, *, cwd: str) -> list[st
 
 async def trust_native_policy_hooks(client: CodexAppServerClient, *, cwd: str) -> None:
     """
-    Trust the Omnigent policy hook so codex actually runs it.
+    Trust the tesseract policy hook so codex actually runs it.
 
     Runs the same flow codex's TUI uses for hook trust: ``hooks/list``
     to read each hook's content hash, then ``config/batchWrite`` (with
     ``reloadUserConfig`` so loaded threads hot-reload) writing
     ``hooks.state.<key>.trusted_hash = currentHash``. Re-lists and
-    verifies every Omnigent hook ended ``trusted``/``managed``.
+    verifies every tesseract hook ended ``trusted``/``managed``.
 
     :param client: A connected Codex app-server client.
     :param cwd: The session cwd the hooks are scoped to, e.g.
         ``"/home/user/repo"``.
     :returns: None.
-    :raises RuntimeError: If no Omnigent hook is discovered (it was
+    :raises RuntimeError: If no tesseract hook is discovered (it was
         not registered or not loaded) or if a hook remains untrusted
         after the trust write. Either is a silent fail-open for a policy
         gate, so it must fail loud.
@@ -2259,7 +2259,7 @@ async def trust_native_policy_hooks(client: CodexAppServerClient, *, cwd: str) -
     ours = _our_policy_hooks_from_list(listed, cwd)
     if not ours:
         raise RuntimeError(
-            f"Omnigent policy hook was not discovered for cwd {cwd!r}; "
+            f"tesseract policy hook was not discovered for cwd {cwd!r}; "
             "tool-call policy enforcement would silently not run. "
             f"{_hooks_list_diagnostics(listed, cwd)}."
         )
@@ -2285,7 +2285,7 @@ async def trust_native_policy_hooks(client: CodexAppServerClient, *, cwd: str) -
             else ""
         )
         raise RuntimeError(
-            "Omnigent policy hook still untrusted after config/batchWrite; "
+            "tesseract policy hook still untrusted after config/batchWrite; "
             "tool-call policy enforcement would not run. Untrusted hooks: "
             f"{_untrusted_hook_detail(still_untrusted)}.{hint}"
         )
@@ -2297,7 +2297,7 @@ def _trust_codex_project(codex_home: Path, cwd: Path) -> None:
 
     Codex 0.146 introduced a project-trust screen before the remote TUI
     creates its thread. Headless sessions cannot answer it, so startup waits
-    until Omnigent reports a timeout. The config is already a private copy;
+    until tesseract reports a timeout. The config is already a private copy;
     this never modifies the user's shared ``~/.codex/config.toml``.
 
     :param codex_home: Private per-session ``CODEX_HOME`` directory.
@@ -2490,19 +2490,19 @@ def build_codex_native_server(
     :param profile: Optional Databricks CLI profile, e.g.
         ``"<your-profile>"``.
     :param bridge_dir: Native Codex bridge directory; the policy hook is
-        pointed at it and reads the session id + Omnigent coordinates from it.
-    :param ap_server_url: Omnigent server base URL the policy hook POSTs tool
+        pointed at it and reads the session id + tesseract coordinates from it.
+    :param ap_server_url: tesseract server base URL the policy hook POSTs tool
         calls to, e.g. ``"http://127.0.0.1:8787"``. ``None`` registers
-        the hook but writes no Omnigent coordinates (hook no-ops).
+        the hook but writes no tesseract coordinates (hook no-ops).
     :param ap_auth_headers: Outbound auth headers for the policy hook's
-        Omnigent requests, e.g. ``{"Authorization": "Bearer <token>"}``.
+        tesseract requests, e.g. ``{"Authorization": "Bearer <token>"}``.
     :param python_executable: Python executable the policy hook command
         runs. ``None`` uses :data:`sys.executable`.
     :param codex_path: Optional executable override. ``None`` searches
         ``PATH``.
     :param extra_config_overrides: Additional ``-c`` config overrides
         appended after Databricks routing overrides, e.g. MCP server
-        registration for the Omnigent tool relay.
+        registration for the tesseract tool relay.
     :param developer_instructions: Optional raw ``AgentSpec.instructions``
         (author-supplied, not framework-composed) appended to Codex's
         private per-session config.
@@ -3180,7 +3180,7 @@ def resolve_native_codex_launch(
         and not config_provider_dismissed
     ):
         # An adopted cli-config entry can explicitly shadow the same ambient
-        # detection without being marked the Omnigent default. Codex still
+        # detection without being marked the tesseract default. Codex still
         # selects that provider from config.toml, so pin the already-resolved
         # detection instead of describing this as an OpenAI-login launch.
         # This keeps rollout metadata, app-server, and remote TUI routing on
@@ -3706,7 +3706,7 @@ def build_codex_remote_args(
     (web-UI-driven) session there is nobody at the terminal to dismiss
     that screen, so ``wait_for_thread_started`` times out and the session
     hangs in ``running`` with no response. Passing the provider overrides
-    through makes the TUI resolve the Omnigent provider
+    through makes the TUI resolve the tesseract provider
     (``requires_openai_auth = false``), skip onboarding, and start the
     thread immediately. Codex global ``-c`` flags must precede the
     ``resume`` subcommand, so they are emitted first.
@@ -3743,7 +3743,7 @@ def build_codex_remote_args(
         ``--dangerously-bypass-hook-trust`` so the TUI runs all enabled
         hooks without the interactive "Hooks need review" trust prompt.
         Intended for runner-owned headless sessions where the private
-        ``CODEX_HOME`` is provisioned by Omnigent and there is no terminal
+        ``CODEX_HOME`` is provisioned by tesseract and there is no terminal
         user to answer the prompt. Default ``False`` for interactive
         ``omnigent codex`` sessions where the user faces the terminal and
         can accept hooks normally.

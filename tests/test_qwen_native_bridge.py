@@ -42,7 +42,7 @@ def test_write_mcp_config_writes_into_bridge_dir_not_workspace(bridge_dir: Path)
         "serve-mcp",
     ]
     assert str(bridge_dir) in server["args"]
-    # trust:true auto-approves qwen's own MCP gate (Omnigent gates separately).
+    # trust:true auto-approves qwen's own MCP gate (tesseract gates separately).
     assert server["trust"] is True
     # The relay's bearer token was written for ``serve-mcp`` to read at startup.
     assert (bridge_dir / "bridge.json").is_file()

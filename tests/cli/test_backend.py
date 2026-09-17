@@ -2,7 +2,7 @@
 
 Under the daemon model every ``run`` / ``claude`` invocation
 ensures the host daemon and targets either the given ``--server`` URL or
-a daemon-started local Omnigent server. Covers ``_ensure_host_daemon`` (local vs
+a daemon-started local tesseract server. Covers ``_ensure_host_daemon`` (local vs
 remote spawn + reuse), ``_ensure_backend`` (the single resolver), and
 ``_discover_local_server_url`` (the CLI-side handshake), plus the command
 wiring that routes ``--server`` through them.
@@ -216,7 +216,7 @@ def test_ensure_host_daemon_local_inherits_data_dir_and_db_uri(
 ) -> None:
     """The local daemon inherits the runtime data-dir + DB URI vars.
 
-    In local mode the daemon owns the local Omnigent server, so it must resolve the
+    In local mode the daemon owns the local tesseract server, so it must resolve the
     same config home, data dir, and DB URI the CLI assumes — otherwise the CLI
     reads the local-server pidfile from one dir while the daemon writes it to
     another and discovery times out.
@@ -237,7 +237,7 @@ def test_ensure_host_daemon_local_inherits_data_dir_and_db_uri(
 def test_build_host_daemon_env_local_preserves_server_credentials(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Local daemon env carries credentials needed by its Omnigent server.
+    """Local daemon env carries credentials needed by its tesseract server.
 
     The daemon's local server is the process that performs LLM calls, so
     stripping ``OPENAI_*`` here makes default persistent ``omnigent run``
@@ -1601,7 +1601,7 @@ def test_host_stop_stops_sessions_before_daemon(
     events: list[tuple[str, str]] = []
 
     def _fake_http_json(**kwargs: object) -> cli._HostHttpResult:
-        """Record lifecycle requests and return minimal Omnigent responses."""
+        """Record lifecycle requests and return minimal tesseract responses."""
         method = str(kwargs["method"])
         path = str(kwargs["path"])
         events.append((method, path))

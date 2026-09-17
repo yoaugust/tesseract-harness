@@ -298,7 +298,7 @@ class _SlowStreamHarness(HarnessApp):
     turn mid-stream.
 
     Used by the session-interrupt integration test to verify the
-    Omnigent server → runner → harness interrupt path actually cancels
+    tesseract server → runner → harness interrupt path actually cancels
     the in-flight turn. ``_EchoHarness`` completes synchronously
     and is useless for this purpose because there is no turn left
     to interrupt by the time the test POSTs the interrupt event.

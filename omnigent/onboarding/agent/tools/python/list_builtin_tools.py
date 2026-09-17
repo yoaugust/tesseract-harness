@@ -1,4 +1,4 @@
-"""List all built-in tools available in Omnigent.
+"""List all built-in tools available in tesseract.
 
 Returns the live registry of builtin tool names and their
 descriptions, so the onboarding assistant always recommends
@@ -78,7 +78,7 @@ if _hindsight_available():
 @tool
 def list_builtin_tools() -> str:
     """
-    List all built-in tools available in Omnigent.
+    List all built-in tools available in tesseract.
 
     Returns tool names and descriptions. Call this before
     recommending tools for a new agent.

@@ -12,7 +12,7 @@ table:
   e.g. ``'["--dangerously-skip-permissions"]'``. NULL means no args
   (non-native sessions, or a native session launched with none). The
   runner reconstructs the terminal launch command from these plus the
-  harness binary; the command and all bridge / Omnigent / auth wiring stay
+  harness binary; the command and all bridge / tesseract / auth wiring stay
   runner-owned and are never stored here.
 
 Set via ``POST /v1/sessions`` metadata at create-time (so the runner

@@ -6,7 +6,7 @@
  * Arca is Databricks' internal sandbox CLI: each user has one EC2 dev
  * instance, `arca ssh <args...>` passes the args through to ssh against it
  * (starting the instance first when needed). Connecting that instance as an
- * Omnigent host means running, over `arca ssh`:
+ * tesseract host means running, over `arca ssh`:
  *
  *   isaac omni host --server <url> --background --non-interactive
  *
@@ -217,7 +217,7 @@ function lastLine(text) {
 }
 
 /**
- * Start connecting the user's Arca instance to `serverUrl` as an Omnigent
+ * Start connecting the user's Arca instance to `serverUrl` as an tesseract
  * host, streaming the command's live output. Built for the connect console:
  * the caller shows `command` to the user, pipes `onOutput` chunks into a
  * terminal pane, and may `cancel()` (window closed). The promise never
@@ -331,7 +331,7 @@ function startArcaConnect(serverUrl, deps = {}) {
 }
 
 /**
- * Connect the user's Arca instance to `serverUrl` as an Omnigent host. Thin
+ * Connect the user's Arca instance to `serverUrl` as an tesseract host. Thin
  * non-streaming wrapper over {@link startArcaConnect}; never rejects.
  *
  * @param {string} serverUrl The window's connected server URL.

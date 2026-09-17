@@ -1,4 +1,4 @@
-"""Shared helpers for the Omnigent REPL pexpect tests.
+"""Shared helpers for the tesseract REPL pexpect tests.
 
 These helpers are used by multiple ``test_repl_*.py`` files in
 this directory. They are intentionally kept separate from

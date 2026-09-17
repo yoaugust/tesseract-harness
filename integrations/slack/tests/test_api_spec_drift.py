@@ -1,4 +1,4 @@
-"""Guard the Slack client against Omnigent API spec drift.
+"""Guard the Slack client against tesseract API spec drift.
 
 The Slack integration is deliberately decoupled from the ``omnigent`` server
 package (it can't import it), so it can't introspect the live FastAPI app. But

@@ -21,7 +21,7 @@ class SysAddPolicyTool(Tool):
 
     The agent picks a handler from ``sys_policy_registry`` and
     passes its ``factory_params``. The runner forwards the request
-    to the Omnigent server's ``POST /v1/sessions/{session_id}/policies``
+    to the tesseract server's ``POST /v1/sessions/{session_id}/policies``
     endpoint.
     """
 

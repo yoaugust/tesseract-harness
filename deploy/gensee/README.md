@@ -1,10 +1,10 @@
-# Omnigent on Gensee
+# tesseract on Gensee
 
 [GenseeAI](https://gensee.ai) provides
 [open-source, forkable runtimes with checkpoint/restore support](https://github.com/GenseeAI/gensee-crate)
-for managed Omnigent sessions. The built-in launcher talks to the Gensee
+for managed tesseract sessions. The built-in launcher talks to the Gensee
 control plane over HTTPS; no cloud-provider credentials or Gensee
-implementation packages are installed in Omnigent.
+implementation packages are installed in tesseract.
 
 Gensee is currently a **managed-host provider only**. Creating a managed
 session allocates one sandbox, asks its runtime agent to clone or initialize the
@@ -20,7 +20,7 @@ You need:
 
 1. A Gensee service endpoint and API token. Gensee currently provisions these
    for contracted organizations.
-2. An Omnigent server with a public HTTPS URL reachable from the sandbox
+2. An tesseract server with a public HTTPS URL reachable from the sandbox
    runtime.
 3. Any model-provider credentials users need, supplied either by interactive
    login inside their sandbox or through the explicit `env` allowlist below.
@@ -99,8 +99,8 @@ the server-managed configuration.
 
 ## Credential boundary
 
-The Gensee API token stays in the Omnigent server and authorizes lifecycle
-requests. Each sandbox receives a separate server-minted Omnigent host token
+The Gensee API token stays in the tesseract server and authorizes lifecycle
+requests. Each sandbox receives a separate server-minted tesseract host token
 through Gensee's short-lived secret store; the token is not included in the
 durable operation request.
 
@@ -112,7 +112,7 @@ gensee:
   env: [OPENAI_API_KEY, GIT_TOKEN]
 ```
 
-the corresponding values are read from the Omnigent server environment and
+the corresponding values are read from the tesseract server environment and
 sent to the Gensee secret store. Only list variables that every sandbox on that
 server is authorized to receive. For per-user credentials, leave `env` empty
 and let each user sign in from their own sandbox terminal.
@@ -131,7 +131,7 @@ The launcher uses the following controller operations:
 - query allocation and runtime-agent readiness;
 - release the allocation idempotently.
 
-The Omnigent launch token lasts seven days. Sandbox release is safe to retry,
+The tesseract launch token lasts seven days. Sandbox release is safe to retry,
 which lets session deletion and the deployment-wide reaper recover from
 temporary control-plane failures. The reaper is disabled unless configured;
 see the main [deployment guide](../README.md#run-hosts-in-cloud-sandboxes).
@@ -154,7 +154,7 @@ The session should progress through provisioning and starting, then its host
 should appear online. Delete the test session and confirm the corresponding
 allocation is released in the Gensee control plane.
 
-For a repeatable live check, run the opt-in lifecycle E2E against a non-production Omnigent server configured with Gensee. It creates one managed session without an LLM turn, waits for its host and runner, deletes the session, and verifies the exact Gensee allocation is released:
+For a repeatable live check, run the opt-in lifecycle E2E against a non-production tesseract server configured with Gensee. It creates one managed session without an LLM turn, waits for its host and runner, deletes the session, and verifies the exact Gensee allocation is released:
 
 ```bash
 OMNIGENT_E2E_GENSEE=1 \
@@ -170,9 +170,9 @@ Omit `OMNIGENT_E2E_GENSEE_SERVER_TOKEN` when the test server has authentication 
 ## Troubleshooting
 
 - **`GENSEE_CONTROLLER_API_TOKEN` must contain the API token** — expose the
-  configured token variable to the Omnigent server process or Pod.
+  configured token variable to the tesseract server process or Pod.
 - **Controller is not ready** — verify the endpoint's `/readyz` response and
-  certificate chain from the Omnigent server host.
+  certificate chain from the tesseract server host.
 - **Operation timed out** — inspect the allocation in the Gensee control plane;
   only increase `operation_timeout_s` after checking sandbox startup and agent
   logs.

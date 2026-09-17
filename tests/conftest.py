@@ -1,4 +1,4 @@
-"""Shared pytest configuration and fixtures for Omnigent tests."""
+"""Shared pytest configuration and fixtures for tesseract tests."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ try:
 except ImportError:
     _resource = None  # type: ignore[assignment]
 
-# Establish test data isolation before importing any Omnigent modules. This
+# Establish test data isolation before importing any tesseract modules. This
 # deliberately replaces ambient state; subprocesses inherit the safe override.
 _TEST_OMNIGENT_DATA_DIR = Path(tempfile.mkdtemp(prefix="omnigent-pytest-")).resolve()
 os.environ["OMNIGENT_DATA_DIR"] = str(_TEST_OMNIGENT_DATA_DIR)
@@ -130,7 +130,7 @@ def _run_test_environment_guardrails(config: pytest.Config) -> None:
 def pytest_unconfigure(config: pytest.Config) -> None:
     """Clean up per-session resources.
 
-    Reap before removing the data dir: tests spawn real detached Omnigent
+    Reap before removing the data dir: tests spawn real detached tesseract
     processes (host daemons, local servers, runner zygotes) that would
     otherwise outlive the session — squatting port 6767 and serving a
     deleted database. Reaping first also lets attribution use the live

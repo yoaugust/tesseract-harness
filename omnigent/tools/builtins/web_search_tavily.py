@@ -45,7 +45,7 @@ _DEFAULT_SEARCH_DEPTH = "basic"
 _VALID_SEARCH_DEPTHS = frozenset({"basic", "advanced"})
 
 # Identifies this integration to Tavily via the ``X-Client-Source`` header so
-# traffic from the Omnigent provider is attributable.
+# traffic from the tesseract provider is attributable.
 _CLIENT_SOURCE = "omnigent"
 
 

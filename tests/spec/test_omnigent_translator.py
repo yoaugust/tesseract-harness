@@ -315,7 +315,7 @@ def test_tool_pointing_at_non_callable_rejected(
     rejected with a clear error.
 
     Step (c) made plain callables the only supported tool
-    shape on the Omnigent side; runner-protocol instances no longer
+    shape on the tesseract side; runner-protocol instances no longer
     have a fallback. The translator fails loud rather than
     wrapping a non-callable in a tool the harness can't invoke.
 
@@ -353,7 +353,7 @@ def test_missing_llm_rejected(basic_spec: AgentSpec) -> None:
         agent_spec_to_agent_def(basic_spec)
 
 
-# ── Harness inference for native Omnigent v1 specs ────────────────────────────────
+# ── Harness inference for native tesseract v1 specs ────────────────────────────────
 
 
 @pytest.mark.parametrize(
@@ -372,7 +372,7 @@ def test_native_omnigent_spec_infers_harness_from_model(
     expected_harness: str,
 ) -> None:
     """
-    Native Omnigent v1 specs use ``executor.type="omnigent"`` with no harness in
+    Native tesseract v1 specs use ``executor.type="omnigent"`` with no harness in
     ``executor.config``.  :func:`agent_spec_to_agent_def` must infer
     the harness from the model prefix so Claude models don't fall back
     to ``DatabricksExecutor``.
@@ -399,7 +399,7 @@ def test_native_omnigent_spec_infers_harness_from_model(
 
 def test_sub_agent_infers_harness_and_forwards_os_env() -> None:
     """
-    When a parent spec's sub-agent uses a native Omnigent v1 executor (no
+    When a parent spec's sub-agent uses a native tesseract v1 executor (no
     harness in ``executor.config``), :func:`agent_spec_to_agent_def`
     must infer the harness from the sub-agent's model prefix AND forward
     ``os_env`` to the returned :class:`AgentTool`.

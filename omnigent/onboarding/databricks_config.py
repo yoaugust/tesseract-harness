@@ -101,7 +101,7 @@ def get_workspace_url_for_profile(profile: str) -> str | None:
     """Return the workspace host for a ``~/.databrickscfg`` profile.
 
     Reads the INI-style ``~/.databrickscfg`` directly with
-    :mod:`configparser`, then falls back to Omnigent' built-in setup
+    :mod:`configparser`, then falls back to tesseract' built-in setup
     profile metadata for legacy names.
 
     :param profile: Profile section name, e.g. ``"<your-profile>"`` or

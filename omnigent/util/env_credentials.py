@@ -1,4 +1,4 @@
-"""Helpers for Omnigent-prefixed credential environment variables."""
+"""Helpers for tesseract-prefixed credential environment variables."""
 
 from __future__ import annotations
 
@@ -12,17 +12,17 @@ _ENV_REF_RE = re.compile(r"(?<!\$)\$(?:\{([A-Za-z_][A-Za-z0-9_]*)\}|([A-Za-z_][A
 
 
 def omnigent_prefixed_env_name(name: str) -> str:
-    """Return the Omnigent-prefixed alias for *name*.
+    """Return the tesseract-prefixed alias for *name*.
 
     :param name: Environment variable name, e.g. ``"ANTHROPIC_API_KEY"``.
     :returns: ``"OMNIGENT_ANTHROPIC_API_KEY"`` unless *name* is already
-        Omnigent-prefixed.
+        tesseract-prefixed.
     """
     return name if name.startswith(OMNIGENT_ENV_PREFIX) else f"{OMNIGENT_ENV_PREFIX}{name}"
 
 
 def env_names_with_omnigent_prefix(name: str) -> tuple[str, ...]:
-    """Return the canonical env var name plus its Omnigent-prefixed alias.
+    """Return the canonical env var name plus its tesseract-prefixed alias.
 
     The canonical name stays first so existing deployments keep precedence
     when both names are set.

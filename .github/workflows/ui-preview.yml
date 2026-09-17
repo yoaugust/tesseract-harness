@@ -5,9 +5,9 @@ run-name: >-
       || github.event.pull_request.title
       || github.event.head_commit.message }}
 
-# Per-PR live preview of the Omnigent web UI, deployed to Databricks Apps.
+# Per-PR live preview of the tesseract web UI, deployed to Databricks Apps.
 # The preview is ephemeral (SQLite + local artifacts) and ships no LLM/runner --
-# Omnigent runs agent turns on a runner the reviewer connects from their own
+# tesseract runs agent turns on a runner the reviewer connects from their own
 # machine. See .github/ui-preview/README.md.
 #
 # Fork PRs are supported: the `ui-preview` label is the trust boundary. Applying

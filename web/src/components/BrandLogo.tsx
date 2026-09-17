@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { OttoEyes } from "@/components/OttoEyes";
-import { OttoIcon } from "@/components/icons/OttoIcon";
+import tesseractLogo from "@/assets/tesseract-logo.png";
 import { useAppName, useLogoUrl } from "@/lib/branding";
 import { authenticatedFetch } from "@/lib/identity";
 import { getOmnigentHostConfig, getOmnigentHostGeneration } from "@/lib/host";
@@ -86,10 +85,13 @@ function acquireLogo(path: string, generation: number): BlobUrlHandle {
 }
 
 function FallbackLogo({ className, variant }: { className?: string; variant: "eyes" | "icon" }) {
-  return variant === "eyes" ? (
-    <OttoEyes className={className} />
-  ) : (
-    <OttoIcon className={className} aria-hidden />
+  return (
+    <img
+      src={tesseractLogo}
+      className={className}
+      alt={variant === "eyes" ? "tesseract" : ""}
+      aria-hidden={variant === "icon"}
+    />
   );
 }
 
@@ -157,8 +159,8 @@ function StandaloneBrandLogo({
 
 /**
  * The app's brand logo: the operator's custom logo when configured, else the
- * Otto mascot. `variant` picks the logo variant and matching fallback —
- * `"eyes"` (hero) → `main`/`OttoEyes`, `"icon"` (indicators) → `loading`/`OttoIcon`.
+ * tesseract mark. `variant` selects the operator logo slot while keeping the
+ * matching tesseract fallback for standalone builds.
  */
 export function BrandLogo({
   className,

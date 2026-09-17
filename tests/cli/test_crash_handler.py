@@ -162,7 +162,7 @@ def test_render_non_tty_is_plain_no_box(data_dir: Path) -> None:
     assert "╭" not in out and "│" not in out  # no box
     assert "⚠" not in out  # no emoji
     assert "\x1b[" not in out  # no ANSI
-    assert "Omnigent ran into an issue." in out
+    assert "tesseract ran into an issue." in out
     assert "A crash report was saved to:" in out
     assert "/tmp/crash-x.md" in out
     assert "ValueError: plain path crash" in out
@@ -181,7 +181,7 @@ def test_render_tty_shows_header_and_copyable_path(data_dir: Path) -> None:
     out = buf.getvalue()
     plain = _strip_ansi(out)
     # Header present.
-    assert "Omnigent ran into an issue." in plain
+    assert "tesseract ran into an issue." in plain
     # No box borders — path must be cleanly selectable.
     assert "╭" not in plain and "│" not in plain and "╰" not in plain
     # The path is on its own line, indented, no wrapping.

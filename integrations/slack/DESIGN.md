@@ -1,17 +1,17 @@
 # Slack integration — design & architecture
 
-How the Omnigent Slack bot is built and the key technical decisions behind it.
+How the tesseract Slack bot is built and the key technical decisions behind it.
 For operator setup (scopes, `.env`, running the daemon) see `README.md`; this
 doc is for people working on the code.
 
 ## What it is
 
 A Slack **Socket Mode** bot that bridges Slack to a single, operator-configured
-Omnigent server. It maps **one Slack thread ↔ one Omnigent session**, streams
+tesseract server. It maps **one Slack thread ↔ one tesseract session**, streams
 the agent's answer into the thread live, and renders tool-approval /
 `AskUserQuestion` prompts as interactive Block Kit cards.
 
-The **guiding principle**: the Omnigent **web UI is the reference client** for
+The **guiding principle**: the tesseract **web UI is the reference client** for
 the server API. Where possible the bot mirrors how the web UI consumes the
 server (server-authoritative state, push-driven streaming, no invented polling);
 deviations exist only where Slack's transport genuinely differs from a browser
@@ -259,7 +259,7 @@ user-facing messages, shared by the session-startup and mid-turn paths:
 
 ## Authentication (per-user, delegated)
 
-Each Slack user authenticates as their own Omnigent identity — no Omnigent
+Each Slack user authenticates as their own tesseract identity — no tesseract
 credential passes through Slack. The bot auto-detects the server's auth mode
 (unauthenticated `GET /v1/me`) and drives `accounts`-mode device grant (RFC 8628)
 or `oidc` cli-login inside the `/omnigent` modal; `header`/proxy mode is

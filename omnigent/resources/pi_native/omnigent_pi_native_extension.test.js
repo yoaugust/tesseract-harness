@@ -14,7 +14,7 @@
 // Run with: node omnigent/resources/pi_native/omnigent_pi_native_extension.test.js
 //
 // Manual reproduction of the original bug (for context):
-//   1. Start a native Pi session linked to Omnigent and let it go idle.
+//   1. Start a native Pi session linked to tesseract and let it go idle.
 //   2. Hit "stop"/interrupt while no turn is running (between turns).
 //   3. Send a fresh user message within 30 seconds.
 //   Before the fix: the fresh turn is aborted immediately at agent_start /

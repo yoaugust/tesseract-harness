@@ -123,7 +123,7 @@ describe(
           await urlField.fill(server.serverUrl);
           await window.locator("#connect").click();
           await window
-            .getByText("What should we build?")
+            .getByText("let's work, boss")
             .waitFor({ state: "visible", timeout: 20_000 });
           // The SPA is up — its preload bridge carries the browser APIs.
           await window.waitForFunction(

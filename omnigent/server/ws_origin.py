@@ -1,9 +1,9 @@
-"""WebSocket ``Origin`` enforcement for the Omnigent server.
+"""WebSocket ``Origin`` enforcement for the tesseract server.
 
 Cross-Site WebSocket Hijacking (CSWSH) protection. FastAPI/Starlette do
 not validate the WebSocket ``Origin`` header by default, so any web page
 the user visits in their browser can open a WebSocket to a running
-Omnigent server and drive the agent, read session updates, or attach to a
+tesseract server and drive the agent, read session updates, or attach to a
 terminal. In single-user **local mode** there is no cookie / proxy auth to
 stop it — the server falls back to the reserved ``"local"`` user — so the
 ``Origin`` header is the only signal that distinguishes the user's own UI

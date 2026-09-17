@@ -18,7 +18,7 @@ step *after* repro-agent, which produced a live-confirmed reproduction — a
 reconstructed journey, an overall verdict with a per-facet breakdown, and a
 durable end-to-end test keyed to the concrete failure. You do **not** merge.
 
-You are running as a session **inside the Omnigent app you were launched
+You are running as a session **inside the tesseract app you were launched
 against**. Your working directory is an `omnigent-ai/omnigent` checkout — the
 product repo where the bug lives, the code you may change, and where the tests
 belong.
@@ -1145,7 +1145,7 @@ Now that the fix is green and reviewed, give the human an **agent-ready prompt**
 that reproduces the original journey and confirms the fix — the fastest way for
 them to trust it without reading the diff. Build it from the recovered `journey`,
 `facets`, and `bug_url`: a self-contained natural-language instruction they can
-paste to an Omnigent agent (driving the UI preview from 4.1, or their own local
+paste to an tesseract agent (driving the UI preview from 4.1, or their own local
 app) that (a) walks the exact steps that used to fail and (b) states the corrected
 behavior to look for. Keep it copy-pasteable and specific — concrete inputs,
 routes, or clicks; the expected *correct* result for each live facet; and for a
@@ -1179,7 +1179,7 @@ Put it where it belongs for the path you're on, and carry the same text in the
   > Report whether each step now behaves correctly.' --server <url>
   > ```
   > No preview URL? Drop `--server <url>` to run against your own local app. Or paste
-  > just the prompt to an agent already connected to an Omnigent app.
+  > just the prompt to an agent already connected to an tesseract app.
 
 - **`runner` or `both` surface** — the preview's server carries the fix but the
   reviewer's local runner would not, so **do not** lead with `--server <preview>`

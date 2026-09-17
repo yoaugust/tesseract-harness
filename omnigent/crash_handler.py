@@ -445,7 +445,7 @@ def _issue_body(exc: BaseException, tb_text: str) -> str:
     exc_type = type(exc).__qualname__
     msg = str(exc).strip() or "(no message)"
     return (
-        "This crash was auto-reported by Omnigent's crash handler.\n\n"
+        "This crash was auto-reported by tesseract's crash handler.\n\n"
         f"**Exception:** `{exc_type}: {msg}`\n\n"
         "**Command:**\n"
         f"```\n{_command_line()}\n```\n\n"

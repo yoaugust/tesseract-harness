@@ -212,7 +212,7 @@ def _log_dir() -> Path:
     """
     Return the CLI diagnostics log directory.
 
-    Uses the shared Omnigent runtime data dir so ``OMNIGENT_DATA_DIR``
+    Uses the shared tesseract runtime data dir so ``OMNIGENT_DATA_DIR``
     isolates diagnostics with the DB, artifacts, and process logs.
 
     :returns: ``<data-dir>/logs/cli``.
@@ -394,7 +394,7 @@ def print_stale_host_hint() -> None:
     dest = getattr(sys.stderr, "_original_stderr", sys.stderr)
     print(
         "If this is a runner tunnel rejection (HTTP 401), stale host processes "
-        f"may be the cause. Run `{cli_invocation()} stop` to stop existing Omnigent "
+        f"may be the cause. Run `{cli_invocation()} stop` to stop existing tesseract "
         "host instances, then try again.",
         file=dest,
     )

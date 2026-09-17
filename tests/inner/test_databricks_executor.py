@@ -1683,7 +1683,7 @@ def test_bearer_auth_current_token_none_for_non_bearer(headers: dict[str, str]) 
     """
     ``current_token()`` returns ``None`` for a non-Bearer or empty
     ``Authorization`` header (the system only supports Bearer). Returning the
-    raw header would feed callers a credential the Omnigent server can't use.
+    raw header would feed callers a credential the tesseract server can't use.
     """
 
     class _Config:

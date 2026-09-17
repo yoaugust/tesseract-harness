@@ -2,7 +2,7 @@
 
 Launched by the CLI when spawning the runner as a separate process.
 Reads process wiring from environment variables set by the parent:
-- ``RUNNER_SERVER_URL``: Omnigent server base URL for outbound calls
+- ``RUNNER_SERVER_URL``: tesseract server base URL for outbound calls
   (spec fetch, response resolution, and WS tunnel registration).
 """
 
@@ -117,7 +117,7 @@ def _set_runner_auth_factory(factory: Callable[[], str | None] | None) -> None:
 
 
 def _server_url_from_env() -> str:
-    """Return the required Omnigent server URL from the runner environment.
+    """Return the required tesseract server URL from the runner environment.
 
     :returns: Server base URL, e.g. ``"http://127.0.0.1:6767"``.
     :raises RuntimeError: If ``RUNNER_SERVER_URL`` is missing or
@@ -132,7 +132,7 @@ def _server_url_from_env() -> str:
 
 
 def _runner_config_path() -> Path:
-    """Return the global Omnigent config path visible to the runner.
+    """Return the global tesseract config path visible to the runner.
 
     Respects :envvar:`OMNIGENT_CONFIG_HOME` for test isolation and
     subprocess consistency with the CLI/onboarding layer.
@@ -288,7 +288,7 @@ async def _run_inactivity_monitor(
 class _RunnerDatabricksAuth(ThreadedAuth):
     """httpx Auth that mints a fresh Databricks OAuth token per request.
 
-    Used by the runner's HTTP client for callbacks to the Omnigent server
+    Used by the runner's HTTP client for callbacks to the tesseract server
     (agent-bundle downloads, response lookups, file APIs, idle
     notifications). Tokens are refreshed transparently so
     long-running sessions survive the 1-hour OAuth token lifetime.
@@ -307,7 +307,7 @@ class _RunnerDatabricksAuth(ThreadedAuth):
             token, e.g. the return value of
             :func:`_make_auth_token_factory`. ``None`` disables
             auth (local unauthenticated servers).
-        :param server_url: Omnigent server URL used to look up the ``?o=``
+        :param server_url: tesseract server URL used to look up the ``?o=``
             workspace selector for the ``X-Databricks-Org-Id`` routing
             header. Defaults to ``RUNNER_SERVER_URL`` so existing callers
             (which pass only the factory) need no change.
@@ -467,7 +467,7 @@ class _InitialAuthTokenFactory:
     def __init__(self, token: str, server_url: str) -> None:
         """
         :param token: Current bearer obtained from the connected host.
-        :param server_url: Omnigent server URL used by the fallback resolver.
+        :param server_url: tesseract server URL used by the fallback resolver.
         """
         self._initial_token: str | None = token
         self._last_initial_token: str = token  # retained for managed-mint proxy auth
@@ -607,7 +607,7 @@ def _make_auth_token_factory(
     - :func:`serve_tunnel` for the WebSocket ``Authorization`` header
       (refreshed on each reconnect).
     - :class:`_RunnerDatabricksAuth` for the httpx client
-      (refreshed on each HTTP callback to the Omnigent server).
+      (refreshed on each HTTP callback to the tesseract server).
     - ``omnigent/host/connect.py`` for the host tunnel's WS upgrade
       headers.
 
@@ -807,7 +807,7 @@ def _make_managed_mint_factory(
     callback client (see :func:`_make_auth_token_factory` callers), so one
     credential authenticates every runner->server surface.
 
-    :param server_url: Omnigent server base URL, e.g.
+    :param server_url: tesseract server base URL, e.g.
         ``"https://omnigent.example.com"``.
     :param binding_token: The runner's tunnel binding token (the sandbox's
         only credential), presented to the mint endpoint.
@@ -841,7 +841,7 @@ def _make_managed_mint_factory(
     # server definitively will not mint for this runner — HTTP 400 (no auth
     # provider / header mode), 404 (an older server without the endpoint),
     # or an Apps OAuth redirect that happens before the request reaches
-    # Omnigent. Every other outcome installs the factory: a success seeds
+    # tesseract. Every other outcome installs the factory: a success seeds
     # the cache; a transient failure (network blip, timeout) installs it
     # anyway so the next callback re-mints; a 5xx from an intermediary
     # installs it with declined latched so callbacks go bare but can
@@ -891,7 +891,7 @@ class _ManagedMintTokenFactory:
     ) -> None:
         """
         :param mint_url: Fully-qualified ``/v1/runners/{id}/token`` URL.
-        :param server_url: Omnigent server base URL.
+        :param server_url: tesseract server base URL.
         :param binding_token: The runner's tunnel binding token.
         :param proxy_bearer: Optional bearer for the Apps proxy. Seeded with
             the host's initial bearer; replaced by the minted JWT after the
@@ -1056,8 +1056,8 @@ def _mint_managed_owner_token(
     :param binding_token: The runner's tunnel binding token, sent as the
         ``X-Omnigent-Runner-Tunnel-Token`` header to authenticate the mint.
     :param proxy_bearer: Optional bearer for a Databricks Apps proxy sitting
-        in front of the Omnigent server. The proxy requires a valid
-        ``Authorization`` header even on unauthenticated-to-Omnigent
+        in front of the tesseract server. The proxy requires a valid
+        ``Authorization`` header even on unauthenticated-to-tesseract
         endpoints; the binding token alone is not enough to pass it.
     :returns: ``(jwt, expires_at_epoch_seconds)``.
     :raises httpx.HTTPError: On network failure or a non-2xx response.
@@ -1296,9 +1296,9 @@ async def _resolve_agent_spec_from_server(
     session_id: str | None = None,
 ) -> ResolvedSpec | None:
     """
-    Fetch, cache, and parse one agent spec bundle from the Omnigent server.
+    Fetch, cache, and parse one agent spec bundle from the tesseract server.
 
-    :param server_client: HTTP client pointed at the Omnigent server,
+    :param server_client: HTTP client pointed at the tesseract server,
         e.g. base URL ``"http://127.0.0.1:6767"``.
     :param spec_cache_root: Stable runner-local cache root for
         extracted agent bundles.
@@ -1394,9 +1394,9 @@ def create_app(
     # restarts (§5 "Persistence" in RUNNER.md).
     _runner_id = get_stable_runner_id()
     os.environ[RUNNER_ID_ENV_VAR] = _runner_id
-    # Stamp the Omnigent session marker into the runner's environment so
+    # Stamp the tesseract session marker into the runner's environment so
     # every process this runner spawns can detect it is running inside an
-    # Omnigent agent session, the way Claude Code sets CLAUDE_CODE and
+    # tesseract agent session, the way Claude Code sets CLAUDE_CODE and
     # Codex sets CODEX. Harness workers inherit it (the process manager
     # merges os.environ), native CLI terminals copy os.environ, and the
     # claude-sdk SDK merges os.environ. The deny-by-default env scrubbers
@@ -1409,10 +1409,10 @@ def create_app(
     pm = HarnessProcessManager()
 
     # MCP pool — the runner owns stdio MCP subprocess spawning.
-    # The Omnigent server's POST /v1/sessions/{id}/mcp handles policy
+    # The tesseract server's POST /v1/sessions/{id}/mcp handles policy
     # evaluation and delegates execution here via
     # POST /v1/sessions/{id}/mcp/execute (tunneled through the WS
-    # tunnel the runner opened to the Omnigent server at startup).
+    # tunnel the runner opened to the tesseract server at startup).
     # stdio_cwd=runner_workspace ensures relative command paths like
     # ".venv/bin/python" resolve against the user's project root.
 
@@ -1470,7 +1470,7 @@ def create_app(
 
     async def spec_resolver(agent_id: str, session_id: str | None = None) -> ResolvedSpec | None:
         """
-        Fetch agent spec from the Omnigent server, extract under the
+        Fetch agent spec from the tesseract server, extract under the
         runner's stable spec cache, and return the parsed
         :class:`AgentSpec`.
 

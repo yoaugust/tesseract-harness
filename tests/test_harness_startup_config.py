@@ -323,7 +323,7 @@ def test_args_no_config_layer() -> None:
 # The runner's native terminal auto-create resolves command+args through the
 # resolvers above; these pin the exact `isaac -- <args>` / `isaac codex --
 # <args>` shape a downstream integration configures. The config `args` base
-# prepends before Omnigent's already-augmented args, so the `--` stays first.
+# prepends before tesseract's already-augmented args, so the `--` stays first.
 def test_isaac_wrap_shape_claude_native() -> None:
     cfg = {"harness": {"claude-native": {"command": "isaac", "args": ["--"]}}}
     assert resolve_harness_command("claude-native", default="claude", cfg=cfg) == "isaac"

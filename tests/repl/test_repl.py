@@ -1190,7 +1190,7 @@ def test_render_startup_banner_contains_agent_name() -> None:
     What this proves: the user sees the agent name centered in
     the box on REPL boot. If the assertion fails, the banner
     would render with the mascot art and box border but no
-    visible label — users on a fresh Omnigent session would have
+    visible label — users on a fresh tesseract session would have
     no in-banner cue for which agent they're talking to (the
     bottom toolbar shows the model, but the welcome panel is
     where the legacy CLI puts it). Bold ANSI sequence ``\\x1b[1m``
@@ -1214,7 +1214,7 @@ def test_render_startup_banner_contains_agent_name() -> None:
 
 def test_render_startup_banner_omits_keybinding_hints() -> None:
     """
-    The Omnigent welcome banner does NOT carry the keybinding hint row.
+    The tesseract welcome banner does NOT carry the keybinding hint row.
 
     What this proves: keybinding hints live in the bottom toolbar
     only — duplicating them inside the welcome box widens the
@@ -1234,13 +1234,13 @@ def test_render_startup_banner_omits_keybinding_hints() -> None:
     for legacy_hint in ("ctrl-g debug", "ctrl-d exit"):
         assert legacy_hint not in ansi, (
             f"AP welcome banner contains legacy hint {legacy_hint!r} "
-            f"which doesn't correspond to an Omnigent binding."
+            f"which doesn't correspond to an tesseract binding."
         )
 
 
 def test_render_startup_banner_uses_mascot_accent_color() -> None:
     """
-    The Omnigent mode banner box border is rendered in the Omnigent
+    The tesseract mode banner box border is rendered in the tesseract
     starfish magenta-pink brand accent (truecolor RGB ``#F43BA6`` →
     ``38;2;244;59;166``), matching the bottom toolbar, prompt
     marker, and tool-call glyphs.
@@ -1249,25 +1249,25 @@ def test_render_startup_banner_uses_mascot_accent_color() -> None:
     the bottom toolbar, the prompt marker ``❯``, and the SDK's
     formatter accent together survives the AP-side render. If a
     future change drops the truecolor escape (e.g. by stripping
-    ANSI on the Omnigent path or swapping Rich for raw text), the
+    ANSI on the tesseract path or swapping Rich for raw text), the
     banner would render as a plain unstyled box and visually
     diverge from the rest of the UI. The override happens in
     :func:`omnigent.repl._repl._render_startup_banner_ansi`.
     """
     ansi = _render_startup_banner_ansi("agent")
     # ``38;2;244;59;166`` is the SGR truecolor foreground encoding
-    # of #F43BA6 — the Omnigent starfish magenta-pink brand accent
+    # of #F43BA6 — the tesseract starfish magenta-pink brand accent
     # (also ``TerminalHost.accent_color`` default). The banner
     # builder injects it for both the box border and the mascot art
-    # on the Omnigent path.
+    # on the tesseract path.
     assert "\x1b[38;2;244;59;166m" in ansi, (
-        f"Banner missing Omnigent truecolor accent escape "
+        f"Banner missing tesseract truecolor accent escape "
         f"(\\x1b[38;2;244;59;166m); got: {ansi!r}. If this is "
         f"absent, the AP-side override in "
         f"``_render_startup_banner_ansi`` isn't propagating into "
         f"the banner — the box border and mascot art would lose "
         f"the brand magenta, breaking the visual link with the "
-        f"rest of the Omnigent UI."
+        f"rest of the tesseract UI."
     )
 
 
@@ -1301,11 +1301,11 @@ def test_run_banner_uses_magenta_mascot_color() -> None:
 
 def test_render_startup_banner_fits_under_80_columns() -> None:
     """
-    The Omnigent welcome box stays under 80 columns wide even when
+    The tesseract welcome box stays under 80 columns wide even when
     paired with the longest example agent name.
 
     What this proves: in an 80-column terminal (the de-facto
-    minimum for a usable shell) the Omnigent banner does not wrap. The
+    minimum for a usable shell) the tesseract banner does not wrap. The
     box width is driven by the agent label (the hint row is
     blanked, so ``WELCOME_HINTS`` does not push the box wider).
     If a future change reintroduces the hint text in the box, or
@@ -3234,9 +3234,9 @@ def _openai_key_default_config() -> dict[str, object]:
 
 def test_model_readout_own_auth_acp_harness_reports_agent_not_provider() -> None:
     """
-    Own-auth ACP harnesses must not report an Omnigent provider credential.
+    Own-auth ACP harnesses must not report an tesseract provider credential.
 
-    ``acp``/``acp:<slug>`` and ``goose`` spawn without any Omnigent provider
+    ``acp``/``acp:<slug>`` and ``goose`` spawn without any tesseract provider
     wiring, but ``default_provider_for_harness`` used to fall through to the
     configured key/gateway default for them (the unmapped pi-style fallback),
     so the readout named a model and credential the session never touches.

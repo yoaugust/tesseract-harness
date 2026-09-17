@@ -76,7 +76,7 @@ def test_model_family_matches_model_override_sets() -> None:
 def test_subagents_matches_its_implementing_mechanism() -> None:
     """``subagents`` is derivable — from the two mechanisms that implement it.
 
-    1. A **native** agent with a ``subagent_wrapper_label``: Omnigent intercepts
+    1. A **native** agent with a ``subagent_wrapper_label``: tesseract intercepts
        the vendor's own spawn and mints the child session.
     2. An **ACP vendor extension** carrying a sub-agent dialect
        (:mod:`omnigent.inner.devin`): the agent reports its sub-agent lifecycle in

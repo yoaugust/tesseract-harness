@@ -53,7 +53,7 @@ REFRESH_MIN_REMAINING_SECONDS = 90.0
 def _token_file_path() -> Path:
     """Return the path to the auth token storage file.
 
-    Uses the shared Omnigent state directory, honoring
+    Uses the shared tesseract state directory, honoring
     ``OMNIGENT_DATA_DIR``.
 
     :returns: Path to ``<data-dir>/auth_tokens.json``.
@@ -773,7 +773,7 @@ def open_server_client(
     transport: httpx.AsyncBaseTransport | None = None,
     host_id: str | None = None,
 ) -> httpx.AsyncClient:
-    """Open an :class:`httpx.AsyncClient` to an Omnigent server, keyed for routing.
+    """Open an :class:`httpx.AsyncClient` to an tesseract server, keyed for routing.
 
     The one way to open a client to the server. It folds
     :func:`databricks_request_headers` in for you, so a request to a host-sharded

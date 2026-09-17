@@ -71,9 +71,9 @@ def get_manifest() -> ExtensionManifest:
 
 ## Compatibility
 
-The extension API major is independent of the Omnigent package version. V1
+The extension API major is independent of the tesseract package version. V1
 changes are additive; authors must ignore unknown catalog fields. Breaking
-changes require a new extension API major. Deprecations name the Omnigent
+changes require a new extension API major. Deprecations name the tesseract
 release in which removal is planned and remain supported through the stated
 window.
 

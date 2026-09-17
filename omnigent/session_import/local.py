@@ -462,7 +462,7 @@ def load_claude_session(
 
 
 def _codex_message_data(payload: dict[str, object]) -> dict[str, object] | None:
-    """Convert a visible Codex message payload to Omnigent message data."""
+    """Convert a visible Codex message payload to tesseract message data."""
     role = payload.get("role")
     if role not in {"user", "assistant"}:
         return None
@@ -531,7 +531,7 @@ def _codex_response_item(
     *,
     response_id: str,
 ) -> NewConversationItem | None:
-    """Convert one supported Codex response item to an Omnigent item."""
+    """Convert one supported Codex response item to an tesseract item."""
     item_type = payload.get("type")
     normalized_type = item_type
     data: dict[str, object] | None = None
@@ -736,7 +736,7 @@ def load_codex_session(
 
 
 def _qwen_message_data(record: dict[str, object]) -> dict[str, object] | None:
-    """Convert one visible Qwen recording row to Omnigent message data."""
+    """Convert one visible Qwen recording row to tesseract message data."""
     # Qwen records assistant events as type="assistant" while message.role is "model".
     record_type = record.get("type")
     if record_type == "user":
@@ -1020,7 +1020,7 @@ def _pi_active_branch(records: list[dict[str, object]]) -> list[dict[str, object
 
 
 def _pi_message_items(record: dict[str, object]) -> tuple[NewConversationItem, ...]:
-    """Convert one Pi message entry to visible Omnigent items."""
+    """Convert one Pi message entry to visible tesseract items."""
     if record.get("type") == "branch_summary":
         summary = record.get("summary")
         if not isinstance(summary, str) or not summary:

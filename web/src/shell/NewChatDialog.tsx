@@ -2189,7 +2189,7 @@ export function NewChatLandingScreen() {
   } = useHosts({ refetchOnFocus: true });
 
   // Offer an import affordance on the empty landing: a brand-new user with no
-  // Omnigent sessions can pull in their existing local CLI history. Same query
+  // tesseract sessions can pull in their existing local CLI history. Same query
   // key ChatPage already holds, so this reuses the cache. Wait for data before
   // deciding so the button doesn't flash for returning users.
   const { data: conversationsData } = useConversations("", true);

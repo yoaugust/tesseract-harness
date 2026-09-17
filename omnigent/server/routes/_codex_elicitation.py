@@ -30,7 +30,7 @@ class _CodexElicitationAdapter:
 
     :param build_params: Converts Codex JSON-RPC params into AP
         elicitation params, e.g. ``_codex_mcp_elicitation_params``.
-    :param build_response: Converts an Omnigent web verdict into Codex's
+    :param build_response: Converts an tesseract web verdict into Codex's
         method-specific JSON-RPC result payload, e.g.
         ``_codex_mcp_elicitation_response``.
     """
@@ -42,7 +42,7 @@ class _CodexElicitationAdapter:
 @dataclass(frozen=True)
 class CodexElicitationRequest:
     """
-    Validated Codex request expressed in Omnigent elicitation terms.
+    Validated Codex request expressed in tesseract elicitation terms.
 
     :param params: AP/MCP-shaped elicitation params for the web UI.
     :param method: Codex JSON-RPC method, e.g.
@@ -70,12 +70,12 @@ class CodexElicitationRequest:
 
 def parse_codex_elicitation_request(payload: dict[str, Any]) -> CodexElicitationRequest:
     """
-    Validate a Codex request envelope and build its Omnigent adapter object.
+    Validate a Codex request envelope and build its tesseract adapter object.
 
     :param payload: Codex JSON-RPC request envelope, e.g.
         ``{"id": 1, "method": "mcpServer/elicitation/request",
         "params": {...}}``.
-    :returns: Validated request metadata plus Omnigent elicitation params.
+    :returns: Validated request metadata plus tesseract elicitation params.
     :raises OmnigentError: If the request shape is unsupported or
         missing required fields.
     """
@@ -357,7 +357,7 @@ def _result_execpolicy_amendment(
     content: dict[str, str | int | float | bool | list[str] | None] | None,
 ) -> list[str] | None:
     """
-    Extract a user-selected execpolicy amendment from Omnigent content.
+    Extract a user-selected execpolicy amendment from tesseract content.
 
     :param content: MCP ``ElicitResult.content`` submitted through the
         session approval event, e.g. ``{"execpolicy_amendment":
@@ -511,7 +511,7 @@ def _codex_mcp_elicitation_params(
     params: dict[str, Any],
 ) -> ElicitationRequestParams:
     """
-    Build Omnigent params for Codex ``mcpServer/elicitation/request``.
+    Build tesseract params for Codex ``mcpServer/elicitation/request``.
 
     :param request_id: Codex JSON-RPC request id, e.g. ``12``.
     :param method: Codex app-server method, e.g.
@@ -588,7 +588,7 @@ def _codex_tool_request_user_input_params(
     params: dict[str, Any],
 ) -> ElicitationRequestParams:
     """
-    Build Omnigent params for Codex ``item/tool/requestUserInput``.
+    Build tesseract params for Codex ``item/tool/requestUserInput``.
 
     :param request_id: Codex JSON-RPC request id, e.g. ``12``.
     :param method: Codex app-server method, e.g.
@@ -635,7 +635,7 @@ def _codex_command_approval_params(
     params: dict[str, Any],
 ) -> ElicitationRequestParams:
     """
-    Build Omnigent params for Codex command approval requests.
+    Build tesseract params for Codex command approval requests.
 
     :param request_id: Codex JSON-RPC request id, e.g. ``12``.
     :param method: Codex app-server method.
@@ -695,7 +695,7 @@ def _codex_file_change_approval_params(
     params: dict[str, Any],
 ) -> ElicitationRequestParams:
     """
-    Build Omnigent params for Codex file-change approval requests.
+    Build tesseract params for Codex file-change approval requests.
 
     :param request_id: Codex JSON-RPC request id, e.g. ``12``.
     :param method: Codex app-server method, e.g.
@@ -743,7 +743,7 @@ def _codex_permissions_approval_params(
     params: dict[str, Any],
 ) -> ElicitationRequestParams:
     """
-    Build Omnigent params for Codex permission-profile approval requests.
+    Build tesseract params for Codex permission-profile approval requests.
 
     :param request_id: Codex JSON-RPC request id, e.g. ``12``.
     :param method: Codex app-server method, e.g.
@@ -791,7 +791,7 @@ def _codex_apply_patch_approval_params(
     params: dict[str, Any],
 ) -> ElicitationRequestParams:
     """
-    Build Omnigent params for legacy Codex patch approval requests.
+    Build tesseract params for legacy Codex patch approval requests.
 
     :param request_id: Codex JSON-RPC request id, e.g. ``12``.
     :param method: Codex app-server method, e.g.

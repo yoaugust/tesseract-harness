@@ -46,11 +46,11 @@ from omnigent.models.claude_model_vocabulary import (
 ADVERTISEMENT_FILE = "subagent_router.json"
 # Claude-native bridge config, read for the session id / launch model.
 _BRIDGE_CONFIG_FILE = "bridge.json"
-# Per-turn relay advertisement listing the Omnigent tools this session holds.
+# Per-turn relay advertisement listing the tesseract tools this session holds.
 # Same filename as ``claude_native_bridge._TOOL_RELAY_FILE``; duplicated
 # because this module is stdlib-only and must not import the bridge.
 _TOOL_RELAY_FILE = "tool_relay.json"
-# MCP server the bridge registers the Omnigent tools under. Must match
+# MCP server the bridge registers the tesseract tools under. Must match
 # ``claude_native_bridge._MCP_SERVER_NAME`` (and the codex-native
 # ``[mcp_servers.omnigent]`` table), which the same no-import rule forbids
 # reading directly.
@@ -64,7 +64,7 @@ _MCP_PREFIXING_HARNESSES = frozenset({"claude-sdk", "claude_sdk", "claude-native
 # (``omnigentsys_session_create``), but that spelling is not callable.
 _MCP_NAMESPACED_HARNESSES = frozenset({"codex", "codex-native"})
 
-# Omnigent tools a routed spawn needs. Named in the deny reason only when the
+# tesseract tools a routed spawn needs. Named in the deny reason only when the
 # session's relay actually advertises the create tool.
 _SPAWN_TOOL = "sys_session_create"
 _AGENT_LIST_TOOL = "sys_agent_list"
@@ -264,7 +264,7 @@ def resolve_session_id(
     bridge_dir: str | Path | None = None,
 ) -> str | None:
     """
-    Resolve the Omnigent session the spawn belongs to.
+    Resolve the tesseract session the spawn belongs to.
 
     :param endpoint: Advertised endpoint, which may carry the session id.
     :param bridge_dir: Claude-native bridge directory, read as a last
@@ -421,7 +421,7 @@ def request_decision(
     POST one routing request to the runner.
 
     :param endpoint: Advertised endpoint.
-    :param session_id: Omnigent session id.
+    :param session_id: tesseract session id.
     :param body: Request body from :func:`build_route_request`.
     :param timeout: Socket timeout in seconds.
     :returns: Decoded decision, or ``None`` on any transport / decode
@@ -533,9 +533,9 @@ _SMART_ROUTING_PREAMBLE = (
 
 def mcp_tool_name(bare: str, harness: str | None) -> str:
     """
-    Spell an Omnigent tool the way *harness* advertises it.
+    Spell an tesseract tool the way *harness* advertises it.
 
-    :param bare: Omnigent tool name, e.g. ``"sys_session_create"``.
+    :param bare: tesseract tool name, e.g. ``"sys_session_create"``.
     :param harness: Requesting harness, e.g. ``"claude-native"``. ``None``
         or an unrecognized value keeps the bare name — an invented prefix
         is worse than the name the agent spec already documents.
@@ -548,7 +548,7 @@ def mcp_tool_name(bare: str, harness: str | None) -> str:
 
 def advertised_relay_tools(bridge_dir: str | Path | None) -> frozenset[str]:
     """
-    Read the Omnigent tool names this session's relay advertises.
+    Read the tesseract tool names this session's relay advertises.
 
     Defensive like :func:`read_router_endpoint`: any failure reads as
     "availability unknown" (an empty set), which callers treat as "assume
@@ -610,7 +610,7 @@ def _no_spawn_tool_instruction(model: str, picked: str) -> str:
     del model
     return (
         f"{_SMART_ROUTING_PREAMBLE} It selected {picked} for this sub-task, which "
-        "your built-in spawn tool cannot launch, and this session holds no Omnigent "
+        "your built-in spawn tool cannot launch, and this session holds no tesseract "
         "tool that can start one either. This is not an error and the sub-task is "
         "approved — do the work yourself on your current model instead of spawning, "
         "then continue."
@@ -638,7 +638,7 @@ def routed_spawn_instruction(
     :param harness: Harness it runs on, when the pick crosses harnesses.
     :param requesting_harness: Harness whose model reads this, which decides
         the tool spelling. ``None`` falls back to bare names.
-    :param available_tools: Omnigent tools the session's relay advertises.
+    :param available_tools: tesseract tools the session's relay advertises.
         Empty means "unknown", which assumes the spawn tool is there.
     :returns: Deny reason that reads as an approved, actionable re-route.
     """
@@ -694,7 +694,7 @@ def redirect_reason(
     :param harness: Harness the router picked, e.g. ``"codex"``.
     :param model: Model the router picked.
     :param requesting_harness: Harness whose model reads this.
-    :param available_tools: Omnigent tools the session's relay advertises.
+    :param available_tools: tesseract tools the session's relay advertises.
     :returns: Deny reason telling the model how to respawn correctly.
     """
     return routed_spawn_instruction(
@@ -725,8 +725,8 @@ def decision_to_hook_output(
         unacceptable value beats neither). ``None`` injects the id as-is,
         which is what codex's ``spawn_agent`` expects.
     :param requesting_harness: Harness whose model reads a deny reason,
-        which decides how the Omnigent tools are spelled.
-    :param available_tools: Omnigent tools the session's relay advertises,
+        which decides how the tesseract tools are spelled.
+    :param available_tools: tesseract tools the session's relay advertises,
         so a deny never names one the session does not hold.
     :returns: Hook output, or ``None`` for "no opinion" (allow the spawn
         unchanged with no emitted decision).

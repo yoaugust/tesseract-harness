@@ -24,7 +24,7 @@ reboot (and by tmp-cleaner cron on many distros). The bridge dir is
 correctly transient for hooks / tmux / token state, but the launch
 cwd needs to survive across reboots so a user who resumes a session
 the day after creating it still gets the chdir prompt. ``~/.omnigent/``
-is where the persistent Omnigent server SQLite db and other durable
+is where the persistent tesseract server SQLite db and other durable
 single-user state already live.
 
 Layout (per conversation):
@@ -126,7 +126,7 @@ def _state_dir_for_conversation_id(conversation_id: str) -> Path:
     the bare-digest directory is absent, the legacy one is returned (never
     renamed — files inside may embed their own absolute path).
 
-    :param conversation_id: Omnigent conversation id, bare 32-char hex
+    :param conversation_id: tesseract conversation id, bare 32-char hex
         (a legacy ``conv_``-prefixed form is accepted and normalised).
     :returns: Absolute directory path; not guaranteed to exist.
     """
@@ -157,7 +157,7 @@ def write_launch_state(conversation_id: str, working_directory: str) -> None:
     leaves a half-written JSON blob that a later resume would fail
     to parse.
 
-    :param conversation_id: Omnigent conversation id, e.g.
+    :param conversation_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param working_directory: Absolute filesystem path the wrapper
         was invoked from, e.g. ``"/home/me/repo"``. Should already be
@@ -216,7 +216,7 @@ def redirect_launch_state(conversation_id: str, working_directory: str) -> None:
     redirect action changes the launch cwd contract for future
     resumes, so the persisted cwd must follow it.
 
-    :param conversation_id: Omnigent conversation id, e.g.
+    :param conversation_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param working_directory: New absolute filesystem path for
         future resumes, e.g. ``"/home/me/new-repo"``.
@@ -256,7 +256,7 @@ def read_launch_state(conversation_id: str) -> ClaudeNativeLaunchState | None:
     nicety, not a correctness primitive; a corrupted file shouldn't
     block resume. The user can still chdir manually if Claude exits.
 
-    :param conversation_id: Omnigent conversation id, e.g.
+    :param conversation_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :returns: Parsed state, or ``None`` if missing / malformed.
     """

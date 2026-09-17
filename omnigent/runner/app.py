@@ -507,7 +507,7 @@ _DEAD_HARNESS_CHANNEL_ERRORS: tuple[type[BaseException], ...] = (
 # Not in the retryable-harness-error allowlist — desync is terminal, not transient.
 _RUNNER_TURN_CONTEXT_DESYNC_CODE = "runner_turn_context_desync"
 # Bounded retry budget for the sub-agent wake POST. The wake is the sole
-# delivery signal for the last child of a fan-out, and Omnigent routinely
+# delivery signal for the last child of a fan-out, and tesseract routinely
 # returns a transient 503 RUNNER_UNAVAILABLE while the parent's runner tunnel
 # is reconnecting, so a single attempt can strand the parent silently.
 _WAKE_POST_MAX_ATTEMPTS = 3
@@ -546,7 +546,7 @@ def _get_runner_llm_client() -> LLMClient:
     variables, which include the Databricks credentials set up by the
     runner entry point. This is intentionally separate from the AP
     server's ``_get_llm_client()`` — the runner may have different
-    (or more) credentials than the Omnigent server.
+    (or more) credentials than the tesseract server.
 
     :returns: A ``llms.Client`` instance bound to this runner process.
     """
@@ -582,11 +582,11 @@ async def _evaluate_policy_via_omnigent(
     on_delivery_failure: Callable[[str], Awaitable[None]] | None = None,
 ) -> None:
     """
-    Proxy a policy evaluation request from the harness to the Omnigent server.
+    Proxy a policy evaluation request from the harness to the tesseract server.
 
     Called by the runner's ``proxy_stream`` when it intercepts a
     ``policy_evaluation.requested`` SSE event from the harness. Posts
-    the evaluation request to the Omnigent server's
+    the evaluation request to the tesseract server's
     ``POST /sessions/{id}/policies/evaluate`` endpoint, then delivers
     the verdict back to the harness as a ``policy_verdict`` inbound
     event.
@@ -595,7 +595,7 @@ async def _evaluate_policy_via_omnigent(
     verdict is phase-aware:
 
     - ``PHASE_LLM_REQUEST`` / ``PHASE_LLM_RESPONSE`` fail OPEN
-      (``POLICY_ACTION_ALLOW``) so a transient Omnigent outage does not
+      (``POLICY_ACTION_ALLOW``) so a transient tesseract outage does not
       hang the turn — these gates are advisory.
     - ``PHASE_TOOL_CALL`` fails CLOSED (``POLICY_ACTION_DENY``). For
       connector-native MCP tools the harness ``can_use_tool`` callback
@@ -606,7 +606,7 @@ async def _evaluate_policy_via_omnigent(
       already executed, so denying would only block an already-incurred
       side effect.
 
-    :param server_client: HTTP client pointed at the Omnigent server.
+    :param server_client: HTTP client pointed at the tesseract server.
     :param harness_client: HTTP client pointed at the harness subprocess.
     :param conversation_id: Session/conversation identifier,
         e.g. ``"conv_abc123"``.
@@ -627,7 +627,7 @@ async def _evaluate_policy_via_omnigent(
     _default_action = "POLICY_ACTION_DENY" if _fail_closed else "POLICY_ACTION_ALLOW"
     verdict_action = _default_action
     verdict_reason: str | None = (
-        f"Omnigent policy evaluation unavailable; failing closed for {phase}."
+        f"tesseract policy evaluation unavailable; failing closed for {phase}."
         if _fail_closed
         else None
     )
@@ -771,7 +771,7 @@ async def _mint_acp_subagent_child(
     completion edge fails fast rather than hanging) and is logged, never raised
     into the turn.
 
-    :param client: Omnigent HTTP client for the runner subprocess.
+    :param client: tesseract HTTP client for the runner subprocess.
     :param parent_id: The parent conversation the sub-agent belongs to.
     :param child_key: Stable sub-agent id; the idempotency + correlation key.
     :param title: Row label for the child, e.g. ``"mathutils"``.
@@ -825,7 +825,7 @@ async def _post_acp_subagent_message(
     native forwarders use for sub-agent transcripts), so the child conversation
     renders normally when opened. Best-effort and never raised into the turn.
 
-    :param client: Omnigent HTTP client for the runner subprocess.
+    :param client: tesseract HTTP client for the runner subprocess.
     :param child_id: The child session to append to.
     :param child_key: Sub-agent id, used for the response id and log context.
     :param role: ``"user"`` (the delegated task) or ``"assistant"`` (its result).
@@ -878,7 +878,7 @@ async def _complete_acp_subagent_child(
     as its output. Best-effort: a missing or failed mint is logged and skipped,
     never raised into the turn.
 
-    :param client: Omnigent HTTP client for the runner subprocess.
+    :param client: tesseract HTTP client for the runner subprocess.
     :param child_key: Stable sub-agent id, matching the start edge.
     :param ok: Whether the sub-agent reported success.
     :param summary: The sub-agent's closing summary, attached as the child output.
@@ -941,7 +941,7 @@ async def _post_acp_subagent_tool_call(
     Waits (bounded) for the start edge to mint the child. Best-effort: a missing
     or failed mint is logged and skipped, never raised into the turn.
 
-    :param client: Omnigent HTTP client for the runner subprocess.
+    :param client: tesseract HTTP client for the runner subprocess.
     :param child_key: Stable sub-agent id, matching the start edge.
     :param call_id: The tool call's id (the child item's ``call_id``).
     :param name: Human tool label, e.g. ``"Wrote mathutils.py"``.
@@ -1366,7 +1366,7 @@ async def _resolve_forwarded_message_content(
 ) -> list[_JsonObject]:
     """Resolve server-uploaded ``file_id`` blocks inside the runner.
 
-    Remote Omnigent servers can forward session messages with raw file IDs
+    Remote tesseract servers can forward session messages with raw file IDs
     because their file store is not available to the out-of-process
     runner. The runner can still fetch bytes through the session-scoped
     file resource endpoint and inline them before handing content to a
@@ -1843,7 +1843,7 @@ async def _get_recovery_page(
     """
     Read one page of a sessions API listing for restart recovery.
 
-    :param server_client: HTTP client connected to the Omnigent server.
+    :param server_client: HTTP client connected to the tesseract server.
     :param path: Sessions API path, e.g. ``"/v1/sessions/conv_p/child_sessions"``.
     :param params: Query parameters, e.g. ``{"limit": "1000"}``.
     :returns: The decoded JSON page.
@@ -1861,7 +1861,7 @@ async def _list_child_sessions(
     """
     Return every child-session summary of a parent, following pagination.
 
-    :param server_client: HTTP client connected to the Omnigent server.
+    :param server_client: HTTP client connected to the tesseract server.
     :param parent_id: Parent session id, e.g. ``"conv_parent123"``.
     :returns: Child summaries as returned by the sessions API.
     :raises _SubagentRecoveryReadError: When a page read fails.
@@ -1884,7 +1884,7 @@ async def _fetch_latest_assistant_text(
     """
     Return the newest assistant message text of a session, reading newest first.
 
-    :param server_client: HTTP client connected to the Omnigent server.
+    :param server_client: HTTP client connected to the tesseract server.
     :param session_id: Session to read, e.g. ``"conv_child456"``.
     :returns: Joined text blocks of the newest assistant message (empty when
         that message carries no text, matching live delivery), or ``None``
@@ -1922,7 +1922,7 @@ async def _recover_subagent_results_from_server(
     result is rebuilt from the child transcript and queued again under the
     same dispatch id, letting the eventual drain close the loop.
 
-    :param server_client: HTTP client connected to the Omnigent server.
+    :param server_client: HTTP client connected to the tesseract server.
     :param parent_id: Parent session whose inbox was recreated, e.g.
         ``"conv_parent123"``.
     :param schedule_wake: Callback that posts the parent wake notice.
@@ -2197,7 +2197,7 @@ def _wake_post_is_retryable(exc: httpx.HTTPError) -> bool:
     Transport-level failures (connect/read errors, timeouts) are always
     retryable. A non-2xx response surfaces as :class:`httpx.HTTPStatusError`:
     5xx statuses are transient (notably the 503 ``RUNNER_UNAVAILABLE`` that
-    Omnigent returns while the parent's runner tunnel is reconnecting), as
+    tesseract returns while the parent's runner tunnel is reconnecting), as
     are a few 4xx codes; every other 4xx is a permanent client-side rejection
     that retrying cannot fix.
 
@@ -2206,7 +2206,7 @@ def _wake_post_is_retryable(exc: httpx.HTTPError) -> bool:
     :returns: ``True`` if a bounded retry is worthwhile, else ``False``.
     """
     if not isinstance(exc, httpx.HTTPStatusError):
-        # Transport failure — the POST may never have reached Omnigent.
+        # Transport failure — the POST may never have reached tesseract.
         return True
     status_code = exc.response.status_code
     if status_code >= 500:
@@ -2232,7 +2232,7 @@ async def _deliver_subagent_wake_post(
     exponential backoff, because the wake is the sole delivery signal for
     the last child of a fan-out. Permanent 4xx rejections stop immediately.
 
-    :param server_client: Omnigent HTTP client for the runner subprocess.
+    :param server_client: tesseract HTTP client for the runner subprocess.
     :param parent_id: Parent session to wake, e.g. ``"conv_parent123"``.
     :param notice: The ``[System: ...]`` notice text to inject.
     :param created_by: Human actor that dispatched the completed child
@@ -2318,7 +2318,7 @@ def _subagent_delivery_not_confirmed_response(
 
     Top-level sessions also post terminal status but have no parent inbox, so
     an untracked status remains a no-op unless the runner knows this session
-    was created as a sub-agent. For known sub-agents, Omnigent must not receive a
+    was created as a sub-agent. For known sub-agents, tesseract must not receive a
     2xx acknowledgement unless the terminal payload is confirmed in the
     parent's inbox — except a tracked entry whose parent is itself a
     sub-agent, which ``post_session_events`` acknowledges before calling here;
@@ -2702,7 +2702,7 @@ def create_runner_app(
     :param server_client: httpx.AsyncClient pointed at the AP
         server's public API. Used by the runner for
         elicitation/approval forwarding.
-        In-process: pointed at the Omnigent ASGI app.
+        In-process: pointed at the tesseract ASGI app.
         Out-of-process: pointed at the server's HTTP URL.
     :param terminal_registry: TerminalRegistry instance for
         runner-local terminal tool dispatch (Phase 2).
@@ -3201,7 +3201,7 @@ def create_runner_app(
                 [
                     "",
                     "Last captured terminal output: unavailable. The process exited before "
-                    "Omnigent captured a pane snapshot.",
+                    "tesseract captured a pane snapshot.",
                 ]
             )
         return "\n".join(parts)
@@ -5638,7 +5638,7 @@ def create_runner_app(
         Claude Code can only set the mode at launch (``--permission-mode``)
         or from its own shift+tab cycle, so the bridge drives that cycle
         and verifies the pane landed on *mode*. A 200 carries the mode now
-        rendered, which the Omnigent server persists as the session's
+        rendered, which the tesseract server persists as the session's
         current mode.
         """
         from omnigent.harnesses.claude_native.bridge import (
@@ -6427,14 +6427,14 @@ def create_runner_app(
         """Compact a claude-sdk session by sending it the ``/compact`` command.
 
         The Claude SDK owns its own context window in the harness subprocess,
-        so Omnigent-side transcript compaction is ineffective for it. The
+        so tesseract-side transcript compaction is ineffective for it. The
         effective path is to send the literal ``/compact`` slash command to
         the live client, which runs native compaction — the same PreCompact
         path auto-compaction uses, whose ``response.compaction.completed`` the
         executor already emits. We do that by dispatching a resumed
         ``/compact`` turn: buffered behind an in-flight turn (the harness has a
         single client), started immediately otherwise. Returns 200 so the
-        Omnigent server treats the control as handled and skips its own
+        tesseract server treats the control as handled and skips its own
         (transcript-only) compaction.
         """
         compact_body: _JsonObject = {
@@ -6922,7 +6922,7 @@ def create_runner_app(
             await harness_client.post(
                 f"/v1/sessions/{conv_id}/events",
                 json={"type": "interrupt"},
-                # Bounded under the Omnigent server's 5s stop deadline.
+                # Bounded under the tesseract server's 5s stop deadline.
                 timeout=3.0,
             )
         except NoLiveHarnessError:
@@ -12124,7 +12124,7 @@ def create_runner_app_from_env() -> FastAPI:
     """Lightweight uvicorn ``--factory`` entry point for transport subprocesses.
 
     Reads ``RUNNER_SERVER_URL`` from the environment and constructs a
-    minimal :class:`httpx.AsyncClient` for the Omnigent server, then delegates
+    minimal :class:`httpx.AsyncClient` for the tesseract server, then delegates
     to :func:`create_runner_app` with no :class:`HarnessProcessManager`,
     no spec resolver, and no terminal registry.
 
@@ -12501,7 +12501,7 @@ async def _evaluate_agent_start_gate(
     Constructs a :class:`RunnerToolPolicyGate` from the spec and
     evaluates a synthetic ``__agent_start`` tool call.  This reuses
     the same gate that guards MCP tool calls — no round-trip to the
-    Omnigent server required.
+    tesseract server required.
 
     :param spec: The resolved agent spec (``AgentSpec``).
     :param harness: Canonical harness name, e.g. ``"claude-sdk"``.

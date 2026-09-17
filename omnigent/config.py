@@ -1,4 +1,4 @@
-"""Read Omnigent's user and project configuration."""
+"""Read tesseract's user and project configuration."""
 
 from __future__ import annotations
 

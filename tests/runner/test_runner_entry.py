@@ -99,7 +99,7 @@ class _TrackingTerminalRegistry:
         """
         Initialize the terminal registry test double.
 
-        :param conversation_link_base_url: Omnigent server base URL passed
+        :param conversation_link_base_url: tesseract server base URL passed
             through by the runner entry point, e.g.
             ``"http://runner.test"``.
         :returns: None.
@@ -418,7 +418,7 @@ def test_delegated_factory_falls_back_when_apps_proxy_redirects_mint(
     def _apps_redirect(
         mint_url: str, server_url: str, binding_token: str, **_kw: object
     ) -> tuple[str, float]:
-        """Model the Apps edge intercepting the mint request before Omnigent."""
+        """Model the Apps edge intercepting the mint request before tesseract."""
         del server_url, binding_token
         mint_calls.append(1)
         request = httpx.Request("POST", mint_url)
@@ -1314,7 +1314,7 @@ def test_runner_databricks_auth_injects_fresh_token_per_request() -> None:
     This is the mechanism that keeps the runner's httpx client
     authenticated after the initial OAuth token expires. If the
     factory is called only once (cached), HTTP callbacks to the
-    Omnigent server break after 1 hour.
+    tesseract server break after 1 hour.
 
     :returns: None.
     """
@@ -1402,7 +1402,7 @@ def _drive_auth_flow(
 @pytest.mark.parametrize(
     "location",
     [
-        # Real-world shape captured from the Omnigent HTTP path: the Apps
+        # Real-world shape captured from the tesseract HTTP path: the Apps
         # front door redirects directly to ``/oidc/...authorize``
         # with a ``redirect_uri`` of ``.../.auth/callback``.
         (
@@ -1554,7 +1554,7 @@ async def test_runner_databricks_auth_end_to_end_through_mock_transport() -> Non
     isolation. Mirrors the production flow:
 
     1. Runner posts to ``/v1/sessions/{id}/mcp`` with stale bearer.
-    2. Omnigent front door bounces with ``302 → /oidc/...authorize``.
+    2. tesseract front door bounces with ``302 → /oidc/...authorize``.
     3. Runner re-mints, retries with fresh bearer, server returns 200.
 
     Without the login-redirect branch in ``auth_flow``, step 3 never
@@ -2268,12 +2268,12 @@ async def test_runner_shutdown_closes_terminal_registry(
     assert process_managers and process_managers[0].shutdown_called
     assert terminal_registries and terminal_registries[0].shutdown_called
     assert terminal_registries[0].conversation_link_base_url == "http://runner.test"
-    # In Omnigent mode (P1) the entry point passes mcp_manager=None; MCP calls are
+    # In tesseract mode (P1) the entry point passes mcp_manager=None; MCP calls are
     # routed per-session through ProxyMcpManager (runner/proxy_mcp_manager.py)
     # instead of a shared RunnerMcpManager. No RunnerMcpManager is created on
     # startup, so mcp_managers is empty — that is the correct post-P1 behavior.
     assert not mcp_managers, (
-        "RunnerMcpManager should not be created by create_app() in Omnigent mode; "
+        "RunnerMcpManager should not be created by create_app() in tesseract mode; "
         "MCP calls are proxied per-session through ProxyMcpManager"
     )
     assert async_clients and async_clients[0].closed

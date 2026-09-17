@@ -314,7 +314,7 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument(
         "--server",
         default=None,
-        help="Omnigent server URL to run against. Omit to use the local server "
+        help="tesseract server URL to run against. Omit to use the local server "
         "omnigent run spins up.",
     )
     p.add_argument(

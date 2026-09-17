@@ -151,7 +151,7 @@ def build_opencode_mcp_block(
     servers: Sequence[MCPServerConfig],
 ) -> dict[str, dict[str, object]]:
     """
-    Translate Omnigent MCP server declarations into opencode.json's ``mcp`` block.
+    Translate tesseract MCP server declarations into opencode.json's ``mcp`` block.
 
     Mirrors how codex/claude expose the agent's MCP servers, but via opencode's
     own config (no relay): ``stdio`` → ``{type:"local", command:[cmd, *args],
@@ -207,15 +207,15 @@ def build_opencode_omnigent_mcp_server(
     bridge_dir: Path, *, python_executable: str | None = None
 ) -> dict[str, dict[str, object]]:
     """
-    Build the opencode ``mcp`` entry that connects opencode to Omnigent's MCP.
+    Build the opencode ``mcp`` entry that connects opencode to tesseract's MCP.
 
-    This is what makes opencode's model call the Omnigent builtin tools
+    This is what makes opencode's model call the tesseract builtin tools
     (``sys_session_*``, ``sys_agent_*``, ``load_skill``, ``web_fetch``,
     ``list_comments``/``update_comment``, policy tools, …). opencode launches the
     SHARED ``omnigent.harnesses.claude_native.bridge serve-mcp`` as a ``{type:"local"}``
     stdio MCP server (the same relay codex/cursor/qwen use); ``serve-mcp`` reads
     the relay URL+token from ``tool_relay.json`` in *bridge_dir* (written by the
-    runner's comment relay) and proxies each tool call back through the Omnigent
+    runner's comment relay) and proxies each tool call back through the tesseract
     server, where policy is enforced. The command is sourced from
     :func:`claude_native_bridge.build_mcp_config` so the invocation stays in one
     place.
@@ -514,11 +514,11 @@ def maybe_merge_user_provider_config(config: dict[str, object]) -> dict[str, obj
 
     OpenCode reads ``XDG_CONFIG_HOME/opencode/opencode.json(c)`` for custom
     provider definitions (e.g. OpenAI-compatible endpoints with custom base
-    URLs). When running under Omnigent, the per-session ``XDG_CONFIG_HOME``
+    URLs). When running under tesseract, the per-session ``XDG_CONFIG_HOME``
     override hides this global config. This function reads the user's real
     config and merges any ``provider`` block into *config* so the spawned
     server sees both the user's providers (with their custom base URLs) and
-    any Omnigent-synthesized providers (e.g. Databricks gateway).
+    any tesseract-synthesized providers (e.g. Databricks gateway).
 
     ``provider`` entries are merged, and the user's top-level ``plugin``
     entries are appended after any synthesized ones (synthesized policy
@@ -606,7 +606,7 @@ def maybe_merge_user_provider_config(config: dict[str, object]) -> dict[str, obj
     existing = result.get("provider")
     if isinstance(existing, dict):
         # Merge user's providers alongside existing ones; don't clobber
-        # synthesized providers (Omnigent's keys like "databricks-gateway"
+        # synthesized providers (tesseract's keys like "databricks-gateway"
         # take priority).
         merged = dict(existing)
         for key, value in user_providers.items():

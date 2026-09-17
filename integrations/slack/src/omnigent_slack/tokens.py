@@ -1,7 +1,7 @@
-"""Storage for delegated Omnigent tokens.
+"""Storage for delegated tesseract tokens.
 
 Each Slack user who authenticates via the device flow gets a delegated
-access + refresh token for their Omnigent server (see
+access + refresh token for their tesseract server (see
 ``designs/DEVICE_AUTH.md``). Those are bearer credentials that let
 this process act as that user.
 

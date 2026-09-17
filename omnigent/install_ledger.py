@@ -19,8 +19,8 @@ from omnigent.util.json_types import JsonObject as _JsonObject
 SCHEMA_VERSION = 1
 LEDGER_NAME = "install_ledger.json"
 BACKFILL_LEDGER_NAME = "install_ledger.backfill.json"
-PROFILE_MARKER_BEGIN = "# >>> Omnigent installer >>>"
-PROFILE_MARKER_END = "# <<< Omnigent installer <<<"
+PROFILE_MARKER_BEGIN = "# >>> tesseract installer >>>"
+PROFILE_MARKER_END = "# <<< tesseract installer <<<"
 CONSOLE_SCRIPTS = ["omnigent", "omni"]
 
 
@@ -422,15 +422,15 @@ def desktop_data_paths() -> list[str]:
     candidates: list[Path]
     if platform.system() == "Darwin":
         candidates = [
-            home / "Library" / "Application Support" / "Omnigent",
-            home / "Library" / "Caches" / "Omnigent",
-            home / "Library" / "Logs" / "Omnigent",
+            home / "Library" / "Application Support" / "tesseract",
+            home / "Library" / "Caches" / "tesseract",
+            home / "Library" / "Logs" / "tesseract",
         ]
     else:
         xdg_config = Path(os.environ.get("XDG_CONFIG_HOME", home / ".config"))
         xdg_cache = Path(os.environ.get("XDG_CACHE_HOME", home / ".cache"))
         xdg_state = Path(os.environ.get("XDG_STATE_HOME", home / ".local" / "state"))
-        candidates = [xdg_config / "Omnigent", xdg_cache / "Omnigent", xdg_state / "Omnigent"]
+        candidates = [xdg_config / "tesseract", xdg_cache / "tesseract", xdg_state / "tesseract"]
     return [str(path) for path in candidates if path.exists()]
 
 

@@ -6,10 +6,10 @@ For codex-native, ``config.toml``'s ``model`` key is the cost-policy source
 of truth (it is what an in-TUI ``/model`` writes). At subscription and at
 each ``turn/started`` the forwarder reads it (``_refresh_model_from_config``,
 which delegates to the shared ``read_codex_config_model`` in the bridge
-module) onto ``_CodexForwarderState.model`` and mirrors it to the Omnigent server
+module) onto ``_CodexForwarderState.model`` and mirrors it to the tesseract server
 as an ``external_model_change`` event (→ persisted ``conv.model_override``)
 so the cost-budget policy resolves the selected model. The startup/spawn
-model IS mirrored (so Omnigent learns the session's model even when unchanged);
+model IS mirrored (so tesseract learns the session's model even when unchanged);
 only an already-mirrored value is not re-posted.
 """
 
@@ -82,7 +82,7 @@ def _state(model: str | None, posted_model: str | None) -> fwd._CodexForwarderSt
 async def test_sync_model_change_posts_on_change() -> None:
     """A model differing from the baseline posts external_model_change.
 
-    The in-TUI ``/model`` switch (gpt-5.5 → gpt-5.4) must mirror to Omnigent as
+    The in-TUI ``/model`` switch (gpt-5.5 → gpt-5.4) must mirror to tesseract as
     an ``external_model_change`` and advance the baseline so it isn't
     re-posted. A missing post here is exactly the bug a user hit: the
     terminal model changed but the cost policy kept seeing gpt-5.5.
@@ -107,7 +107,7 @@ async def test_sync_model_change_posts_on_change() -> None:
 async def test_sync_model_change_no_post_when_unchanged() -> None:
     """Model equal to the baseline (seeded spawn default) does not post.
 
-    Prevents the spawn/startup model from being echoed back to Omnigent as a
+    Prevents the spawn/startup model from being echoed back to tesseract as a
     spurious "change" (which would also fire on every settings update).
     """
     client = _RecordingClient()
@@ -179,7 +179,7 @@ def test_refresh_prefers_pushed_settings_model_over_stale_config(tmp_path: Path)
     # Subscription-time read adopts the pinned launch model (baseline).
     fwd._refresh_model_from_config(tmp_path, state)
     assert state.model == "databricks-gpt-5-5"
-    # Omnigent pushes a routed model thread-level; the live notification wins.
+    # tesseract pushes a routed model thread-level; the live notification wins.
     state.note_thread_settings_updated({"threadSettings": {"model": "databricks-gpt-5-6-luna"}})
 
     # turn/started re-read: config.toml is UNCHANGED — the pushed model holds.
@@ -261,7 +261,7 @@ def test_refresh_effort_prefers_pushed_settings_effort_over_stale_config(
 ) -> None:
     """An unchanged config.toml must not roll back a live thread-settings effort.
 
-    An Omnigent-initiated effort change lands thread-level (notified as
+    An tesseract-initiated effort change lands thread-level (notified as
     ``thread/settings/updated``) without rewriting config.toml; the next
     ``turn/started`` re-read of the unchanged file must keep the pushed
     effort rather than reverting it one turn after it applied.
@@ -271,7 +271,7 @@ def test_refresh_effort_prefers_pushed_settings_effort_over_stale_config(
     # Subscription/turn-time read adopts the pinned launch effort (baseline).
     fwd._refresh_effort_from_config(tmp_path, state)
     assert state.effort == "medium"
-    # Omnigent pushes a new effort thread-level; the live notification wins.
+    # tesseract pushes a new effort thread-level; the live notification wins.
     state.note_thread_settings_updated({"threadSettings": {"effort": "low"}})
 
     # turn/started re-read: config.toml is UNCHANGED — the pushed effort holds.
@@ -299,7 +299,7 @@ def test_refresh_effort_noop_when_config_has_no_effort(tmp_path: Path) -> None:
 def test_note_resume_response_records_model_without_seeding_baseline() -> None:
     """The startup/resume model is recorded but the baseline stays unset.
 
-    Omnigent must learn the session's ACTUAL model — including the spawn default —
+    tesseract must learn the session's ACTUAL model — including the spawn default —
     because the cost gate resolves ``conv.model_override or spec.llm.model``
     and for codex the spawn model is frequently NOT ``spec.llm.model``. So
     ``note_resume_response`` records ``model`` but leaves ``posted_model``
@@ -321,7 +321,7 @@ async def test_sync_after_resume_posts_spawn_model() -> None:
     """End-to-end: an unchanged spawn model is mirrored to AP.
 
     This is the regression for the wrongly-blocked cheap session: codex
-    spawned on gpt-5.4-mini, the model never "changed", yet Omnigent must still
+    spawned on gpt-5.4-mini, the model never "changed", yet tesseract must still
     receive it as ``model_override`` so the cost gate sees a cheap model
     instead of falling back to the spec model and DENYing.
     """
@@ -347,7 +347,7 @@ def test_thread_settings_updated_records_effort_and_collaboration_mode() -> None
 
     App-server sends the public ``ThreadSettings`` shape with ``effort`` and
     ``collaborationMode``. If this parser regresses, the later sync helpers have
-    no state to mirror, so Omnigent would keep stale ``reasoning_effort`` and
+    no state to mirror, so tesseract would keep stale ``reasoning_effort`` and
     mode metadata even though Codex changed them.
     """
     state = fwd._CodexForwarderState()
@@ -401,7 +401,7 @@ def test_thread_settings_updated_records_approval_preset() -> None:
 @pytest.mark.asyncio
 async def test_sync_codex_approval_mode_change_posts_preset_and_dedupes() -> None:
     """
-    Codex ``/permissions`` changes mirror the runtime preset to Omnigent once.
+    Codex ``/permissions`` changes mirror the runtime preset to tesseract once.
 
     The post must carry ``approval_mode`` so the server stamps the read-back
     label + publishes; a second sync with the same preset must not re-post.
@@ -427,7 +427,7 @@ async def test_sync_codex_approval_mode_change_posts_preset_and_dedupes() -> Non
 @pytest.mark.asyncio
 async def test_sync_reasoning_effort_change_posts_and_dedupes() -> None:
     """
-    Codex effort changes mirror to Omnigent exactly once per observed value.
+    Codex effort changes mirror to tesseract exactly once per observed value.
 
     The first sync must POST ``external_reasoning_effort_change`` so the server
     persists ``conversation.reasoning_effort``. The second sync with the same
@@ -466,11 +466,11 @@ async def test_sync_reasoning_effort_change_posts_and_dedupes() -> None:
 @pytest.mark.asyncio
 async def test_sync_reasoning_effort_change_posts_clear() -> None:
     """
-    Codex clearing effort mirrors JSON null to Omnigent.
+    Codex clearing effort mirrors JSON null to tesseract.
 
     ``None`` is a meaningful observed value (model/default effort), so the
     forwarder must still post it after a prior explicit effort. If this returned
-    early on falsey ``None``, Omnigent would keep a stale explicit effort.
+    early on falsey ``None``, tesseract would keep a stale explicit effort.
     """
     client = _RecordingClient()
     state = fwd._CodexForwarderState(
@@ -501,7 +501,7 @@ async def test_sync_reasoning_effort_change_posts_clear() -> None:
 @pytest.mark.asyncio
 async def test_sync_codex_collaboration_mode_change_posts_and_dedupes() -> None:
     """
-    Codex collaboration mode changes mirror to Omnigent labels once.
+    Codex collaboration mode changes mirror to tesseract labels once.
 
     The ``mode`` value is the durable "Plan vs Default" signal we can get from
     app-server. Missing this POST would leave the session snapshot without the
@@ -637,7 +637,7 @@ def test_user_message_has_file_content(content: object, expected: bool) -> None:
 @pytest.mark.asyncio
 async def test_post_user_message_image_only_posts_empty_content() -> None:
     """
-    An image-only ``userMessage`` is posted with EMPTY Omnigent content.
+    An image-only ``userMessage`` is posted with EMPTY tesseract content.
 
     Regression guard for the image-only bleed/ordering bug: the forwarder
     must post the user item (so the server drains the pending-input FIFO
@@ -4318,7 +4318,7 @@ def test_refresh_developer_instructions_from_config_clears_on_genuine_absence(
 
     Genuine absence (the top-level key is genuinely gone — a real, distinct
     tri-state result, not a collapsed truthy check) is real, actionable
-    information — e.g. the user's Omnigent-appended directive was removed —
+    information — e.g. the user's tesseract-appended directive was removed —
     and must be reflected, not preserved as stale. This is the corrected
     expectation: a naive "no-op unless truthy" implementation cannot tell
     genuine absence apart from a transient read failure and would keep

@@ -530,7 +530,7 @@ def register_pane(
     :param launch_argv: ``sys.argv`` of the running ``omnigent
         run`` process. Re-played verbatim by the chooser when the
         user picks "new conversation with same agent".
-    :param server_url: Omnigent server base URL (e.g.
+    :param server_url: tesseract server base URL (e.g.
         ``"http://127.0.0.1:8023"``), or ``None`` for the legacy
         non-AP path. Used by the chooser to enumerate
         sub-agent conversations.

@@ -1,6 +1,6 @@
 """Optional live end-to-end test for the Gensee managed-host lifecycle.
 
-The test targets an existing Omnigent server configured with the built-in
+The test targets an existing tesseract server configured with the built-in
 Gensee provider. It creates one managed session without sending an LLM prompt,
 waits for the sandbox host and runner to connect, deletes that exact session,
 and verifies that the corresponding Gensee allocation is released.
@@ -8,7 +8,7 @@ and verifies that the corresponding Gensee allocation is released.
 This test is opt-in because it provisions a billable external sandbox. The
 agent must use a harness available in the Gensee runtime image.
 ``OMNIGENT_E2E_GENSEE_SERVER_TOKEN`` is optional for auth-disabled servers and
-is sent as an Omnigent server Bearer token when present.
+is sent as an tesseract server Bearer token when present.
 
     OMNIGENT_E2E_GENSEE=1 \
     OMNIGENT_E2E_GENSEE_SERVER_URL=https://omnigent.example.com \
@@ -64,7 +64,7 @@ def _assert_gensee_enabled(client: httpx.Client) -> None:
     info = response.json()
     providers = info.get("sandbox_providers") or []
     assert "gensee" in providers or info.get("sandbox_provider") == "gensee", (
-        "the target Omnigent server does not advertise Gensee as a managed sandbox provider"
+        "the target tesseract server does not advertise Gensee as a managed sandbox provider"
     )
 
 
@@ -73,7 +73,7 @@ def _assert_agent_exists(client: httpx.Client, agent_id: str) -> None:
     response.raise_for_status()
     agents = response.json().get("data") or []
     assert any(agent.get("id") == agent_id for agent in agents), (
-        f"agent {agent_id!r} is not registered on the target Omnigent server"
+        f"agent {agent_id!r} is not registered on the target tesseract server"
     )
 
 

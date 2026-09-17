@@ -42,7 +42,7 @@ class SqlAlchemyAgentStore(AgentStore):
         Creates or reuses a SQLAlchemy engine and session factory
         for the given database URI.
 
-        :param storage_location: SQLAlchemy database URI for the Omnigent DB,
+        :param storage_location: SQLAlchemy database URI for the tesseract DB,
             e.g. ``"sqlite:///agents.db"`` or
             ``"postgresql://<user>:<password>@host/db"``.
         :param conversation_storage_location: Optional URI for the Agent
@@ -176,7 +176,7 @@ class SqlAlchemyAgentStore(AgentStore):
                 return None
         # For session-scoped agents, derive the owning conversation id
         # from the forward pointer so callers can use agent.session_id.
-        # Runs outside the Omnigent session: the lookup targets the AP DB.
+        # Runs outside the tesseract session: the lookup targets the AP DB.
         session_id: str | None = None
         if row.kind == encode_agent_kind("session"):
             session_id = self._session_id_for_agent(agent_id)

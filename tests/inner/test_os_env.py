@@ -109,7 +109,7 @@ def test_build_helper_env_active_passes_omnigent_session_marker() -> None:
 
     The marker (set once on the runner process) must reach an agent's
     sandboxed shell so code running there can detect it is inside an
-    Omnigent session, the way ``CLAUDE_CODE`` / ``CODEX`` are visible in
+    tesseract session, the way ``CLAUDE_CODE`` / ``CODEX`` are visible in
     their own agents' shells.
 
     :returns: None.

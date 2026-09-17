@@ -1,6 +1,6 @@
 ---
 name: antigravity-native-e2e-dev
-description: Spin up a live local Omnigent server + runner and exercise the native Antigravity (agy) TUI harness (antigravity-native) end-to-end — launch the real `agy` CLI via `omnigent antigravity`, drive turns through the web UI, smoke-test, and bug-bash. Load when developing, testing, or debugging the antigravity-native harness (omnigent/inner/antigravity_native_executor.py, omnigent/antigravity_native.py, antigravity_native_bridge.py, antigravity_native_rpc.py, antigravity_native_reader.py, antigravity_native_launch.py) or its agy launch / RPC mirror / tmux delivery / OAuth / MCP-relay behavior. NOT the in-process `antigravity` Gemini SDK harness.
+description: Spin up a live local tesseract server + runner and exercise the native Antigravity (agy) TUI harness (antigravity-native) end-to-end — launch the real `agy` CLI via `omnigent antigravity`, drive turns through the web UI, smoke-test, and bug-bash. Load when developing, testing, or debugging the antigravity-native harness (omnigent/inner/antigravity_native_executor.py, omnigent/antigravity_native.py, antigravity_native_bridge.py, antigravity_native_rpc.py, antigravity_native_reader.py, antigravity_native_launch.py) or its agy launch / RPC mirror / tmux delivery / OAuth / MCP-relay behavior. NOT the in-process `antigravity` Gemini SDK harness.
 ---
 
 # Antigravity native harness: end-to-end dev & testing (local server/runner)
@@ -24,7 +24,7 @@ against a live local server + runner** — not just the unit tests.
 your TTY ── (attach / pexpect) ──► omnigent antigravity (CLI, local)
                                         │ ensures
                                         ▼
-                                  host daemon ──► local Omnigent server (AP)
+                                  host daemon ──► local tesseract server (AP)
                                         │ spawns                      ▲
                                         ▼                  connect-RPC │ HTTP
                                   runner ── launches ──► agy (TUI, in tmux)
@@ -44,9 +44,9 @@ Three transports, easy to confuse:
    headless RPC path was retired; the `antigravity_native.py` module header still
    says "delivered via the RPC" — that's stale doc-lag, the executor is authoritative).
 2. **Read path = RPC.** `antigravity_native_reader` polls/streams agy's connect-RPC
-   trajectory steps and mirrors them into the Omnigent session.
+   trajectory steps and mirrors them into the tesseract session.
 3. **Control = RPC.** Interrupt is `CancelCascadeSteps`; a tool/permission prompt
-   is answered via `HandleCascadeUserInteraction` (surfaced as an Omnigent
+   is answered via `HandleCascadeUserInteraction` (surfaced as an tesseract
    elicitation).
 
 ## Prerequisites (check these first)
@@ -164,14 +164,14 @@ whole point of the TUI-typing write path).
 ## Inspect the bridge (debugging)
 
 Per-session bridge state lives under a hashed dir (keyed by *bridge id*, which
-defaults to the Omnigent conversation id):
+defaults to the tesseract conversation id):
 
 ```bash
 .venv/bin/python -c "from omnigent.antigravity_native_bridge import bridge_dir_for_bridge_id as d; print(d('$CONV'))"
 # ~/.omnigent/antigravity-native/<sha256(bridge_id)[:32]>/
 #   state.json     <- {session_id, conversation_id (agy's real UUID once minted), active_turn_id}
 #   tmux.json      <- {socket_path, tmux_target} the executor types into (send-keys)
-#   bridge.json    <- token for the Omnigent MCP relay (sys_* tools)
+#   bridge.json    <- token for the tesseract MCP relay (sys_* tools)
 #   agy-home/.gemini/...  <- per-session ISOLATED HOME: a COPY of your OAuth token
 #                            + onboarding markers + config/mcp_config.json (relay)
 ```
@@ -193,8 +193,8 @@ Key facts:
 |------|-----|
 | Web→TUI delivery | POST a message (Step 3); confirm it renders in the agy TUI AND mirrors to `…/items` |
 | Native tools (shell/edit/read) | prompt agy to create→read→edit a file + run a command; confirm it touches disk |
-| Omnigent MCP relay (`sys_*`) | in the agy TUI run `/mcp` → expect `✓ omnigent`; prompt agy to `sys_session_list` / spawn a sub-agent |
-| Permission elicitation | with a tool that needs approval, agy's `request-review` surfaces as an **Omnigent elicitation** (interaction bridge); answer it in the web UI and confirm the tool runs |
+| tesseract MCP relay (`sys_*`) | in the agy TUI run `/mcp` → expect `✓ omnigent`; prompt agy to `sys_session_list` / spawn a sub-agent |
+| Permission elicitation | with a tool that needs approval, agy's `request-review` surfaces as an **tesseract elicitation** (interaction bridge); answer it in the web UI and confirm the tool runs |
 | Interrupt | mid-turn, hit stop in the UI → `CancelCascadeSteps` (RUNNING cascades only; a step WAITING on an interaction is unblocked by a DENY, not cancel) |
 | Model echo | `/model` in the TUI, then a web turn — confirm the new model is used (latest `USER_INPUT` step's `planModel`) |
 | Resume | stop, `omnigent antigravity --server "$SERVER" --resume "$CONV"`; `--resume` (no value) opens the antigravity-native picker |
@@ -267,7 +267,7 @@ leave the TUI empty while the session records an error.
   early just queues into the TUI.
 - **Permission gating is all-or-nothing + post-hoc.** agy honors only
   `--dangerously-skip-permissions` (no firing pre-tool hook), so a headless launch
-  auto-bypasses and the genuine Omnigent gate is the elicitation + post-hoc audit
+  auto-bypasses and the genuine tesseract gate is the elicitation + post-hoc audit
   (`antigravity_native_audit`), not a per-tool pre-empt.
 - **Stale module header.** `antigravity_native.py`'s top docstring says web turns
   go over `SendUserCascadeMessage` RPC — the live executor types into the TUI

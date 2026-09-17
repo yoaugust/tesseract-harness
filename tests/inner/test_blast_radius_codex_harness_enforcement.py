@@ -1,7 +1,7 @@
 """Regression target: ``blast_radius`` must gate the direct ``codex`` harness too.
 
 The ``blast_radius`` policy (and any policy built on the ``tool_call`` seam) is
-enforced for harnesses whose shell surfaces as an Omnigent ``tool_call``
+enforced for harnesses whose shell surfaces as an tesseract ``tool_call``
 (``sys_os_shell`` / claude-native ``Bash``), but is *silently not enforced* for
 the direct ``codex`` harness, whose shell executes inside the Codex process and
 is surfaced only *observationally*.

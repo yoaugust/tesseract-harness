@@ -43,7 +43,7 @@ def bridge_dir_for_session_id(session_id: str) -> Path:
     """
     Return the bridge directory for a native Pi session.
 
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :returns: Absolute bridge directory under ``~/.omnigent/pi-native``.
     """
     digest = hashlib.sha256(session_id.encode("utf-8")).hexdigest()[:32]
@@ -54,7 +54,7 @@ def prepare_bridge_dir(session_id: str) -> Path:
     """
     Create the bridge directory and inbox for *session_id*.
 
-    :param session_id: Omnigent conversation id.
+    :param session_id: tesseract conversation id.
     :returns: Prepared bridge directory.
     """
     bridge_dir = bridge_dir_for_session_id(session_id)
@@ -107,7 +107,7 @@ def build_pi_native_spawn_env(conversation_id: str) -> dict[str, str]:
     """
     Build spawn env for the ``pi-native`` harness process.
 
-    :param conversation_id: Omnigent conversation id.
+    :param conversation_id: tesseract conversation id.
     :returns: Environment variables needed by the Pi-native harness executor.
     """
     return {
@@ -301,16 +301,16 @@ def write_extension_files(
     Write the Pi extension and config used by a native Pi terminal.
 
     :param bridge_dir: Prepared bridge directory.
-    :param session_id: Omnigent conversation id.
-    :param server_url: Omnigent server base URL.
+    :param session_id: tesseract conversation id.
+    :param server_url: tesseract server base URL.
     :param conversation_url: Human-facing web conversation URL.
     :param auth_headers: HTTP headers the extension should use when posting
-        terminal-originated events back to Omnigent.
-    :param tools: Flat Omnigent tool schemas
+        terminal-originated events back to tesseract.
+    :param tools: Flat tesseract tool schemas
         (``[{"name", "description", "parameters"}]``) the extension should
         register via ``pi.registerTool``. Each tool's ``execute`` round-trips
         the call through ``POST /v1/sessions/{id}/mcp`` (the same MCP proxy the
-        runner uses), so the Pi agent can invoke Omnigent ``sys_*`` tools with
+        runner uses), so the Pi agent can invoke tesseract ``sys_*`` tools with
         centralized server-side policy enforcement. ``None``/empty registers no
         tools (Pi falls back to its own built-in tool surface only).
     :returns: ``(extension_path, config_path)``.

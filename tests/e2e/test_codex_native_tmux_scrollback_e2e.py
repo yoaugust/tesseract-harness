@@ -1,4 +1,4 @@
-"""E2E regression: a native attach to an Omnigent-managed tmux terminal must be
+"""E2E regression: a native attach to an tesseract-managed tmux terminal must be
 able to reach the formatted scrollback above the viewport.
 
 The reported journey: run ``omnigent codex`` from a native terminal, produce

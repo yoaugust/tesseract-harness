@@ -1,6 +1,6 @@
-# Omnigent performance benchmark
+# tesseract performance benchmark
 
-Baseline, repeatable latency/throughput numbers for key Omnigent user
+Baseline, repeatable latency/throughput numbers for key tesseract user
 journeys, so we can track them over time and catch regressions. Modeled on
 MLflow's `dev/benchmarks/gateway/` workflow.
 

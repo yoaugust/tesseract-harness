@@ -1,4 +1,4 @@
-# Databricks Asset Bundle config for the Omnigent Databricks App.
+# Databricks Asset Bundle config for the tesseract Databricks App.
 #
 # Every knob the app exposes lives here. deploy.py wraps `databricks
 # bundle deploy` + `bundle run`; per-app values are passed as `--var`
@@ -70,7 +70,7 @@ resources:
     # display name comes from ${var.app_name}.
     omnigent:
       name: ${var.app_name}
-      description: "Omnigent server backed by Lakebase + UC Volumes."
+      description: "tesseract server backed by Lakebase + UC Volumes."
       source_code_path: ./src
       # compute_size is intentionally NOT declared here. Terraform's
       # databricks_app provider uses an apps update API that rejects

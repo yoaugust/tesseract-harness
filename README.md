@@ -1,10 +1,10 @@
 <div align="center">
 
-# <img src="https://raw.githubusercontent.com/omnigent-ai/omnigent/main/docs/images/omnigent-logo.svg" alt="" height="38" valign="middle" /> Omnigent
+# <img src="docs/images/tesseract-logo.png" alt="" height="38" valign="middle" /> tesseract
 
 ### The open-source meta-harness for all your AI agents.
 
-Omnigent is an open-source **meta-harness** that gives you a common orchestration layer over Claude Code, Codex, Cursor, OpenCode, Hermes, Pi, and the agents you write yourself: swap or combine harnesses without rewriting, enforce policies and sandboxing, and collaborate in real time from any device — terminal, browser, phone, or the native desktop app.
+tesseract is an open-source **meta-harness** that gives you a common orchestration layer over Claude Code, Codex, Cursor, OpenCode, Hermes, Pi, and the agents you write yourself: swap or combine harnesses without rewriting, enforce policies and sandboxing, and collaborate in real time from any device — terminal, browser, phone, or the native desktop app.
 
 [![PyPI version](https://img.shields.io/pypi/v/omnigent.svg)](https://pypi.org/project/omnigent/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/omnigent-ai/omnigent/blob/main/LICENSE)
@@ -16,14 +16,14 @@ Omnigent is an open-source **meta-harness** that gives you a common orchestratio
 </div>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/omnigent-ai/omnigent/main/docs/images/omnigent-desktop.png" alt="The Omnigent desktop app: starting a new session, with pinned and project-grouped sessions in the sidebar" width="720" />
+  <img src="https://raw.githubusercontent.com/omnigent-ai/omnigent/main/docs/images/omnigent-desktop.png" alt="The tesseract desktop app: starting a new session, with pinned and project-grouped sessions in the sidebar" width="720" />
 </p>
 
 ---
 
-## Why Omnigent?
+## Why tesseract?
 
-Omnigent lets you:
+tesseract lets you:
 
 - **📱 Work with agents from any device, including your phone.** Sessions
   follow you: start in your terminal, continue in the browser, pick it up on
@@ -64,7 +64,7 @@ Omnigent lets you:
 
 ### 1. Install
 
-One command installs Omnigent and everything it needs:
+One command installs tesseract and everything it needs:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/omnigent-ai/omnigent/main/scripts/install_oss.sh | sh
@@ -93,7 +93,7 @@ Available user-facing extras include:
 <details>
 <summary>Prefer to install manually?</summary>
 
-Omnigent needs **Python 3.12+**. Install the `omnigent` package:
+tesseract needs **Python 3.12+**. Install the `omnigent` package:
 
 ```bash
 uv tool install omnigent        # or: pip install "omnigent"
@@ -159,7 +159,7 @@ uv tool install -q --python 3.12 git+https://github.com/omnigent-ai/omnigent.git
   (`apt install bubblewrap`; the installer offers to install it for you). macOS
   uses the built-in `seatbelt` sandbox and needs nothing extra.
 - **Databricks** (optional). To use a Databricks workspace as your model
-  provider, install Omnigent with the `databricks` extra:
+  provider, install tesseract with the `databricks` extra:
   `uv tool install "omnigent[databricks]"` — or pass it to the bootstrap
   installer with `... | sh -s -- --extra databricks`. Signing in to the
   workspace also uses the [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/install).
@@ -169,7 +169,7 @@ uv tool install -q --python 3.12 git+https://github.com/omnigent-ai/omnigent.git
 <details>
 <summary>Windows (native)</summary>
 
-Omnigent runs natively on Windows in a degraded mode. The `install_oss.sh`
+tesseract runs natively on Windows in a degraded mode. The `install_oss.sh`
 bootstrap is POSIX-only, so install with `uv` directly:
 
 ```powershell
@@ -196,7 +196,7 @@ What is **not** available on Windows (use Linux/macOS, or WSL, for these):
 <details>
 <summary>Updating to a new release</summary>
 
-When a newer release is on PyPI, Omnigent shows a one-line notice (once per
+When a newer release is on PyPI, tesseract shows a one-line notice (once per
 release) pointing here. To update:
 
 ```bash
@@ -217,7 +217,7 @@ mirrors work out of the box; override with `OMNIGENT_INDEX_URL` if needed.
 </details>
 
 <details>
-<summary>Uninstalling Omnigent</summary>
+<summary>Uninstalling tesseract</summary>
 
 Preview the CLI/profile cleanup that would run by default:
 
@@ -232,7 +232,7 @@ history, credentials, and projects:
 omnigent uninstall --yes
 ```
 
-To also remove Omnigent state under `~/.omnigent`, pass `--purge`; Omnigent
+To also remove tesseract state under `~/.omnigent`, pass `--purge`; tesseract
 backs it up outside the target before deletion. Your `~/omnigent` workspace is
 kept unless you explicitly add `--purge-workspace`.
 
@@ -265,7 +265,7 @@ in a native window and adds OS notifications (with a configurable sound) and a d
 > the shorter `omni`. They're interchangeable.
 
 > [!TIP]
-> On first run, Omnigent picks up model credentials already in your
+> On first run, tesseract picks up model credentials already in your
 > environment (an `ANTHROPIC_API_KEY` / `OPENAI_API_KEY`, or a `claude` /
 > `codex` CLI you're logged into) and offers one as the default.
 
@@ -311,7 +311,7 @@ omnigent run --harness devin
 ```
 
 Both speak the [Agent Client Protocol](https://agentclientprotocol.com) over
-stdio, and Omnigent stores no credential for either — each CLI reads back the
+stdio, and tesseract stores no credential for either — each CLI reads back the
 login it wrote to disk. That also means `--model` is refused rather than
 silently dropped: both run their account-default model. To pin one, configure an
 `acp:` agent whose command passes the vendor's own model flag.
@@ -384,7 +384,7 @@ limited to 100 characters; custom title requirements may use up to 200.
 Default titles over 100 characters are rejected, leaving the first-message
 fallback title in place. Custom titles over 200 characters are truncated with
 a trailing ellipsis. Manually assigned titles are also limited to 200
-characters. The setting applies after the local Omnigent server restarts, both
+characters. The setting applies after the local tesseract server restarts, both
 to new sessions and to later agent-initiated renames through `sys_session_rename`.
 Agent proposals are formatted using the same title requirements; if formatting
 fails, the existing title is preserved. Manual renames remain unchanged.
@@ -410,7 +410,7 @@ Server operators can set the same key in the YAML passed to
 omnigent setup
 ```
 
-Add a credential, set a default, or remove one, grouped by agent. Omnigent
+Add a credential, set a default, or remove one, grouped by agent. tesseract
 works with four kinds of credentials:
 
 | | Kind | What it is |
@@ -443,7 +443,7 @@ the OpenAI-compatible `…/api/v1`.
 
 ### 4. Deploy a server (and use it from your phone📱)
 
-Run Omnigent on a server with a stable URL
+Run tesseract on a server with a stable URL
 ([`deploy/README.md`](https://github.com/omnigent-ai/omnigent/blob/main/deploy/README.md) is the full guide) and your sessions
 become reachable from anywhere, including your phone. The web UI is built for
 mobile, so you get the same chat, sub-agents, terminals, and files, in sync
@@ -475,7 +475,7 @@ omnigent host  https://your-host    # new sessions can now run on this machine
 
 ### 5. Collaborate with your team
 
-Omnigent supports **multi-user accounts**, controlled by one environment
+tesseract supports **multi-user accounts**, controlled by one environment
 variable:
 
 ```bash
@@ -574,7 +574,7 @@ See the [policy guide](https://github.com/omnigent-ai/omnigent/blob/main/docs/PO
 An agent is a short YAML file: your prompt, your tools — local Python
 functions, MCP servers, and sub-agents a supervisor can delegate to. You don't
 have to write it by hand: agents can build agents, so describe the agent you
-want in any Omnigent chat and it authors the file for you.
+want in any tesseract chat and it authors the file for you.
 
 ```yaml
 name: my_agent
@@ -618,9 +618,9 @@ Polly at [`examples/polly/`](https://github.com/omnigent-ai/omnigent/tree/main/e
 
 ## Telemetry
 
-Omnigent collects anonymized usage data (telemetry) by default. This data
+tesseract collects anonymized usage data (telemetry) by default. This data
 contains no sensitive or personally identifiable information. If you're using
-Omnigent through a managed service or distribution, please consult your managed
+tesseract through a managed service or distribution, please consult your managed
 service agreement to determine any data collection that may impact your use of
 the service. To opt out, follow our instructions in
 [Usage Telemetry](https://omnigent.ai/docs/deploy/telemetry).

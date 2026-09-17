@@ -1,6 +1,6 @@
 # Sandbox providers
 
-Omnigent supports running agent hosts in remote sandboxes. Built-in providers
+tesseract supports running agent hosts in remote sandboxes. Built-in providers
 (Modal, Daytona, Blaxel, CoreWeave Sandbox, E2B, Gensee, Islo, OpenShell,
 Boxlite, Kubernetes, microsandbox)
 ship with the core package. Third-party packages can add new providers through
@@ -119,7 +119,7 @@ omnigent/
 ```
 
 The `omnigent.community.sandbox` namespace package is already set up by core
-Omnigent using `pkgutil.extend_path`, so your package's files are discovered
+tesseract using `pkgutil.extend_path`, so your package's files are discovered
 automatically when installed.
 
 ## Server-managed sandboxes

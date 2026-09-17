@@ -1,6 +1,6 @@
 """Tests for ``_evaluate_policy_via_omnigent`` fail-open / fail-closed.
 
-The runner proxies harness policy-evaluation requests to the Omnigent
+The runner proxies harness policy-evaluation requests to the tesseract
 server and posts the verdict back to the harness. When that round-trip
 errors or returns non-200 the default verdict must be *phase-aware*:
 
@@ -55,7 +55,7 @@ class _CapturingHarnessClient:
 async def _run(server_client: Any, phase: str) -> dict[str, Any]:
     """Drive the proxy once and return the verdict body posted to the harness.
 
-    :param server_client: Stub Omnigent-server client.
+    :param server_client: Stub tesseract-server client.
     :param phase: Proto phase string, e.g. ``"PHASE_TOOL_CALL"``.
     :returns: The single ``policy_verdict`` body the harness received.
     """

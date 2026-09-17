@@ -216,7 +216,7 @@ async def test_handle_model_options_claude_probe_failure_is_failed(
 async def test_handle_model_options_uses_host_pi_configuration(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pi's launch picker uses only models configured through Omnigent."""
+    """Pi's launch picker uses only models configured through tesseract."""
     from omnigent.harnesses.pi_native import credentials as pi_native_credentials
 
     monkeypatch.setattr(

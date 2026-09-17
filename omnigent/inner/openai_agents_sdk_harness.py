@@ -6,7 +6,7 @@ shared :mod:`omnigent.runtime.harnesses._runner` invokes after
 the parent process resolves ``"openai-agents"`` to this module
 via :data:`omnigent.runtime.harnesses._HARNESS_MODULES`.
 
-The registry key is ``"openai-agents"`` (matching the Omnigent
+The registry key is ``"openai-agents"`` (matching the tesseract
 YAML ``executor.harness`` spelling and ``OmnigentExecutor``'s
 existing harness allowlist); the Python module retains the ``_sdk``
 suffix because the underlying SDK package is ``openai-agents`` and

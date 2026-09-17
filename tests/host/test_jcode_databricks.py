@@ -64,7 +64,7 @@ class TestConnectJcodeGatewayEnv:
     ) -> None:
         """On a connect host: a session-private JCODE_HOME with a config.toml pinning the
         dbx gateway provider, a per-session runtime dir, and the bearer — with base_url
-        set by Omnigent (not read from a shared file) and the bearer never on disk."""
+        set by tesseract (not read from a shared file) and the bearer never on disk."""
         _write_sidecar(tmp_path)
         _mock_broker(monkeypatch, workspace="https://ws.example", bearer="tok-123")
 

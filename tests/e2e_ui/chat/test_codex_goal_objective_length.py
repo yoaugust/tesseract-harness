@@ -2,7 +2,7 @@
 Codex app-server injection error.
 
 Codex app-server rejects goal objectives longer than 4000 characters with a
-JSON-RPC ``-32600`` error, but Omnigent's ``/goal`` chat-command path sends
+JSON-RPC ``-32600`` error, but tesseract's ``/goal`` chat-command path sends
 the objective without any client-side length check. The rejection then
 reaches the user verbatim as an injection failure — an error pill reading
 ``Codex native executor error: {'code': -32600, 'message': 'goal objective

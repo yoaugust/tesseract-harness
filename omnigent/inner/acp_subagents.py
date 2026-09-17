@@ -14,7 +14,7 @@ that maps one dialect onto it. It reads no vendor field and names no vendor;
 matching :class:`~omnigent.inner.executor.SubAgentStarted` /
 :class:`~omnigent.inner.executor.SubAgentCompleted` /
 :class:`~omnigent.inner.executor.SubAgentToolCall`, which the runner turns into
-an Omnigent child session and its transcript so the web "Subagents" panel lists
+an tesseract child session and its transcript so the web "Subagents" panel lists
 one row per child with the work it did.
 
 A vendor's dialect lives with that vendor — see

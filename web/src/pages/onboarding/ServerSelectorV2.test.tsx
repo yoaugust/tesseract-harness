@@ -22,7 +22,7 @@ function makeSetup(over: Partial<ServerSelectorV2Setup> = {}): ServerSelectorV2S
 describe("ServerSelectorV2", () => {
   it("starts on the landing step", () => {
     render(<ServerSelectorV2 setup={makeSetup()} />);
-    expect(screen.getByRole("heading", { name: "Meet Omnigent" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Meet tesseract" })).toBeInTheDocument();
   });
 
   it("Get started advances to the deployment-mode step", () => {

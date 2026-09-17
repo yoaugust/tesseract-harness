@@ -189,7 +189,7 @@ class ElicitationController:
                 client,
                 key,
                 (
-                    ":link: Omnigent needs input I can't collect here "
+                    ":link: tesseract needs input I can't collect here "
                     f"({request.message}). Open the session to respond:\n"
                     f"{self._approve_link(request.session_id, request.elicitation_id)}"
                 ),
@@ -216,7 +216,7 @@ class ElicitationController:
             posted = await client.chat_postMessage(
                 channel=key.channel_id,
                 thread_ts=key.reply_ts,
-                text="Omnigent needs your input to continue.",
+                text="tesseract needs your input to continue.",
                 blocks=elicitation_card_blocks(request, turn.owner_user_id),
             )
         except Exception:
@@ -476,7 +476,7 @@ class ElicitationController:
             )
 
     def _approve_link(self, session_id: str, elicitation_id: str) -> str:
-        # Deep link to the elicitation's approve page in the Omnigent web UI, so
+        # Deep link to the elicitation's approve page in the tesseract web UI, so
         # a user can resolve a request the bot can't render in Slack.
         base = self._server_url.rstrip("/")
         return f"{base}/approve/{session_id}/{elicitation_id}"

@@ -819,7 +819,7 @@ async def test_transfer_terminal_moves_resource_without_closing(
 
     This catches the ``/clear`` bug class where moving ownership would
     accidentally close tmux or leave the runner registry keyed under
-    the old conversation, making the new Omnigent conversation unable to
+    the old conversation, making the new tesseract conversation unable to
     attach to the still-running Claude pane.
     """
     source = registry.get("conv_abc", "bash", "s1")
@@ -1911,7 +1911,7 @@ async def test_concurrent_resource_reads_share_one_session_snapshot(
 ) -> None:
     """A startup burst of concurrent resource reads resolves the
     session's spec through one ``GET /v1/sessions/{id}`` and one bundle
-    resolution, instead of each request stampeding the Omnigent server.
+    resolution, instead of each request stampeding the tesseract server.
 
     Reproduces the observed runner-startup burst: dozens of paired
     ``GET /sessions/{id}`` + ``agent/contents`` requests in one second.
@@ -1941,7 +1941,7 @@ async def test_concurrent_resource_reads_share_one_session_snapshot(
 
     async def _server_handler(request: httpx.Request) -> httpx.Response:
         """
-        Stub Omnigent server that blocks + counts the session snapshot fetch.
+        Stub tesseract server that blocks + counts the session snapshot fetch.
 
         :param request: Outbound request from the runner.
         :returns: The session snapshot (after release) for the session
@@ -2046,7 +2046,7 @@ async def test_failed_session_snapshot_is_not_cached_and_retries(
 
     async def _server_handler(request: httpx.Request) -> httpx.Response:
         """
-        Stub Omnigent server: fail the first snapshot, succeed afterward.
+        Stub tesseract server: fail the first snapshot, succeed afterward.
 
         :param request: Outbound request from the runner.
         :returns: 503 on the first session GET, then the real snapshot.
@@ -2139,7 +2139,7 @@ async def test_unbound_agent_snapshot_is_not_cached_and_retries(
 
     async def _server_handler(request: httpx.Request) -> httpx.Response:
         """
-        Stub Omnigent server: 200 with no agent_id first, then the bound one.
+        Stub tesseract server: 200 with no agent_id first, then the bound one.
 
         :param request: Outbound request from the runner.
         :returns: A 200 snapshot lacking ``agent_id`` on the first
@@ -2276,7 +2276,7 @@ async def test_failed_snapshot_does_not_latch_session_workspace(
 
     async def _server_handler(request: httpx.Request) -> httpx.Response:
         """
-        Stub Omnigent server: fail every snapshot until it is reachable.
+        Stub tesseract server: fail every snapshot until it is reachable.
 
         :param request: Outbound request from the runner.
         :returns: 503 while unreachable, then the bound snapshot naming
@@ -2537,7 +2537,7 @@ async def test_failed_snapshot_does_not_pin_workspace_cache_to_none(
     snapshot_count = 0
 
     async def _server_handler(request: httpx.Request) -> httpx.Response:
-        """Stub Omnigent server: fail the first session snapshot fetch,
+        """Stub tesseract server: fail the first session snapshot fetch,
         then report the session's real workspace on every fetch after."""
         nonlocal snapshot_count
         if request.method == "GET" and request.url.path == f"/v1/sessions/{conv}":

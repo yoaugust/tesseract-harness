@@ -1187,7 +1187,7 @@ async def test_fork_switch_404_unknown_target() -> None:
         ),
         # cross-family into a native target: model id is meaningless across
         # providers → reset. History still carries — the runner rebuilds the
-        # native transcript from the copied Omnigent items — but the source's
+        # native transcript from the copied tesseract items — but the source's
         # native session id must NOT be stamped (wrong transcript format for
         # the target; a doomed clone attempt would launch fresh instead).
         # Still terminal-first, but the codex wrapper.
@@ -1212,7 +1212,7 @@ async def test_fork_switch_404_unknown_target() -> None:
             {"omnigent.ui": "terminal", "omnigent.wrapper": "cursor-native-ui"},
         ),
         # pi-native CAN carry fork history: the runner rebuilds Pi's JSONL
-        # session file from the copied Omnigent items. Cross-family from a
+        # session file from the copied tesseract items. Cross-family from a
         # claude SDK source, so model settings reset and the source's native
         # session id is NOT stamped (Pi rebuilds from items, not a source
         # file) — same shape as the codex-native cross-family case.
@@ -1225,7 +1225,7 @@ async def test_fork_switch_404_unknown_target() -> None:
             {"omnigent.ui": "terminal", "omnigent.wrapper": "pi-native-ui"},
         ),
         # qwen-native CAN carry fork history: the runner rebuilds qwen's on-disk
-        # chat recording (+ runtime/meta sidecars) from the copied Omnigent items
+        # chat recording (+ runtime/meta sidecars) from the copied tesseract items
         # (see write_qwen_session_recording). Cross-family here (claude SDK source
         # is anthropic, qwen is openai-family), so model settings reset and the
         # source's native session id is NOT stamped — same shape as the pi-native
@@ -1387,7 +1387,7 @@ async def test_fork_no_switch_native_source_carries_history(
         # first message (its conversation is server-backed, so no local store to
         # seed for --resume) — so a same-agent fork DOES mark native carry.
         ("cursor-native", True),
-        # pi rebuilds its JSONL session file from the copied Omnigent items
+        # pi rebuilds its JSONL session file from the copied tesseract items
         # (it is in _FORK_HISTORY_NATIVE_HARNESSES), so a same-agent fork marks
         # native carry — parity with claude/codex.
         ("pi-native", True),
@@ -1403,7 +1403,7 @@ async def test_fork_cursor_pi_native_carry_gating(
 
     cursor carries fork history via a text preamble (its conversation is
     server-backed, so no local store to seed for --resume); pi rebuilds its
-    JSONL session file from the copied Omnigent items. Both therefore mark
+    JSONL session file from the copied tesseract items. Both therefore mark
     ``carry_history_into_native``.
     """
     conv = _make_conversation()

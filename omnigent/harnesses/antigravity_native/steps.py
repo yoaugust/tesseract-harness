@@ -54,7 +54,7 @@ from typing import Literal, TypedDict
 
 _logger = logging.getLogger(__name__)
 
-# Omnigent ``agent`` label stamped on mirrored assistant/function-call items so
+# tesseract ``agent`` label stamped on mirrored assistant/function-call items so
 # the web UI attributes them to the native agy agent. Relocated here (Task 12
 # cutover) from the retired transcript forwarder.
 _AGENT_NAME = "antigravity-native-ui"
@@ -69,13 +69,13 @@ _TOOL_ARG_DISPLAY_KEYS = frozenset({"toolAction", "toolSummary"})
 @dataclass(frozen=True)
 class OutboundEvent:
     """
-    One Omnigent session event to POST for an agy step.
+    One tesseract session event to POST for an agy step.
 
     Relocated here (Task 12 cutover) from the retired transcript forwarder; it is
     the shared event shape produced by both this mapper and the RPC read driver
     (:mod:`omnigent.harnesses.antigravity_native.reader`).
 
-    :param event_type: Omnigent session event type, e.g.
+    :param event_type: tesseract session event type, e.g.
         ``"external_conversation_item"`` or ``"external_session_status"``.
     :param data: Event ``data`` payload posted under
         ``{"type": event_type, "data": data}``.
@@ -334,7 +334,7 @@ def pending_interaction(step: dict[str, object]) -> PendingInteraction | None:
 
 def _response_id(conversation_id: str, step_idx: int) -> str:
     """
-    Build a stable Omnigent response id for a RPC step.
+    Build a stable tesseract response id for a RPC step.
 
     Mirrors the forwarder's ``_response_id`` format so ids are consistent
     across the transcript and RPC paths.
@@ -940,7 +940,7 @@ def map_step_to_events(
     conversation_id: str,
 ) -> list[OutboundEvent]:
     """
-    Map one agy RPC step to Omnigent conversation-item events.
+    Map one agy RPC step to tesseract conversation-item events.
 
     This is the pure, no-delta mapping layer for the RPC-based read path. It
     produces ``external_conversation_item`` events

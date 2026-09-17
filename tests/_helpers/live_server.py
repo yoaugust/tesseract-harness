@@ -2,7 +2,7 @@
 Shared fixtures for tests that need a live ``omnigent.cli server`` subprocess.
 
 Lifted out of ``tests/e2e/conftest.py`` so the inner test suite
-(``tests/inner/test_integration.py`` running with Omnigent mode) can
+(``tests/inner/test_integration.py`` running with tesseract mode) can
 reuse the same machinery without duplication. The e2e conftest
 re-exports from here.
 

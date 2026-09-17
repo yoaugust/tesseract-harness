@@ -1,15 +1,15 @@
-"""Cursor preToolUse hook script for Omnigent policy enforcement.
+"""Cursor preToolUse hook script for tesseract policy enforcement.
 
 Runs as a subprocess of the Cursor SDK bridge process, not the harness.
 
 Reads tool-call info from stdin (Cursor hook protocol), evaluates
-PHASE_TOOL_CALL policy via the Omnigent server, and returns the
+PHASE_TOOL_CALL policy via the tesseract server, and returns the
 verdict on stdout.
 
 Environment variables (baked into the hooks.json command by the
 CursorExecutor at session startup):
 
-    _OMNIGENT_SERVER_URL  : Base URL of the Omnigent server
+    _OMNIGENT_SERVER_URL  : Base URL of the tesseract server
                             (e.g. ``http://127.0.0.1:6767``).
     _OMNIGENT_SESSION_ID  : Session / conversation ID for policy
                             evaluation.
@@ -92,7 +92,7 @@ def main() -> None:
 
     if resp is None:
         detail = api_error or (reauth.failure_reason if reauth else None)
-        message = f"Tool '{tool_name}' blocked: Omnigent policy evaluation unavailable"
+        message = f"Tool '{tool_name}' blocked: tesseract policy evaluation unavailable"
         if detail:
             message += f" ({detail})"
         json.dump({"permission": "deny", "agent_message": message}, sys.stdout)
@@ -104,7 +104,7 @@ def main() -> None:
         json.dump(
             {
                 "permission": "deny",
-                "agent_message": f"Tool '{tool_name}' blocked: malformed Omnigent policy response",
+                "agent_message": f"Tool '{tool_name}' blocked: malformed tesseract policy response",
             },
             sys.stdout,
         )
@@ -116,7 +116,7 @@ def main() -> None:
     if action == "POLICY_ACTION_DENY":
         out: dict[str, str] = {"permission": "deny"}
         if reason:
-            out["agent_message"] = f"Tool '{tool_name}' denied by Omnigent policy: {reason}"
+            out["agent_message"] = f"Tool '{tool_name}' denied by tesseract policy: {reason}"
         json.dump(out, sys.stdout)
     elif action == "POLICY_ACTION_ASK":
         # The server resolves ASK by parking the HTTP request until the

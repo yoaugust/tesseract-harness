@@ -400,7 +400,7 @@ def test_sqlite_engine_skips_server_pool_settings_and_enables_wal(
     (``pool_pre_ping`` / ``pool_recycle``) — those are meaningful
     only for multi-connection server databases. They must, however,
     enable WAL journal mode and a 20s ``busy_timeout`` on every
-    connection so multi-process workloads (REPL + Omnigent server +
+    connection so multi-process workloads (REPL + tesseract server +
     runner subprocess + DBOS scheduler all hitting the same
     ``chat.db``) don't surface as ``disk I/O error`` /
     ``database is locked`` under default ``journal_mode=DELETE``.

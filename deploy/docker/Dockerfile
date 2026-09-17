@@ -1,4 +1,4 @@
-# Omnigent images: server (default target) + host (`--target host`).
+# tesseract images: server (default target) + host (`--target host`).
 #
 # The default/final target builds the server image (external-runner
 # mode): the FastAPI / WebSocket coordinator — HTTP + SSE routes, the
@@ -13,7 +13,7 @@
 # simply never imported because HarnessProcessManager is never
 # invoked in this deployment mode.
 #
-# The `host` target is the inverse: a prebaked Omnigent HOST image for
+# The `host` target is the inverse: a prebaked tesseract HOST image for
 # remote sandboxes (e.g. `omnigent sandbox create --provider modal`)
 # and server-launched managed hosts. It bakes the full omnigent
 # install plus the tools a host needs at runtime — git (workspaces /
@@ -173,7 +173,7 @@ RUN if [ -n "${OMNIGENT_EXTRAS}" ]; then \
 FROM node:${NODE_VERSION}-slim AS node-runtime
 
 # ── Host runtime (`--target host`) ──────────────────────
-# Prebaked Omnigent host for remote sandboxes: full omnigent install,
+# Prebaked tesseract host for remote sandboxes: full omnigent install,
 # git + tmux for harness runtime needs, procps + lsof so the antigravity-native
 # executor can discover agy's connect-RPC port (antigravity_native_rpc.py uses
 # `pgrep` in _list_agy_pids to find agy processes — with a /proc-scan fallback if

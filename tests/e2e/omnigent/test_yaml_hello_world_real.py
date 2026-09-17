@@ -4,7 +4,7 @@ Migrated to mock LLM: uses a canned text response so the test is
 deterministic and needs no real credentials.
 
 **What breaks if this fails:**
-- Omnigent' YAML spec parser regresses on the minimal
+- tesseract' YAML spec parser regresses on the minimal
   ``name:`` + ``prompt:`` shape.
 - ``omnigent.loader`` stops applying CLI ``--model`` as a
   fallback when the YAML omits ``executor.model``.

@@ -1,6 +1,6 @@
 """In-process index of the assistant text streaming in the current turn.
 
-Lets the Omnigent server replay the text streamed so far when a client
+Lets the tesseract server replay the text streamed so far when a client
 (re)connects mid-turn — fixing the bug where, for non-claude-native
 agents (e.g. polly), a cold reload / new tab / navigate-away-and-back
 showed only "a few tokens" of an in-flight response and the visible
@@ -59,7 +59,7 @@ Deliberately ephemeral
 The text is never written to the conversation store; the final
 assistant message still persists on ``response.completed`` exactly as
 before, and the index is cleared at that point. Nothing here pollutes
-the durable transcript. The index lives only in the Omnigent process, so it
+the durable transcript. The index lives only in the tesseract process, so it
 does not survive an AP-server restart mid-turn — acceptable, because
 the relay's in-memory accumulator does not survive a restart either,
 and the only loss is the in-flight prefix of a single turn.
@@ -69,7 +69,7 @@ Lifecycle correctness (no gap, no duplicate)
 :func:`snapshot_for` must be read through ``subscribe``'s
 ``pre_ready_snapshot`` hook, which runs synchronously right after the
 subscriber's queue slot is registered and *before the first
-``yield``/``await``*. On the single Omnigent event loop where the relay
+``yield``/``await``*. On the single tesseract event loop where the relay
 publishes, no delta can be published between slot registration and that
 read, so deltas before that instant are in the snapshot prefix and
 deltas at/after it land on the subscriber's queue (the live tail). The
@@ -580,7 +580,7 @@ def discard(conversation_id: str) -> None:
     """
     Drop a conversation's in-flight entry, if any.
 
-    Called from the Omnigent relay's teardown (``_relay_runner_stream``'s
+    Called from the tesseract relay's teardown (``_relay_runner_stream``'s
     ``finally``) so a relay that exits WITHOUT a terminal turn event —
     a runner death / tunnel drop mid-turn, a ``[DONE]`` with no
     preceding terminal, or a PATCH-rebind cancellation — does not strand

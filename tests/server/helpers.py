@@ -1015,7 +1015,7 @@ class CapturingRunnerClient:
     """
     Real stub for the in-process runner client used by popup-forward tests.
 
-    Records every control event the Omnigent server POSTs to the runner's
+    Records every control event the tesseract server POSTs to the runner's
     ``/events`` and signals when a ``cost_approval_popup`` arrives. A real
     class (not MagicMock) so an unexpected call shape fails loud rather than
     silently returning a mock. Install it as the global runner client with

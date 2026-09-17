@@ -105,7 +105,7 @@ def test_run_with_claude_alias_produces_output(
     """``omnigent run --harness claude-sdk`` exits 0 with assistant text.
 
     Proves the "claude" alias is canonicalized through the full
-    CLI → Omnigent server → harness spawn → LLM call → output path.
+    CLI → tesseract server → harness spawn → LLM call → output path.
 
     :param request: Pytest request for --profile flag access.
     """

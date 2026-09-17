@@ -32,10 +32,10 @@ class IntegrationMode(str, Enum):
 
 
 class Elicitation(str, Enum):
-    """How a policy ASK / tool-approval is surfaced to the Omnigent web UI."""
+    """How a policy ASK / tool-approval is surfaced to the tesseract web UI."""
 
     NONE = "none"
-    HOOK = "hook"  # vendor PreToolUse hook posts to Omnigent
+    HOOK = "hook"  # vendor PreToolUse hook posts to tesseract
     JSONRPC = "jsonrpc"  # app-server JSON-RPC elicitation (codex)
     APPROVAL_MIRROR = "approval-mirror"  # poll the TUI approval pane, mirror to web
     SSE_PERMISSION = "sse-permission"  # permission events over SSE / ACP elicit
@@ -46,7 +46,7 @@ class Resume(str, Enum):
 
     NONE = "none"  # prior conversations cannot be resumed
     WARM_REATTACH = "warm-reattach"  # reattach to a live vendor session / terminal
-    COLD_ONLY = "cold-only"  # rebuild from Omnigent transcript / history replay
+    COLD_ONLY = "cold-only"  # rebuild from tesseract transcript / history replay
 
 
 class EffortFamily(str, Enum):
@@ -75,8 +75,8 @@ class ModelFamily(str, Enum):
 class AuthModel(str, Enum):
     """Where the harness's credentials come from."""
 
-    OMNIGENT_CREDENTIAL = "omnigent-credential"  # Omnigent gateway / provider config
-    OWN_AUTH = "own-auth"  # vendor login / API key, not Omnigent-managed
+    OMNIGENT_CREDENTIAL = "omnigent-credential"  # tesseract gateway / provider config
+    OWN_AUTH = "own-auth"  # vendor login / API key, not tesseract-managed
     SESSION_SCOPED_CONFIG = "session-scoped-config"  # per-session synthesized vendor config
 
 
@@ -113,7 +113,7 @@ class HarnessCapabilities:
     :param effort: Which reasoning-effort value set applies.
     :param model_family: Which model vendors the harness accepts.
     :param auth: Where the harness's credentials come from.
-    :param subagents: Whether the harness can spawn Omnigent sub-agents.
+    :param subagents: Whether the harness can spawn tesseract sub-agents.
     :param interrupt: Whether a running turn can be cancelled mid-stream. This
         is a *declared* claim; the harness bench's interrupt probe verifies it
         live and flags drift when a harness does not honor it.

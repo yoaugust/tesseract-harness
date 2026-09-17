@@ -1,4 +1,4 @@
-"""Shared full-server infrastructure: spawn a real Omnigent server + runner.
+"""Shared full-server infrastructure: spawn a real tesseract server + runner.
 
 Split from :mod:`tests.harness_bench.full_server_driver` so the *server
 lifecycle* (spawning the server/runner, registering bench agents + sessions)
@@ -206,7 +206,7 @@ def _bundle_agent_config(config: dict[str, Any]) -> bytes:
 class SharedFullServer:
     """One server + one runner shared by several full-server harnesses.
 
-    The Omnigent server is multi-agent/multi-session, and a single runner
+    The tesseract server is multi-agent/multi-session, and a single runner
     resolves the harness type per session from that session's agent spec (see
     ``runner/app.py``). So N SDK harnesses do NOT each need their own
     server+runner — they can each register as their own agent + session on one

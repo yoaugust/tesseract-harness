@@ -1,4 +1,4 @@
-# Omnigent server config — non-secret settings in one file.
+# tesseract server config — non-secret settings in one file.
 #
 # Copy to the persistent volume as `/data/config.yaml` (the default the
 # server looks for), or point OMNIGENT_CONFIG at an explicit path. The
@@ -59,4 +59,4 @@ allowed_domains:
 #     main: logo.png             # hero / primary mark
 #     loading: loading.webp      # working indicator (falls back to main)
 #     favicon: favicon.png       # browser-tab icon
-#   powered_by: true             # "Powered by Omnigent" credit (only when branded); false to hide
+#   powered_by: true             # "Powered by tesseract" credit (only when branded); false to hide

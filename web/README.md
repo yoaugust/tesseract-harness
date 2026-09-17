@@ -1,7 +1,7 @@
 # web
 
 The web UI for `omnigent server --agent <agent>`. SPA built with Vite + React + TypeScript +
-Tailwind v4 + shadcn/ui. Talks to the current Omnigent API surface
+Tailwind v4 + shadcn/ui. Talks to the current tesseract API surface
 (`/v1/agents`, `/v1/sessions`, session-scoped
 `/v1/sessions/{id}/resources/files`).
 
@@ -50,7 +50,7 @@ Additional `omnigent server` options:
 | `--execution-timeout` | `7200`                 | Max wall-clock seconds per execution |
 | `--agent`             | (none)                 | Pre-register an agent (repeatable)   |
 
-## Build + serve from the Omnigent server
+## Build + serve from the tesseract server
 
 ```bash
 cd web

@@ -32,7 +32,7 @@ ACTION_SETUP_START = "omnigent_setup_start"
 CALLBACK_SETUP_INFO = "omnigent_setup_info"
 CALLBACK_SELECT_MODAL = "omnigent_setup_select"
 
-# Slash command that lets a user (re)configure their Omnigent setup.
+# Slash command that lets a user (re)configure their tesseract setup.
 COMMAND_NAME = "/omnigent"
 
 AGENT_BLOCK = "agent_block"
@@ -87,9 +87,9 @@ class _ViewUpdateAck:
 
 
 class SetupFlow:
-    """Per-user Omnigent setup for the operator-configured server.
+    """Per-user tesseract setup for the operator-configured server.
 
-    The bot talks to one fixed Omnigent server (``server_url``, set by the
+    The bot talks to one fixed tesseract server (``server_url``, set by the
     operator — never entered by a user), so setup no longer asks for a URL.
     Opening ``/omnigent`` validates connectivity against that server,
     logging the user in (in-modal) if it requires auth, then lets them pick
@@ -195,7 +195,7 @@ class SetupFlow:
             client,
             user_id,
             text=(
-                f":wave: Logged out{servers}. Your Omnigent settings were "
+                f":wave: Logged out{servers}. Your tesseract settings were "
                 "cleared — run `/omnigent` to set up again."
             ),
             purpose="logout confirmation",
@@ -220,7 +220,7 @@ class SetupFlow:
         await self._dm_user(
             client,
             user_id,
-            text="Set up Omnigent to start using me.",
+            text="Set up tesseract to start using me.",
             blocks=setup_prompt_blocks(),
             purpose="setup",
         )
@@ -229,7 +229,7 @@ class SetupFlow:
                 channel=channel,
                 user=user_id,
                 thread_ts=thread_ts,
-                text="Let's get you set up — check your DM with me to configure Omnigent.",
+                text="Let's get you set up — check your DM with me to configure tesseract.",
             )
 
     async def prompt_relogin(
@@ -254,7 +254,7 @@ class SetupFlow:
         delivered = await self._dm_user(
             client,
             user_id,
-            text="Your Omnigent login has expired. Sign in again to keep going.",
+            text="Your tesseract login has expired. Sign in again to keep going.",
             blocks=relogin_prompt_blocks(),
             purpose="re-login",
         )
@@ -266,7 +266,7 @@ class SetupFlow:
                 channel=channel,
                 user=user_id,
                 thread_ts=thread_ts,
-                text=("Your Omnigent login has expired — check your DM with me to sign in again."),
+                text=("Your tesseract login has expired — check your DM with me to sign in again."),
             )
         return True
 
@@ -350,7 +350,7 @@ class SetupFlow:
             await client.views_update(
                 view_id=view_id,
                 view=login_failed_modal(
-                    server_url, "Could not reach the Omnigent server. Try again shortly."
+                    server_url, "Could not reach the tesseract server. Try again shortly."
                 ),
             )
             return
@@ -445,7 +445,7 @@ class SetupFlow:
                 view_id,
                 server_url,
                 "you're signed in, but the server rejected the sign-in when "
-                "validating it. Ask your Omnigent operator to confirm the OAuth "
+                "validating it. Ask your tesseract operator to confirm the OAuth "
                 "app's scopes are accepted by the server.",
                 context=context.capitalize(),
             )
@@ -489,8 +489,8 @@ class SetupFlow:
                 view_id=view_id,
                 view=login_failed_modal(
                     server_url,
-                    "the Omnigent server doesn't support Device Authorization Grant. "
-                    "Please contact your Omnigent server administrator.",
+                    "the tesseract server doesn't support Device Authorization Grant. "
+                    "Please contact your tesseract server administrator.",
                 ),
             )
             return
@@ -580,7 +580,7 @@ class SetupFlow:
                 view=login_failed_modal(
                     server_url,
                     "sign-in isn't fully configured (no enrollment URL). "
-                    "Contact your Omnigent operator.",
+                    "Contact your tesseract operator.",
                 ),
             )
             return
@@ -614,10 +614,10 @@ class SetupFlow:
     async def _team_name(self, client: Any, team_id: str) -> str:
         """Resolve the Slack workspace's display name via ``team.info``.
 
-        Used only to label the ``client_id`` sent to the Omnigent server.
+        Used only to label the ``client_id`` sent to the tesseract server.
         Best-effort: any API failure (missing ``team:read`` scope, network)
         falls back to an empty string, so login still proceeds with the
-        bare ``Slack-Omnigent`` client id.
+        bare ``Slack-tesseract`` client id.
         """
         try:
             resp = await client.team_info(team=team_id)
@@ -731,7 +731,7 @@ class SetupFlow:
         await ack()
         server_url = self._server_url
         self._logger.info(
-            "Saved Omnigent setup team=%s user=%s server=%s agent=%s host_type=%s host=%s",
+            "Saved tesseract setup team=%s user=%s server=%s agent=%s host_type=%s host=%s",
             team_id,
             user_id,
             server_url,
@@ -780,7 +780,7 @@ def setup_prompt_blocks() -> list[dict[str, Any]]:
             "text": {
                 "type": "mrkdwn",
                 "text": (
-                    "*Set up Omnigent*\nPick an agent and host so I can run sessions for you."
+                    "*Set up tesseract*\nPick an agent and host so I can run sessions for you."
                 ),
             },
         },
@@ -789,7 +789,7 @@ def setup_prompt_blocks() -> list[dict[str, Any]]:
             "elements": [
                 {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "⚙️ Set up Omnigent"},
+                    "text": {"type": "plain_text", "text": "⚙️ Set up tesseract"},
                     "style": "primary",
                     "action_id": ACTION_SETUP_START,
                 }
@@ -807,7 +807,7 @@ def relogin_prompt_blocks() -> list[dict[str, Any]]:
             "text": {
                 "type": "mrkdwn",
                 "text": (
-                    ":lock: *Your Omnigent login has expired.*\n"
+                    ":lock: *Your tesseract login has expired.*\n"
                     "Sign in again to keep running sessions."
                 ),
             },
@@ -817,7 +817,7 @@ def relogin_prompt_blocks() -> list[dict[str, Any]]:
             "elements": [
                 {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "🔑 Sign in to Omnigent"},
+                    "text": {"type": "plain_text", "text": "🔑 Sign in to tesseract"},
                     "style": "primary",
                     "action_id": ACTION_SETUP_START,
                 }
@@ -833,12 +833,12 @@ def connecting_modal() -> dict[str, Any]:
     return {
         "type": "modal",
         "callback_id": CALLBACK_SETUP_INFO,
-        "title": {"type": "plain_text", "text": "Set up Omnigent"},
+        "title": {"type": "plain_text", "text": "Set up tesseract"},
         "close": {"type": "plain_text", "text": "Cancel"},
         "blocks": [
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": "Connecting to Omnigent…"},
+                "text": {"type": "mrkdwn", "text": "Connecting to tesseract…"},
             }
         ],
     }
@@ -848,7 +848,7 @@ def no_host_modal(server_url: str) -> dict[str, Any]:
     return {
         "type": "modal",
         "callback_id": CALLBACK_SETUP_INFO,
-        "title": {"type": "plain_text", "text": "Set up Omnigent"},
+        "title": {"type": "plain_text", "text": "Set up tesseract"},
         "close": {"type": "plain_text", "text": "Close"},
         "blocks": [
             {
@@ -865,7 +865,7 @@ def no_agents_modal(server_url: str) -> dict[str, Any]:
     return {
         "type": "modal",
         "callback_id": CALLBACK_SETUP_INFO,
-        "title": {"type": "plain_text", "text": "Set up Omnigent"},
+        "title": {"type": "plain_text", "text": "Set up tesseract"},
         "close": {"type": "plain_text", "text": "Close"},
         "blocks": [
             {
@@ -897,7 +897,7 @@ def login_waiting_modal(server_url: str, verification_url: str, user_code: str) 
     return {
         "type": "modal",
         "callback_id": CALLBACK_SETUP_INFO,
-        "title": {"type": "plain_text", "text": "Set up Omnigent"},
+        "title": {"type": "plain_text", "text": "Set up tesseract"},
         "close": {"type": "plain_text", "text": "Cancel"},
         "blocks": [
             {
@@ -930,7 +930,7 @@ def enrollment_waiting_modal(server_url: str, enrollment_url: str) -> dict[str, 
     return {
         "type": "modal",
         "callback_id": CALLBACK_SETUP_INFO,
-        "title": {"type": "plain_text", "text": "Set up Omnigent"},
+        "title": {"type": "plain_text", "text": "Set up tesseract"},
         "close": {"type": "plain_text", "text": "Cancel"},
         "blocks": [
             {
@@ -962,7 +962,7 @@ def login_failed_modal(server_url: str, reason: str) -> dict[str, Any]:
     return {
         "type": "modal",
         "callback_id": CALLBACK_SETUP_INFO,
-        "title": {"type": "plain_text", "text": "Set up Omnigent"},
+        "title": {"type": "plain_text", "text": "Set up tesseract"},
         "close": {"type": "plain_text", "text": "Close"},
         "blocks": [
             {
@@ -986,7 +986,7 @@ def setup_failed_modal(reason: str) -> dict[str, Any]:
     return {
         "type": "modal",
         "callback_id": CALLBACK_SETUP_INFO,
-        "title": {"type": "plain_text", "text": "Set up Omnigent"},
+        "title": {"type": "plain_text", "text": "Set up tesseract"},
         "close": {"type": "plain_text", "text": "Close"},
         "blocks": [
             {
@@ -1074,7 +1074,7 @@ def select_modal(
     return {
         "type": "modal",
         "callback_id": CALLBACK_SELECT_MODAL,
-        "title": {"type": "plain_text", "text": "Set up Omnigent"},
+        "title": {"type": "plain_text", "text": "Set up tesseract"},
         "submit": {"type": "plain_text", "text": "Save"},
         "close": {"type": "plain_text", "text": "Cancel"},
         "blocks": blocks,

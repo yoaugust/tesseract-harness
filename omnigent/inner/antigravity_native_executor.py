@@ -1,9 +1,9 @@
-"""Executor that delivers Omnigent web/mobile turns into a native Antigravity agy.
+"""Executor that delivers tesseract web/mobile turns into a native Antigravity agy.
 
 ``omnigent antigravity`` runs the Antigravity ``agy`` CLI in a runner-owned tmux
-terminal and mirrors its transcript into the Omnigent session via the RPC read
+terminal and mirrors its transcript into the tesseract session via the RPC read
 driver (the read path). This executor is the **write path**: when a turn is
-submitted from the Omnigent web/mobile UI it delivers the user's message by
+submitted from the tesseract web/mobile UI it delivers the user's message by
 TYPING IT INTO the agy TUI pane over tmux
 (:func:`omnigent.harnesses.antigravity_native.bridge.inject_user_message_via_tui`), exactly
 like the **claude**/**codex** native bridges drive their vendor panes. agy then
@@ -12,7 +12,7 @@ runs a real model turn and its reply flows back through the read driver.
 **Why typing into the TUI, not headless ``SendUserCascadeMessage`` RPC
 (#1156/#1158).** Typing into the TUI gives true parity with claude/codex native:
 the turn RENDERS in the agy TUI AND lands on the SAME cascade the TUI displays,
-so the agy TUI and the Omnigent web mirror share ONE conversation in both
+so the agy TUI and the tesseract web mirror share ONE conversation in both
 directions. The prior headless RPC path delivered onto a separate
 ``StartCascade`` cascade the TUI never showed — so the agy TUI never echoed web
 turns (#1156) and TUI-typed turns never mirrored to the web (#1158). agy records
@@ -43,7 +43,7 @@ NEVER hardcoded. The executor resolves the model at runtime in two tiers
 the older ``requestedModel.model`` shape as a fallback) reflecting the user's TUI
 ``/model`` choice without new plumbing; (2) on a first turn / when no
 prior model is observable, fall back to the ``recommended`` entry from
-``GetAvailableModels``. The Omnigent ``ExecutorConfig.model``/``reasoning_effort``
+``GetAvailableModels``. The tesseract ``ExecutorConfig.model``/``reasoning_effort``
 stay informational on this write path — agy's own model selection determines the
 turn's model and thinking budget and cannot be overridden from here.
 
@@ -214,7 +214,7 @@ class AntigravityNativeExecutor(Executor):
 
         :param messages: Conversation history in executor message shape; the
             latest user message is delivered.
-        :param tools: Tool schemas from Omnigent. Ignored; native agy owns its
+        :param tools: Tool schemas from tesseract. Ignored; native agy owns its
             own tool surface.
         :param system_prompt: System prompt from the agent spec. Ignored; the
             native conversation was created by the wrapper.
@@ -319,9 +319,9 @@ def _bridge_dir_from_env() -> Path:
 
 def _request_session_id_from_env() -> str | None:
     """
-    Resolve the Omnigent session id that requested this harness process.
+    Resolve the tesseract session id that requested this harness process.
 
-    :returns: Omnigent session id, e.g. ``"conv_abc123"``, or ``None``.
+    :returns: tesseract session id, e.g. ``"conv_abc123"``, or ``None``.
     """
     raw = os.environ.get(ANTIGRAVITY_NATIVE_REQUEST_SESSION_ID_ENV_VAR, "").strip()
     return raw or None

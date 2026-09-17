@@ -1,6 +1,6 @@
 # Harness Plugin Interface
 
-Omnigent now discovers optional harness support through Python entry points.
+tesseract now discovers optional harness support through Python entry points.
 Core `omnigent` ships the built-in harness contribution. A separate package, for
 example `omnigent-kimi`, can add harness ids, aliases, runner modules, install
 metadata, model environment plumbing, and picker labels without adding that

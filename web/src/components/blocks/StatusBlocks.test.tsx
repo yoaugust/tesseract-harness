@@ -481,7 +481,7 @@ describe("ErrorBanner", () => {
           "Terminal diagnostics:",
           "pid: 42",
           "",
-          "Last captured output: unavailable. The process exited before Omnigent captured a pane snapshot.",
+          "Last captured output: unavailable. The process exited before tesseract captured a pane snapshot.",
         ].join("\n")}
         source="execution"
         code="required_terminal_exited"

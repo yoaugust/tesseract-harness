@@ -19,7 +19,7 @@ with four required arguments (plus one optional):
 - ``--conversation-id <id>``: the conversation this process serves.
   Stashed on ``app.state.conversation_id`` so the harness can scope
   its in-memory state per §Harness in-memory state in the design
-  doc. Omnigent allocates the id; the runner does NOT parse it from the
+  doc. tesseract allocates the id; the runner does NOT parse it from the
   socket path (the socket layout is a process-manager
   implementation detail, not a stable contract).
 - ``--parent-pid <pid>`` (optional): PID of the spawning process.

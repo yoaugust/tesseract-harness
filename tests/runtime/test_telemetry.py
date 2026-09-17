@@ -767,7 +767,7 @@ def test_fastapi_session_id_hook_stamps_session_id(
 ) -> None:
     """
     The FastAPI server-request hook tags the server span with the
-    Omnigent session id parsed from a ``/sessions/<conv_…>/`` path, so
+    tesseract session id parsed from a ``/sessions/<conv_…>/`` path, so
     every session-scoped request span is findable by session.
 
     :param in_memory_exporter: In-memory span exporter fixture.

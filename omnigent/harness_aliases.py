@@ -1,7 +1,7 @@
 """Shared harness-name alias helpers.
 
 Keep user-facing shorthand spellings at the edges while the rest of
-Omnigent continues to use canonical harness identifiers internally.
+tesseract continues to use canonical harness identifiers internally.
 """
 
 from __future__ import annotations
@@ -11,8 +11,8 @@ from omnigent.harness_plugins import harness_aliases, native_harnesses
 HARNESS_ALIASES: dict[str, str] = harness_aliases()
 
 # Canonical native-CLI harness spellings. These harnesses type messages into
-# a resident terminal process and mirror their transcript back to Omnigent, so
-# the runner must not replay Omnigent history or treat a completed queue call
+# a resident terminal process and mirror their transcript back to tesseract, so
+# the runner must not replay tesseract history or treat a completed queue call
 # as a full in-process model turn. ``AgentSpec.harness_kind`` returns these
 # canonical spellings for native agents, so no executor-type aliasing is needed
 # here.

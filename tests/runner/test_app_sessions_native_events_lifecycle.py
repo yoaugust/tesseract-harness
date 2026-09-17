@@ -38,7 +38,7 @@ from tests.runner.helpers import NullServerClient
 
 
 class _EventRecordingServerClient(NullServerClient):
-    """Records Omnigent ``external_*`` event POSTs for assertion.
+    """Records tesseract ``external_*`` event POSTs for assertion.
 
     Subclasses :class:`NullServerClient` so all other runner→AP calls still
     succeed silently; captures ``external_conversation_item`` bodies so a
@@ -150,7 +150,7 @@ async def test_events_codex_native_settings_change_uses_thread_settings_update(
     """
     Codex-native model / effort updates call ``thread/settings/update``.
 
-    The web UI persists model and effort through Omnigent's normal session
+    The web UI persists model and effort through tesseract's normal session
     PATCH path. The runner must translate the forwarded control event into
     Codex app-server's structured settings RPC, not type into the terminal or
     204 as a no-op. The update is a next-turn setting: it is valid even when
@@ -2850,7 +2850,7 @@ async def test_stop_session_on_native_subagent_without_parent_inbox_returns_204(
 
     ``stop_session`` is user-initiated stop orchestration, not the native
     terminal-status ACK path. Once the pane is killed, the runner must return
-    204 so Omnigent can finish host-runner teardown and write the deliberate-stop
+    204 so tesseract can finish host-runner teardown and write the deliberate-stop
     label even if parent delivery cannot be confirmed.
     """
     from omnigent.runner import app as runner_app
@@ -3007,7 +3007,7 @@ async def test_events_stop_session_on_non_native_session_is_204_noop(
 
     In-process harnesses have no external tmux process for the runner to
     kill: stop cancels the in-flight turn via the cancel floor, or — with
-    no turn in flight, as here — is a clean 204 no-op. The Omnigent server is
+    no turn in flight, as here — is a clean 204 no-op. The tesseract server is
     harness-agnostic and forwards stop_session for any session, so the
     runner must accept it and 204 — never reach ``kill_session``.
     """
@@ -3748,7 +3748,7 @@ async def test_events_effort_change_on_native_session_types_slash_command(
     POST ``/events`` with ``{"type":"effort_change","effort":"high"}``
     on a claude-native session injects ``/effort high`` into tmux.
 
-    With the unified-effort refactor Omnigent server no longer POSTs to
+    With the unified-effort refactor tesseract server no longer POSTs to
     ``/claude-native-effort`` — every PATCH effort goes through the
     generic ``/events`` path. The runner's ``/events`` dispatch must
     recognize the native harness and route to
@@ -3854,10 +3854,10 @@ async def test_events_effort_change_on_native_session_types_slash_command(
     assert command == "/effort high", f"Expected '/effort high' literal, got {command!r}."
     # 1.0s short timeout: missing tmux.json means the pane isn't
     # attached; persisted effort still applies on next spawn. A 30s
-    # default would hang the Omnigent PATCH whenever the pane is detached.
+    # default would hang the tesseract PATCH whenever the pane is detached.
     assert timeout_s == 1.0
     # 3) effort_change is a control signal, not a state change.
-    # Any session.status enqueued here would mislead the Omnigent relay.
+    # Any session.status enqueued here would mislead the tesseract relay.
     assert queued_events == [], (
         f"effort_change must not publish session events; got "
         f"{queued_events!r}. If non-empty, the native handler is "

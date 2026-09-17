@@ -118,7 +118,7 @@ def _stop_host_daemon(home: Path) -> None:
 @dataclass(frozen=True)
 class _ServerHandle:
     """
-    Live standalone Omnigent server used by ``--server`` e2e tests.
+    Live standalone tesseract server used by ``--server`` e2e tests.
 
     :param base_url: Local server URL, e.g. ``"http://127.0.0.1:8123"``.
     :param proc: Server subprocess.
@@ -209,11 +209,11 @@ def _spawn_run(
     """
     Spawn ``omnigent run`` under a real PTY.
 
-    :param omnigent_python: Python interpreter with Omnigent installed.
+    :param omnigent_python: Python interpreter with tesseract installed.
     :param repo_root: Checkout root used as subprocess cwd.
     :param yaml_path: Agent YAML path.
     :param env: Subprocess environment.
-    :param server_url: Optional Omnigent server URL for ``--server`` mode.
+    :param server_url: Optional tesseract server URL for ``--server`` mode.
     :param session_id: Optional session id for resume.
     :param no_session: When true, pass ``--no-session``.
     :returns: A live pexpect child.
@@ -261,7 +261,7 @@ def _session_runner_id(base_url: str, session_id: str) -> str:
     """
     Fetch the runner id currently bound to a session.
 
-    :param base_url: Omnigent server URL.
+    :param base_url: tesseract server URL.
     :param session_id: Session id.
     :returns: Bound runner id.
     :raises AssertionError: If the session is missing or unbound.
@@ -284,7 +284,7 @@ def _wait_session_runner_online(
     """
     Poll until a session has an online runner, optionally a new one.
 
-    :param base_url: Omnigent server URL.
+    :param base_url: tesseract server URL.
     :param session_id: Session id.
     :param previous_runner_id: Optional stale runner id that must be
         replaced before returning.
@@ -321,7 +321,7 @@ def _newest_session_id(base_url: str, agent_name: str) -> str:
     re-appear on a turn — so scraping them from the PTY races. The
     server's session list is the robust source of truth instead.
 
-    :param base_url: Omnigent server URL.
+    :param base_url: tesseract server URL.
     :param agent_name: Agent display name to resolve.
     :returns: The newest session id, e.g. ``"conv_..."``.
     :raises AssertionError: When no session exists for the agent.
@@ -365,7 +365,7 @@ def _drive_turn(
     :param child: Live REPL process.
     :param marker: Literal assistant marker expected in the PTY.
     :param mock_llm_server_url: Mock server URL for configuring queues.
-    :param base_url: Omnigent server URL for the ``--server`` flow;
+    :param base_url: tesseract server URL for the ``--server`` flow;
         ``None`` for the local flow.
     :param agent_name: Agent display name used to resolve the session
         in the ``--server`` flow (required when ``base_url`` is set).
@@ -492,7 +492,7 @@ def _wait_http_ready(base_url: str, proc: subprocess.Popen[bytes], log_path: Pat
 
 def _server_entrypoint() -> str:
     """
-    Return a Python entrypoint for a remote-style Omnigent server.
+    Return a Python entrypoint for a remote-style tesseract server.
 
     :returns: Python source passed to ``python -c``.
     """
@@ -556,9 +556,9 @@ def _running_server(
     tmp_path: Path,
 ) -> Iterator[_ServerHandle]:
     """
-    Run a remote-style Omnigent server for ``--server`` tests.
+    Run a remote-style tesseract server for ``--server`` tests.
 
-    :param omnigent_python: Python interpreter with Omnigent installed.
+    :param omnigent_python: Python interpreter with tesseract installed.
     :param repo_root: Checkout root used as subprocess cwd.
     :param env: Subprocess environment.
     :param tmp_path: Per-test temp directory.
@@ -619,7 +619,7 @@ def _registered_runner(
     """
     Register one runner against a remote-style test server.
 
-    :param base_url: Omnigent server URL.
+    :param base_url: tesseract server URL.
     :param repo_root: Workspace root exposed to runner-local tools.
     :param yaml_path: Spec path to prewarm on the runner.
     :param tmp_path: Per-test temporary directory.

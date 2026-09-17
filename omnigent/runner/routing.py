@@ -1,4 +1,4 @@
-"""Conversation-aware runner routing for the Omnigent server.
+"""Conversation-aware runner routing for the tesseract server.
 
 The tunnel registry is the source of truth for online runners. This
 module turns that registry into the one dispatch decision the server

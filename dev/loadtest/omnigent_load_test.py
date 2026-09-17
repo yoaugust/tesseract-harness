@@ -1,4 +1,4 @@
-"""Load test: each Locust user is a real Omnigent host running real turns.
+"""Load test: each Locust user is a real tesseract host running real turns.
 
 One unit of load = one **host**. Each Locust user spawns a real
 ``omnigent host`` subprocess (a unique host identity), registers it with the
@@ -6,7 +6,7 @@ target server over the host tunnel, then repeatedly: creates a **host-bound
 session** and drives **real multi-turn conversations** on it — every turn is a
 genuine ``POST .../events`` → server → the user's host → a runner subprocess it
 spawns → LLM → stream → ``idle`` loop. The LLM is **mocked** (zero latency), so
-the numbers isolate Omnigent's own dispatch / streaming / history overhead, not
+the numbers isolate tesseract's own dispatch / streaming / history overhead, not
 provider time. ``-u N`` scales the number of hosts.
 
 Because turns really execute on the host, each host spawns a **real runner
@@ -67,7 +67,7 @@ _TERMINAL_STATES = frozenset({"idle", "failed"})
 
 
 class HostUser(HttpUser):
-    """One simulated Omnigent host: spawns a real host, drives real turns.
+    """One simulated tesseract host: spawns a real host, drives real turns.
 
     ``on_start`` spawns the host subprocess and waits for it to register;
     the task creates host-bound sessions and drives turns; ``on_stop`` tears

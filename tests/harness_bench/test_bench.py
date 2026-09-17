@@ -1051,7 +1051,7 @@ def test_live_is_still_refused_when_a_selected_harness_needs_the_gateway(
 ) -> None:
     """The waiver is per-run, not blanket.
 
-    claude-native takes an Omnigent-supplied credential, so a selection that
+    claude-native takes an tesseract-supplied credential, so a selection that
     names it — alone, or mixed with own_auth natives — still has to resolve the
     gateway. Same for the SDK family, and for an own_auth native forced onto
     full-server, where turns route through the server again.

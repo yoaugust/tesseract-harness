@@ -1,4 +1,4 @@
-"""Executor that bridges Omnigent web-chat turns into the native Kiro TUI."""
+"""Executor that bridges tesseract web-chat turns into the native Kiro TUI."""
 
 from __future__ import annotations
 

@@ -17,20 +17,20 @@ final class OmnigentUITests: XCTestCase {
       "--omnigent-server-url",
       serverURL,
     ]
-    NSLog("Omnigent screenshot server URL: \(serverURL)")
+    NSLog("tesseract screenshot server URL: \(serverURL)")
     app.launchEnvironment["OMNIGENT_SCREENSHOT_APP_URL"] = serverURL
     app.launch()
 
     XCTAssertTrue(
       app.staticTexts["Server URL"].waitForExistence(timeout: 15),
-      "Expected Omnigent to show the server selection screen before connecting."
+      "Expected tesseract to show the server selection screen before connecting."
     )
     snapshot("01-home", timeWaitingForIdle: 2)
 
     connectFromSetupIfNeeded(app, serverURL: serverURL)
     XCTAssertTrue(
       app.webViews.firstMatch.waitForExistence(timeout: 90),
-      "Expected Omnigent to connect to \(serverURL) before taking screenshots."
+      "Expected tesseract to connect to \(serverURL) before taking screenshots."
     )
 
     snapshot("02-connected", timeWaitingForIdle: 5)
@@ -66,7 +66,7 @@ final class OmnigentUITests: XCTestCase {
     let app = launchApp(
       openURL: "omnigent://localhost:8000/c/e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9")
 
-    let alert = app.alerts["Open this Omnigent link?"]
+    let alert = app.alerts["Open this tesseract link?"]
     XCTAssertTrue(
       alert.waitForExistence(timeout: 10),
       "A valid deep link to an unknown server should show the consent alert."
@@ -91,7 +91,7 @@ final class OmnigentUITests: XCTestCase {
     // that delivery silently failed.
     assertAppReachedSetup(app)
 
-    let alert = app.alerts["Open this Omnigent link?"]
+    let alert = app.alerts["Open this tesseract link?"]
     XCTAssertFalse(
       alert.waitForExistence(timeout: 6),
       "A deep link with a smuggled query (encoded `?`) must be rejected — no consent alert."
@@ -104,7 +104,7 @@ final class OmnigentUITests: XCTestCase {
       openURL: "omnigent://localhost:8000/c/e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9%23evil")
     assertAppReachedSetup(app)
 
-    let alert = app.alerts["Open this Omnigent link?"]
+    let alert = app.alerts["Open this tesseract link?"]
     XCTAssertFalse(
       alert.waitForExistence(timeout: 6),
       "A deep link with a smuggled fragment (encoded `#`) must be rejected — no consent alert."
@@ -122,7 +122,7 @@ final class OmnigentUITests: XCTestCase {
     // (unknown server), proving the link was ACCEPTED.
     let app = launchApp(openURL: "omnigent://localhost:8000/c/conv_abc")
 
-    let alert = app.alerts["Open this Omnigent link?"]
+    let alert = app.alerts["Open this tesseract link?"]
     XCTAssertTrue(
       alert.waitForExistence(timeout: 10),
       "A deep link with a benign (non-smuggling) id should be accepted and show the consent alert."
@@ -136,7 +136,7 @@ final class OmnigentUITests: XCTestCase {
     let app = launchApp(openURL: "omnigent://localhost:8000/c/%2e%2e")
     assertAppReachedSetup(app)
 
-    let alert = app.alerts["Open this Omnigent link?"]
+    let alert = app.alerts["Open this tesseract link?"]
     XCTAssertFalse(
       alert.waitForExistence(timeout: 6),
       "A deep link with an encoded `..` must be rejected — no consent alert."
@@ -149,7 +149,7 @@ final class OmnigentUITests: XCTestCase {
       openURL: "omnigent://localhost:8000/c/e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9%00x")
     assertAppReachedSetup(app)
 
-    let alert = app.alerts["Open this Omnigent link?"]
+    let alert = app.alerts["Open this tesseract link?"]
     XCTAssertFalse(
       alert.waitForExistence(timeout: 6),
       "A deep link with a control character in the id must be rejected — no consent alert."

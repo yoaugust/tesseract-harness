@@ -17,7 +17,7 @@ class ConfigError(Exception):
     """
 
 
-# Auth posture the bot assumes for its Omnigent server. ``auto`` probes the
+# Auth posture the bot assumes for its tesseract server. ``auto`` probes the
 # server (the historical behaviour — device grant / OIDC ticket). ``databricks``
 # is for a server fronted by the Databricks Apps proxy (header mode), which the
 # probe can't drive: identity is asserted by the proxy. The bot runs its own
@@ -109,14 +109,14 @@ class Settings(BaseSettings):
     slack_bot_token: str = Field(validation_alias="OMNIGENT_SLACK_BOT_TOKEN")
     slack_app_token: str = Field(validation_alias="OMNIGENT_SLACK_APP_TOKEN")
 
-    # The one Omnigent server this bot talks to. Set by the operator, never
+    # The one tesseract server this bot talks to. Set by the operator, never
     # by a Slack user — so the bot only ever issues requests to this fixed
     # host (closes the SSRF vector a user-supplied URL would open). Every
     # user still authenticates as their own identity against it.
     server_url: str = Field(validation_alias="OMNIGENT_SERVER_URL")
 
     # Optional shared secret proving this socket server is an authorized
-    # device-grant client. When the Omnigent server has
+    # device-grant client. When the tesseract server has
     # OMNIGENT_DEVICE_CLIENT_SECRET set, this must match; the bot sends it
     # in the X-Omnigent-Client-Secret header on device authorize/token/
     # revoke. Leave unset when the server doesn't require it.
@@ -136,7 +136,7 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", validation_alias="LOG_LEVEL")
 
     # Fernet key (urlsafe-base64, 32 bytes) that encrypts the delegated
-    # Omnigent access/refresh tokens at rest in the local SQLite store.
+    # tesseract access/refresh tokens at rest in the local SQLite store.
     # Generate with ``python -c "from cryptography.fernet import Fernet;
     # print(Fernet.generate_key().decode())"``. Set this so a stolen
     # database file cannot be used to impersonate users — see
@@ -150,7 +150,7 @@ class Settings(BaseSettings):
 
     # ── Databricks Apps web-auth (header/proxy-mode servers) ──────────────
     #
-    # When the Omnigent server is deployed as a Databricks App, its proxy
+    # When the tesseract server is deployed as a Databricks App, its proxy
     # asserts identity via a header the bot can't produce from a Socket-Mode
     # event. Set OMNIGENT_SLACK_SERVER_AUTH=databricks and register a custom U2M
     # OAuth app (authorization code + PKCE) in the workspace: the bot runs that
@@ -334,7 +334,7 @@ class Settings(BaseSettings):
 _REQUIRED_ENV_VARS: dict[str, str] = {
     "OMNIGENT_SLACK_BOT_TOKEN": "Slack bot token (xoxb-…)",
     "OMNIGENT_SLACK_APP_TOKEN": "Slack app-level token (xapp-…)",
-    "OMNIGENT_SERVER_URL": "Omnigent server URL (https://…)",
+    "OMNIGENT_SERVER_URL": "tesseract server URL (https://…)",
 }
 
 

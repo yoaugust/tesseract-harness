@@ -117,7 +117,7 @@ class _CompactionState:
     :param conversation_id: Conversation id, e.g.
         ``"conv_0123456789abcdef"``. Used to look up the runner
         client from the router so Layer 2 summarization runs through
-        the runner's credentials rather than the Omnigent server's.
+        the runner's credentials rather than the tesseract server's.
     """
 
     context_window: int | None
@@ -360,7 +360,7 @@ async def summarize_history(
 
     When *runner_client* is provided the summarization LLM call is
     delegated to the runner's ``POST /v1/summarize`` endpoint so the
-    runner's credentials are used instead of the Omnigent server's. Falls
+    runner's credentials are used instead of the tesseract server's. Falls
     back to *llm_client* when no runner client is configured.
 
     :param messages_to_summarize: The messages outside the recent
@@ -439,7 +439,7 @@ async def _summarize_via_runner_uncached(
     POST to the runner's ``/v1/summarize`` endpoint and return the result.
 
     The runner creates its own LLM client using its local credentials,
-    so the Omnigent server needs no LLM auth for this call.
+    so the tesseract server needs no LLM auth for this call.
 
     :param runner_client: ``httpx.AsyncClient`` pointed at the runner.
     :param messages_to_summarize: Messages to summarize.
@@ -606,7 +606,7 @@ async def compact(
     :param runner_client: Optional ``httpx.AsyncClient`` pointed at
         the runner. When set, Layer 2 summarization is delegated to
         the runner's ``POST /v1/summarize`` endpoint so the runner's
-        credentials are used instead of the Omnigent server's. ``None``
+        credentials are used instead of the tesseract server's. ``None``
         falls back to *llm_client*.
     :param force: When ``True``, run through Layer 2 even if Layer 1
         already fits within the budget. Used by explicit user-initiated

@@ -119,10 +119,10 @@ Deletion order is therefore an explicit application-code responsibility.
 `ConversationStore.delete_conversation` collects the conversation's full
 subtree, then in one transaction deletes FTS rows, items, and labels before the
 conversation rows themselves — children before parent. A second transaction
-then cleans up the Omnigent-side rows: comments, policies, session permissions,
+then cleans up the tesseract-side rows: comments, policies, session permissions,
 conversation metadata, and session-scoped agents. That transaction runs after
 the conversation is already gone and is best-effort — if it fails, orphaned
-Omnigent rows survive a conversation that no longer exists. Do not remove any
+tesseract rows survive a conversation that no longer exists. Do not remove any
 of this cleanup logic on the assumption a DB cascade covers it; none does.
 
 `conversation_items.response_id` references no table at all — it's a

@@ -206,7 +206,7 @@ Validated for presence and shape only: `Owner`, `Transport`, `Implementation`,
 | Streaming (P0) | count output-text deltas; repeated single-delta output is `PARTIAL` |
 | Reasoning (P1) | request high effort and require a forwarded reasoning delta or persisted reasoning item; no observation is inconclusive because the model may emit none |
 | Tool calling (P0) | provoke the transport's tool mechanism and require a surfaced call |
-| Omnigent MCP (P1, native only) | call read-only `sys_session_list` through the generated `omnigent` MCP relay and require a matching function-call item |
+| tesseract MCP (P1, native only) | call read-only `sys_session_list` through the generated `omnigent` MCP relay and require a matching function-call item |
 | Policy DENY (P0) | apply a tool-call deny and require a blocked-call signal |
 | Policy ALLOW (P1) | attach an explicit allow and require a non-blocked tool output; native hooks expose no positive ALLOW event |
 | Policy ASK (P1) | apply ask and require an elicitation/approval request |
@@ -282,7 +282,7 @@ The bench on `main` includes:
 
 - **Six P0 probes:** Basic turn, Streaming, Tool calling, Policy DENY, Model
   override, and Interrupt.
-- **Six P1 probes:** Fork replay, Reasoning, Omnigent MCP, Policy ALLOW, Policy ASK, and Cost tracking. P1 verdicts
+- **Six P1 probes:** Fork replay, Reasoning, tesseract MCP, Policy ALLOW, Policy ASK, and Cost tracking. P1 verdicts
   are report-only and do not gate the same way as P0 declarations.
 - **Three transport drivers:** `full-server`, `native-tui`, and `sdk-inproc`,
   selected by harness family with `--transport` and `--fast` overrides.
@@ -368,7 +368,7 @@ stream, the bench flags a real drift on the next run, rather than a false
 | Basic turn, Streaming, Reasoning, Model override, Interrupt | Wrap-level observation; reasoning effort is set per request | End-to-end server/runner observation; reasoning effort is set on the session | End-to-end server/runner/vendor observation; reasoning effort is set on the session |
 | Fork replay | Not observable | Clone + copied-history replay through server/runner | Clone + copied-history replay through server/runner/vendor |
 | Tool calling | Request-level wrap tool | Server-dispatched builtin | Vendor tool mirrored into session items |
-| Omnigent MCP | Not applicable | Not applicable | Generated `omnigent` MCP relay when supported by the vendor |
+| tesseract MCP | Not applicable | Not applicable | Generated `omnigent` MCP relay when supported by the vendor |
 | Policy DENY | Not observable | Fixed policy blocks the builtin | Session CEL policy triggers the native policy hook |
 | Policy ALLOW / ASK | Not observable | Fixed policy; ASK observes and resolves an elicitation | Temporary session CEL policy; ASK observes and resolves an elicitation |
 | Cost tracking | Completed-response usage when forwarded | Session snapshot usage/cost | Session snapshot when the vendor forwards usage |
@@ -431,7 +431,7 @@ agree with it.
 
 - **Declarative native tool-relay mechanism** — extend the harness capability
   model to distinguish generated MCP, native registration, and no relay. Derive
-  the Omnigent MCP probe's applicability from that declaration instead of the
+  the tesseract MCP probe's applicability from that declaration instead of the
   bench's temporary `_NATIVE_OMNIGENT_MCP_HARNESSES` list.
 - **Registry-driven native-agent seeding** — replace the hardcoded server
   seeding list with registry iteration so community native harnesses work end

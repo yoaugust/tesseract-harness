@@ -1,6 +1,6 @@
-"""Public manifest types for installed Omnigent extensions.
+"""Public manifest types for installed tesseract extensions.
 
-The extension API is versioned independently from the Omnigent package. Entry
+The extension API is versioned independently from the tesseract package. Entry
 points should return these lightweight, declarative values without importing
 extension runtime implementations.
 """

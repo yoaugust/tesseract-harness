@@ -14,11 +14,11 @@ Per ``designs/OMNIGENT_TERMINAL_BRIDGE.md`` §4.2, this rewrite swaps to:
   sessions of the same configured terminal (e.g. ``bash:s1`` and
   ``bash:s2`` running in parallel).
 - No idle reaper: terminals are explicit-launch only and the LLM is
-  expected to ``sys_terminal_close`` when done. Omnigent shutdown still
+  expected to ``sys_terminal_close`` when done. tesseract shutdown still
   closes everything; per-conversation cleanup runs from the workflow's
   finally block.
 
-The registry is constructed once at Omnigent startup
+The registry is constructed once at tesseract startup
 (``omnigent.runtime._globals.init``) and accessed via
 ``omnigent.runtime.get_terminal_registry()`` from tools and the
 workflow.
@@ -49,7 +49,7 @@ from omnigent.inner.terminal import TerminalInstance, create_terminal_instance
 logger = logging.getLogger(__name__)
 
 # Per-instance close timeout. Bounds the cleanup window so a wedged
-# tmux session can't block Omnigent shutdown or workflow finalization
+# tmux session can't block tesseract shutdown or workflow finalization
 # indefinitely. 5s mirrors the legacy ``_RELEASE_GRACE_S`` in
 # ``runtime/harnesses/process_manager.py`` — long enough for a
 # well-behaved tmux to flush and exit, short enough that cleanup
@@ -67,7 +67,7 @@ def conversation_link_for_id(
 
     :param conversation_id: Conversation/session id, e.g.
         ``"conv_abc123"``.
-    :param base_url: Optional Omnigent server base URL, e.g.
+    :param base_url: Optional tesseract server base URL, e.g.
         ``"http://127.0.0.1:6767"``. When provided, the returned
         link is absolute.
     :returns: Web UI link, e.g. ``"/c/conv_abc123"`` or
@@ -119,7 +119,7 @@ class TerminalRegistry:
         """
         Construct an empty registry.
 
-        :param conversation_link_base_url: Optional Omnigent server base URL
+        :param conversation_link_base_url: Optional tesseract server base URL
             for terminal status links, e.g. ``"http://127.0.0.1:6767"``.
             ``None`` keeps links relative.
         """
@@ -386,7 +386,7 @@ class TerminalRegistry:
         """Move one terminal registry entry without closing tmux.
 
         This is used by native Claude ``/clear`` rotation: the Claude
-        process and tmux pane keep running, but the Omnigent session that owns
+        process and tmux pane keep running, but the tesseract session that owns
         the terminal resource changes. No tmux I/O occurs in this method.
 
         :param source_conversation_id: Current owning conversation id,
@@ -541,7 +541,7 @@ class TerminalRegistry:
         Called from the FastAPI server's lifespan shutdown handler.
         Iterates every conversation slot and closes each instance,
         bounded by ``_CLOSE_TIMEOUT_S`` per instance. Best-effort —
-        a stuck instance shouldn't block the rest of Omnigent shutdown.
+        a stuck instance shouldn't block the rest of tesseract shutdown.
         """
         with self._lock:
             slots = list(self._by_conversation.items())

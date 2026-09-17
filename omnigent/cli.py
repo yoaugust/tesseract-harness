@@ -427,7 +427,7 @@ def _server_uvicorn_log_config(
     """
     Return Uvicorn logging config with request-duration access logs.
 
-    Uvicorn emits the FastAPI access line itself, so Omnigent standardizes
+    Uvicorn emits the FastAPI access line itself, so tesseract standardizes
     its default and access formatters while preserving handler routing and
     request-duration enrichment.
 
@@ -752,7 +752,7 @@ _HostPayload: TypeAlias = dict[str, _HostJsonValue]
 
 def _effective_global_config_path() -> Path:
     """
-    Return the path to the user-level Omnigent config.
+    Return the path to the user-level tesseract config.
 
     :returns: ``$OMNIGENT_CONFIG_HOME/config.yaml`` when the env
         override is set, otherwise :data:`_GLOBAL_CONFIG_PATH`.
@@ -1399,7 +1399,7 @@ def _require_existing_sqlite_db(db_uri: str) -> None:
     if not db_path.exists():
         raise click.ClickException(
             f"Database file {str(db_path)!r} does not exist. Check the path in "
-            f"the database URL — db-upgrade upgrades an existing Omnigent "
+            f"the database URL — db-upgrade upgrades an existing tesseract "
             f"database and will not create one."
         )
 
@@ -1939,8 +1939,8 @@ def _finish_cli_profile(profiler: Any, output_path: Path) -> None:  # type: igno
         f"{total_calls:,} calls ({primitive_calls:,} primitive)",
         err=True,
     )
-    _print_rows("Top Omnigent call paths", omnigent_rows)
-    _print_rows("Top Omnigent functions by self time", self_time_rows)
+    _print_rows("Top tesseract call paths", omnigent_rows)
+    _print_rows("Top tesseract functions by self time", self_time_rows)
     click.echo(f"\nFull profile data: {output_path}", err=True)
 
 
@@ -2007,7 +2007,7 @@ def _extract_global_logging_flags(argv: list[str]) -> tuple[list[str], bool, boo
     is_eager=True,
     expose_value=False,
     callback=_set_debug_logging,
-    help="Enable verbose DEBUG logging for Omnigent processes.",
+    help="Enable verbose DEBUG logging for tesseract processes.",
 )
 @click.option(
     "--log-to-stderr",
@@ -2026,7 +2026,7 @@ def _extract_global_logging_flags(argv: list[str]) -> tuple[list[str], bool, boo
     help="Show the version and exit.",
 )
 def cli() -> None:
-    """Omnigent CLI."""
+    """tesseract CLI."""
 
 
 # Names of every subcommand the click group owns. Used by
@@ -2490,7 +2490,7 @@ _HOST_PID_PATH = data_dir() / "host.pid"
 
 # host.pid records the daemon PID + the "target" it serves: a normalized
 # server URL for remote/explicit targets, or the literal marker ``"local"``
-# for a daemon that owns a local Omnigent server. Daemon reuse is keyed on this
+# for a daemon that owns a local tesseract server. Daemon reuse is keyed on this
 # target (real URLs never collide with the marker).
 _LOCAL_DAEMON_MARKER = "local"
 
@@ -2519,7 +2519,7 @@ def _is_local_server_request(server: str | None) -> bool:
 @dataclass(frozen=True)
 class _HostHttpResult:
     """
-    Decoded Omnigent management HTTP response.
+    Decoded tesseract management HTTP response.
 
     :param status_code: HTTP status code, e.g. ``200``. ``0`` means no
         HTTP response was received because the request failed locally.
@@ -2559,7 +2559,7 @@ class _DaemonSessionsResult:
     """
     Sessions fetched for one daemon target.
 
-    :param base_url: Omnigent server base URL, e.g.
+    :param base_url: tesseract server base URL, e.g.
         ``"https://example.databricksapps.com"``. ``None`` when a
         local daemon's server cannot be discovered.
     :param sessions: Session rows owned by the daemon host id.
@@ -2628,7 +2628,7 @@ def _normalize_daemon_target(server_url: str | None) -> str:
     """
     Normalize a daemon target key.
 
-    :param server_url: Requested Omnigent server URL, e.g.
+    :param server_url: Requested tesseract server URL, e.g.
         ``"https://example.databricksapps.com/"``. ``None`` or empty
         string selects local mode.
     :returns: ``"local"`` for local mode, otherwise the URL without a
@@ -2642,7 +2642,7 @@ def _daemon_host_online(record: _HostDaemonRecord, *, timeout_s: float = 2.0) ->
     Probe whether a daemon's host is currently online on its server.
 
     A daemon process being alive (PID check) does not mean its WebSocket
-    tunnel to the Omnigent server is up: the server only reports the host
+    tunnel to the tesseract server is up: the server only reports the host
     ``online`` while a daemon holds an authenticated tunnel and has
     heartbeated within ``HOST_LIVENESS_TTL_S``. After a server restart,
     an ungraceful daemon death, or a flapping tunnel, the daemon can be a
@@ -2856,7 +2856,7 @@ def _find_daemon_record(target: str) -> _HostDaemonRecord | None:
 
 def _update_daemon_resolved_server_url(target: str, server_url: str) -> None:
     """
-    Record the concrete Omnigent server URL served by a daemon target.
+    Record the concrete tesseract server URL served by a daemon target.
 
     :param target: Normalized target, e.g. ``"local"``.
     :param server_url: Concrete server URL, e.g.
@@ -2949,9 +2949,9 @@ def _daemon_host_identity_changed(record: _HostDaemonRecord) -> bool:
 
 def _terminate_host_unit(record: _HostDaemonRecord, *, reason: str) -> None:
     """
-    Tear down a daemon and, in local mode, the Omnigent server it owns.
+    Tear down a daemon and, in local mode, the tesseract server it owns.
 
-    The ``--local`` daemon spawns its Omnigent server once and never respawns
+    The ``--local`` daemon spawns its tesseract server once and never respawns
     it, so a stale daemon and its server must be replaced as a unit:
     killing only the daemon would strand the server (and vice versa). This
     stops both so the caller can spawn a fresh, correctly-configured pair.
@@ -3169,7 +3169,7 @@ def _foreground_daemon_record(
 
     :param target: Normalized daemon target, e.g.
         ``"https://example.databricksapps.com"`` or ``"local"``.
-    :param server_url: Concrete Omnigent server URL being connected to, e.g.
+    :param server_url: Concrete tesseract server URL being connected to, e.g.
         ``"http://127.0.0.1:8123"``.
     :param host_id: Local host id, e.g. ``"host_abc123"``.
     :returns: Daemon registry record for ``os.getpid()``.
@@ -3361,9 +3361,9 @@ def _load_or_create_host_id() -> str | None:
 def _ensure_host_daemon(server_url: str | None) -> bool:
     """Start or reuse a host daemon for one target.
 
-    :param server_url: Omnigent server URL the daemon connects to, or ``None``
+    :param server_url: tesseract server URL the daemon connects to, or ``None``
         for local mode — the daemon starts (or reuses) a persistent local
-        Omnigent server and connects to that.
+        tesseract server and connects to that.
     :returns: ``True`` when an existing daemon was torn down and respawned
         because its config (auth source) changed — the caller
         should ask the user to re-run against the freshly-restarted server
@@ -3407,10 +3407,10 @@ def _build_host_daemon_env(
     """
     Build the environment for the background host daemon.
 
-    Remote daemons connect to an already-running Omnigent server, so they only
+    Remote daemons connect to an already-running tesseract server, so they only
     need process essentials, TLS trust, and Databricks auth. Local daemons
-    also start the local Omnigent server; that server is the user's local runtime
-    and must inherit Omnigent config plus provider credentials such as
+    also start the local tesseract server; that server is the user's local runtime
+    and must inherit tesseract config plus provider credentials such as
     ``OPENAI_API_KEY`` and ``OPENAI_BASE_URL``. Both modes are allowlisted:
     local mode carries the runtime/provider vars needed by the local server,
     but unrelated shell secrets are not inherited merely because the daemon
@@ -3418,7 +3418,7 @@ def _build_host_daemon_env(
     through :func:`omnigent.host.connect._build_runner_env`, so these
     local-server credentials do not leak into runner subprocesses.
 
-    :param server_url: Omnigent server URL for remote mode, e.g.
+    :param server_url: tesseract server URL for remote mode, e.g.
         ``"https://example.databricksapps.com"``, or a falsey value
         such as ``None`` / ``""`` for local daemon mode.
     :returns: Environment dict for ``subprocess.Popen``.
@@ -3594,16 +3594,16 @@ def _ensure_databricks_server_auth(server: str, *, non_interactive: bool = False
 
 
 def _ensure_backend(server: str | None) -> str:
-    """Ensure the host daemon is running and return the Omnigent server URL.
+    """Ensure the host daemon is running and return the tesseract server URL.
 
     The daemon is the single backend for ``attach`` / ``run`` / ``claude`` /
-    ``codex``: it spawns the runner and, in local mode, the Omnigent server too.
+    ``codex``: it spawns the runner and, in local mode, the tesseract server too.
     The CLI is a pure client of the returned URL.
 
     :param server: ``--server`` value after config fallback. A non-empty
         value targets that (remote or explicit-local) server. ``None`` or
         ``""`` selects local mode: the daemon starts (or reuses) a
-        persistent local Omnigent server and this returns its discovered loopback
+        persistent local tesseract server and this returns its discovered loopback
         URL.
     :returns: A concrete base URL, e.g. ``"http://127.0.0.1:8123"`` or the
         remote URL passed in.
@@ -3645,7 +3645,7 @@ def _ensure_backend(server: str | None) -> str:
             auth_future.result()
             daemon_future.result()
         return server
-    # Local mode: the daemon spawns (or reuses) a persistent local Omnigent server.
+    # Local mode: the daemon spawns (or reuses) a persistent local tesseract server.
     # On a cold start this is the longest silent gap between the user pressing
     # Enter and any output, so render a spinner whose label tracks the step.
     # It clears on context exit — before any auth-mode-change echo below and
@@ -3664,7 +3664,7 @@ def _ensure_backend(server: str | None) -> str:
 def _exit_for_auth_mode_change(base_url: str) -> None:
     """Tell the user the server was restarted in a new mode, then exit clean.
 
-    The local Omnigent server bakes its auth posture (header vs accounts, cookie
+    The local tesseract server bakes its auth posture (header vs accounts, cookie
     secret) at boot, so an ``OMNIGENT_AUTH_ENABLED`` flip restarts it
     via :func:`_ensure_host_daemon`. Continuing the *same* command across
     that restart is brittle — the in-flight session/credential/terminal
@@ -3673,7 +3673,7 @@ def _exit_for_auth_mode_change(base_url: str) -> None:
     a clean single-mode start. When the new mode is accounts and no admin
     exists yet, point the user at the one-time setup URL.
 
-    :param base_url: The freshly-restarted Omnigent server URL, e.g.
+    :param base_url: The freshly-restarted tesseract server URL, e.g.
         ``"http://127.0.0.1:6767"``.
     :returns: Never returns — raises ``SystemExit(0)``.
     :raises SystemExit: Always, with code 0 (a clean, expected stop).
@@ -3703,9 +3703,9 @@ def _exit_for_auth_mode_change(base_url: str) -> None:
 def _discover_local_server_url(
     timeout: float = _LOCAL_SERVER_DISCOVER_TIMEOUT_S,
 ) -> str:
-    """Poll until the daemon-started local Omnigent server is reachable.
+    """Poll until the daemon-started local tesseract server is reachable.
 
-    In local mode the daemon owns the Omnigent server; the CLI discovers its URL
+    In local mode the daemon owns the tesseract server; the CLI discovers its URL
     via the local-server pidfile + ``/health`` rather than starting it
     itself.
 
@@ -3733,13 +3733,13 @@ def _discover_local_server_url(
                 tail_path, tail = tail_info
                 detail = f"\n  Server log: {tail_path}\n\n  Last 50 lines:\n{tail}"
             raise LocalServerStartupError(
-                "The local daemon exited before its Omnigent server became ready. "
+                "The local daemon exited before its tesseract server became ready. "
                 f"See logs under {process_log_dir_reference('host')} and "
                 f"{process_log_dir_reference('server')}." + detail
             )
         time.sleep(0.2)
     raise LocalServerStartupError(
-        f"Timed out after {timeout:.0f}s waiting for the local Omnigent server to "
+        f"Timed out after {timeout:.0f}s waiting for the local tesseract server to "
         f"start. See {process_log_dir_reference('server')} for details."
     )
 
@@ -3777,7 +3777,7 @@ def _start_cli_runner_process(
 
     The runner always connects back over the WebSocket tunnel. Local
     ``omnigent server`` passes its loopback URL; ``run --server``
-    passes the remote Omnigent server URL.
+    passes the remote tesseract server URL.
 
     For remote Databricks-fronted servers, the runner subprocess
     authenticates via the stored ``omnigent login`` record (or
@@ -4083,7 +4083,7 @@ def server(
     admin_password: str | None,
     background: bool,
 ) -> None:
-    """Start the Omnigent server, or manage the background server.
+    """Start the tesseract server, or manage the background server.
 
     Bare ``omnigent server`` runs the server in the FOREGROUND (Ctrl-C to
     stop) — for deploys / Docker. Pass ``--background`` to spawn it as a
@@ -4578,11 +4578,11 @@ def server(
 
 
 def _stop_local_server_and_daemon(*, force: bool) -> bool:
-    """Stop the background Omnigent server and the local host daemon that owns it.
+    """Stop the background tesseract server and the local host daemon that owns it.
 
     Stops the local-mode host daemon first (the daemon spawns its server
     once and never respawns it, so leaving it alive would only have it
-    reconnect-flap against a dead server), then the detached Omnigent server
+    reconnect-flap against a dead server), then the detached tesseract server
     recorded in ``~/.omnigent/local_server.pid``. Best-effort and
     idempotent — a missing daemon or server is a no-op.
 
@@ -4659,7 +4659,7 @@ def server_start() -> None:
     help="SIGKILL the local host daemon if it does not exit on SIGTERM.",
 )
 def server_stop(force: bool) -> None:
-    """Stop the background Omnigent server and the local host daemon.
+    """Stop the background tesseract server and the local host daemon.
 
     Stops the local host daemon first, then the detached server recorded
     in ``~/.omnigent/local_server.pid`` — its web UI and sessions become
@@ -4679,7 +4679,7 @@ def server_stop(force: bool) -> None:
 @server.command("status")
 @click.option("--json", "json_output", is_flag=True, help="Emit JSON.")
 def server_status(json_output: bool) -> None:
-    """Show whether the background Omnigent server is running.
+    """Show whether the background tesseract server is running.
 
     Reports the recorded pid/port, URL, live-session count, and whether a
     local host daemon is attached. Reads ``~/.omnigent/local_server.pid``
@@ -4725,7 +4725,7 @@ def server_status(json_output: bool) -> None:
 
 
 @cli.command("start")
-@click.option("--server", default=None, help="Omnigent server URL to host on.")
+@click.option("--server", default=None, help="tesseract server URL to host on.")
 @click.option(
     "--non-interactive",
     "non_interactive",
@@ -4738,7 +4738,7 @@ def server_status(json_output: bool) -> None:
     ),
 )
 def start(server: str | None, non_interactive: bool) -> None:
-    """Start Omnigent on this machine, in the background.
+    """Start tesseract on this machine, in the background.
 
     The on switch, and the counterpart of ``omnigent stop``: brings up the
     local server (web UI / history) and registers this machine as a host, then
@@ -4750,7 +4750,7 @@ def start(server: str | None, non_interactive: bool) -> None:
     ``omnigent host stop``). Sign-in happens here, in your terminal, before the
     daemon detaches.
 
-    :param server: Omnigent server URL to host on, e.g.
+    :param server: tesseract server URL to host on, e.g.
         ``"https://example.databricksapps.com"``. ``None`` falls back to
         config; empty string forces local mode.
     :param non_interactive: When ``True``, never launch the browser login for
@@ -4772,7 +4772,7 @@ def start(server: str | None, non_interactive: bool) -> None:
     help="Continue past failures and SIGKILL daemons that do not exit on SIGTERM.",
 )
 def stop(force: bool) -> None:
-    """Stop everything Omnigent is running on this machine.
+    """Stop everything tesseract is running on this machine.
 
     The off switch, and the counterpart of ``omnigent start``: stops every host
     daemon (local and remote-targeted) and the detached background server.
@@ -5054,7 +5054,7 @@ def doctor(
     if json_output:
         click.echo(json.dumps(payload, indent=2, sort_keys=True))
     elif ledger is None:
-        click.echo("No Omnigent install detected; no ledger written.")
+        click.echo("No tesseract install detected; no ledger written.")
     elif apply_changes:
         click.echo(f"Wrote backfill ledger to {backfill_ledger_path()}.")
     else:
@@ -5088,7 +5088,7 @@ def uninstall(
     no_backup: bool,
     assume_inferred: bool,
 ) -> None:
-    """Uninstall Omnigent from this machine."""
+    """Uninstall tesseract from this machine."""
     from omnigent.install_ledger import resolve_uninstall_ledger
 
     ledger = resolve_uninstall_ledger()
@@ -5116,13 +5116,13 @@ def uninstall(
                         "backups": [],
                         "summary": {"done": 0, "skipped": 0, "failed": 0, "reported": 0},
                         "exit_code": 3,
-                        "error": "no Omnigent install detected",
+                        "error": "no tesseract install detected",
                     },
                     indent=2,
                 )
             )
             raise SystemExit(3)
-        click.echo("No Omnigent install detected; nothing to uninstall.", err=True)
+        click.echo("No tesseract install detected; nothing to uninstall.", err=True)
         raise SystemExit(3)
 
     script_path = _uninstall_script_path()
@@ -5545,7 +5545,7 @@ def upgrade(
     target_version: str | None,
     dry_run: bool,
 ) -> None:
-    """Upgrade Omnigent to the latest release.
+    """Upgrade tesseract to the latest release.
 
     Detects how omnigent was installed (uv tool / pipx), checks the
     configured index for a newer release and — unless ``--check`` — drains
@@ -5804,7 +5804,7 @@ cli.add_command(
 def _bundle(source: Path) -> bytes:
     """
     Produce a tar.gz bundle from a directory or standalone
-    Omnigent YAML file, or pass through an existing tarball.
+    tesseract YAML file, or pass through an existing tarball.
 
     Environment variable references (``${VAR}``) in
     ``config.yaml`` and ``tools/mcp/*.yaml`` are expanded
@@ -5814,7 +5814,7 @@ def _bundle(source: Path) -> bytes:
     resolve.
 
     :param source: Path to an agent image directory,
-        standalone Omnigent YAML file, or an existing
+        standalone tesseract YAML file, or an existing
         ``.tar.gz`` bundle file.
     :returns: The gzipped tarball bytes.
     :raises OmnigentError: If a required env var is
@@ -6188,11 +6188,11 @@ def resume(
     # Click uses the docstring as --help text — keep param docs in
     # comments so they don't leak into CLI output.
     #
-    # :param target: Optional Omnigent conversation id, e.g.
+    # :param target: Optional tesseract conversation id, e.g.
     #     ``"conv_abc123"``. None falls through to the picker.
-    # :param server: Remote Omnigent server URL (optional in id mode;
+    # :param server: Remote tesseract server URL (optional in id mode;
     #     required in picker mode).
-    """Resume an Omnigent conversation, auto-dispatching by runtime.
+    """Resume an tesseract conversation, auto-dispatching by runtime.
 
     \b
     With CONV_ID: looks up the conversation and dispatches to the
@@ -6268,7 +6268,7 @@ class _SessionImportResult:
     "--server",
     default=None,
     help=(
-        "Omnigent server URL. Defaults to the configured server, an existing "
+        "tesseract server URL. Defaults to the configured server, an existing "
         "local server, or a newly started local server."
     ),
 )
@@ -6286,7 +6286,7 @@ def import_session_command(
 ) -> None:
     """Import chats from supported local coding harnesses.
 
-    The source transcript is converted to ordinary Omnigent items and stored
+    The source transcript is converted to ordinary tesseract items and stored
     as a normal session. Qwen, Kiro, and Kimi currently preserve visible
     messages but not native tool activity; OpenCode and Pi preserve exported
     tool activity. Use --session for one chat or --last for a bounded batch. A
@@ -6404,7 +6404,7 @@ def import_session_command(
             return _SessionImportResult(
                 sid,
                 "unreachable",
-                message=f"Could not reach the Omnigent server: {exc}",
+                message=f"Could not reach the tesseract server: {exc}",
                 raw_exc=exc,
             )
 
@@ -6593,7 +6593,7 @@ def _render_usage(report: dict[str, Any], limit: int) -> None:  # type: ignore[e
     "--server",
     default=None,
     help=(
-        "Omnigent server URL. "
+        "tesseract server URL. "
         "Defaults to the configured server, or a local server already running."
     ),
 )
@@ -6605,7 +6605,7 @@ def _render_usage(report: dict[str, Any], limit: int) -> None:  # type: ignore[e
     help="Emit the raw usage report as JSON instead of the table.",
 )
 def usage(limit: int, server: str | None, as_json: bool) -> None:
-    """Show your Omnigent usage and costs.
+    """Show your tesseract usage and costs.
 
     The summary is sourced from the per-user daily cost rollup, which
     attributes spend to the UTC calendar day it occurred on — so the
@@ -6657,7 +6657,7 @@ def usage(limit: int, server: str | None, as_json: bool) -> None:
 @cli.group("session", invoke_without_command=True)
 @click.pass_context
 def session(ctx: click.Context) -> None:
-    """Manage Omnigent sessions.
+    """Manage tesseract sessions.
 
     \b
     Examples:
@@ -6689,7 +6689,7 @@ def session(ctx: click.Context) -> None:
     "--server",
     default=None,
     help=(
-        "Omnigent server URL. "
+        "tesseract server URL. "
         "Defaults to the configured server, or a local server already running."
     ),
 )
@@ -6851,7 +6851,7 @@ def _import_item_payload(item: Mapping[str, object]) -> dict[str, object]:
     "--server",
     default=None,
     help=(
-        "Omnigent server URL. "
+        "tesseract server URL. "
         "Defaults to the configured server, or a local server already running."
     ),
 )
@@ -7025,7 +7025,7 @@ _RUN_HARNESS_HELP = (
     f"Harness to use: {_HARNESS_CHOICES_HELP}. Without AGENT, launches that harness directly."
 )
 _FROM_OPENCLAW_HELP = (
-    "Launch one agent from the OpenClaw/acpx registry without saving it to Omnigent config."
+    "Launch one agent from the OpenClaw/acpx registry without saving it to tesseract config."
 )
 _MODEL_HELP = "Model to use for the agent."
 _PROMPT_HELP = "Send this as the first message when the REPL starts."
@@ -7056,33 +7056,33 @@ _LOG_HELP = "Write a JSON dump of the conversation to ~/.omnigent/logs/ on exit.
 
 _DEFAULT_HARNESS_PROMPTS = {
     "claude-sdk": (
-        "You are Claude Code, running through Omnigent. "
+        "You are Claude Code, running through tesseract. "
         "Help the user with software engineering tasks."
     ),
     "codex": (
-        "You are Codex, running through Omnigent. Help the user with software engineering tasks."
+        "You are Codex, running through tesseract. Help the user with software engineering tasks."
     ),
     "cursor": (
-        "You are Cursor, running through Omnigent. Help the user with software engineering tasks."
+        "You are Cursor, running through tesseract. Help the user with software engineering tasks."
     ),
     "kimi": (
-        "You are Kimi Code, running through Omnigent. "
+        "You are Kimi Code, running through tesseract. "
         "Help the user with software engineering tasks."
     ),
     "qwen": (
-        "You are Qwen Code, running through Omnigent. "
+        "You are Qwen Code, running through tesseract. "
         "Help the user with software engineering tasks."
     ),
     "goose": (
-        "You are Goose, running through Omnigent. Help the user with software engineering tasks."
+        "You are Goose, running through tesseract. Help the user with software engineering tasks."
     ),
 }
-_DEFAULT_HARNESS_PROMPT = "You are a helpful coding agent running through Omnigent."
+_DEFAULT_HARNESS_PROMPT = "You are a helpful coding agent running through tesseract."
 
 # Harnesses whose auto-generated launcher YAML should include an
 # ``os_env`` block.  This triggers the workflow's ``ToolManager``
 # to inject ``sys_os_*`` tools into the request so file/shell
-# operations route through the Omnigent dispatch path (runner
+# operations route through the tesseract dispatch path (runner
 # visibility, timeouts, error recovery) instead of the harness's
 # internal built-in tools.
 # Membership is tested on the canonical id, so "acp" covers every
@@ -7095,7 +7095,7 @@ _OS_ENV_HARNESSES: frozenset[str] = frozenset(
 
 def _validate_harness(harness: str) -> None:
     """
-    Fail fast when *harness* is not a supported Omnigent harness.
+    Fail fast when *harness* is not a supported tesseract harness.
 
     :param harness: Harness id from ``--harness``, e.g.
         ``"claude-sdk"``.
@@ -7114,7 +7114,7 @@ def _default_harness_prompt(harness: str) -> str:
     Return the lightweight generated-agent instructions for *harness*.
 
     :param harness: Supported harness id.
-    :returns: Prompt text for the generated Omnigent YAML.
+    :returns: Prompt text for the generated tesseract YAML.
     """
     return _DEFAULT_HARNESS_PROMPTS.get(harness, _DEFAULT_HARNESS_PROMPT)
 
@@ -7149,16 +7149,16 @@ def _materialize_harness_launcher_file(
     acp_agent: AcpAgentEntry | None = None,
 ) -> Path:
     """
-    Create a temporary standalone Omnigent YAML for no-AGENT ``run``.
+    Create a temporary standalone tesseract YAML for no-AGENT ``run``.
 
-    The generated file uses the single-file Omnigent YAML shape
+    The generated file uses the single-file tesseract YAML shape
     (``name`` / ``prompt`` / ``executor``), not native AP
     ``config.yaml``. Passing this file to ``run_chat`` exercises the
     same compat adapter as ``omnigent run examples/foo.yaml``.
 
     Harnesses listed in :data:`_OS_ENV_HARNESSES` get an ``os_env``
     block so the workflow injects ``sys_os_*`` tools into the
-    request — routing file/shell operations through the Omnigent
+    request — routing file/shell operations through the tesseract
     dispatch path rather than the harness's internal built-ins.
 
     :param harness: Supported harness id to launch, e.g.
@@ -7438,7 +7438,7 @@ def _dispatch_native_terminal_harness(
 
     ``run --harness cursor-native`` (and the claude/codex/pi equivalents)
     must NOT go through the materialized-launcher REPL: that drives an
-    Omnigent turn per message — which persists its own user item — *while*
+    tesseract turn per message — which persists its own user item — *while*
     the harness forwarder mirrors the same message back from the TUI's
     transcript, recording every user message twice. These harnesses are
     terminal-mirror sessions whose turns originate in the TUI, so dispatch
@@ -7600,7 +7600,7 @@ def _smart_routing_decision(*, server: str, harness: str) -> ArmedSession:
     *harness*'s own first-message hook picks the model once the user types,
     which is what the stderr line reports.
 
-    :param server: Resolved Omnigent server base URL.
+    :param server: Resolved tesseract server base URL.
     :param harness: Canonical native harness to bind, e.g. ``"codex-native"``.
     :returns: The armed session to attach the wrapper to.
     :raises click.ClickException: When Smart Routing is unavailable.
@@ -7652,7 +7652,7 @@ def _reject_agent_with_native_terminal_harness(harness: str) -> None:
 
     A ``*-native`` harness mirrors an external CLI's own TUI; the agent spec's
     prompt/tools are never consulted, and driving it through the REPL would
-    double-record every message (Omnigent turn + forwarder mirror). So an
+    double-record every message (tesseract turn + forwarder mirror). So an
     explicit AGENT path combined with a native terminal harness has no coherent
     meaning — fail loud and point at the dedicated subcommand.
 
@@ -7696,7 +7696,7 @@ def _dispatch_run(
     """
     Route ``omnigent run`` to the right impl.
 
-    The click path always drives the Omnigent server-backed REPL. With
+    The click path always drives the tesseract server-backed REPL. With
     ``--server <url>``, use that server URL instead of starting a
     local server. (``omnigent attach`` is a separate attach-only
     client and does NOT route through here.)
@@ -7710,7 +7710,7 @@ def _dispatch_run(
     :param prompt: ``-p`` / ``--prompt`` value.
     :param system_prompt: ``--system-prompt`` value.
     :param server: Server URL from ``--server`` or config. With a local
-        target, this is the Omnigent server used for upload/session setup; with
+        target, this is the tesseract server used for upload/session setup; with
         no target and explicit ``--server``, this is the direct server.
     :param resume_picker: True when ``--resume`` / ``-r`` is set with
         no value (interactive picker).
@@ -7828,7 +7828,7 @@ def _dispatch_run(
             raise click.ClickException(_missing_run_agent_message())
         # ``*-native`` terminal harnesses launch their own TUI wrapper instead of
         # the materialized-launcher REPL — the REPL would double-record every
-        # user message (Omnigent turn + forwarder mirror). Returns False for
+        # user message (tesseract turn + forwarder mirror). Returns False for
         # non-native harnesses, which fall through to the launcher below.
         if _dispatch_native_terminal_harness(
             harness=harness,
@@ -7868,7 +7868,7 @@ def _dispatch_run(
         _validate_harness(harness)
         # A ``*-native`` harness IS its own TUI agent — pairing it with an AGENT
         # spec is meaningless, and routing it through the REPL would double-record
-        # every message (Omnigent turn + forwarder mirror, same as the no-AGENT
+        # every message (tesseract turn + forwarder mirror, same as the no-AGENT
         # path above). Reject rather than silently launch the broken surface.
         _reject_agent_with_native_terminal_harness(harness)
 
@@ -7975,10 +7975,10 @@ def _dispatch_run(
 
 def _resolve_attach_server(server: str | None, configured_server: str | None) -> str | None:
     """
-    Resolve the Omnigent server URL ``attach`` should join.
+    Resolve the tesseract server URL ``attach`` should join.
 
     Resolution order: an explicit ``--server`` value, then the configured
-    ``server`` default, then a local Omnigent server already running in the
+    ``server`` default, then a local tesseract server already running in the
     background. ``attach`` never starts a server, so this returns ``None``
     when none of those is available and the caller fails loud.
 
@@ -8023,7 +8023,7 @@ def _require_live_conversation(
     ``GET /v1/sessions/{id}`` and raises on a transport failure or any
     non-200 status.
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:6767"``.
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:6767"``.
     :param conversation_id: Conversation id to attach to, e.g.
         ``"conv_abc123"``.
     :raises click.ClickException: When the server is unreachable or the
@@ -8137,7 +8137,7 @@ def attach(
 # `run` absorbs the legacy ``omnigent run`` subcommand. With an AGENT
 # argument it opens the interactive REPL on a freshly started session;
 # without AGENT it can launch a built-in harness directly via ``--harness``.
-# Both paths route through the same Omnigent server+REPL dispatcher.
+# Both paths route through the same tesseract server+REPL dispatcher.
 @cli.command()
 @click.argument("target", required=False, metavar="[AGENT]")
 @click.option(
@@ -8244,7 +8244,7 @@ def run(
     debug_events: bool,
     register_host: bool,
 ) -> None:
-    """Start a session with an Omnigent agent.
+    """Start a session with an tesseract agent.
 
     AGENT may be an agent YAML file or an agent directory. Without AGENT,
     pass ``--server`` to connect directly to a server, or pass
@@ -8378,7 +8378,7 @@ def run(
     auto_open_setting = _resolve_auto_open_conversation_setting(_global_cfg)
     auto_open_conversation = auto_open_setting if auto_open_setting is not None else prompt is None
 
-    # NOTE: the host daemon + Omnigent server are ensured inside ``run_chat``'s
+    # NOTE: the host daemon + tesseract server are ensured inside ``run_chat``'s
     # non-URL branch (a URL ``target`` connects directly). ``--host`` is now
     # redundant (the daemon is always ensured) and kept only as a no-op.
     del register_host
@@ -8513,7 +8513,7 @@ class _HostGroup(click.Group):
 
 
 def _prompt_stop_local_server() -> None:
-    """Ask whether to also stop the detached local Omnigent server after exit.
+    """Ask whether to also stop the detached local tesseract server after exit.
 
     The local-mode host daemon spawns a detached, persistent local AP
     server (:func:`ensure_local_omnigent_server`) that survives the daemon's exit
@@ -8638,7 +8638,7 @@ def _maybe_open_host_web_ui(
     except OSError:
         opened = False
     if not opened:
-        click.echo(f"Open the Omnigent web UI: {web_url}", err=True)
+        click.echo(f"Open the tesseract web UI: {web_url}", err=True)
 
 
 def _run_background_host(
@@ -8659,9 +8659,9 @@ def _run_background_host(
     spawn — otherwise the daemon would die in the background with an opaque
     redirect error.
 
-    :param server: Resolved Omnigent server URL, e.g.
+    :param server: Resolved tesseract server URL, e.g.
         ``"https://example.databricksapps.com"``. ``None`` or ``""`` selects
-        local mode (the daemon starts or reuses a local Omnigent server).
+        local mode (the daemon starts or reuses a local tesseract server).
     :param stop_command: Command to echo for stopping this daemon, e.g.
         ``"omnigent stop"`` — each entry point suggests the teardown that
         matches how it was invoked.
@@ -8669,7 +8669,7 @@ def _run_background_host(
         fail with the ``omnigent login`` hint instead.
     :raises click.ClickException: If the daemon cannot be spawned, exits
         immediately, fails to register, or (local mode) never serves its local
-        Omnigent server.
+        tesseract server.
     """
     if server:
         _ensure_databricks_server_auth(server, non_interactive=non_interactive)
@@ -8815,7 +8815,7 @@ def host(
 
     :param ctx: Click invocation context. ``ctx.invoked_subcommand`` is
         set when a management subcommand such as ``"status"`` is running.
-    :param server: Remote Omnigent server URL, e.g.
+    :param server: Remote tesseract server URL, e.g.
         ``"https://example.databricksapps.com"``. ``None`` falls back
         to config; empty string selects local mode.
     :param background: When ``True``, spawn the daemon detached and return
@@ -8853,7 +8853,7 @@ def host(
     from omnigent.host.connect import run_host_process
 
     # ``host`` IS the daemon (foreground). With no server URL, start (or
-    # reuse) the local Omnigent server here and connect to it; otherwise connect to
+    # reuse) the local tesseract server here and connect to it; otherwise connect to
     # the given remote/local URL. Unlike the background commands, we do not
     # spawn a second daemon via ``_ensure_host_daemon``.
     target = _normalize_daemon_target(server)
@@ -8934,10 +8934,10 @@ def _resolve_host_server(server: str | None) -> str | None:
 
 def _daemon_base_url(record: _HostDaemonRecord) -> str | None:
     """
-    Resolve the Omnigent server URL for a daemon record.
+    Resolve the tesseract server URL for a daemon record.
 
     :param record: Daemon registry record to inspect.
-    :returns: Omnigent server URL, e.g. ``"http://127.0.0.1:8123"``, or
+    :returns: tesseract server URL, e.g. ``"http://127.0.0.1:8123"``, or
         ``None`` when a local daemon's server cannot be discovered.
     """
     if record.mode == "local":
@@ -9021,9 +9021,9 @@ def _host_http_json(
     host_id: str | None = None,
 ) -> _HostHttpResult:
     """
-    Send one management request to an Omnigent server.
+    Send one management request to an tesseract server.
 
-    :param base_url: Omnigent server base URL, e.g.
+    :param base_url: tesseract server base URL, e.g.
         ``"https://example.databricksapps.com"``.
     :param method: HTTP method, e.g. ``"GET"`` or ``"POST"``.
     :param path: Request path beginning with ``/``, e.g.
@@ -9091,7 +9091,7 @@ def _host_http_json(
 
 def _host_error_text(body: _HostJsonObject | str) -> str:
     """
-    Extract a concise error string from an Omnigent response body.
+    Extract a concise error string from an tesseract response body.
 
     :param body: Response body decoded by :func:`_host_http_json`.
     :returns: Human-readable error text.
@@ -9195,7 +9195,7 @@ def _fetch_session_pages(
     """
     Fetch every available session page from a server.
 
-    :param base_url: Omnigent server base URL, e.g.
+    :param base_url: tesseract server base URL, e.g.
         ``"https://example.databricksapps.com"``.
     :param connected_only: When ``True``, ask the server for connected
         sessions only.
@@ -9276,7 +9276,7 @@ def _sessions_for_daemon(
         return _DaemonSessionsResult(
             base_url=None,
             sessions=[],
-            error="local Omnigent server is not reachable",
+            error="local tesseract server is not reachable",
             unreachable=_local_server_confirmed_dead(),
         )
     host_id = record.host_id or _load_existing_host_id()
@@ -9309,7 +9309,7 @@ def _runner_online_map(
     """
     Resolve live runner connectivity for sessions.
 
-    :param base_url: Omnigent server base URL, e.g.
+    :param base_url: tesseract server base URL, e.g.
         ``"https://example.databricksapps.com"``.
     :param sessions: Session rows containing ``runner_id`` values.
     :returns: Map of ``runner_id`` to ``True`` / ``False``. ``None``
@@ -9357,7 +9357,7 @@ def _annotate_sessions_with_runner_online(
     """
     Add ``runner_online`` to session rows.
 
-    :param base_url: Omnigent server base URL, e.g.
+    :param base_url: tesseract server base URL, e.g.
         ``"https://example.databricksapps.com"``.
     :param sessions: Session rows returned by ``GET /v1/sessions``.
     :returns: Copies of the session rows with ``runner_online`` added.
@@ -9409,7 +9409,7 @@ def _add_daemon_host_status(
     base_url = payload.get("server_url")
     host_id = payload.get("host_id")
     if not isinstance(base_url, str):
-        payload["error"] = "local Omnigent server is not reachable"
+        payload["error"] = "local tesseract server is not reachable"
         return
     if not isinstance(host_id, str) or not host_id:
         payload["error"] = "host id is not available in local config"
@@ -9553,7 +9553,7 @@ def _host_truncate(text: _HostJsonValue, *, max_chars: int) -> str:
     """
     Truncate long text from the right for compact terminal display.
 
-    :param text: Value to truncate, e.g. an Omnigent error message.
+    :param text: Value to truncate, e.g. an tesseract error message.
     :param max_chars: Maximum display width, e.g. ``96``.
     :returns: The original text if it fits, otherwise a right-truncated
         string ending in an ellipsis.
@@ -9905,7 +9905,7 @@ def host_enable(
     except HostServiceError as exc:
         raise click.ClickException(str(exc)) from exc
 
-    click.echo(f"Enabled the Omnigent host user service for {_host_display_url(target)}.")
+    click.echo(f"Enabled the tesseract host user service for {_host_display_url(target)}.")
     click.echo(f"Service definition: {_display_path(service.path)}")
     if service.log_path is not None:
         click.echo(f"Service output: {_display_path(service.log_path)}")
@@ -9925,7 +9925,7 @@ def host_disable() -> None:
     for record in _list_daemon_records():
         if not _pid_alive(record.pid):
             _delete_daemon_record(record)
-    click.echo("Disabled the Omnigent host user service.")
+    click.echo("Disabled the tesseract host user service.")
     click.echo(f"Removed service definition: {_display_path(service.path)}")
 
 
@@ -9981,9 +9981,9 @@ def _stop_session_on_server(
     session_id: str,
 ) -> None:
     """
-    Stop one Omnigent session via the server lifecycle event API.
+    Stop one tesseract session via the server lifecycle event API.
 
-    :param base_url: Omnigent server base URL, e.g.
+    :param base_url: tesseract server base URL, e.g.
         ``"https://example.databricksapps.com"``.
     :param session_id: Session id, e.g. ``"conv_abc123"``.
     :raises click.ClickException: If the server rejects the stop event.
@@ -10248,7 +10248,7 @@ def host_stop_session(
     :param ctx: Click context carrying group-level options.
     :param session_ids: Session ids to stop, e.g.
         ``["conv_abc123", "conv_def456"]``.
-    :param server: Omnigent server URL that owns the sessions, e.g.
+    :param server: tesseract server URL that owns the sessions, e.g.
         ``"https://example.databricksapps.com"``. ``None`` falls back
         to config/local discovery.
     :param force: Continue after individual stop failures.
@@ -10260,7 +10260,7 @@ def host_stop_session(
         resolved_server = local_server_url_if_healthy()
         if resolved_server is None:
             raise click.ClickException(
-                "No server was supplied and no local Omnigent server is reachable."
+                "No server was supplied and no local tesseract server is reachable."
             )
     for session_id in session_ids:
         try:
@@ -10337,7 +10337,7 @@ def host_reset_id(yes: bool) -> None:
 
 @cli.command(hidden=True)
 def version() -> None:
-    """Print the installed Omnigent version."""
+    """Print the installed tesseract version."""
     print(_format_version())
 
 
@@ -10655,7 +10655,7 @@ def _slack_daemon() -> IntegrationDaemon:
 @cli.group("integration", invoke_without_command=True)
 @click.pass_context
 def integration(ctx: click.Context) -> None:
-    """Run and manage Omnigent chat integrations.
+    """Run and manage tesseract chat integrations.
 
     \b
     Available integrations:
@@ -10727,7 +10727,7 @@ def slack(ctx: click.Context, background: bool) -> None:
     # Foreground: inherit stdio, block until the bot exits (Ctrl-C). Config
     # comes from the inherited environment only (no .env loading — matches
     # `omni server`), so the child inherits our cwd; nothing to special-case.
-    click.echo("Starting the Omnigent Slack bot (foreground). Press Ctrl-C to stop.")
+    click.echo("Starting the tesseract Slack bot (foreground). Press Ctrl-C to stop.")
     result = subprocess.run(_slack_argv(), env=os.environ.copy(), check=False)
     raise SystemExit(result.returncode)
 
@@ -10756,7 +10756,7 @@ def _start_slack_background() -> None:
             message += f"\nLast log lines:\n{tail}"
         message += f"\nFull log: {_display_path(Path(record.log_path))}"
         raise click.ClickException(message)
-    click.echo(f"Started the Omnigent Slack bot in the background (pid {record.pid}).")
+    click.echo(f"Started the tesseract Slack bot in the background (pid {record.pid}).")
     click.echo(f"Logs: {_display_path(Path(record.log_path))}")
     click.echo("Stop it with: omni integration slack stop")
 
@@ -10780,7 +10780,7 @@ def slack_stop() -> None:
     if record is None:
         click.echo("Slack bot: not running.")
         return
-    click.echo(f"Stopped the Omnigent Slack bot (pid {record.pid}).")
+    click.echo(f"Stopped the tesseract Slack bot (pid {record.pid}).")
 
 
 @slack.command("logs")
@@ -10808,7 +10808,7 @@ def slack_logs(follow: bool) -> None:
 
 @cli.group("config", cls=_ConfigGroup)
 def config_grp() -> None:
-    """Get, set, and view Omnigent defaults and credentials.
+    """Get, set, and view tesseract defaults and credentials.
 
     Defaults (auto_open_conversation, default_agent, harness, model,
     server) are used by ``omnigent run``. Project-level config
@@ -10850,7 +10850,7 @@ def config_list() -> None:
 )
 @click.argument("settings", nargs=-1, required=True, metavar="KEY=VALUE...")
 def config_set(is_global: bool, settings: tuple[str, ...]) -> None:
-    """Set one or more Omnigent defaults.
+    """Set one or more tesseract defaults.
 
     Without ``--global``, pairs are written to ``.omnigent/config.yaml``
     in the current directory (project-level, like ``.git/config``); with
@@ -10893,7 +10893,7 @@ def config_set(is_global: bool, settings: tuple[str, ...]) -> None:
 )
 @click.argument("keys", nargs=-1, required=True, metavar="KEY...")
 def config_unset(is_global: bool, keys: tuple[str, ...]) -> None:
-    """Remove one or more Omnigent defaults.
+    """Remove one or more tesseract defaults.
 
     :param is_global: When ``True``, remove from ``~/.omnigent/config.yaml``;
         when ``False``, from ``.omnigent/config.yaml`` in cwd.
@@ -10919,7 +10919,7 @@ def config_unset(is_global: bool, keys: tuple[str, ...]) -> None:
 )
 def setup(internal_beta: bool) -> None:
     """
-    Launch the Omnigent first-time setup flow.
+    Launch the tesseract first-time setup flow.
 
     By default this runs the standard model/credential picker — choose a
     provider for each harness and set your defaults, then start a session
@@ -11036,7 +11036,7 @@ if _sandbox_providers():
 # Operator-only maintenance commands, grouped under ``omnigent debug``
 # so they stay out of the everyday surface.
 #
-# ``db-upgrade`` runs manual schema operations on an Omnigent tracking
+# ``db-upgrade`` runs manual schema operations on an tesseract tracking
 # database. Mirrors ``mlflow db upgrade`` (``mlflow/db.py``) so the
 # workflow is familiar to anyone who's bumped an MLflow database before.
 # The server initializes a fresh database on first boot and attempts to
@@ -11062,7 +11062,7 @@ def debug() -> None:
 @click.argument("url")
 def debug_db_upgrade(url: str) -> None:
     """
-    Upgrade the schema of an Omnigent tracking database to the
+    Upgrade the schema of an tesseract tracking database to the
     latest supported version.
 
     URL is a SQLAlchemy database URL, e.g.
@@ -11747,7 +11747,7 @@ def _resolve_server_url(server: str) -> ServerUrl:
                 except OSError as exc:
                     raise click.ClickException(
                         "Could not persist the workspace routing selector. "
-                        "Check that the Omnigent data directory is writable, then retry."
+                        "Check that the tesseract data directory is writable, then retry."
                     ) from exc
             return resolved
         return ServerUrl.from_api_base(api_base)
@@ -11875,7 +11875,7 @@ def _workspace_hosted_profile_org_id(
     workspace_host: str,
     profile_name: str | None = None,
 ) -> str | None:
-    """Return the CLI-recorded workspace id for workspace-hosted Omnigent."""
+    """Return the CLI-recorded workspace id for workspace-hosted tesseract."""
     from omnigent.util.server_url import is_workspace_hosted_url
 
     if not is_workspace_hosted_url(server):
@@ -11914,7 +11914,7 @@ def _databricks_host_needs_org_selector(workspace_host: str) -> bool:
 
 
 def _databricks_login(server: str, workspace_host: str, org_id: str | None = None) -> None:
-    """Log in to a Databricks-fronted Omnigent server.
+    """Log in to a Databricks-fronted tesseract server.
 
     Covers both Databricks Apps deployments and workspace-hosted
     omnigent (``https://<workspace>/api/2.0/omnigent``). Reuses an
@@ -12216,7 +12216,7 @@ def _remember_default_server(server: str) -> None:
 @cli.command("login")
 @click.argument("server_url")
 def login(server_url: str) -> None:
-    """Authenticate with a remote Omnigent server.
+    """Authenticate with a remote tesseract server.
 
     Probes the server's auth mode and runs the matching flow:
 
@@ -12286,7 +12286,7 @@ def login(server_url: str) -> None:
     if probe.status_code == 401:
         import contextlib as _contextlib
 
-        # 401 with non-JSON body — probably not an Omnigent server.
+        # 401 with non-JSON body — probably not an tesseract server.
         # Suppress: we fall through to the OIDC path below which has
         # its own clearer error message.
         with _contextlib.suppress(ValueError):
@@ -12948,7 +12948,7 @@ def _reject_reserved_kiro_resume_args(kiro_args: tuple[str, ...]) -> None:
     reserved = {"--resume", "--resume-id", "--resume-picker"}
     if any(arg == flag or arg.startswith(f"{flag}=") for arg in kiro_args for flag in reserved):
         raise click.UsageError(
-            "Kiro resume flags are reserved for Omnigent resume handling; use "
+            "Kiro resume flags are reserved for tesseract resume handling; use "
             f"`{cli_invocation()} kiro --resume [CONVERSATION]` instead."
         )
 

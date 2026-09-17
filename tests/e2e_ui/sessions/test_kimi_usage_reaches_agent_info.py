@@ -2,7 +2,7 @@
 
 A headless ``kimi`` harness turn completes and the kimi CLI records real
 per-turn token usage in its ``wire.jsonl`` (a ``usage.record`` row with
-input / output / cache-read tokens), but the Omnigent ``KimiExecutor`` emits
+input / output / cache-read tokens), but the tesseract ``KimiExecutor`` emits
 ``TurnComplete(usage=None)`` and never forwards that usage, so it is dropped
 before it reaches the session. The web SPA's agent-info popover therefore
 shows NO ``Token usage`` breakdown for kimi sessions even though the

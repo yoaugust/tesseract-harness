@@ -414,7 +414,7 @@ class _CodexNativeLaunchConfig:
 
     :param workspace: Workspace cwd for the Codex app-server and TUI,
         e.g. ``Path("/Users/me/repo")``.
-    :param policy_server_url: Omnigent server URL for the Codex policy hook and
+    :param policy_server_url: tesseract server URL for the Codex policy hook and
         forwarder, e.g. ``"http://127.0.0.1:8123"``.
     :param terminal_launch_args: User pass-through Codex CLI args, e.g.
         ``["--config", "approval_policy=on-request"]``.
@@ -433,7 +433,7 @@ class _CodexNativeLaunchConfig:
     :param fork_carry_history: ``True`` on a forked clone bound to a
         native target (``omnigent.fork.carry_history``); when no source
         rollout exists to clone (an SDK or cross-family source) the runner
-        builds the clone's rollout from the copied Omnigent items instead (see
+        builds the clone's rollout from the copied tesseract items instead (see
         ``_ensure_local_codex_resume_rollout``).
     :param bypass_sandbox: ``True`` when the session opted into Codex's
         DANGEROUS full-bypass stance (``omnigent.codex_native.bypass_sandbox``
@@ -491,7 +491,7 @@ class _PiNativeLaunchConfig:
     model); cursor-native does the same.
 
     :param workspace: Workspace cwd for the native TUI.
-    :param server_url: Omnigent server URL for the extension/forwarder.
+    :param server_url: tesseract server URL for the extension/forwarder.
     :param terminal_launch_args: User pass-through native CLI args.
     :param external_session_id: Existing external session id, when captured by
         the extension.
@@ -501,7 +501,7 @@ class _PiNativeLaunchConfig:
     :param fork_carry_history: ``True`` on a forked clone bound to a native
         target (``omnigent.fork.carry_history``); when no source session
         exists to clone, the clone's session is rebuilt from its OWN copied
-        Omnigent items (see :func:`_auto_create_pi_terminal`). Also consumed by
+        tesseract items (see :func:`_auto_create_pi_terminal`). Also consumed by
         the cursor-native launch to replay prior turns as a text preamble on
         the first message.
     :param model_override: Persisted per-session ``/model`` override, e.g.
@@ -855,7 +855,7 @@ async def _pi_native_launch_config(
     Shared by the pi-native and cursor-native launch paths.
 
     :param session_id: Session/conversation id.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :returns: Parsed launch config.
     """
     if server_client is None:
@@ -955,7 +955,7 @@ async def _codex_native_launch_config(
     Fetch and validate persisted Codex launch config for a session.
 
     :param session_id: Session/conversation id, e.g. ``"conv_abc123"``.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :returns: Parsed launch config.
     :raises RuntimeError: If the session snapshot or required runner env is
         unavailable.
@@ -1095,14 +1095,14 @@ class _OpenCodeNativeLaunchConfig:
     Persisted launch config for runner-owned OpenCode terminals.
 
     :param workspace: Workspace cwd for ``opencode serve`` and the TUI.
-    :param policy_server_url: Omnigent server URL for the forwarder.
+    :param policy_server_url: tesseract server URL for the forwarder.
     :param terminal_launch_args: User pass-through OpenCode CLI args.
     :param model_override: Persisted model override, or ``None``.
     :param external_session_id: Existing OpenCode session id to resume.
     :param fork_carry_history: ``True`` on a forked clone whose prior
         transcript should be seeded as a text preamble
         (``omnigent.fork.carry_history``); opencode has no native session to
-        clone, so the runner rehydrates from the copied Omnigent transcript.
+        clone, so the runner rehydrates from the copied tesseract transcript.
     """
 
     workspace: Path
@@ -1122,7 +1122,7 @@ async def _opencode_native_launch_config(
     Fetch and validate persisted OpenCode launch config for a session.
 
     :param session_id: Session/conversation id, e.g. ``"conv_abc123"``.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :returns: Parsed launch config.
     :raises RuntimeError: If the snapshot or required runner env is missing.
     """
@@ -1219,10 +1219,10 @@ async def _auto_create_opencode_terminal(
     :param resource_registry: Registry used to launch the terminal.
     :param publish_event: Per-session SSE emitter for the new terminal.
     :param agent_spec: Optional resolved agent spec (os_env + model).
-    :param server_client: Runner Omnigent server HTTP client.
-    :param ensure_comment_relay: Callback that starts the Omnigent builtin-tool
+    :param server_client: Runner tesseract server HTTP client.
+    :param ensure_comment_relay: Callback that starts the tesseract builtin-tool
         relay for this session's bridge dir (the nested
-        ``_ensure_comment_relay_started``). ``None`` skips wiring the Omnigent
+        ``_ensure_comment_relay_started``). ``None`` skips wiring the tesseract
         MCP relay (tests / no server).
     :returns: The created terminal resource view.
     """
@@ -1250,7 +1250,7 @@ async def _auto_create_opencode_terminal(
     workspace = str(launch_config.workspace)
     bridge_dir = prepare_bridge_dir(session_id)
     # Seed the token the shared ``serve-mcp`` reads at boot (idempotent) so the
-    # Omnigent builtin-tool relay (wired below) can start. Safe to call before
+    # tesseract builtin-tool relay (wired below) can start. Safe to call before
     # the relay; ``start_tool_relay`` mints its own relay token in
     # ``tool_relay.json``.
     write_relay_bridge_config(bridge_dir)
@@ -1359,13 +1359,13 @@ async def _auto_create_opencode_terminal(
             # needed.
             config = dict(build_opencode_model_default_config(model_override))
 
-    # Build opencode's ``mcp`` block: the Omnigent builtin-tool relay (so the
-    # model can call sys_*/load_skill/web_fetch — the real "connects to Omnigent
+    # Build opencode's ``mcp`` block: the tesseract builtin-tool relay (so the
+    # model can call sys_*/load_skill/web_fetch — the real "connects to tesseract
     # MCP") PLUS the agent's own declared MCP servers (translated into opencode's
     # config). The relay is added only when we'll actually start it below
     # (``ensure_comment_relay`` present), else serve-mcp would launch with no
     # tool_relay.json to read. Force every tool call to prompt so it routes
-    # through Omnigent's policy engine via the forwarder's permission gate —
+    # through tesseract's policy engine via the forwarder's permission gate —
     # opencode's enforcement is reactive (no pre-tool hook), so "ask" is what
     # makes the policy verdicts apply to MCP (and other) tools.
     mcp_block = build_opencode_mcp_block(_opencode_native_mcp_servers_from_spec(agent_spec))
@@ -1376,7 +1376,7 @@ async def _auto_create_opencode_terminal(
         config["mcp"] = mcp_block
         config["permission"] = "ask"
 
-    # Load the Omnigent policy-bridge plugin so opencode's lifecycle hooks reach
+    # Load the tesseract policy-bridge plugin so opencode's lifecycle hooks reach
     # the policy engine at phases the reactive permission.asked path can't:
     # REQUEST (gate TUI-typed prompts at submit) and TOOL_RESULT (gate/redact
     # tool output). The plugin POSTs PHASE_REQUEST / PHASE_TOOL_RESULT to
@@ -1432,10 +1432,10 @@ async def _auto_create_opencode_terminal(
     # remote runner (no local auth.json) / Databricks-gateway path.
     seed_opencode_auth(bridge_dir)
 
-    # Start the Omnigent builtin-tool relay BEFORE opencode boots, so
+    # Start the tesseract builtin-tool relay BEFORE opencode boots, so
     # ``tool_relay.json`` exists when opencode launches the ``serve-mcp`` MCP
     # server and lists its tools (the sys_*/load_skill/web_fetch surface). The
-    # relay POSTs each call back through the Omnigent server (policy enforced).
+    # relay POSTs each call back through the tesseract server (policy enforced).
     if server_client is not None and ensure_comment_relay is not None:
         await ensure_comment_relay(
             session_id,
@@ -1462,7 +1462,7 @@ async def _auto_create_opencode_terminal(
                     opencode_session_id = existing.id
                 else:
                     # The persisted opencode session is gone (new host / wiped
-                    # XDG store) — we'll rehydrate from the Omnigent transcript
+                    # XDG store) — we'll rehydrate from the tesseract transcript
                     # below instead of silently starting empty.
                     resume_lost_history = True
             if opencode_session_id is None:
@@ -1470,7 +1470,7 @@ async def _auto_create_opencode_terminal(
                 opencode_session_id = created.id
                 # Rehydrate prior context (text-prefix replay) when this is a
                 # lost-session resume OR a forked clone carrying history — both
-                # seed the copied Omnigent transcript as a noReply preamble.
+                # seed the copied tesseract transcript as a noReply preamble.
                 if resume_lost_history or launch_config.fork_carry_history:
                     await _rehydrate_opencode_session_from_transcript(
                         opencode_client=client,
@@ -1511,7 +1511,7 @@ async def _auto_create_opencode_terminal(
 
     # Start the SSE forwarder in the background so session creation never
     # blocks on it. The forwarder owns its OpenCode client for the stream
-    # lifetime; ``server_client`` is the runner's Omnigent client. The
+    # lifetime; ``server_client`` is the runner's tesseract client. The
     # supervisor closes the ``opencode serve`` subprocess when forwarding
     # ends (cancelled on session teardown), mirroring the codex forwarder's
     # ``finally`` — else one server orphans per session.
@@ -1653,8 +1653,8 @@ def _build_opencode_policy_evaluator(
     rejects — never a silent approve. Only an explicit ``ALLOW`` permits the
     operation.
 
-    :param server_client: Runner's Omnigent server HTTP client.
-    :param conversation_id: Owning Omnigent session id, e.g. ``"conv_abc"``.
+    :param server_client: Runner's tesseract server HTTP client.
+    :param conversation_id: Owning tesseract session id, e.g. ``"conv_abc"``.
     :returns: An async evaluator returning a verdict mapping, or a deny
         verdict on failure.
     """
@@ -1745,7 +1745,7 @@ def _resolve_opencode_compact_model(
     """
     Resolve the ``(provider_id, model_id)`` for an opencode ``/summarize``.
 
-    opencode's ``/summarize`` requires an explicit model, but Omnigent
+    opencode's ``/summarize`` requires an explicit model, but tesseract
     creates the session WITHOUT one (the model is pinned per prompt), so
     ``session.raw["model"]`` is usually absent. Resolve it from a
     most-authoritative-first fallback chain:
@@ -1836,7 +1836,7 @@ def _opencode_native_mcp_servers_from_spec(
 
 def _render_opencode_transcript_text(items: list[object]) -> str:
     """
-    Render committed Omnigent message items into a plain-text transcript.
+    Render committed tesseract message items into a plain-text transcript.
 
     Used for opencode resume's text-prefix replay. Extracts user/assistant
     text from ``GET /v1/sessions/{id}/items`` message items.
@@ -1874,7 +1874,7 @@ async def _rehydrate_opencode_session_from_transcript(
     Seed a fresh opencode session with prior context (text-prefix replay).
 
     opencode has no history-import API, so on a cross-host resume (where the
-    persisted opencode session is gone) inject the Omnigent transcript as a
+    persisted opencode session is gone) inject the tesseract transcript as a
     single ``noReply`` context message — the agent resumes with its prior
     context instead of silent amnesia. Best-effort: returns ``False`` when the
     transcript can't be fetched or is empty.
@@ -1928,7 +1928,7 @@ def _pi_args_have_session_control(args: list[str]) -> bool:
     Return whether user Pi args already specify session behavior.
 
     :param args: User pass-through Pi CLI args.
-    :returns: ``True`` when Omnigent should not add resume/session flags.
+    :returns: ``True`` when tesseract should not add resume/session flags.
     """
     session_flags = {
         "--session-dir",
@@ -1950,11 +1950,11 @@ def _pi_args_have_provider(args: list[str]) -> bool:
     """Return whether user Pi args already pin a provider/model/key.
 
     When the user passes their own ``--provider`` / ``--model`` / ``--api-key``,
-    Omnigent must not inject the ``omnigent setup`` provider on top — the
+    tesseract must not inject the ``omnigent setup`` provider on top — the
     explicit choice wins.
 
     :param args: User pass-through Pi CLI args.
-    :returns: ``True`` when Omnigent should not add provider/model args.
+    :returns: ``True`` when tesseract should not add provider/model args.
     """
     provider_flags = {"--provider", "--model", "--api-key"}
     for arg in args:
@@ -1977,8 +1977,8 @@ def _build_pi_native_args(
     Build Pi CLI args for a runner-owned native TUI session.
 
     :param terminal_launch_args: User pass-through Pi args.
-    :param extension_path: Generated Omnigent Pi extension path.
-    :param session_dir: Per-Omnigent-session Pi session directory.
+    :param extension_path: Generated tesseract Pi extension path.
+    :param session_dir: Per-tesseract-session Pi session directory.
     :param external_session_id: Captured Pi session id, if any.
     :param approve: When ``True``, pass ``--approve`` to pre-accept Pi's
         project-folder trust dialog (supported from Pi 0.79+).
@@ -2016,12 +2016,12 @@ async def _resolve_pi_resume_session(
     1. **Cold resume** — the session already carries a captured Pi
        ``external_session_id`` but the local session file may be missing
        (cross-machine, a fresh runner, or a cleared bridge dir). Synthesize the
-       file from committed Omnigent items so ``pi --session <id>`` opens with
+       file from committed tesseract items so ``pi --session <id>`` opens with
        prior context. An existing file is reused untouched.
     2. **Fork rebuild** — a forked clone bound to a pi-native target with NO
        captured session of its own and a carry-history marker: mint a new Pi
-       session id, build its file from the clone's OWN copied Omnigent items,
-       and patch the server so Omnigent reflects the clone's session id and a
+       session id, build its file from the clone's OWN copied tesseract items,
+       and patch the server so tesseract reflects the clone's session id and a
        later relaunch resumes it via case 1.
     3. **Fresh / nothing to carry** — return ``None`` so Pi launches a brand
        new session.
@@ -2030,12 +2030,12 @@ async def _resolve_pi_resume_session(
     so Pi launches fresh rather than pointing ``--session`` at a file that does
     not exist.
 
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param launch_config: Resolved Pi launch config (carries the captured id
         and fork directives).
     :param session_dir: Directory passed to ``pi --session-dir``.
     :param workspace: Resolved cwd Pi will run in.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :returns: Pi session id to launch with via ``--session``, or ``None`` to
         launch fresh.
     """
@@ -2098,7 +2098,7 @@ async def _resolve_pi_resume_session(
         return launch_config.external_session_id
 
     # Case 2: forked clone bound to a pi-native target with no captured session
-    # yet. Build the clone's session from its OWN copied Omnigent items under a
+    # yet. Build the clone's session from its OWN copied tesseract items under a
     # minted id. (A same-provider source's captured id, when present, is stamped
     # as fork_source_external_id; but Pi session files are runner-local and the
     # clone has its OWN copied items, so we rebuild from items either way —
@@ -2130,7 +2130,7 @@ async def _resolve_pi_resume_session(
             extra={"session_id": session_id},
         )
         if built is not None:
-            # Record the minted id so Omnigent reflects the clone's own Pi
+            # Record the minted id so tesseract reflects the clone's own Pi
             # session and a later relaunch resumes it via case 1. Best-effort:
             # the extension also re-captures the id on session_start, so a
             # failed patch is recovered then.
@@ -2169,7 +2169,7 @@ async def _auto_create_pi_terminal(
     :param resource_registry: Session resource registry for launching the
         terminal.
     :param publish_event: Runner session event publisher.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :param agent_spec: The session's resolved agent spec, passed so the Pi
         terminal inherits the agent's ``os_env.sandbox`` rather than falling
         back to the platform default. ``None`` only when the session has no
@@ -2221,11 +2221,11 @@ async def _auto_create_pi_terminal(
     binding_token = _runner_tunnel_binding_token_from_env()
     if binding_token:
         auth_headers[RUNNER_TUNNEL_TOKEN_HEADER] = binding_token
-    # Build the Omnigent tool surface (sys_* tools) the Pi extension registers
+    # Build the tesseract tool surface (sys_* tools) the Pi extension registers
     # via pi.registerTool. Reuses the same schema set the claude-native /
     # codex-native relay advertises, gated by the session's spec. Each tool's
     # execute() round-trips through POST /v1/sessions/{id}/mcp, so the Pi agent
-    # can call Omnigent tools with centralized server-side policy enforcement
+    # can call tesseract tools with centralized server-side policy enforcement
     # — parity with the other native harnesses. Best-effort: a schema-build
     # failure must not block the terminal launch, so fall back to no tools.
     pi_tools: list[_JsonObject] = []
@@ -2250,7 +2250,7 @@ async def _auto_create_pi_terminal(
         tools=pi_tools,
     )
     pi_command = resolve_pi_executable()
-    # Rebuild the local Pi session JSONL from committed Omnigent items so a
+    # Rebuild the local Pi session JSONL from committed tesseract items so a
     # cold-resume or fork opens with prior conversation context (parity with
     # claude-native / codex-native). Returns the id to launch with via
     # ``--session`` (the captured id, a minted fork id, or None for fresh).
@@ -2403,7 +2403,7 @@ async def _post_pi_native_credential_warning(
     whose model is unreachable.
 
     :param session_id: Session/conversation identifier.
-    :param server_client: Runner Omnigent server client (``None`` in tests).
+    :param server_client: Runner tesseract server client (``None`` in tests).
     :param warning: The user-facing warning text to surface.
     """
     if server_client is None:
@@ -2435,7 +2435,7 @@ async def _post_pi_native_credential_warning(
 
 _CODEX_THREAD_RESET_NOTICE = (
     "Codex reported an internal error while loading this session's saved transcript, "
-    "so Omnigent started a fresh Codex thread instead of failing the turn. The chat "
+    "so tesseract started a fresh Codex thread instead of failing the turn. The chat "
     "history here is intact, but Codex's own memory of the earlier turns is not "
     "restored."
 )
@@ -2457,7 +2457,7 @@ async def _post_codex_thread_reset_notice(
     codex-side. Best-effort: a failed post only loses the notice.
 
     :param session_id: Session/conversation identifier.
-    :param server_client: Runner Omnigent server client (``None`` in tests).
+    :param server_client: Runner tesseract server client (``None`` in tests).
     :param codex_error: The error text codex returned for ``thread/resume``,
         e.g. ``"failed to read thread: thread-store internal error: …"``.
     """
@@ -2513,7 +2513,7 @@ async def _auto_create_cursor_terminal(
     :param resource_registry: Session resource registry for launching the
         terminal.
     :param publish_event: Runner session event publisher.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :param agent_spec: Optional resolved agent spec for the session. When it
         declares a cursor-agent model (``executor.model``), that model is passed
         to the TUI via ``--model`` unless the user already pinned one through the
@@ -2612,7 +2612,7 @@ async def _auto_create_cursor_terminal(
     # A fork bound to cursor carries history as a text preamble: cursor's
     # conversation is server-backed, so there's no local store to seed for
     # ``--resume`` (a fresh fork has no prior chat anyway → ``not preseeded``).
-    # Render the copied Omnigent items once and stash them; the executor prepends
+    # Render the copied tesseract items once and stash them; the executor prepends
     # them to the fork's first injected message. Best-effort — a failure just
     # starts the cursor turn without the prior context.
     if launch_config.fork_carry_history and not preseeded and server_client is not None:
@@ -2692,7 +2692,7 @@ async def _auto_create_cursor_terminal(
         },
     )
 
-    # Mirror the Cursor TUI's conversation back into the Omnigent session so the
+    # Mirror the Cursor TUI's conversation back into the tesseract session so the
     # chat view (message bubbles, derived title, working spinner) tracks the
     # embedded terminal. Host-spawned sessions have no CLI client to start this,
     # so the runner owns it — the cursor analog of the claude/codex transcript
@@ -2799,7 +2799,7 @@ async def _auto_create_goose_terminal(
 
     Launches ``goose session --name <session_id>`` in a runner-owned tmux pane.
     Auth is Goose's own configuration (``goose configure`` → keyring /
-    ``~/.config/goose/config.yaml``), so HOME is inherited and Omnigent writes no
+    ``~/.config/goose/config.yaml``), so HOME is inherited and tesseract writes no
     vendor config (Goose owns its own tool surface / MCP extensions). The
     ``--name`` lets the forwarder discover *this* session's row deterministically.
     Mirrors :func:`_auto_create_cursor_terminal`, minus the MCP machinery.
@@ -2807,7 +2807,7 @@ async def _auto_create_goose_terminal(
     :param session_id: Session/conversation identifier (also the goose ``--name``).
     :param resource_registry: Session resource registry for launching the terminal.
     :param publish_event: Runner session event publisher.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :returns: Created terminal resource view.
     """
     from omnigent.harnesses.goose_native.main import resolve_goose_executable
@@ -2893,7 +2893,7 @@ async def _auto_create_goose_terminal(
         },
     )
 
-    # Mirror the Goose TUI's conversation back into the Omnigent session so the
+    # Mirror the Goose TUI's conversation back into the tesseract session so the
     # chat view tracks the embedded terminal. Host-spawned sessions have no CLI
     # client to start this, so the runner owns it — reusing the runner's own
     # server URL + refresh-capable auth.
@@ -2966,7 +2966,7 @@ async def _auto_create_hermes_terminal(
 
     Launches the bare ``hermes`` TUI in a runner-owned tmux pane. Auth is Hermes'
     own configuration (``hermes setup`` / ``hermes model`` →
-    ``~/.hermes/config.yaml``), so HOME is inherited and Omnigent writes no vendor
+    ``~/.hermes/config.yaml``), so HOME is inherited and tesseract writes no vendor
     config (Hermes owns its own tool surface / skills). Hermes can't be told its
     session id in advance, so the forwarder discovers *this* launch's row by
     ``cwd`` + ``started_at`` floor (see :mod:`omnigent.harnesses.hermes_native.forwarder`).
@@ -2975,7 +2975,7 @@ async def _auto_create_hermes_terminal(
     :param session_id: Session/conversation identifier.
     :param resource_registry: Session resource registry for launching the terminal.
     :param publish_event: Runner session event publisher.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :returns: Created terminal resource view.
     """
     from omnigent.harnesses.hermes_native.main import resolve_hermes_executable
@@ -3001,8 +3001,8 @@ async def _auto_create_hermes_terminal(
     # ``external_session_status: idle`` parent-wake edge.
     clear_hermes_status_state(bridge_dir)
 
-    # Write a per-session HERMES_HOME with the Omnigent policy hook so the
-    # native TUI evaluates tool calls against Omnigent policies.
+    # Write a per-session HERMES_HOME with the tesseract policy hook so the
+    # native TUI evaluates tool calls against tesseract policies.
     _hermes_server_url = _required_runner_env("RUNNER_SERVER_URL")
     write_policy_hook_config(bridge_dir, _hermes_server_url, session_id)
 
@@ -3056,7 +3056,7 @@ async def _auto_create_hermes_terminal(
                     )
                     hermes_args.extend(["--resume", _target_session_id])
                     # Pre-seed the forwarder cursor past cloned messages so
-                    # the forwarder only mirrors NEW messages (Omnigent already
+                    # the forwarder only mirrors NEW messages (tesseract already
                     # has the cloned ones from the fork item copy).
                     if _clone_max_id > 0:
                         from omnigent.harnesses.hermes_native.forwarder import (
@@ -3128,7 +3128,7 @@ async def _auto_create_hermes_terminal(
         },
     )
 
-    # Mirror the Hermes TUI's conversation back into the Omnigent session so the
+    # Mirror the Hermes TUI's conversation back into the tesseract session so the
     # chat view tracks the embedded terminal. Host-spawned sessions have no CLI
     # client to start this, so the runner owns it — reusing the runner's own
     # server URL + refresh-capable auth.
@@ -3236,8 +3236,8 @@ async def _auto_create_kiro_terminal(
         raise RuntimeError(f"Kiro workspace does not exist for session {session_id!r}.")
     workspace = str(workspace_path)
     bridge_dir = prepare_bridge_dir(session_id)
-    # Declare the Omnigent MCP server in the workspace-scoped kiro config so
-    # kiro-cli can call Omnigent tools. Only when the tool relay will actually
+    # Declare the tesseract MCP server in the workspace-scoped kiro config so
+    # kiro-cli can call tesseract tools. Only when the tool relay will actually
     # start (server_client + ensure_comment_relay present), else serve-mcp would
     # launch with no relay to route calls back to. Mirrors cursor-native.
     if server_client is not None and ensure_comment_relay is not None:
@@ -3289,9 +3289,9 @@ async def _auto_create_kiro_terminal(
     server_url = _required_runner_env("RUNNER_SERVER_URL")
     _runner_auth = _RunnerDatabricksAuth(_make_auth_token_factory())
 
-    # Start the Omnigent builtin-tool relay (writes tool_relay.json into the kiro
+    # Start the tesseract builtin-tool relay (writes tool_relay.json into the kiro
     # bridge dir) so the serve-mcp server declared in the workspace mcp.json can
-    # route Omnigent tool calls back through the session's policy/elicitation
+    # route tesseract tool calls back through the session's policy/elicitation
     # gate. Mirrors cursor-native.
     if server_client is not None and ensure_comment_relay is not None:
         await ensure_comment_relay(
@@ -3344,7 +3344,7 @@ async def _persist_qwen_external_session_id(
     session_id: str,
     qwen_session_id: str,
 ) -> None:
-    """Record the qwen session id on the Omnigent session as ``external_session_id``.
+    """Record the qwen session id on the tesseract session as ``external_session_id``.
 
     Mirrors claude-/codex-/pi-native: the persisted id is what a later resume
     reads back from the session snapshot to restore the vendor TUI, and what
@@ -3353,8 +3353,8 @@ async def _persist_qwen_external_session_id(
     resume/fork carry-over, never the live turn (the deterministic id +
     on-disk-recording check still let the *next* launch resume).
 
-    :param server_client: Runner Omnigent server client (``None`` skips the write).
-    :param session_id: Omnigent session/conversation id.
+    :param server_client: Runner tesseract server client (``None`` skips the write).
+    :param session_id: tesseract session/conversation id.
     :param qwen_session_id: The qwen ``--session-id`` to persist.
     """
     if server_client is None:
@@ -3387,9 +3387,9 @@ async def _build_qwen_fork_recording(
     session_id: str,
     workspace: str,
 ) -> str | None:
-    """Synthesize a qwen chat recording for a forked clone from its Omnigent items.
+    """Synthesize a qwen chat recording for a forked clone from its tesseract items.
 
-    A forked clone has its OWN copied Omnigent items but no qwen recording yet
+    A forked clone has its OWN copied tesseract items but no qwen recording yet
     (``external_session_id`` is NULL on a fork). We rebuild a recording from those
     items under the clone's deterministic session id so the TUI resumes with the
     prior conversation. The rebuild reads harness-neutral items (not the source's
@@ -3401,8 +3401,8 @@ async def _build_qwen_fork_recording(
     would re-enter here and overwrite qwen's live, full-fidelity recording with
     a text-only rebuild.
 
-    :param server_client: Runner Omnigent server client.
-    :param session_id: The forked clone's Omnigent conversation id.
+    :param server_client: Runner tesseract server client.
+    :param session_id: The forked clone's tesseract conversation id.
     :param workspace: Realpath'd cwd qwen will resume in.
     :returns: The qwen session id to ``--resume``, or ``None`` when there's
         nothing carryable or the build fails (caller then launches fresh).
@@ -3473,14 +3473,14 @@ async def _auto_create_qwen_terminal(
     the bridge dir's ``--input-file`` (web-UI turns are appended here as JSONL
     ``submit`` commands) and ``--json-file`` (qwen streams structured events here
     for the forwarder to mirror). Auth is qwen's own configuration (OpenAI-compat
-    env vars or ``~/.qwen`` from ``/auth``), so HOME is inherited and Omnigent
+    env vars or ``~/.qwen`` from ``/auth``), so HOME is inherited and tesseract
     writes no vendor config. Mirrors :func:`_auto_create_goose_terminal`, with a
     file-based bridge instead of tmux ``send-keys``.
 
     :param session_id: Session/conversation identifier.
     :param resource_registry: Session resource registry for launching the terminal.
     :param publish_event: Runner session event publisher.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :returns: Created terminal resource view.
     """
     from omnigent.harnesses.qwen_native.main import resolve_qwen_executable
@@ -3522,7 +3522,7 @@ async def _auto_create_qwen_terminal(
     # Resume the qwen TUI's own history on re-launch (resume / runner restart) so
     # the embedded pane shows the prior conversation, not a blank prompt. Uses the
     # same ``external_session_id`` convention as claude-/codex-/pi-native: the id
-    # is persisted on the Omnigent session and read back from the snapshot
+    # is persisted on the tesseract session and read back from the snapshot
     # (``launch_config.external_session_id``), which also lets a fork carry history
     # (``omnigent.fork.source_external_session_id``). qwen is cleaner than
     # claude/codex here — it lets us *assign* the id via ``--session-id``, so we
@@ -3537,7 +3537,7 @@ async def _auto_create_qwen_terminal(
     # checkpoint and emits only NEW events to ``--json-file`` on resume (verified),
     # so the forwarder never re-mirrors the prior transcript — no duplicate bubbles.
     # Forked clone carrying history into qwen: rebuild a recording from the
-    # clone's copied Omnigent items and force ``--resume``. Gated on a NULL
+    # clone's copied tesseract items and force ``--resume``. Gated on a NULL
     # ``external_session_id`` so it normally runs only on the FIRST launch;
     # ``_build_qwen_fork_recording`` is also idempotent (resumes an existing
     # recording, never clobbers it). Mirrors pi-native's fork rebuild
@@ -3575,7 +3575,7 @@ async def _auto_create_qwen_terminal(
             # next resume reads it from the snapshot and forks can carry history.
             await _persist_qwen_external_session_id(server_client, session_id, qwen_session_id)
 
-    # Expose Omnigent's builtin tools (sys_*, load_skill, web_fetch, …) to qwen
+    # Expose tesseract's builtin tools (sys_*, load_skill, web_fetch, …) to qwen
     # via the shared MCP relay, passed through qwen's ``--mcp-config`` flag (the
     # claude-native model). The config lives in the bridge dir — never the
     # workspace — so we drop no file in the user's repo and concurrent
@@ -3600,7 +3600,7 @@ async def _auto_create_qwen_terminal(
             mcp_enabled = False
             _logger.warning(
                 "qwen-native: bridge dir failed secure validation; skipping "
-                "Omnigent MCP wiring for session %s.",
+                "tesseract MCP wiring for session %s.",
                 session_id,
                 exc_info=True,
             )
@@ -3609,7 +3609,7 @@ async def _auto_create_qwen_terminal(
 
     # The dual-output + input-file flags wire qwen to the bridge; any user
     # ``terminal_launch_args`` (e.g. ``-m <model>``) precede them. Approval stays
-    # the default in-terminal prompt (the embedded pane shows it) — Omnigent-side
+    # the default in-terminal prompt (the embedded pane shows it) — tesseract-side
     # gating via ``confirmation_response`` is a follow-up (see design doc).
     qwen_args = [
         *(launch_config.terminal_launch_args or []),
@@ -3653,7 +3653,7 @@ async def _auto_create_qwen_terminal(
         },
     )
 
-    # Mirror the qwen TUI's conversation back into the Omnigent session so the
+    # Mirror the qwen TUI's conversation back into the tesseract session so the
     # chat view tracks the embedded terminal. Host-spawned sessions have no CLI
     # client to start this, so the runner owns it — reusing the runner's own
     # server URL + refresh-capable auth.
@@ -3749,14 +3749,14 @@ async def _auto_create_kimi_terminal(
     The pane runs with a session-scoped ``KIMI_CODE_HOME`` (built by
     :func:`omnigent.harnesses.kimi_native.credentials.build_kimi_session_home`) that
     mirrors the user's global ``kimi login`` (symlinked ``oauth`` / providers)
-    and adds the Omnigent tool-policy hooks — a ``PreToolUse`` deny-gate and a
+    and adds the tesseract tool-policy hooks — a ``PreToolUse`` deny-gate and a
     ``PermissionRequest`` read-only surface dispatched to
     :mod:`omnigent.harnesses.kimi_native.hook`. The hook subprocess reads its routing
     from ``hook_config.json`` in the bridge dir.
 
     A background forwarder (:func:`omnigent.harnesses.kimi_native.forwarder.
     supervise_kimi_forwarder`) tails kimi's per-session ``wire.jsonl`` transcript
-    and mirrors each user prompt + assistant reply into the Omnigent chat, so the
+    and mirrors each user prompt + assistant reply into the tesseract chat, so the
     response shows in the web UI — not only the embedded terminal. Tool calls and
     reasoning are NOT mirrored (the embedded terminal renders those). NO MCP
     plumbing (upstream kimi has no per-spawn MCP config).
@@ -3765,7 +3765,7 @@ async def _auto_create_kimi_terminal(
     :param resource_registry: Session resource registry for launching the
         terminal.
     :param publish_event: Runner session event publisher.
-    :param server_client: Runner Omnigent server client (used only for the
+    :param server_client: Runner tesseract server client (used only for the
         workspace snapshot read).
     :param ensure_comment_relay: Unused; kept for call-site parity with the
         other native auto-create helpers.
@@ -3809,7 +3809,7 @@ async def _auto_create_kimi_terminal(
     # snapshot and threaded here.
     kimi_args = list(launch_config.terminal_launch_args or [])
 
-    # Wire the Omnigent tool-policy hooks: kimi reads a single
+    # Wire the tesseract tool-policy hooks: kimi reads a single
     # ``$KIMI_CODE_HOME/config.toml``, so point it at a session-scoped home that
     # mirrors the user's global kimi config (symlinked auth) plus a PreToolUse
     # deny-gate and a PermissionRequest read-only surface, both dispatched to
@@ -3872,7 +3872,7 @@ async def _auto_create_kimi_terminal(
         },
     )
 
-    # Mirror the kimi TUI transcript into the Omnigent chat: tail the per-session
+    # Mirror the kimi TUI transcript into the tesseract chat: tail the per-session
     # wire.jsonl and POST each user/assistant turn, so the reply renders in the
     # web UI (not just the embedded pane). Reuses the shared auto-forwarder
     # registry so terminal teardown / stop cancels it. Unlike the hook's static
@@ -3938,7 +3938,7 @@ async def _auto_create_codex_terminal(
     :param resource_registry: Session resource registry used to launch
         the Codex terminal resource.
     :param publish_event: The runner's per-session SSE emitter, used to
-        surface the new terminal on the live stream (the Omnigent relay
+        surface the new terminal on the live stream (the tesseract relay
         republishes it to the web UI) so the Terminal toggle enables
         without a refresh.
     :param bundle_dir: Materialized agent-bundle root when the session's
@@ -3953,7 +3953,7 @@ async def _auto_create_codex_terminal(
     :param agent_spec: Optional resolved agent spec for the session.
         When provided, its executor model is used as the Codex app-server
         default, e.g. ``"gpt-5.4-mini"``.
-    :param server_client: Runner's Omnigent server HTTP client. Used to read
+    :param server_client: Runner's tesseract server HTTP client. Used to read
         persisted launch args and the native thread id.
     :returns: The created terminal resource view.
     """
@@ -4174,7 +4174,7 @@ async def _auto_create_codex_terminal(
             launch_config = dataclasses.replace(
                 launch_config, external_session_id=target_thread_id
             )
-            # Record the assigned thread id now so Omnigent reflects the clone's
+            # Record the assigned thread id now so tesseract reflects the clone's
             # own Codex thread immediately and a later relaunch resumes it.
             # Best-effort, like the claude-native fork branch.
             if server_client is not None:
@@ -4187,7 +4187,7 @@ async def _auto_create_codex_terminal(
                 except httpx.HTTPError:
                     # The clone resumes via the known-thread forwarder (no
                     # discovery), so nothing re-captures the id later: it stays
-                    # unset on the Omnigent session and a future relaunch of this
+                    # unset on the tesseract session and a future relaunch of this
                     # clone will start fresh rather than resume the cloned
                     # rollout. The cloned rollout itself is already on disk, so
                     # the current launch still resumes with history.
@@ -4203,7 +4203,7 @@ async def _auto_create_codex_terminal(
         and server_client is not None
     ):
         # Forked clone bound to a codex-native target with no source rollout
-        # available: build the clone's rollout from its own copied Omnigent
+        # available: build the clone's rollout from its own copied tesseract
         # items under a thread id we mint, then flip launch_config so the
         # resume path below launches ``codex resume <our_thread_id>``. Reuses
         # the same server-items→rollout converter the cross-machine cold resume
@@ -4325,7 +4325,7 @@ async def _auto_create_codex_terminal(
     write_mcp_bridge_config(bridge_dir)
     mcp_overrides = codex_mcp_config_overrides(bridge_dir)
 
-    # Omnigent coordinates for the codex-native policy hook. The hook runs as a
+    # tesseract coordinates for the codex-native policy hook. The hook runs as a
     # separate subprocess that POSTs tool calls to /policies/evaluate, so
     # it reads a one-shot token snapshot from policy_hook.json — same as
     # the claude-native PermissionRequest hook on this host-spawned path.
@@ -4552,17 +4552,17 @@ async def _auto_create_codex_terminal(
             bypass_sandbox=launch_config.bypass_sandbox,
             # The --remote TUI loads its own config and does not inherit the
             # app-server's -c flags; pass the same provider/model overrides so it
-            # resolves the Omnigent provider instead of falling back to the OpenAI
+            # resolves the tesseract provider instead of falling back to the OpenAI
             # built-in (which would force the first-run login screen and block
             # thread creation).
             config_overrides=tuple(app_server.config_overrides),
             codex_cli_version=app_server.codex_cli_version,
-            # Omnigent provisions the private CODEX_HOME and vets hook sources
+            # tesseract provisions the private CODEX_HOME and vets hook sources
             # itself; skip the interactive trust prompt that headless sub-agents
             # can never answer.
             #
             # A failed version probe must not restore the interactive gate:
-            # Omnigent's supported Codex floor is newer than the release that added
+            # tesseract's supported Codex floor is newer than the release that added
             # this flag. Otherwise a transient ``codex --version`` failure strands
             # the queued web message behind the terminal-only review screen.
             bypass_hook_trust=(
@@ -4721,7 +4721,7 @@ async def _codex_discover_thread_and_forward(
     turn_router: TurnRouter | None = None,
 ) -> None:
     """
-    Adopt the fresh Codex TUI's thread, then mirror it into the Omnigent session.
+    Adopt the fresh Codex TUI's thread, then mirror it into the tesseract session.
 
     Runs as a background task spawned by :func:`_auto_create_codex_terminal`
     so session creation never blocks on TUI startup. Waits for the fresh TUI
@@ -4729,7 +4729,7 @@ async def _codex_discover_thread_and_forward(
     executor's bridge-state retry can inject web-UI turns into that same
     thread), then runs the transcript forwarder for the session's lifetime.
 
-    :param session_id: Omnigent session/conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session/conversation id, e.g. ``"conv_abc123"``.
     :param bridge_dir: Native Codex bridge directory for this session.
     :param codex_ws_url: App-server loopback ws URL the TUI and forwarder
         attach to, e.g. ``"ws://127.0.0.1:9876"``. Persisted as the bridge
@@ -4791,7 +4791,7 @@ async def _codex_discover_thread_and_forward(
         )
         write_bridge_startup_error(
             bridge_dir,
-            "Codex is not signed in and no Omnigent provider routes the codex "
+            "Codex is not signed in and no tesseract provider routes the codex "
             "harness, so the Codex TUI is parked on its sign-in screen and "
             f"cannot run this turn. Launch routing: {routing_summary}. "
             "Sign in from the session terminal, or configure a provider "
@@ -4851,7 +4851,7 @@ async def _codex_discover_thread_and_forward(
         auth_token = auth_factory() if auth_factory is not None else None
         headers: dict[str, str] = {"Authorization": f"Bearer {auth_token}"} if auth_token else {}
 
-        # Mirror the discovered Codex thread id onto the Omnigent session as its
+        # Mirror the discovered Codex thread id onto the tesseract session as its
         # external_session_id, the same way claude-native records its
         # captured session id. This is what makes the session forkable with
         # history: fork_conversation stamps
@@ -4859,7 +4859,7 @@ async def _codex_discover_thread_and_forward(
         # external_session_id, and the forked clone's runner clones this
         # thread's rollout from it (see _clone_codex_rollout). Without it a
         # host-spawned codex session has no recorded thread id, so a fork
-        # would resume fresh. Best-effort: a transient Omnigent failure here still
+        # would resume fresh. Best-effort: a transient tesseract failure here still
         # leaves chat streaming working — only fork-history carry-over
         # degrades.
         from omnigent.cli_auth import open_server_client
@@ -4933,7 +4933,7 @@ async def _codex_forward_known_thread(
     """
     Forward a runner-owned Codex terminal that resumes an existing thread.
 
-    :param session_id: Omnigent conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract conversation id, e.g. ``"conv_abc123"``.
     :param bridge_dir: Native Codex bridge directory for this session.
     :param codex_ws_url: App-server loopback URL, e.g.
         ``"ws://127.0.0.1:9876"``.
@@ -5003,11 +5003,11 @@ async def _run_antigravity_reader(
     for the single-instance task registry. See the helper for the full wiring
     (client lifecycle, elicitation bridge, ``supervise_reader`` spawn).
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:6767"``.
-    :param headers: Auth headers for the Omnigent client (best-effort static
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:6767"``.
+    :param headers: Auth headers for the tesseract client (best-effort static
         bearer; ``auth`` carries the refresh-capable flow).
     :param auth: Refresh-capable httpx auth flow, or ``None`` when unauthenticated.
-    :param session_id: Omnigent conversation id to mirror into, e.g.
+    :param session_id: tesseract conversation id to mirror into, e.g.
         ``"conv_abc123"``.
     :param bridge_dir: Native Antigravity bridge directory for this session.
     :returns: None. Runs until cancelled.
@@ -5076,11 +5076,11 @@ async def _auto_create_antigravity_terminal(
     :param publish_event: The runner's per-session SSE emitter, used to
         surface the new terminal on the live stream so the web UI's Terminal
         toggle enables without a refresh.
-    :param server_client: Runner's Omnigent server HTTP client. Used to read
+    :param server_client: Runner's tesseract server HTTP client. Used to read
         the persisted workspace, launch args, and the discovered agy
         conversation id (``external_session_id``) for resume.
     :param ensure_comment_relay: The runner's relay starter
-        (``_ensure_comment_relay_started``). When provided, the Omnigent MCP
+        (``_ensure_comment_relay_started``). When provided, the tesseract MCP
         relay is started against this session's bridge dir before launch so the
         wrapped agy sees the ``sys_*`` tools (#1194). ``None`` skips relay wiring
         (the ``_run_turn_bg`` first-turn fallback re-ensures it).
@@ -5184,8 +5184,8 @@ async def _auto_create_antigravity_terminal(
         extra_args=terminal_launch_args,
     )
 
-    # Wire the Omnigent MCP relay so the wrapped agy gets the sys_* tools
-    # (spawn sub-agent sessions, drive Omnigent terminals, list agents/models,
+    # Wire the tesseract MCP relay so the wrapped agy gets the sys_* tools
+    # (spawn sub-agent sessions, drive tesseract terminals, list agents/models,
     # sys_os_*) — the only native harness that otherwise lacks them (#1194).
     # agy has no --mcp-config flag and ignores ANTIGRAVITY_* env knobs. It does
     # accept the hidden --gemini_dir flag, so keep the process HOME real for auth
@@ -5352,7 +5352,7 @@ async def _auto_create_antigravity_terminal(
     # Start the RPC streaming reader + interaction bridge server-side (the read
     # path that replaced the retired transcript forwarder). It mirrors agy's
     # conversation over connect-RPC and surfaces WAITING interactions as web
-    # elicitations via the Task 9 hook. The reader owns its own Omnigent client
+    # elicitations via the Task 9 hook. The reader owns its own tesseract client
     # (built by the shared ``run_reader_with_bridge`` helper) from the server URL +
     # refresh-capable auth resolved above. Reuses the same per-session
     # background-task registry, so a session never runs two readers at once and a
@@ -5526,7 +5526,7 @@ async def _cold_start_agy_conversation(
     ``agy_conv_*`` placeholder) so :func:`read_bridge_state` returns the real id
     and the reader/executor address the cold-started conversation directly.
 
-    The cold-started id is also PATCHed onto the Omnigent session as
+    The cold-started id is also PATCHed onto the tesseract session as
     ``external_session_id`` (best-effort, mirroring codex/pi) so a later
     ``--resume`` reads it back and passes ``--conversation <id>`` to continue
     agy's actual conversation — the read-path replacement for the forwarder's
@@ -5551,7 +5551,7 @@ async def _cold_start_agy_conversation(
         the real cold-started id is written into.
     :param session_id: Owning session/conversation id (for log correlation and
         the ``external_session_id`` PATCH target).
-    :param server_client: Runner Omnigent server client used for the
+    :param server_client: Runner tesseract server client used for the
         ``external_session_id`` PATCH. ``None`` skips the PATCH (the cascade id is
         still written to bridge state).
     :param tmux_socket: This session's tmux socket path, used to scope the
@@ -5715,7 +5715,7 @@ async def _session_payload_for_host_spawn_check(
     """
     Fetch a session snapshot for Codex host-spawn detection.
 
-    :param server_client: The runner's Omnigent server HTTP client, or
+    :param server_client: The runner's tesseract server HTTP client, or
         ``None`` in embedded/test setups.
     :param session_id: Session/conversation id, e.g.
         ``"conv_abc123"``.
@@ -5776,7 +5776,7 @@ async def _codex_session_needs_runner_terminal(
     Returns ``False`` only when the lookup fails; without a session
     snapshot, the runner cannot confirm this is a codex-native session.
 
-    :param server_client: The runner's Omnigent server HTTP client, or ``None`` in
+    :param server_client: The runner's tesseract server HTTP client, or ``None`` in
         embedded/test setups.
     :param session_id: Session/conversation id, e.g. ``"conv_abc123"``.
     :returns: ``True`` when the session snapshot exists; ``False`` on
@@ -5991,7 +5991,7 @@ def _cursor_fork_history_preamble(items: list[_JsonObject]) -> str:
     strip sentinel are added by
     :func:`omnigent.harnesses.cursor_native.bridge.wrap_fork_preamble`.
 
-    :param items: Committed Omnigent items (``GET /v1/sessions/{id}/items``),
+    :param items: Committed tesseract items (``GET /v1/sessions/{id}/items``),
         chronological.
     :returns: A blank-line-separated transcript like ``"You: …\\n\\nAssistant:
         …"``, or ``""`` when no replayable user/assistant text exists.
@@ -6093,7 +6093,7 @@ def _build_claude_native_base_args(
     Assemble the base ``claude`` CLI args for a native-terminal launch.
 
     These are the args before :func:`augment_claude_args` layers on the
-    bridge / MCP / hook / Omnigent wiring. The order is: ``--resume`` for a
+    bridge / MCP / hook / tesseract wiring. The order is: ``--resume`` for a
     cold resume, then persisted reasoning effort, then the user's
     pass-through ``terminal_launch_args``, then a ``--model`` derived
     from ``model_override`` — appended only when the user did not
@@ -6184,7 +6184,7 @@ def _publish_terminal_pending(
     Emitted by the auto-create path so the web UI can show a spinner on
     the Terminal pill while the runner boots a terminal-first session's
     terminal, and clear it once the terminal lands or auto-create
-    fails. The Omnigent relay caches the latest value and republishes it, and
+    fails. The tesseract relay caches the latest value and republishes it, and
     seeds the ``terminal_pending`` snapshot field, so a client that
     connects mid-spin-up still sees the spinner. ``pending=False`` is
     what distinguishes "still starting up" from "no terminal" (killed /
@@ -6254,7 +6254,7 @@ def _native_terminal_start_error_payload(exc: BaseException, runtime_name: str) 
 
     if isinstance(exc, ClaudeNativeHookInterpreterMismatchError):
         message = (
-            "Claude Code is Windows-native, but Omnigent is running under WSL. "
+            "Claude Code is Windows-native, but tesseract is running under WSL. "
             "Install @anthropic-ai/claude-code from WSL so a WSL-native `claude` "
             "binary wins PATH resolution, then retry."
         )
@@ -6292,7 +6292,7 @@ def _publish_native_terminal_start_error(
     ``session.status: failed`` with the structured cause, while resource
     panels and the relay keep working. The runner does not publish a
     bare ``response.error`` here because terminal auto-create happens
-    outside a transcript turn; Omnigent writes and publishes the turn-scoped
+    outside a transcript turn; tesseract writes and publishes the turn-scoped
     ``response.error`` only when it consumes a user message that cannot
     run because the terminal is failed.
 
@@ -6340,7 +6340,7 @@ def _codex_ensure_response_with_policy_notice(
 
     When the codex app-server degraded to "no policy enforcement"
     (fail-open — codex too old or trust failed), attach the reason as
-    ``policy_hook_disabled_reason`` exactly once so Omnigent can post a single
+    ``policy_hook_disabled_reason`` exactly once so tesseract can post a single
     durable web-UI banner. The app-server's one-shot flag is cleared
     after the first surface, so repeated ensures (each user message
     re-probes) do not re-post the notice.
@@ -6416,12 +6416,12 @@ def _ensure_orchestrator_skills_in_bundle(
         )
 
 
-#: Omnigent MCP tools an auto-harness Claude session must be able to call
+#: tesseract MCP tools an auto-harness Claude session must be able to call
 #: without an interactive prompt: the two the cross-harness redirect names, the
 #: one that delivers the sub-task, and the one that collects its result. The
 #: native path passes no allowlist otherwise, so Claude Code's "don't ask mode"
 #: denies them outright ("Permission to use mcp__omnigent__sys_read_inbox has
-#: been denied"). Narrower than the SDK arm, which pre-approves every Omnigent
+#: been denied"). Narrower than the SDK arm, which pre-approves every tesseract
 #: tool in ``auto`` / ``bypassPermissions``.
 _ROUTED_SPAWN_ALLOWED_TOOLS: tuple[str, ...] = (
     "mcp__omnigent__sys_session_create",
@@ -6629,7 +6629,7 @@ async def _clear_session_model_override(
     Legacy callers use the explicit ``"default"`` alias; JSON null is a no-op.
 
     :param session_id: Session/conversation identifier.
-    :param server_client: Runner Omnigent server client.
+    :param server_client: Runner tesseract server client.
     :param expected_model_override: Only clear this original launch-time pick.
     """
     try:
@@ -6683,10 +6683,10 @@ async def _auto_create_claude_terminal(
     :param resource_registry: Session resource registry for
         launching the terminal.
     :param publish_event: The runner's per-session SSE emitter, used to
-        surface the new terminal on the live stream (the Omnigent relay
+        surface the new terminal on the live stream (the tesseract relay
         republishes it to the web UI) so the Terminal toggle enables
         without a refresh.
-    :param server_client: Omnigent server client used to fetch the session
+    :param server_client: tesseract server client used to fetch the session
         snapshot so the terminal inherits the persisted
         ``reasoning_effort``.
     :param bundle_dir: Materialized agent-bundle root when the session's
@@ -6822,7 +6822,7 @@ async def _auto_create_claude_terminal(
 
     from omnigent.runner._entry import _make_auth_token_factory, _RunnerDatabricksAuth
 
-    # The Omnigent server URL + auth are needed in two places below: the
+    # The tesseract server URL + auth are needed in two places below: the
     # PermissionRequest hook (so Claude's approval prompts route to the
     # web UI instead of its TUI) and the transcript forwarder. The CLI
     # client supplies these on the wrapper path; on this host-spawned
@@ -6954,7 +6954,7 @@ async def _auto_create_claude_terminal(
             # Resume our OWN clone (plain --resume, no --fork-session).
             resume_external_session_id = our_uuid
             resume_prefix_bytes = _measured_prefix_bytes(_cloned)
-            # Record the assigned id now so Omnigent reflects the clone's own
+            # Record the assigned id now so tesseract reflects the clone's own
             # Claude session immediately, and a later relaunch resumes it
             # via the normal cold-resume path (this branch is gated on
             # external_session_id being unset). Best-effort.
@@ -6980,7 +6980,7 @@ async def _auto_create_claude_terminal(
     ):
         # Forked clone bound to a native target with NO source native
         # transcript to clone (an SDK or cross-family source): build the clone's
-        # native transcript from its OWN copied Omnigent items under a uuid we
+        # native transcript from its OWN copied tesseract items under a uuid we
         # assign, then launch plain ``--resume <our_uuid>``. This reuses the
         # same server-items→transcript converter the cross-machine cold
         # resume path uses (``_ensure_local_claude_resume_transcript``), so
@@ -7018,7 +7018,7 @@ async def _auto_create_claude_terminal(
         if _built is not None:
             resume_external_session_id = our_uuid
             resume_prefix_bytes = _measured_prefix_bytes(_built)
-            # Record the assigned id so Omnigent reflects the clone's own Claude
+            # Record the assigned id so tesseract reflects the clone's own Claude
             # session and a later relaunch resumes it via the cold-resume
             # path above. Best-effort, mirroring the clone branch.
             try:
@@ -7323,7 +7323,7 @@ async def _auto_create_claude_terminal(
     # default readiness probe waits on a codex bridge thread.
     # Only an auto-harness session's spawns can be re-routed across harness
     # families, so only it needs the routed-spawn note and the pre-approval for
-    # the three Omnigent tools that carry out the re-route. A pinned session's
+    # the three tesseract tools that carry out the re-route. A pinned session's
     # argv must stay byte-identical.
     routed_spawn_note, routed_spawn_tools = _routed_spawn_launch_args(
         launch_metadata.auto_harness,
@@ -7501,7 +7501,7 @@ async def _auto_create_claude_terminal(
     )
 
     # Start the transcript forwarder so Claude's responses flow
-    # back to the Omnigent server. Normally the CLI client runs this,
+    # back to the tesseract server. Normally the CLI client runs this,
     # but for host-spawned sessions there is no CLI. Reuses the
     # ``server_url`` + auth computed above; ``auth`` refreshes the
     # bearer token per request so forwarding outlives token expiry.
@@ -7510,7 +7510,7 @@ async def _auto_create_claude_terminal(
     # ``resume_external_session_id`` is set we launched Claude with
     # ``--resume`` over a transcript synthesized from AP's committed
     # history (see ``_ensure_local_claude_resume_transcript`` above), so
-    # offset 0 already holds every item Omnigent has. Starting the forwarder at
+    # offset 0 already holds every item tesseract has. Starting the forwarder at
     # offset 0 would re-post the whole transcript as new external
     # conversation items — there is no server-side dedup — duplicating the
     # visible history on every resume. A genuinely fresh
@@ -7560,14 +7560,14 @@ async def _auto_create_repl_terminal(
     agent_spec: AgentSpec | ResolvedSpec | None = None,
 ) -> SessionResourceView:
     """
-    Auto-create an Omnigent REPL terminal for a runner-hosted SDK session.
+    Auto-create an tesseract REPL terminal for a runner-hosted SDK session.
 
     Called when the runner receives a non-native (SDK-harness) top-level
     session via ``POST /v1/sessions`` and no REPL terminal exists yet. The
     terminal hosts the framework's own TUI (``omnigent attach
     <session_id> --server <url>``) in a tmux pane, exposed through the
     standard terminal-attach WebSocket so the web UI embeds it exactly
-    like the claude-/codex-native terminals — with the Omnigent REPL as
+    like the claude-/codex-native terminals — with the tesseract REPL as
     the TUI.
 
     The REPL is a pure co-drive client: it joins the live session over
@@ -7592,7 +7592,7 @@ async def _auto_create_repl_terminal(
         ``(session_id, event_dict) -> None``, used to surface the new
         terminal on the live stream so the web UI's Terminal pill enables
         without a refresh.
-    :param server_client: Omnigent server client used to stamp the
+    :param server_client: tesseract server client used to stamp the
         ``omnigent.ui: terminal`` presentation label that makes the web
         UI show the Chat/Terminal toggle.
     :returns: The launched terminal's :class:`SessionResourceView`.
@@ -7700,9 +7700,9 @@ async def _delete_native_bridge_dirs(
     label, so resolve those too (falling back to *session_id*, the un-rotated key);
     the remaining families key purely on *session_id*.
 
-    :param server_client: Omnigent server client used to resolve rotated bridge
+    :param server_client: tesseract server client used to resolve rotated bridge
         id labels. ``None`` skips label resolution (session_id keys only).
-    :param session_id: Omnigent session/conversation id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session/conversation id, e.g. ``"conv_abc123"``.
     """
     from omnigent.harnesses.antigravity_native.bridge import (
         ANTIGRAVITY_NATIVE_BRIDGE_ID_LABEL_KEY,
@@ -7796,9 +7796,9 @@ async def _claude_native_bridge_id_for_session(
 ) -> str:
     """Resolve the bridge id label for a Claude-native session.
 
-    :param server_client: Omnigent server client used to fetch the session
+    :param server_client: tesseract server client used to fetch the session
         snapshot.
-    :param session_id: Omnigent session/conversation id, e.g.
+    :param session_id: tesseract session/conversation id, e.g.
         ``"conv_abc123"``.
     :param session_labels: Labels supplied by the initialization envelope.
         ``None`` selects the legacy labels callback.
@@ -7870,8 +7870,8 @@ async def _resolve_native_spawn_env(
     (writes its policy-hook config before building).
 
     :param harness_name: Harness id, e.g. ``"codex-native"``.
-    :param session_id: Omnigent conversation id.
-    :param server_client: Runner's client to the Omnigent server, for label reads.
+    :param session_id: tesseract conversation id.
+    :param server_client: Runner's client to the tesseract server, for label reads.
     :param optional_labels: Envelope labels already in hand (claude prefers these
         over a fresh fetch), or ``None``.
     :returns: The spawn env mapping, or ``None`` when *harness_name* is not a
@@ -8392,7 +8392,7 @@ async def _claude_native_terminal_arrives_via_transfer(
     live terminal-owning session at bind time, detected here so the
     caller skips auto-create and lets the transfer deliver the terminal.
 
-    :param server_client: Omnigent client to resolve the bridge id label;
+    :param server_client: tesseract client to resolve the bridge id label;
         ``None`` can't confirm a rotation, so returns ``False``.
     :param session_id: Newly-bound session id, e.g. ``"conv_new"``.
     :param resource_registry: Registry probed for the original session's
@@ -8444,7 +8444,7 @@ async def _antigravity_native_terminal_arrives_via_transfer(
     rewrites it only AFTER the transfer), detected here so the caller skips
     auto-create and lets the transfer deliver the terminal.
 
-    :param server_client: Omnigent client to resolve the bridge id label;
+    :param server_client: tesseract client to resolve the bridge id label;
         ``None`` can't confirm a rotation, so returns ``False``.
     :param session_id: Newly-bound session id, e.g. ``"conv_new"``.
     :param resource_registry: Registry probed for the original session's live
@@ -8497,7 +8497,7 @@ async def _codex_native_terminal_arrives_via_transfer(
     (rotation rewrites it only AFTER the transfer), detected here so the
     caller skips auto-create and lets the transfer deliver the terminal.
 
-    :param server_client: Omnigent client to resolve the bridge id label;
+    :param server_client: tesseract client to resolve the bridge id label;
         ``None`` can't confirm a rotation, so returns ``False``.
     :param session_id: Newly-bound session id, e.g. ``"conv_new"``.
     :param resource_registry: Registry probed for the original session's
@@ -8542,9 +8542,9 @@ async def _session_labels_for_runner_spawn(
     """
     Fetch session labels for harness spawn-env construction.
 
-    :param server_client: Omnigent server client used to fetch the session
+    :param server_client: tesseract server client used to fetch the session
         labels endpoint.
-    :param session_id: Omnigent session/conversation id, e.g.
+    :param session_id: tesseract session/conversation id, e.g.
         ``"conv_abc123"``.
     :returns: String label mapping. Empty on lookup failure.
     """

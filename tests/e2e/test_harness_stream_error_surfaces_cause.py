@@ -25,7 +25,7 @@ This is an e2e test of the runner's public HTTP contract
 feeds the web chat -- driven in-process over ASGI with a harness whose stream
 drops mid-flight, exactly as the reaper-kill / trust-prompt failure does in
 production. It drives the *real* ``proxy_stream`` code; only the harness
-subprocess and Omnigent server are test doubles.
+subprocess and tesseract server are test doubles.
 
 Facet 1 (``test_stream_failure_discards_real_cause``): the user-facing
 ``response.failed`` event must carry the real transport cause, not only the

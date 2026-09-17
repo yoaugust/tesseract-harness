@@ -208,8 +208,8 @@ async def test_create_session_terminal_ensure_failure_returns_json_without_live_
     """
     Native terminal ensure failures are reported to AP, not published live.
 
-    ``ensure_native_terminal`` is called by the Omnigent server while handling a
-    user message. Omnigent owns that failed transcript turn: it persists the
+    ``ensure_native_terminal`` is called by the tesseract server while handling a
+    user message. tesseract owns that failed transcript turn: it persists the
     consumed user message, appends the sibling ``error`` item, and
     publishes the live banner. If the runner endpoint also publishes
     ``response.error`` before returning its structured 500, the same
@@ -554,7 +554,7 @@ async def test_late_status_for_deleted_sub_agent_child_is_not_a_spurious_503() -
     child is deleted there is nothing to preserve, so ``delete_session`` must
     drop the name. Without the pop, the lingering name makes the late status
     read ``is_runner_known_subagent=True`` with no work entry → a spurious
-    ``503 subagent_delivery_not_confirmed`` (which Omnigent then retries) plus an
+    ``503 subagent_delivery_not_confirmed`` (which tesseract then retries) plus an
     unbounded leak of the name map across deleted sessions.
     """
     child_id = "045873be7e66575e49c755387fecf59a"

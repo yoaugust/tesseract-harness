@@ -1,6 +1,6 @@
 """
 End-to-end: omnigent example YAMLs that declare unsupported
-concepts MUST fail loud at spec-load time under Omnigent mode.
+concepts MUST fail loud at spec-load time under tesseract mode.
 
 The adapter in :mod:`omnigent.spec.omnigent` rejects several
 concepts it cannot faithfully translate into an omnigent
@@ -51,7 +51,7 @@ _TIMEOUT_SEC = 30
 # (yaml_relpath, expected_error_substring, id)
 #
 # The rejection surface in :func:`_reject_unsupported_concepts`
-# has shrunk over time as the Omnigent translator has grown:
+# has shrunk over time as the tesseract translator has grown:
 #
 # - **Policies**: lifted into ``AgentSpec.guardrails.policies``
 #   and enforced by the workflow layer (see

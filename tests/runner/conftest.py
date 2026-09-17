@@ -341,7 +341,7 @@ class _ReadTimeoutTransport(httpx.AsyncBaseTransport):
 
         :param request: Outbound request from ``httpx.AsyncClient``.
         :returns: Never returns; raises ``httpx.ReadTimeout``.
-        :raises httpx.ReadTimeout: Always raised to simulate Omnigent slowness.
+        :raises httpx.ReadTimeout: Always raised to simulate tesseract slowness.
         """
         self.requests.append(request)
         raise httpx.ReadTimeout("session lookup timed out", request=request)

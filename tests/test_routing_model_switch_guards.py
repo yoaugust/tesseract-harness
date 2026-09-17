@@ -9,7 +9,7 @@ model to X **and saved as your default for new sessions**" and rewrites the
 ``model`` key in the person's own ``~/.claude/settings.json`` — an accepted
 trade-off, since the alternative (driving the interactive picker over tmux)
 cost ~530 lines of fragile screen-scraping automation. What still has to hold
-is that Omnigent itself never writes that file, and that the switch path polls
+is that tesseract itself never writes that file, and that the switch path polls
 the TUI rather than guessing at its render latency.
 """
 

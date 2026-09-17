@@ -772,7 +772,7 @@ def test_fork_sdk_source_into_native_builds_history(
 
             # 2. Fork SWITCHING to claude-native. The SDK source has no
             # external_session_id, so the runner rebuilds the native
-            # transcript from the copied Omnigent items (build-from-items).
+            # transcript from the copied tesseract items (build-from-items).
             fork_id = _fork_session(
                 http_client,
                 source_id=source_id,
@@ -782,7 +782,7 @@ def test_fork_sdk_source_into_native_builds_history(
             _launch_runner(http_client, host_id=host_id, session_id=fork_id, workspace=workspace)
 
             # 3. The native clone recalls the planted word — only possible
-            # if the Omnigent items were rebuilt into its Claude transcript and
+            # if the tesseract items were rebuilt into its Claude transcript and
             # resumed; a fresh launch has no history.
             _send_user_message(
                 http_client,
@@ -797,7 +797,7 @@ def test_fork_sdk_source_into_native_builds_history(
             )
             assert marker in text, (
                 f"native clone did not recall {marker!r} (got {text!r}) — the SDK "
-                "source's Omnigent items were not rebuilt into the clone's Claude "
+                "source's tesseract items were not rebuilt into the clone's Claude "
                 "transcript, so it launched fresh without history"
             )
 
@@ -811,7 +811,7 @@ def test_fork_native_source_into_sdk_carries_history(
     A claude-native source forked into a claude-sdk agent recalls history.
 
     This exercises the native→SDK switch (already supported via SDK
-    transcript replay — the SDK target serializes the copied Omnigent
+    transcript replay — the SDK target serializes the copied tesseract
     transcript as context). The clone binds the built-in ``sdk-chat-builtin``
     (a plain claude-sdk chat agent seeded via OMNIGENT_BUILTIN_AGENT_DIRS —
     NOT the polly supervisor, so the recall is deterministic). It runs on

@@ -3,16 +3,16 @@
 The native wrapper has two live processes that need to rendezvous:
 
 - Claude Code, running in the user's terminal resource.
-- The Omnigent harness turn, running when the web UI submits a
+- The tesseract harness turn, running when the web UI submits a
   message to the session agent.
 
 This module owns the small filesystem rendezvous directory plus two
 helper surfaces:
 
 - An MCP stdio server (``serve-mcp`` subcommand) that Claude Code
-  launches as a child process. It advertises Omnigent tools to
+  launches as a child process. It advertises tesseract tools to
   Claude (workspace ``sys_os_*`` tools outside an active turn,
-  active-turn Omnigent tools via a per-turn relay).
+  active-turn tesseract tools via a per-turn relay).
 - A tmux send-keys path. Web UI messages are delivered to Claude by
   typing them into the same tmux pane the user is attached to;
   Claude treats them as ordinary user input. The runner advertises
@@ -157,7 +157,7 @@ _TOOL_CALL_TIMEOUT_S = 300.0
 # Timeout for the bridge's POST to the active-turn relay server
 # (``_call_relay_tool``). This is the OUTER hop: it waits for the relay
 # handler's entire ``_TOOL_CALL_TIMEOUT_S`` dispatch, which itself fans out
-# to the Omnigent policy server and back. It MUST exceed ``_TOOL_CALL_TIMEOUT_S``
+# to the tesseract policy server and back. It MUST exceed ``_TOOL_CALL_TIMEOUT_S``
 # so the inner handler times out first and returns a clean MCP error over
 # HTTP 200 — rather than the outer ``urlopen`` raising and tearing down the
 # stdio MCP server (see ``_stdio_jsonrpc_loop``). The previous flat 10s sat
@@ -272,7 +272,7 @@ _MODE_CYCLE_MAX_PRESSES = 8
 _MODE_FOOTER_SETTLE_TIMEOUT_S = 2.0
 _MODE_FOOTER_POLL_INTERVAL_S = 0.1
 # Footer Claude Code's interactive ``/model`` picker renders while it is open.
-# Omnigent never drives that picker — it switches with ``/model <id>`` — but a
+# tesseract never drives that picker — it switches with ``/model <id>`` — but a
 # picker the person opened by hand covers the input box, so an injection would
 # be lost; the readiness gate treats it as "not ready".
 _MODEL_PICKER_OPEN_HINT = "use this session only"
@@ -368,8 +368,8 @@ def _windows_native_claude_error(claude_path: str) -> ClaudeNativeHookInterprete
     """
     return ClaudeNativeHookInterpreterMismatchError(
         "Claude Code executable "
-        f"{claude_path!r} is Windows-native, but Omnigent is running under WSL. "
-        "Claude Code cannot run Omnigent's WSL Python hook command from its Windows shell. "
+        f"{claude_path!r} is Windows-native, but tesseract is running under WSL. "
+        "Claude Code cannot run tesseract's WSL Python hook command from its Windows shell. "
         "Install @anthropic-ai/claude-code from WSL (for example, `npm install -g "
         "@anthropic-ai/claude-code`) so a WSL-native `claude` binary wins PATH resolution, "
         "then retry."
@@ -385,7 +385,7 @@ def validate_claude_hook_interpreter_compatibility(
     """Reject the known WSL runner / Windows-native Claude CLI mismatch.
 
     Claude Code runs hooks through its own shell. A Windows-native CLI launched
-    from WSL cannot resolve Omnigent's WSL Python path embedded in those hooks,
+    from WSL cannot resolve tesseract's WSL Python path embedded in those hooks,
     so allowing this combination only produces an opaque readiness timeout.
 
     A ``.exe``/``.cmd``/``.bat``/``.ps1`` extension is always Windows-native,
@@ -548,7 +548,7 @@ def _trusted_parent_for_bridge_dir(target: Path) -> Path:
         # bridge-owned directories below it.
         return _absolute_syntactic_path(kiro_root.parent.parent)
 
-    # Headless ACP harnesses (acp / goose / qwen) put their Omnigent-MCP relay
+    # Headless ACP harnesses (acp / goose / qwen) put their tesseract-MCP relay
     # bridge below ``$TMPDIR/omnigent-<uid>/acp-mcp`` (same uid-scoped shape as
     # cursor/qwen/hermes-native), so trust the uid-scoped temp dir's parent.
     acp_root = _absolute_syntactic_path(acp_mcp_bridge_root())
@@ -572,12 +572,12 @@ def _trusted_parent_for_bridge_dir(target: Path) -> Path:
 @dataclass(frozen=True)
 class ClaudeTranscriptItem:
     """
-    One Omnigent conversation item parsed from Claude's JSONL log.
+    One tesseract conversation item parsed from Claude's JSONL log.
 
     :param source_id: Stable idempotency key derived from the Claude
         transcript record UUID and content block position, e.g.
         ``"747e:0:function_call"``.
-    :param item_type: Omnigent conversation item type, e.g.
+    :param item_type: tesseract conversation item type, e.g.
         ``"message"`` or ``"function_call"``.
     :param data: Item payload shaped like ``SessionEventInput.data``.
     :param response_id: Synthetic response id used to group the
@@ -586,7 +586,7 @@ class ClaudeTranscriptItem:
         Claude ``isCompactSummary: true`` user record — the continuation
         summary Claude writes immediately after it compacts its own
         context. The forwarder uses this flag to persist a durable
-        Omnigent compaction boundary (see
+        tesseract compaction boundary (see
         :func:`omnigent.harnesses.claude_native.forwarder._forward_available_items`)
         instead of rendering the summary as a user bubble. Defaults to
         ``False`` for every ordinary transcript item.
@@ -632,7 +632,7 @@ class TranscriptReadResult:
         line is not included.
     :param current_response_id: Response id for a Claude assistant
         turn that remains active across polls.
-    :param items: Parsed Omnigent conversation items from the
+    :param items: Parsed tesseract conversation items from the
         complete records after the caller's cursor.
     :param latest_usage: Token-usage from the most recent assistant
         entry with a ``message.usage`` block. Keys: ``context_tokens``,
@@ -644,7 +644,7 @@ class TranscriptReadResult:
         ``custom-title`` record — the explicit title a ``/rename`` typed
         in the Claude Code pane writes. ``None`` when no such record was
         scanned. Claude's own auto-generated ``aiTitle`` is deliberately
-        not surfaced here; Omnigent titles unnamed sessions itself.
+        not surfaced here; tesseract titles unnamed sessions itself.
     :param record_items: Parsed items grouped by their complete source JSONL
         record, with the byte offset immediately after each record. Native
         child-transcript batching uses these boundaries for partial checkpoints.
@@ -692,7 +692,7 @@ class ClaudeHookRecord:
         session id had already been observed before this hook was
         recorded. ``None`` means the hook did not capture that
         context.
-    :param clear_rotated_to: Omnigent session id created synchronously by the
+    :param clear_rotated_to: tesseract session id created synchronously by the
         hook for ``SessionStart source=clear``, e.g. ``"conv_new"``,
         or ``None`` when the background forwarder should rotate.
     :param fork_detected: Whether the hook identified this record as a
@@ -700,7 +700,7 @@ class ClaudeHookRecord:
         background forwarder uses this annotation because state.json
         already points at the new Claude session by the time it reads
         hooks.jsonl.
-    :param fork_rotated_to: Omnigent session id created synchronously by the
+    :param fork_rotated_to: tesseract session id created synchronously by the
         hook for a Claude branch/fork transition, e.g. ``"conv_fork"``,
         or ``None`` when the background forwarder should fork.
     :param todos: Updated todo list from a ``PostToolUse``/``TodoWrite``
@@ -1016,9 +1016,9 @@ class ClaudeNativeToolRelay:
     HTTP relay for Claude MCP tool calls, scoped to its caller's lifetime.
 
     Claude's MCP helper process calls the relay synchronously when Claude
-    Code invokes a relayed Omnigent tool; the relay forwards the call
+    Code invokes a relayed tesseract tool; the relay forwards the call
     into the ``tool_executor`` callback supplied at start, which dispatches
-    it on the runner event loop (e.g. through the Omnigent REST API).
+    it on the runner event loop (e.g. through the tesseract REST API).
 
     Callers choose the lifetime and call :meth:`close` when it ends. The
     comment-tool relay (``list_comments`` / ``update_comment``) is
@@ -1158,7 +1158,7 @@ def subagent_router_bridge_root() -> Path:
 
 
 def acp_mcp_bridge_root() -> Path:
-    """Bridge root for the headless ACP harnesses' Omnigent-MCP relay.
+    """Bridge root for the headless ACP harnesses' tesseract-MCP relay.
 
     Shares the uid-scoped temp parent with claude-native
     (``$TMPDIR/omnigent-<uid>/acp-mcp``). Used by the acp / goose / qwen
@@ -1205,7 +1205,7 @@ def bridge_dir_for_conversation_id(conversation_id: str) -> Path:
     """
     Return the bridge directory for a legacy session id.
 
-    :param conversation_id: Omnigent conversation id used as bridge id, e.g.
+    :param conversation_id: tesseract conversation id used as bridge id, e.g.
         ``"conv_abc123"``.
     :returns: Absolute bridge directory under
         ``/tmp/omnigent-<UID>/claude-native``.
@@ -1217,7 +1217,7 @@ def _approval_wait_digest(session_id: str) -> str:
     """
     Return the filename stem shared by every marker for one session.
 
-    :param session_id: Omnigent session id, e.g. ``"conv_abc123"``.
+    :param session_id: tesseract session id, e.g. ``"conv_abc123"``.
     :returns: Hex digest prefix, e.g. ``"3f0e..."`` (32 chars).
     """
     return hashlib.sha256(session_id.encode("utf-8")).hexdigest()[:32]
@@ -1231,7 +1231,7 @@ def approval_wait_marker_path(session_id: str, *, bridge_dir: Path | None = None
     tool calls each raising a permission request) own separate files, so the
     first to finish never clears another's evidence.
 
-    :param session_id: Omnigent session id whose verdict a hook is waiting
+    :param session_id: tesseract session id whose verdict a hook is waiting
         on, e.g. ``"conv_abc123"``.
     :param bridge_dir: The caller's own bridge directory, e.g.
         ``/tmp/omnigent-501/claude-native/<digest>``. When given, the marker
@@ -1295,7 +1295,7 @@ def approval_wait_is_fresh(session_id: str) -> bool:
     Scans every hook's marker for the session; a stale one (a hook killed
     mid-wait) is removed on the way so they never accumulate.
 
-    :param session_id: Omnigent session id to check, e.g.
+    :param session_id: tesseract session id to check, e.g.
         ``"conv_abc123"``.
     :returns: ``True`` when any marker was touched within
         :data:`APPROVAL_WAIT_MARKER_TTL_S`; ``False`` when none exists, all
@@ -1362,7 +1362,7 @@ def build_claude_native_spawn_env(
     """
     Build spawn env for the ``claude-native`` harness process.
 
-    :param conversation_id: Omnigent conversation id, e.g.
+    :param conversation_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param bridge_id: Opaque bridge id from
         :data:`BRIDGE_ID_LABEL_KEY`, e.g. ``"bridge_abc123"``. ``None``
@@ -1414,7 +1414,7 @@ def prepare_bridge_dir(
     """
     Create or refresh the bridge directory for a native Claude session.
 
-    :param conversation_id: Omnigent conversation id, e.g.
+    :param conversation_id: tesseract conversation id, e.g.
         ``"conv_abc123"``.
     :param bridge_id: Opaque bridge id, e.g. ``"bridge_abc123"``.
         ``None`` normalizes old sessions by using *conversation_id*.
@@ -1472,7 +1472,7 @@ def prepare_bridge_dir(
         payload["sandbox"] = _bridge_sandbox_payload(sandbox)
     _write_json_file(bridge_dir / _CONFIG_FILE, payload)
     # Keep ``_PERMISSION_HOOK_FILE`` — the PermissionRequest command hook
-    # reads the Omnigent server URL from it at runtime, so wiping it on re-prep
+    # reads the tesseract server URL from it at runtime, so wiping it on re-prep
     # breaks approval routing on reattach/rebind. ``build_hook_settings``
     # rewrites it on cold launch.
     for filename in (
@@ -1627,10 +1627,10 @@ def _atomic_write_user_json(path: Path, payload: _JsonObject) -> None:
 
 def read_active_session_id(bridge_dir: Path) -> str | None:
     """
-    Read the Omnigent session currently receiving bridge-originated events.
+    Read the tesseract session currently receiving bridge-originated events.
 
     :param bridge_dir: Bridge directory path.
-    :returns: Active Omnigent session id, e.g. ``"conv_abc123"``, or
+    :returns: Active tesseract session id, e.g. ``"conv_abc123"``, or
         ``None`` when the bridge config is absent or malformed.
     """
     config = _read_json_file(bridge_dir / _CONFIG_FILE)
@@ -1740,10 +1740,10 @@ def read_bridge_id(bridge_dir: Path) -> str | None:
 
 def write_active_session_id(bridge_dir: Path, session_id: str) -> None:
     """
-    Atomically update the bridge's active Omnigent session.
+    Atomically update the bridge's active tesseract session.
 
     :param bridge_dir: Bridge directory path.
-    :param session_id: New active Omnigent session id, e.g.
+    :param session_id: New active tesseract session id, e.g.
         ``"conv_abc123"``.
     :returns: None.
     :raises RuntimeError: If the bridge config does not exist.
@@ -1759,7 +1759,7 @@ def write_active_session_id(bridge_dir: Path, session_id: str) -> None:
 
 def read_permission_hook_config(bridge_dir: Path) -> _JsonObject:
     """
-    Read Omnigent routing details for the permission command hook.
+    Read tesseract routing details for the permission command hook.
 
     :param bridge_dir: Bridge directory path.
     :returns: Permission hook config, e.g.
@@ -1793,7 +1793,7 @@ def update_permission_hook_auth_headers(
 
 def build_mcp_config(bridge_dir: Path, *, python_executable: str | None = None) -> _JsonObject:
     """
-    Build the Claude Code MCP config for the Omnigent bridge server.
+    Build the Claude Code MCP config for the tesseract bridge server.
 
     :param bridge_dir: Bridge directory path.
     :param python_executable: Python executable to run, e.g.
@@ -1844,7 +1844,7 @@ def build_hook_settings(
     :param python_executable: Python executable to run, e.g.
         ``"/path/to/.venv/bin/python"``. ``None`` uses
         :data:`sys.executable`.
-    :param ap_server_url: Omnigent server base URL the ``PermissionRequest``
+    :param ap_server_url: tesseract server base URL the ``PermissionRequest``
         command hook should POST to, e.g. ``"http://127.0.0.1:8787"``.
         When ``None``, no ``PermissionRequest`` hook is registered and
         Claude falls back to its built-in TUI permission prompt.
@@ -1901,7 +1901,7 @@ def build_hook_settings(
         str(bridge_dir),
     ]
     # Claude owns command-hook stderr, so it does not reach the runner logs.
-    # Persist it for the forwarder to relay with the Omnigent session id.
+    # Persist it for the forwarder to relay with the tesseract session id.
     observer_stderr = shlex.quote(str(bridge_dir / OBSERVER_HOOK_STDERR_FILE))
     command = f"{shlex.join(command_parts)} 2>> {observer_stderr}"
     hook = {"type": "command", "command": command}
@@ -2219,7 +2219,7 @@ def augment_claude_args(
     turn_routing: bool = False,
 ) -> list[str]:
     """
-    Return Claude CLI args with Omnigent MCP/hook/skill injection.
+    Return Claude CLI args with tesseract MCP/hook/skill injection.
 
     Invocation settings are written into the owner-only bridge directory so
     credential-bearing ``apiKeyHelper`` commands never appear in child argv.
@@ -2229,7 +2229,7 @@ def augment_claude_args(
     :param bridge_dir: Bridge directory path.
     :param python_executable: Python executable to run helper
         modules. ``None`` uses :data:`sys.executable`.
-    :param ap_server_url: Omnigent server base URL passed through to
+    :param ap_server_url: tesseract server base URL passed through to
         :func:`build_hook_settings` so the ``PermissionRequest``
         command hook is registered. ``None`` omits the hook and
         Claude falls back to its built-in TUI prompt.
@@ -2358,7 +2358,7 @@ def _merge_allowed_tools(args: list[str], extra: tuple[str, ...]) -> list[str]:
     """Merge framework-approved tools into Claude's ``--allowedTools`` flag.
 
     :param args: Claude CLI argument list to mutate-and-return.
-    :param extra: Tool names Omnigent may call without an interactive prompt.
+    :param extra: Tool names tesseract may call without an interactive prompt.
     :returns: ``args`` with a deduplicated, order-preserving allowlist.
     """
     if not extra:
@@ -2385,7 +2385,7 @@ def _merge_disallowed_tools(args: list[str], extra: tuple[str, ...]) -> list[str
     overridden; otherwise appends a new flag.
 
     :param args: Claude CLI argument list to mutate-and-return.
-    :param extra: Tool names Omnigent wants disabled.
+    :param extra: Tool names tesseract wants disabled.
     :returns: ``args`` with the merged flag.
     """
     if not extra:
@@ -2726,14 +2726,14 @@ def read_transcript_items_since(
     current_response_id: str | None = None,
 ) -> tuple[int, str | None, list[ClaudeTranscriptItem]]:
     """
-    Read Claude transcript records as Omnigent conversation items.
+    Read Claude transcript records as tesseract conversation items.
 
     Claude Code writes append-only JSONL records whose ``message``
     payloads include user prompts, assistant text, ``thinking``
     blocks, native tool calls, and native tool results. This parser
     intentionally renders no conversation item for metadata records
     (title, file-history, permission mode, system bookkeeping),
-    while translating the user-visible semantic records into Omnigent
+    while translating the user-visible semantic records into tesseract
     item types the web UI already understands — ``thinking`` blocks
     become ``reasoning`` items so the chat surfaces the same
     reasoning context the TUI shows. Some metadata is still
@@ -2905,7 +2905,7 @@ def read_transcript_items_from_offset(
     :param include_sidechains: Pass ``True`` when reading a
         sub-agent's own ``agent-<id>.jsonl`` — every record there is
         a sidechain by Claude's definition, and dropping them would
-        leave the sub-agent's child Omnigent conversation empty. The
+        leave the sub-agent's child tesseract conversation empty. The
         default ``False`` keeps the parent-transcript path
         unchanged.
     :returns: Parsed items plus updated line and byte cursors.
@@ -3159,7 +3159,7 @@ def read_hook_events_since(
     Read hook event names appended after a hook cursor.
 
     The transcript forwarder uses this to publish ``session.status``
-    events to Omnigent when Claude Code's ``Stop`` / ``StopFailure`` hooks
+    events to tesseract when Claude Code's ``Stop`` / ``StopFailure`` hooks
     fire — those are the only edges the wrapper can observe between
     Claude becoming idle and the JSONL transcript reflecting it.
 
@@ -3631,7 +3631,7 @@ def inject_user_message(
     exactly as before.
 
     :param bridge_dir: Bridge directory path.
-    :param content: User text from the Omnigent web UI. Must be non-empty.
+    :param content: User text from the tesseract web UI. Must be non-empty.
     :param timeout_s: Seconds to wait for each readiness gate
         (``tmux.json`` advertised, then prompt rendered), e.g. ``30.0``.
     :returns: None.
@@ -3655,7 +3655,7 @@ def inject_user_message(
     )
     # Escape unsupported slash commands (e.g. ``/help``, ``/exit``) so the
     # Claude Code TUI treats them as user text instead of invoking a state
-    # that Omnigent cannot drive. Allowed commands (``/clear``,
+    # that tesseract cannot drive. Allowed commands (``/clear``,
     # ``/model``, ``/fork``, skills, etc.) pass through unchanged.
     injected_text = _escape_unsupported_slash_command(content)
     needle = _submit_needle(content)
@@ -3918,7 +3918,7 @@ def kill_session(
     :class:`omnigent.inner.terminal.TerminalInstance`). The only way
     a user can end such a session today is to re-attach to the tmux in
     their terminal and exit from inside it. This helper is the analog
-    of that manual exit for the Omnigent web UI's "Stop session" affordance:
+    of that manual exit for the tesseract web UI's "Stop session" affordance:
     it kills the tmux session outright, which terminates ``claude`` and
     everything in the pane.
 
@@ -4519,7 +4519,7 @@ def display_cost_approval_popup(
     Claude-native resolver for the harness-agnostic
     :func:`omnigent.native.native_cost_popup.launch_cost_popup`: it reads the
     pane's tmux socket/target from this bridge's ``tmux.json`` and points
-    the popup at *config_file* for Omnigent routing (base URL + auth
+    the popup at *config_file* for tesseract routing (base URL + auth
     headers, so no token lands on the command line), then delegates. The
     launcher pops the modal on every attached client and skips silently when
     none is attached (e.g. the Terminal tab is closed) — the web
@@ -4528,7 +4528,7 @@ def display_cost_approval_popup(
     :param bridge_dir: Bridge directory path, e.g.
         ``/tmp/omnigent/claude-native/<digest>``. Supplies the tmux target
         (``tmux.json``); the AP-routing config comes from *config_file*.
-    :param session_id: Omnigent session id that owns the elicitation, e.g.
+    :param session_id: tesseract session id that owns the elicitation, e.g.
         ``"conv_abc123"``. Used in the resolve URL the popup POSTs to.
     :param elicitation_id: Outstanding elicitation correlation id, e.g.
         ``"elicit_deadbeef"``.
@@ -5182,7 +5182,7 @@ def start_tool_relay(
     session_id: str | None = None,
 ) -> ClaudeNativeToolRelay:
     """
-    Start a relay for Omnigent tool calls from Claude.
+    Start a relay for tesseract tool calls from Claude.
 
     Writes ``tool_relay.json`` and starts the HTTP server that backs it
     (see :func:`_start_bridge_http_server` for the bind/advertise rules).
@@ -5192,11 +5192,11 @@ def start_tool_relay(
 
     When ``policy_client`` and ``session_id`` are provided the relay also
     exposes ``POST /policies/evaluate``, which proxies requests to the
-    Omnigent server using the runner's refresh-capable client — so hook
+    tesseract server using the runner's refresh-capable client — so hook
     subprocesses never need a server bearer token of their own.
 
     :param bridge_dir: Bridge directory path.
-    :param tools: Omnigent tool schemas to advertise.
+    :param tools: tesseract tool schemas to advertise.
     :param tool_executor: Callback used to dispatch one tool call.
     :param loop: Event loop that owns ``tool_executor``.
     :param policy_client: Runner's async httpx client for policy eval proxy.
@@ -5440,13 +5440,13 @@ def _tool_relay_handler_factory(
         dispatch one tool call.
     :param loop: Event loop that owns ``tool_executor``.
     :param policy_client: Optional async httpx client for proxying
-        ``/policies/evaluate`` to the Omnigent server.
+        ``/policies/evaluate`` to the tesseract server.
     :param session_id: Session id for the ``/policies/evaluate`` path.
     :returns: A concrete :class:`BaseHTTPRequestHandler` subclass.
     """
 
     class _ToolRelayHandler(BaseHTTPRequestHandler):
-        """HTTP handler for active Omnigent tool relay calls."""
+        """HTTP handler for active tesseract tool relay calls."""
 
         def log_message(self, format: str, *args: object) -> None:
             """
@@ -5656,7 +5656,7 @@ def _tool_relay_handler_factory(
             # the fixed prefix is prepended.
             if len(detail) > _POLICY_PROXY_ERROR_DETAIL_MAX:
                 detail = detail[: _POLICY_PROXY_ERROR_DETAIL_MAX - 3] + "..."
-            message = f"omnigent policy-eval proxy could not reach the Omnigent server: {detail}"
+            message = f"omnigent policy-eval proxy could not reach the tesseract server: {detail}"
             # Keep the full exception (with traceback) in the runner log; the
             # user-facing body is capped and can drop a diagnostically useful tail.
             _logger.warning("policy-eval proxy forward failed: %s", detail, exc_info=exc)
@@ -5726,7 +5726,7 @@ def _run_relay_tool(
     try:
         result = future.result(timeout=_TOOL_CALL_TIMEOUT_S)
     except Exception as exc:  # noqa: BLE001 - relay converts callback failures to MCP errors.
-        return _mcp_error(f"Omnigent tool dispatch failed: {exc}")
+        return _mcp_error(f"tesseract tool dispatch failed: {exc}")
     return _mcp_response_from_tool_result(result)
 
 
@@ -5778,7 +5778,7 @@ def _stdio_jsonrpc_loop(
     """
     Run the minimal MCP JSON-RPC stdio loop.
 
-    :param tools: Omnigent tools exposed over MCP.
+    :param tools: tesseract tools exposed over MCP.
     :param stdout_lock: Lock protecting JSON-RPC writes to stdout.
     :param bridge_dir: Bridge directory path used to read the
         active tool relay.
@@ -5878,7 +5878,7 @@ def _extract_progress_token(params: object) -> str | int | None:
 
 def _is_relay_tool_call(params: object, bridge_dir: Path) -> bool:
     """
-    Whether a ``tools/call`` targets a tool routed through the Omnigent relay.
+    Whether a ``tools/call`` targets a tool routed through the tesseract relay.
 
     :param params: Decoded MCP request params (usually a dict).
     :param bridge_dir: Bridge directory used to resolve the active relay.
@@ -5985,7 +5985,7 @@ def _handle_and_write_mcp_request(
     :param request_id: JSON-RPC request identifier returned to the client.
     :param method: JSON-RPC method name.
     :param params: Method parameters from the request.
-    :param tools: Omnigent tools exposed over MCP.
+    :param tools: tesseract tools exposed over MCP.
     :param bridge_dir: Bridge directory used to resolve the active relay.
     :param stdout_lock: Lock serializing responses and notifications.
     :param framed: Whether to emit a Content-Length framed response.
@@ -6034,7 +6034,7 @@ def _handle_mcp_request(
 
     :param method: JSON-RPC method name, e.g. ``"initialize"``.
     :param params: Request params object.
-    :param tools: Omnigent tools exposed over MCP.
+    :param tools: tesseract tools exposed over MCP.
     :param bridge_dir: Bridge directory path used to read the
         active tool relay.
     :returns: MCP result object.
@@ -6050,8 +6050,8 @@ def _handle_mcp_request(
                 "version": "0.1.0",
             },
             "instructions": (
-                "Omnigent tools are available as MCP tools when the "
-                "active Omnigent turn advertises them; local sys_os_* "
+                "tesseract tools are available as MCP tools when the "
+                "active tesseract turn advertises them; local sys_os_* "
                 "tools are available outside an active turn for "
                 "workspace file and shell access."
             ),
@@ -6067,7 +6067,7 @@ def _handle_mcp_request(
 
 def _mcp_tool_schema(tool: Tool) -> _JsonObject:
     """
-    Convert an Omnigent tool schema into MCP tool-list shape.
+    Convert an tesseract tool schema into MCP tool-list shape.
 
     :param tool: Tool instance, e.g. ``SysOsReadTool``.
     :returns: MCP tool descriptor.
@@ -6092,8 +6092,8 @@ def _combined_mcp_tool_schemas(
     :param bridge_dir: Bridge directory path used to read
         ``tool_relay.json``.
     :returns: MCP tool descriptors. Active relay tools override
-        local tools with the same name so calls flow through Omnigent and
-        appear in the Omnigent event stream during web turns.
+        local tools with the same name so calls flow through tesseract and
+        appear in the tesseract event stream during web turns.
     """
     schemas = {name: _mcp_tool_schema(tool) for name, tool in local_tools.items()}
     for tool_spec in _read_relay_tool_specs(bridge_dir):
@@ -6106,7 +6106,7 @@ def _combined_mcp_tool_schemas(
 
 def _mcp_tool_schema_from_spec(tool_spec: _JsonObject) -> _JsonObject:
     """
-    Convert an Omnigent tool schema dict into MCP tool-list shape.
+    Convert an tesseract tool schema dict into MCP tool-list shape.
 
     :param tool_spec: Tool schema from an active harness turn, e.g.
         ``{"name": "sys_os_shell", "parameters": {...}}``.
@@ -6132,7 +6132,7 @@ def _call_mcp_tool(
 
     :param params: MCP tool-call params, e.g.
         ``{"name": "sys_os_read", "arguments": {"path": "README.md"}}``.
-    :param tools: Omnigent tools exposed over MCP.
+    :param tools: tesseract tools exposed over MCP.
     :param bridge_dir: Bridge directory path used to read the
         active tool relay.
     :returns: MCP tool-call result.
@@ -6212,7 +6212,7 @@ def _call_relay_tool(
     token = relay.get("token")
     url = relay.get("url")
     if not isinstance(token, str) or not isinstance(url, str):
-        return _mcp_error("active Omnigent tool relay is missing url/token")
+        return _mcp_error("active tesseract tool relay is missing url/token")
     payload = json.dumps({"name": name, "arguments": arguments}).encode("utf-8")
     req = request.Request(
         f"{url}/tool",
@@ -6236,13 +6236,13 @@ def _call_relay_tool(
     # through ``_call_mcp_tool`` → ``_stdio_jsonrpc_loop`` and kill the MCP
     # server.
     except OSError as exc:
-        return _mcp_error(f"failed to call Omnigent tool relay: {exc}")
+        return _mcp_error(f"failed to call tesseract tool relay: {exc}")
     try:
         decoded = json.loads(raw)
     except json.JSONDecodeError:
-        return _mcp_error("Omnigent tool relay returned malformed JSON")
+        return _mcp_error("tesseract tool relay returned malformed JSON")
     if not isinstance(decoded, dict):
-        return _mcp_error("Omnigent tool relay returned non-object JSON")
+        return _mcp_error("tesseract tool relay returned non-object JSON")
     return decoded
 
 
@@ -6294,7 +6294,7 @@ def _empty_object_schema() -> _JsonObject:
 
 def _build_tools(config: _JsonObject) -> tuple[dict[str, Tool], Callable[[], None]]:
     """
-    Build Omnigent MCP tools served by the bridge.
+    Build tesseract MCP tools served by the bridge.
 
     :param config: Bridge config JSON object. An optional ``"sandbox"``
         key, written by :func:`prepare_bridge_dir` from the session's
@@ -6393,11 +6393,11 @@ def _custom_title_from_transcript_entry(entry: _JsonObject) -> str | None:
     Claude Code appends this metadata record when the operator renames
     the session from the pane (``/rename``). It carries no ``message``,
     so it renders no conversation item; the forwarder mirrors it onto the
-    Omnigent session title instead.
+    tesseract session title instead.
 
     Only the explicit user title is read. Claude also writes an
     ``aiTitle`` record holding its own generated summary, which is
-    ignored here because Omnigent runs its own background titler and two
+    ignored here because tesseract runs its own background titler and two
     auto-titlers would fight over one field.
 
     :param entry: One decoded transcript JSONL record.
@@ -6720,7 +6720,7 @@ def _transcript_items_from_entry(
     include_sidechains: bool = False,
 ) -> tuple[str | None, list[ClaudeTranscriptItem]]:
     """
-    Convert one Claude transcript entry into Omnigent conversation items.
+    Convert one Claude transcript entry into tesseract conversation items.
 
     :param entry: Decoded JSON object from one transcript line.
     :param line_number: One-based transcript line number.
@@ -6734,7 +6734,7 @@ def _transcript_items_from_entry(
         with ``isSidechain: true`` is dropped — that's the right
         behavior when reading the parent's main transcript, where
         sub-agent records are inlined as sidechains and must not
-        appear in the parent's Omnigent conversation. When ``True`` the
+        appear in the parent's tesseract conversation. When ``True`` the
         flag is ignored — required when reading a sub-agent's own
         ``agent-<id>.jsonl`` (every record there is a sidechain by
         definition) so the sub-agent's items reach the child AP
@@ -6797,7 +6797,7 @@ def _attachment_transcript_items_from_entry(
     ``attachment.type == "queued_command"`` rather than a normal
     ``role=user`` message. Treat prompt-mode queued commands as user
     messages so interruption inputs such as ``"STOP"`` appear in the
-    Omnigent transcript and reset the active assistant response.
+    tesseract transcript and reset the active assistant response.
 
     :param entry: Decoded Claude transcript record.
     :param line_number: One-based transcript line number.
@@ -6986,10 +6986,10 @@ _CLAUDE_CLI_SURFACED_COMMANDS: frozenset[str] = frozenset(
     }
 )
 
-# Slash commands that Omnigent lets a user type directly into the native
+# Slash commands that tesseract lets a user type directly into the native
 # Claude Code terminal. Anything not in this set or not a skill is sent
 # as plain text so Claude Code's TUI does not enter an unsupported state
-# (menu, login prompt, exit, etc.) that Omnigent cannot drive.
+# (menu, login prompt, exit, etc.) that tesseract cannot drive.
 _CLAUDE_NATIVE_ALLOWED_USER_SLASH_COMMANDS: frozenset[str] = (
     _CLAUDE_CLI_SURFACED_COMMANDS | frozenset({"branch", "fork"})
 )
@@ -7030,7 +7030,7 @@ def _escape_slash_command_text(content: str) -> str:
 
 def _escape_unsupported_slash_command(content: str) -> str:
     """
-    Escape built-in UI slash commands that Omnigent cannot drive.
+    Escape built-in UI slash commands that tesseract cannot drive.
 
     If the message starts with a known dropped Claude Code command
     (e.g. ``/help``, ``/exit``), escapes it so Claude treats it as
@@ -7077,7 +7077,7 @@ def _passthrough_slash_command_name(content: str) -> str | None:
     commands and known-dropped (escaped) commands return ``None``: their
     outcome is already decided bridge-side.
 
-    :param content: User text from the Omnigent web UI.
+    :param content: User text from the tesseract web UI.
     :returns: The unvalidated command name, e.g. ``"my-skill"``, or
         ``None`` when no rejection watch is needed.
     """
@@ -7717,7 +7717,7 @@ _CONTEXT_OVERFLOW_REPLACEMENT = (
 _LOGIN_COMMAND_RE = re.compile(r"(?<![\w/])/login\b")
 
 _LOGIN_GUIDANCE = (
-    "`/login` is not available from the Omnigent web chat — run "
+    "`/login` is not available from the tesseract web chat — run "
     "`omni setup` on the host to sign in again."
 )
 
@@ -7905,7 +7905,7 @@ def _parent_or_record_source_key(
 
 def _response_id_from_source(source: str) -> str:
     """
-    Derive a deterministic Omnigent response id from a Claude source key.
+    Derive a deterministic tesseract response id from a Claude source key.
 
     :param source: Claude UUID/request id/line key.
     :returns: String id with the standard ``resp_`` prefix.
@@ -7920,7 +7920,7 @@ def _source_id(source_key: str, item_index: int, item_type: str) -> str:
 
     :param source_key: Base Claude record key.
     :param item_index: Content block index inside the record.
-    :param item_type: Omnigent item type.
+    :param item_type: tesseract item type.
     :returns: Stable source id string.
     """
     return f"{source_key}:{item_index}:{item_type}"

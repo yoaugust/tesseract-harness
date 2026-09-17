@@ -22,7 +22,7 @@ pub fn find_repo_root(start: &Path, external_profile: bool) -> Result<PathBuf> {
             {
                 bail!(
                     "found a VCS root at {} but it lacks omnigent/ and web/ — \
-                     run omnidev from inside an Omnigent checkout",
+                     run omnidev from inside an tesseract checkout",
                     root.display()
                 );
             }

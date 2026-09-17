@@ -254,7 +254,7 @@ def test_mcp_elicitation_delivers_user_selected_answer_not_schema_default(
     if resp.status_code not in (200, 201, 409):
         pytest.fail(f"Agent registration failed: {resp.status_code} {resp.text[:500]}")
 
-    # The tool name Omnigent uses in the function_call is
+    # The tool name tesseract uses in the function_call is
     # "<config_key>__<tool_name>" where <config_key> is the key under
     # ``tools:`` in the YAML config (``"elicitation_mcp"`` above).
     # The FastMCP server's own name ("elicitation-enum-test") is NOT used

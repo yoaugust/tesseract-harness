@@ -1,11 +1,11 @@
 {
   "name": "omnigent-vscode",
-  "displayName": "Omnigent",
-  "description": "Open your running local Omnigent server inside VS Code, in an editor-beside iframe.",
+  "displayName": "tesseract",
+  "description": "Open your running local tesseract server inside VS Code, in an editor-beside iframe.",
   "version": "0.1.0",
   "publisher": "databricks",
   "license": "Apache-2.0",
-  "icon": "media/omnigent-icon.png",
+  "icon": "media/tesseract-icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/omnigent-ai/omnigent.git",
@@ -18,12 +18,12 @@
   "activationEvents": [],
   "contributes": {
     "configuration": {
-      "title": "Omnigent",
+      "title": "tesseract",
       "properties": {
         "omnigent.serverUrl": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Manual Omnigent server URL override for a **localhost** server (e.g. `http://127.0.0.1:6767`). Leave empty to auto-discover a locally running Omnigent server. Non-localhost URLs are not supported in this build."
+          "markdownDescription": "Manual tesseract server URL override for a **localhost** server (e.g. `http://127.0.0.1:6767`). Leave empty to auto-discover a locally running tesseract server. Non-localhost URLs are not supported in this build."
         }
       }
     },
@@ -31,8 +31,8 @@
       "activitybar": [
         {
           "id": "omnigent-container",
-          "title": "Omnigent",
-          "icon": "media/omnigent-icon.svg"
+          "title": "tesseract",
+          "icon": "media/tesseract-icon.svg"
         }
       ]
     },
@@ -41,21 +41,21 @@
         {
           "type": "tree",
           "id": "omnigent.home",
-          "name": "Omnigent"
+          "name": "tesseract"
         }
       ]
     },
     "viewsWelcome": [
       {
         "view": "omnigent.home",
-        "contents": "Open the running Omnigent server UI in an editor tab.\n[Open Omnigent](command:omnigent.open)\nStart a local server with `omnigent server`, or set `omnigent.serverUrl` to a localhost URL."
+        "contents": "Open the running tesseract server UI in an editor tab.\n[Open tesseract](command:omnigent.open)\nStart a local server with `omnigent server`, or set `omnigent.serverUrl` to a localhost URL."
       }
     ],
     "commands": [
       {
         "command": "omnigent.open",
-        "title": "Omnigent: Open",
-        "icon": "media/omnigent-icon.svg"
+        "title": "tesseract: Open",
+        "icon": "media/tesseract-icon.svg"
       }
     ],
     "menus": {

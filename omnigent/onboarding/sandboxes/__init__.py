@@ -1,7 +1,7 @@
-"""Sandbox launchers: run Omnigent hosts in remote sandboxes.
+"""Sandbox launchers: run tesseract hosts in remote sandboxes.
 
 Public API for the ``omnigent sandbox`` CLI and anything else that
-bootstraps a sandbox-backed host. Core Omnigent contributes built-in
+bootstraps a sandbox-backed host. Core tesseract contributes built-in
 providers directly; third-party packages can contribute providers through
 the ``omnigent.sandbox_providers`` entry point group.
 """

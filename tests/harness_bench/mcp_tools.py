@@ -1,4 +1,4 @@
-"""Shared Omnigent-MCP tool-name helpers for the harness bench."""
+"""Shared tesseract-MCP tool-name helpers for the harness bench."""
 
 from __future__ import annotations
 

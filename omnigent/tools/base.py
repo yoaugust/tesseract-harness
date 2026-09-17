@@ -124,7 +124,7 @@ class Tool(abc.ABC):
             agent identity.
         :returns: The tool's string result.
         :raises NotImplementedError: When the subclass is
-            runner-dispatched and Omnigent misroutes here.
+            runner-dispatched and tesseract misroutes here.
         """
         del arguments, ctx
         raise NotImplementedError(

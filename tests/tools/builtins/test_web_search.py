@@ -319,7 +319,7 @@ def test_nimble_spec_config_used_in_http_call(tool_ctx: ToolContext) -> None:
 
 
 def test_nimble_sends_x_client_source_header(tool_ctx: ToolContext) -> None:
-    """Every request carries the ``X-Client-Source`` header identifying Omnigent."""
+    """Every request carries the ``X-Client-Source`` header identifying tesseract."""
     fake_response = MagicMock()
     fake_response.json.return_value = {"results": []}
 
@@ -490,7 +490,7 @@ def test_tavily_spec_config_used_in_http_call(tool_ctx: ToolContext) -> None:
 
 
 def test_tavily_sends_x_client_source_header(tool_ctx: ToolContext) -> None:
-    """Every request carries the ``X-Client-Source`` header identifying Omnigent."""
+    """Every request carries the ``X-Client-Source`` header identifying tesseract."""
     fake_response = MagicMock()
     fake_response.json.return_value = {"results": []}
 
@@ -739,7 +739,7 @@ def test_keenable_sends_x_keenable_title_header(tool_ctx: ToolContext) -> None:
         tool.invoke(json.dumps({"query": "test"}), tool_ctx)
 
     headers = mock_post.call_args.kwargs["headers"]
-    assert headers["X-Keenable-Title"] == "Omnigent"
+    assert headers["X-Keenable-Title"] == "tesseract"
 
 
 def test_keenable_http_error_returns_error_string(tool_ctx: ToolContext) -> None:
@@ -889,6 +889,6 @@ def test_non_openai_mode_is_sync_in_sessions_native_mode() -> None:
 
 
 def test_openai_mode_is_not_async() -> None:
-    """OpenAI passthrough mode should not enter Omnigent async dispatch."""
+    """OpenAI passthrough mode should not enter tesseract async dispatch."""
     tool = WebSearchTool(llm_provider="openai")
     assert tool.is_async() is False

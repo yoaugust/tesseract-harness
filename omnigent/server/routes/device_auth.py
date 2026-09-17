@@ -224,7 +224,7 @@ def mint_delegated_token(
     The two claims are independent: a device grant carries both, a login
     grant only ``grant_id``, a machine client only ``scope``.
 
-    :param user_id: The Omnigent identity the token acts as (``sub``).
+    :param user_id: The tesseract identity the token acts as (``sub``).
     :param cookie_secret: HMAC key for HS256 signing.
     :param ttl_seconds: Token lifetime in seconds (kept short — ≤ 1 h).
     :param provider: Identity provider name (informational claim).
@@ -787,7 +787,7 @@ def create_device_auth_router(
         Requires a browser identity; if the user is not signed in,
         bounce through the provider's login and return here (the
         ``return_to`` is sanitized by the login route). Shows the exact
-        Omnigent identity being delegated and the requesting ``client_id``
+        tesseract identity being delegated and the requesting ``client_id``
         so any mismatch is visible before approval.
 
         **Re-authentication:** consent requires a login performed AFTER this
@@ -837,7 +837,7 @@ def create_device_auth_router(
         """Bind a pending grant to the authenticated identity.
 
         Guarded by a strict CSRF check (trusted, present ``Origin``) and
-        requires the browser identity; binds the approving Omnigent
+        requires the browser identity; binds the approving tesseract
         identity to the grant.
         """
         _require_browser_origin(request)
@@ -1015,7 +1015,7 @@ def _consent_html(
         body = (
             "<h1>Authorize access</h1>"
             f"<p>{app_name} is requesting permission to act as "
-            f"<b>{esc(user_id)}</b> on this Omnigent server.</p>"
+            f"<b>{esc(user_id)}</b> on this tesseract server.</p>"
             f'<p class="muted">Code: {esc(user_code)}</p>'
             '<p class="warn">⚠️ Only approve if <b>you</b> just started this '
             "login and this code matches the one the application showed you. If "
@@ -1031,7 +1031,7 @@ def _consent_html(
     return (
         "<!doctype html><html><head><meta charset='utf-8'>"
         "<meta name='viewport' content='width=device-width, initial-scale=1'>"
-        "<title>Authorize access — Omnigent</title><style>"
+        "<title>Authorize access — tesseract</title><style>"
         "body{font-family:system-ui,sans-serif;max-width:32rem;margin:4rem auto;"
         "padding:0 1rem;line-height:1.5}h1{font-size:1.4rem}.muted{color:#666;"
         "font-size:.9rem}.warn{color:#8a5a00;background:#fff7e6;padding:.6rem .8rem;"

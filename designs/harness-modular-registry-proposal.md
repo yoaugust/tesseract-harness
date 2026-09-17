@@ -5,7 +5,7 @@ Supersedes nothing; extends `designs/harness-plugin-interface.md`.
 
 ## Problem
 
-Omnigent supports **headless / SDK harnesses** as community plugins today (see
+tesseract supports **headless / SDK harnesses** as community plugins today (see
 `designs/harness-plugin-interface.md`). A package like `omnigent-foo` declares a
 `HarnessContribution` entry point, fills `harness_modules` / `aliases` /
 `install_specs`, and core wires it in generically — because an SDK harness plugs
@@ -14,7 +14,7 @@ in as *pure data*: one import-path string per harness, dispatched through
 
 **Native (terminal / TUI) harnesses are not pluggable.** A native harness wraps
 a real vendor CLI (Claude Code, Codex, Cursor, Pi, Goose, …) in a tmux/PTY or
-local-server session, tails its transcript, mirrors output back into Omnigent,
+local-server session, tails its transcript, mirrors output back into tesseract,
 and mediates auth / permissions / resume / interrupt. Adding one today means
 editing core in ~10 places. The registry *rejects* any community contribution
 that sets `native_harnesses` or `native_agents`:

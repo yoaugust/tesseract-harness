@@ -1,6 +1,6 @@
-"""Reusable pexpect helpers for driving the Omnigent REPL.
+"""Reusable pexpect helpers for driving the tesseract REPL.
 
-The Omnigent REPL is a prompt-toolkit app that renders a full
+The tesseract REPL is a prompt-toolkit app that renders a full
 terminal layout (status bar + input area + streaming output +
 Ctrl+G debug overview). Driving it from tests requires:
 
@@ -186,7 +186,7 @@ def spawn_omnigent_run(
         by the ``omnigent_credentials_env`` fixture so PAT
         and base URL propagate.
     :param cwd: Working directory for the subprocess. Must be
-        the Omnigent repo root so YAML ``callable:`` entries
+        the tesseract repo root so YAML ``callable:`` entries
         like ``tests.resources.examples._shared.tool_functions.get_current_time``
         resolve on sys.path.
     :param timeout: Default expect-timeout in seconds. Tests

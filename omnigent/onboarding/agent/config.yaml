@@ -1,7 +1,7 @@
 spec_version: 1
 
 name: onboarding-buddy
-description: Built-in assistant that guides users through creating new Omnigent agents.
+description: Built-in assistant that guides users through creating new tesseract agents.
 
 # The model and connection fields are dynamically replaced at runtime
 # by the `omnigent create` CLI based on the user's provider selection.

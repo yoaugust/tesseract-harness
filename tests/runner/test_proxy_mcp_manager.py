@@ -270,7 +270,7 @@ async def test_schemas_for_injects_empty_properties_when_missing() -> None:
 async def test_schemas_for_http_error_returns_failure() -> None:
     """An HTTP 500 from the proxy must surface as a failure, not raise.
 
-    Failure means an Omnigent server error crashes the harness instead of surfacing
+    Failure means an tesseract server error crashes the harness instead of surfacing
     as a graceful tool-unavailable message to the LLM.
     """
     transport = _StubTransport([httpx.Response(status_code=500)])

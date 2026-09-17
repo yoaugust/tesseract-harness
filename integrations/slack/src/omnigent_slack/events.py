@@ -18,7 +18,7 @@ HostType = Literal["external", "managed"]
 
 
 class OmnigentError(RuntimeError):
-    """Base error for the Omnigent client and its event parsing."""
+    """Base error for the tesseract client and its event parsing."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -47,7 +47,7 @@ class ElicitationQuestion:
 class ElicitationRequest:
     """A server-initiated request parsed off the event stream.
 
-    The Omnigent server parks a running turn when a tool call trips an approval
+    The tesseract server parks a running turn when a tool call trips an approval
     policy OR the agent asks the user to choose (``AskUserQuestion``), emitting
     ``response.elicitation_request``. Two shapes the bot renders differently:
 

@@ -1,7 +1,7 @@
-"""Native Cursor TUI wrapper for the Omnigent CLI.
+"""Native Cursor TUI wrapper for the tesseract CLI.
 
 ``omnigent cursor`` launches the Cursor CLI's interactive TUI (``cursor-agent``
-with no args) inside an Omnigent-runner-owned tmux terminal and attaches the
+with no args) inside an tesseract-runner-owned tmux terminal and attaches the
 local TTY — the cursor analog of ``omnigent codex`` / ``omnigent pi``. The runner
 spawns the process (see :func:`omnigent.runner.app._auto_create_cursor_terminal`);
 this module owns the CLI-side orchestration: session create/resume, daemon
@@ -108,7 +108,7 @@ class NativeCursorLaunch:
 
 @dataclass(frozen=True)
 class LaunchedCursorTerminal:
-    """Terminal resource returned by the Omnigent runner launch path."""
+    """Terminal resource returned by the tesseract runner launch path."""
 
     terminal_id: str
     tmux_socket: Path | None
@@ -122,7 +122,7 @@ class PreparedCursorTerminal:
     :param reattached: ``True`` when an existing, still-running session
         terminal was reused (the live-reattach path: prior chat is
         intact).
-    :param cold_resumed: ``True`` when resuming an existing Omnigent
+    :param cold_resumed: ``True`` when resuming an existing tesseract
         session whose terminal had already exited, so a new
         ``cursor-agent`` TUI is launched. The forwarder persisted the
         cursor chat id as ``external_session_id``, so the runner relaunches
@@ -326,10 +326,10 @@ def run_cursor_native(
     mode: str | None = None,
 ) -> None:
     """
-    Launch the Cursor TUI in an Omnigent terminal.
+    Launch the Cursor TUI in an tesseract terminal.
 
-    :param server: Resolved Omnigent server URL.
-    :param session_id: Optional existing Omnigent conversation id.
+    :param server: Resolved tesseract server URL.
+    :param session_id: Optional existing tesseract conversation id.
     :param cursor_args: Raw cursor-agent CLI args to persist for the runner-owned TUI.
     :param resume_picker: ``True`` runs the cursor-native picker.
     :param model: Optional Cursor model id persisted as the session
@@ -347,7 +347,7 @@ def run_cursor_native(
     _preflight_local_tools()
     if server is None:
         raise click.ClickException(
-            "Cursor requires a resolved Omnigent server URL. The CLI should call "
+            "Cursor requires a resolved tesseract server URL. The CLI should call "
             "_ensure_backend before run_cursor_native."
         )
     effective_cursor_args = _inject_mode_arg(cursor_args, mode)
@@ -404,11 +404,11 @@ def _run_with_remote_server(
     auto_open_conversation: bool = False,
 ) -> None:
     """
-    Launch Cursor on an Omnigent server via a daemon-spawned runner.
+    Launch Cursor on an tesseract server via a daemon-spawned runner.
 
-    :param base_url: Omnigent server base URL.
+    :param base_url: tesseract server base URL.
     :param spec_path: Generated Cursor wrapper agent spec.
-    :param session_id: Optional existing Omnigent session id.
+    :param session_id: Optional existing tesseract session id.
     :param resume_picker: When ``True``, run the cursor-native picker.
     :param cursor_args: Raw cursor-agent CLI args.
     :param model: Optional Cursor model id persisted as ``model_override``.
@@ -648,7 +648,7 @@ async def _patch_cursor_session(
     """
     PATCH a cursor-native session's persisted launch config.
 
-    :param client: Omnigent server HTTP client.
+    :param client: tesseract server HTTP client.
     :param session_id: Conversation id to update.
     :param patch: Fields to persist, e.g. ``{"model_override": "gpt-5.2"}``.
     :raises click.ClickException: If the server rejects the update.
@@ -664,7 +664,7 @@ async def _patch_cursor_session(
 
 
 async def _fetch_cursor_session(client: httpx.AsyncClient, session_id: str) -> dict[str, object]:
-    """Fetch an existing Omnigent session."""
+    """Fetch an existing tesseract session."""
     resp = await client.get(f"/v1/sessions/{url_component(session_id)}")
     if resp.status_code == 404:
         raise click.ClickException(f"Conversation {session_id!r} not found on the server.")

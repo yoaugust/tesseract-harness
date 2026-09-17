@@ -1,5 +1,5 @@
 """
-JSON dump of an omnigent conversation — the Omnigent mode port of the
+JSON dump of an omnigent conversation — the tesseract mode port of the
 legacy ``--log`` feature (see designs/RUN_OMNIGENT_REPL_PARITY.md).
 
 The legacy non-AP path wrote a session-shaped JSON to
@@ -510,7 +510,7 @@ def _fetch_all_items_sync(
     end-of-data convention.
 
     Items are converted to plain dicts so the JSON dump is
-    self-contained — a reader doesn't need any of Omnigent'
+    self-contained — a reader doesn't need any of tesseract'
     Pydantic models to consume the file.
 
     :param conv_store: ConversationStore instance.

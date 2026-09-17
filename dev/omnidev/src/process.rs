@@ -34,7 +34,7 @@ impl ProcSpec {
 
     fn omnigent_log_env() -> Vec<(String, String)> {
         // Child stderr is a pipe that omnidev reads into its process panes.
-        // Let Omnigent's process logger mirror to that pipe despite it not
+        // Let tesseract's process logger mirror to that pipe despite it not
         // being a terminal, and force ANSI colors because omnidev parses them.
         vec![
             ("OMNIGENT_LOG_TTY_FD".into(), "2".into()),

@@ -1,4 +1,4 @@
-"""Helpers for opening Omnigent conversation URLs from CLI frontends."""
+"""Helpers for opening tesseract conversation URLs from CLI frontends."""
 
 from __future__ import annotations
 
@@ -49,7 +49,7 @@ def strip_conversation_path(url: str) -> str:
 
 def conversation_url(base_url: str, conversation_id: str) -> str:
     """
-    Build the browser URL for an Omnigent conversation.
+    Build the browser URL for an tesseract conversation.
 
     For Databricks workspace-hosted servers
     (``https://<ws>/api/2.0/omnigent``) the web UI lives on the
@@ -58,7 +58,7 @@ def conversation_url(base_url: str, conversation_id: str) -> str:
     workspace selector appended when ``omnigent login`` recorded the
     org id.
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:6767"``.
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:6767"``.
     :param conversation_id: Conversation id, e.g. ``"conv_abc123"``.
     :returns: Browser URL, e.g. ``"http://127.0.0.1:6767/c/conv_abc123"``.
     """
@@ -109,7 +109,7 @@ def open_conversation_url(url: str) -> bool:
 # workflows that tee the run log) can grep the conversation URL the moment
 # the session exists — before the turn finishes — without polling the
 # sessions API. Keep this literal in sync with any log-scraping consumer.
-SESSION_URL_ANNOUNCE_PREFIX = "Omnigent session: "
+SESSION_URL_ANNOUNCE_PREFIX = "tesseract session: "
 
 
 def announce_conversation_url(
@@ -122,11 +122,11 @@ def announce_conversation_url(
     Print the conversation URL on its own line as soon as the session exists.
 
     Independent of the browser-open preference: this always emits a stable,
-    greppable ``"Omnigent session: <url>"`` line so headless callers (CI
+    greppable ``"tesseract session: <url>"`` line so headless callers (CI
     wrappers) can surface the session link immediately, even when no browser
     is opened. Returns the URL so callers can also use it programmatically.
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:6767"``.
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:6767"``.
     :param conversation_id: Conversation id, e.g. ``"conv_abc123"``.
     :param echo: Output sink for the announcement line. Defaults to stderr
         via ``print`` so it never intermixes with a one-shot's stdout answer.
@@ -151,7 +151,7 @@ def open_conversation_link_if_enabled(
     """
     Open a conversation link when the CLI config enables it.
 
-    :param base_url: Omnigent server base URL, e.g. ``"http://127.0.0.1:6767"``.
+    :param base_url: tesseract server base URL, e.g. ``"http://127.0.0.1:6767"``.
     :param conversation_id: Conversation id, e.g. ``"conv_abc123"``.
     :param enabled: ``True`` when the user opted into automatic browser opens.
     :param warn: Optional warning sink. Receives a complete warning

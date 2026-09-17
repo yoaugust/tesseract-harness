@@ -189,7 +189,7 @@ def test_pi_native_subscription_returns_none() -> None:
     ``kind="subscription", cli="pi"`` signals "use Pi's own native auth".
     When it is configured as the pi-surface default,
     ``resolve_pi_native_provider`` returns ``None`` so Pi reads from its
-    own ``~/.pi/agent`` without an Omnigent-managed ``models.json``.
+    own ``~/.pi/agent`` without an tesseract-managed ``models.json``.
     """
     config = {
         "providers": {"pi-subscription": {"kind": "subscription", "cli": "pi", "default": "pi"}}

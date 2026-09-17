@@ -8,7 +8,7 @@ Three user-observable failure modes are guarded here:
    (0.32.0 at report time). No release could satisfy ``>=1.47.0``.
 2. The same predicate (``harness_cli_installed`` → ``harness_is_configured``)
    made the host refuse every kimi launch, so the harness was unusable.
-3. The Kimi auth guidance Omnigent prints names the wrong config path:
+3. The Kimi auth guidance tesseract prints names the wrong config path:
    ``~/.kimi/config.toml`` is the legacy ``kimi-cli`` location; Kimi Code
    keeps its config in ``$KIMI_CODE_HOME/config.toml`` (default
    ``~/.kimi-code/config.toml`` — ``kimi doctor`` is authoritative). The

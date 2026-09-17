@@ -433,7 +433,7 @@ async def test_shutdown_all_closes_all_entries(
 ) -> None:
     """``shutdown_all`` must close every live connection and empty the pool.
 
-    Failure means the Omnigent server shutdown leaks MCP connections, blocking
+    Failure means the tesseract server shutdown leaks MCP connections, blocking
     graceful process exit.
     """
     patch_mcp_connection["gh"] = _FakeConn(tools=[_make_tool("search")])

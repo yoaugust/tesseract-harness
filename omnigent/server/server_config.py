@@ -223,7 +223,7 @@ def _branding_heading(section: Mapping[str, Any]) -> str | None:
 
 
 def _branding_powered_by(section: Mapping[str, Any]) -> bool:
-    """Whether to show the "Powered by Omnigent" attribution (default True)."""
+    """Whether to show the "Powered by tesseract" attribution (default True)."""
     value = section.get("powered_by")
     return True if value is None else bool(value)
 

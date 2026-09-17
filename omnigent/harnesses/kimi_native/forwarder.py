@@ -1,9 +1,9 @@
-"""Mirror a kimi-native TUI session's transcript into the Omnigent web chat.
+"""Mirror a kimi-native TUI session's transcript into the tesseract web chat.
 
 The kimi-native harness launches the interactive ``kimi`` TUI in a tmux pane and
 injects web-UI turns into it (see :mod:`omnigent.harnesses.kimi_native.bridge`). The TUI's
 reply renders live in the embedded terminal, but — unlike the SDK ``KimiExecutor``
-— nothing flows the assistant's response back into Omnigent's conversation
+— nothing flows the assistant's response back into tesseract's conversation
 transcript (the chat bubbles). This module closes that gap, the kimi analog of
 :mod:`omnigent.harnesses.cursor_native.forwarder`.
 
@@ -180,7 +180,7 @@ class _UsageState:
     """Durable cumulative usage/model mirror state.
 
     Survives forwarder restarts, terminal recreation, and wire-log switches
-    within the same Omnigent session: the posted fields are cumulative
+    within the same tesseract session: the posted fields are cumulative
     (SET-semantics, clamped server-side), so zeroing them mid-session would
     silently drop every later post until fresh totals re-crossed the peak.
     ``model`` / ``posted_model`` are persisted so a restart between an
@@ -234,7 +234,7 @@ class KimiWireItem:
     model: str | None = None
     # For kind == "usage" and the turn-edge kinds: the row's wall-clock
     # ``time`` in epoch ms, so the forwarder can skip history that predates
-    # this Omnigent session (billing floor / historical-edge gate).
+    # this tesseract session (billing floor / historical-edge gate).
     time_ms: int | None = None
 
 
@@ -247,7 +247,7 @@ def clear_kimi_bridge_state(bridge_dir: Path) -> None:
     Mirrors ``cursor_native_forwarder.clear_cursor_bridge_state``: without this,
     a re-created terminal would resume the prior session's line offset against a
     different wire log. The cumulative usage state (``_USAGE_STATE_FILE``) is
-    deliberately KEPT — it belongs to the Omnigent session, not the terminal,
+    deliberately KEPT — it belongs to the tesseract session, not the terminal,
     and zeroing it would silently drop later usage posts (server-side clamps).
     """
     with contextlib.suppress(OSError):
@@ -989,7 +989,7 @@ async def _post_external_session_status(
     final assistant text, since the runner delivers an empty result when an idle
     edge forwards none.
 
-    :raises httpx.HTTPError: If the Omnigent request fails or is rejected.
+    :raises httpx.HTTPError: If the tesseract request fails or is rejected.
     """
     url = f"{base_url.rstrip('/')}/v1/sessions/{session_id}/events"
     resp = await client.post(
@@ -1024,7 +1024,7 @@ async def _post_reasoning_item(
 
 
 class _KimiUsageSync:
-    """Mirror kimi token usage and the effective model to Omnigent.
+    """Mirror kimi token usage and the effective model to tesseract.
 
     The kimi analog of codex-native's ``_SessionUsageCoalescer`` +
     ``_sync_model_change``: per-call ``usage.record`` rows accumulate into
@@ -1068,7 +1068,7 @@ class _KimiUsageSync:
         self._events_url = f"{base_url.rstrip('/')}/v1/sessions/{session_id}/events"
         self._headers = headers
         self._bridge_dir = bridge_dir
-        # Records stamped before this Omnigent session launched belong to a
+        # Records stamped before this tesseract session launched belong to a
         # resumed pre-existing kimi session — never billed. STRICT floor: the
         # discovery mtime skew must not leak into billing, or a turn finishing
         # just before terminal recreation would be re-billed.
@@ -1864,7 +1864,7 @@ async def forward_kimi_wire_to_session(
                         or (item.time_ms is not None and item.time_ms < launch_epoch_ms)
                     ):
                         # A resumed wire's HISTORICAL edge (stamped before this
-                        # Omnigent session launched): replaying it would post a
+                        # tesseract session launched): replaying it would post a
                         # dead turn's terminal status — with its stale error —
                         # over the live turn. Skip it entirely; the same
                         # launch-epoch floor already gates usage billing.

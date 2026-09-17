@@ -570,7 +570,7 @@ async def test_auto_create_kiro_terminal_launches_required_terminal_with_isolate
     assert permission_mirror_calls
     assert permission_mirror_calls[0]["base_url"] == "http://127.0.0.1:6767"
     assert permission_mirror_calls[0]["session_id"] == "823dbd1aab969b5a813fac59bb977a77"
-    # The Omnigent MCP tool relay is seeded for this session's bridge dir.
+    # The tesseract MCP tool relay is seeded for this session's bridge dir.
     assert relay_calls == [
         {
             "session_id": "823dbd1aab969b5a813fac59bb977a77",
@@ -580,7 +580,7 @@ async def test_auto_create_kiro_terminal_launches_required_terminal_with_isolate
             "await_notify": False,
         }
     ]
-    # And the Omnigent MCP server is declared in the workspace-scoped kiro config.
+    # And the tesseract MCP server is declared in the workspace-scoped kiro config.
     workspace_mcp = tmp_path / ".kiro" / "settings" / "mcp.json"
     assert workspace_mcp.exists()
     mcp_servers = json.loads(workspace_mcp.read_text())["mcpServers"]
@@ -592,7 +592,7 @@ async def test_auto_create_kiro_terminal_skips_mcp_wiring_without_relay(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Without a comment-relay callback, the Omnigent MCP is NOT wired.
+    """Without a comment-relay callback, the tesseract MCP is NOT wired.
 
     The workspace mcp.json write + relay seed are gated on ``server_client`` AND
     ``ensure_comment_relay`` together, so serve-mcp never launches with no relay
@@ -787,7 +787,7 @@ async def test_auto_create_claude_terminal_passes_session_effort(
     """
     Host-spawned terminal launch reads session effort and passes ``--effort``.
 
-    When the Omnigent server returns a session with a persisted
+    When the tesseract server returns a session with a persisted
     ``reasoning_effort``, the auto-create path must include
     ``--effort <value>`` in the Claude CLI args so the terminal
     starts at the user's chosen effort level.
@@ -835,7 +835,7 @@ async def test_auto_create_claude_terminal_passes_session_effort(
                 metadata={"terminal_name": "claude", "session_key": "main", "running": True},
             )
 
-    # Fake Omnigent server client that returns a session with reasoning_effort.
+    # Fake tesseract server client that returns a session with reasoning_effort.
     def _handle_request(_request: httpx.Request) -> httpx.Response:
         if use_envelope:
             raise AssertionError("envelope terminal startup made a legacy HTTP callback")
@@ -1868,7 +1868,7 @@ async def test_auto_create_claude_terminal_forwarder_skips_replayed_transcript_o
 
     On cold resume the runner synthesizes Claude's local transcript from
     AP's committed history and launches ``claude --resume``, so the
-    transcript file already holds every item Omnigent has at offset 0. The
+    transcript file already holds every item tesseract has at offset 0. The
     forwarder must therefore start at the transcript end
     (``start_at_end=True``); starting at offset 0 would re-post the whole
     history as new ``external_conversation_item`` records — which carry no
@@ -1906,7 +1906,7 @@ async def test_auto_create_claude_terminal_forwarder_skips_replayed_transcript_o
         _capture_forwarder,
     )
 
-    # Transcript synthesis from Omnigent history has its own coverage; stub it to
+    # Transcript synthesis from tesseract history has its own coverage; stub it to
     # return a path so the resume branch sets ``resume_external_session_id``
     # without a real item fetch. A non-None return mirrors the production
     # contract: it means ``--resume`` will be passed, which is precisely the
@@ -2240,7 +2240,7 @@ async def test_auto_create_claude_terminal_emits_resource_created_event(
     assert len(created) == 1, (
         f"auto-create must publish exactly one session.resource.created; got {published}"
     )
-    # Routed under the session id so the Omnigent relay forwards it to that
+    # Routed under the session id so the tesseract relay forwards it to that
     # session's web stream.
     assert created[0].session_id == "c74c7a36c4736e2153ed6046d16bcf76"
     resource = created[0].event["resource"]
@@ -2252,7 +2252,7 @@ async def test_auto_create_claude_terminal_emits_resource_created_event(
 
 def test_publish_terminal_pending_emits_pending_then_clear() -> None:
     """
-    ``_publish_terminal_pending`` emits the wire shape the Omnigent relay
+    ``_publish_terminal_pending`` emits the wire shape the tesseract relay
     consumes for the Terminal-pill spinner.
 
     The session-creation handler calls this with ``True`` before
@@ -2274,7 +2274,7 @@ def test_publish_terminal_pending_emits_pending_then_clear() -> None:
         {"type": "session.terminal_pending", "pending": True},
         {"type": "session.terminal_pending", "pending": False},
     ]
-    # Routed under the session id so the Omnigent relay forwards it to that
+    # Routed under the session id so the tesseract relay forwards it to that
     # session's web stream.
     assert all(p.session_id == "7cef62c6518d5591cc7991974e33ec4c" for p in published)
 
@@ -2289,7 +2289,7 @@ def test_publish_native_terminal_start_error_emits_failed_status_only(
     The runner must stay alive when terminal auto-create fails, but the
     affected session should only receive ``session.status: failed`` from
     this startup path. A bare ``response.error`` is turn-scoped; if the
-    runner publishes one here, Omnigent can persist an orphan transcript error
+    runner publishes one here, tesseract can persist an orphan transcript error
     and then publish/persist a second error when the user message
     fast-fails against the same terminal.
 
@@ -2372,7 +2372,7 @@ def test_publish_native_terminal_start_error_redacts_mismatch_path(
         "code": "native_terminal_start_failed",
         "error_id": error_id,
         "message": (
-            "Claude Code is Windows-native, but Omnigent is running under WSL. "
+            "Claude Code is Windows-native, but tesseract is running under WSL. "
             "Install @anthropic-ai/claude-code from WSL so a WSL-native `claude` "
             f"binary wins PATH resolution, then retry. Error ID: {error_id}."
         ),
@@ -2446,7 +2446,7 @@ async def test_auto_create_claude_terminal_resets_stale_bridge_id_label(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """
-    Auto-create corrects a stale ``bridge_id`` label on the Omnigent session.
+    Auto-create corrects a stale ``bridge_id`` label on the tesseract session.
 
     If a prior rotation left ``BRIDGE_ID_LABEL_KEY`` set to an older
     bridge id (e.g. ``"m0-bridge_from_prior_rotation"``),
@@ -2503,7 +2503,7 @@ async def test_auto_create_claude_terminal_resets_stale_bridge_id_label(
                 },
             )
 
-    # Capture all HTTP requests made to the fake Omnigent server.
+    # Capture all HTTP requests made to the fake tesseract server.
     recorded_requests: list[httpx.Request] = []
 
     def _handle(req: httpx.Request) -> httpx.Response:
@@ -3075,7 +3075,7 @@ async def test_create_session_antigravity_auto_create_guard_skips_rotation_targe
     """
     The antigravity-native auto-create guard skips ``/clear`` rotation targets.
 
-    A ``/clear`` rotation binds the runner to a fresh Omnigent session, then
+    A ``/clear`` rotation binds the runner to a fresh tesseract session, then
     transfers the existing agy terminal onto it — agy is one long-lived process
     hosting many cascades, so the rotation re-homes the SAME process. The bind
     reaches the runner's ``POST /v1/sessions`` before the transfer runs, so the
@@ -3332,7 +3332,7 @@ async def test_create_session_codex_auto_create_guard_skips_rotation_targets(
     The codex-native auto-create guard skips ``/new`` rotation targets.
 
     A native Codex ``/new`` starts a fresh thread in the SAME terminal, and
-    the forwarder rotates Omnigent ownership onto a fresh session before
+    the forwarder rotates tesseract ownership onto a fresh session before
     transferring that terminal onto it. The bind reaches the runner's
     ``POST /v1/sessions`` before the transfer runs, so the new session
     momentarily has no terminal. Auto-creating a second ``codex:main`` here
@@ -3463,7 +3463,7 @@ async def test_auto_create_claude_terminal_registers_permission_hook(
     The runner's ``_auto_create_claude_terminal`` is the launch path
     used when a claude-native session is created with no CLI client
     present (web-UI sessions, the ``omnigent host`` host API). It
-    must pass the Omnigent server URL into ``augment_claude_args`` so
+    must pass the tesseract server URL into ``augment_claude_args`` so
     ``build_hook_settings`` registers the ``PermissionRequest`` command
     hook and writes permission_hook.json. Without it, approval prompts
     silently never reach the web UI even though every other hook is
@@ -3558,7 +3558,7 @@ async def test_auto_create_claude_terminal_registers_permission_hook(
     assert "claude_native.hook permission-request" in permission_hook["command"]
 
     # The hook reads the server URL back out of this file at hook time,
-    # so it must be written with the runner's Omnigent server URL.
+    # so it must be written with the runner's tesseract server URL.
     config = read_permission_hook_config(
         bridge_dir_for_bridge_id("4e92b5a0c0ee6db3f874f9c4a3f855a5")
     )

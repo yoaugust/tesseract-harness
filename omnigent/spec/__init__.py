@@ -8,7 +8,7 @@ from pathlib import Path
 
 from omnigent.errors import ErrorCode, OmnigentError
 
-# Omnigent compat: imported surgically from a dedicated module so
+# tesseract compat: imported surgically from a dedicated module so
 # the integration's tech debt is removable in one shot. See
 # omnigent/spec/_omnigent_compat.py.
 from omnigent.spec._omnigent_compat import (
@@ -239,7 +239,7 @@ def load(
     elif source.is_dir():
         root = source
     elif source.is_file():
-        # Omnigent single-file YAML dispatch — see
+        # tesseract single-file YAML dispatch — see
         # omnigent.spec._omnigent_compat. Tech-debt aside;
         # remove this branch when omnigent compat ends.
         if is_omnigent_yaml(source):
@@ -270,7 +270,7 @@ def load(
     else:
         raise FileNotFoundError(f"source not found: {source}")
 
-    # Omnigent single-file YAML dispatch (extracted-bundle variant)
+    # tesseract single-file YAML dispatch (extracted-bundle variant)
     # — when a bundle (directory, tarball, or raw bytes) resolves to
     # a root that contains exactly one omnigent YAML and no
     # ``config.yaml``, route to the omnigent adapter. This is the
@@ -350,7 +350,7 @@ def _prune_invalid_sub_agents(spec: AgentSpec) -> list[str]:
         _logger.warning(
             "Dropping sub-agent %r from agent %r: it failed validation on this "
             "client and will be unavailable. This usually means the spec was "
-            "produced by a newer Omnigent server with a feature this client does "
+            "produced by a newer tesseract server with a feature this client does "
             "not support (e.g. a harness it does not recognize) — upgrade this "
             "client to use it. Validation errors: %s",
             name,

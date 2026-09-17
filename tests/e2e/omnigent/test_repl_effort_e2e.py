@@ -1,4 +1,4 @@
-"""E2E: /effort command in the Omnigent REPL under pexpect.
+"""E2E: /effort command in the tesseract REPL under pexpect.
 
 Migrated to mock LLM: the test only exercises slash commands, so
 no LLM turn is required; mock credentials suffice.

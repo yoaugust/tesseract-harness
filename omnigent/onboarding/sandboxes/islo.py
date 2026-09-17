@@ -5,14 +5,14 @@ Implements :class:`~omnigent.onboarding.sandboxes.base.SandboxLauncher`
 for `Islo <https://islo.dev>`_ sandboxes. The integration talks to the
 Islo Python SDK for lifecycle, auth refresh, and blocking execs. A small
 raw HTTP path remains for the SSE stream and file upload endpoints because
-Omnigent's bootstrap needs interactive streaming output.
+tesseract's bootstrap needs interactive streaming output.
 
 Platform notes that shape this launcher:
 
 - **API-key auth.** ``ISLO_API_KEY`` is passed to the SDK, which exchanges
   it for short-lived session tokens and refreshes them automatically.
 - **Prebaked host image.** Like Modal and Daytona, sandboxes boot from
-  the official Omnigent host image unless overridden. That keeps
+  the official tesseract host image unless overridden. That keeps
   server-managed launches fast.
 - **No local port forwarding.** Islo can run commands and upload files
   through its API, but it does not provide a local-to-sandbox port

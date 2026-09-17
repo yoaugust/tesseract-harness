@@ -32,12 +32,12 @@ Protocol flow (identical for every ACP agent):
   4. Re-use the same session id for later turns (the agent retains context).
 
 The agent runs its own agent loop, tool execution, context window and compaction
-internally. This executor translates the ACP event stream into Omnigent
+internally. This executor translates the ACP event stream into tesseract
 :class:`ExecutorEvent`s and routes the agent's permission requests through
-Omnigent's TOOL_CALL policy + human-consent elicitation.
+tesseract's TOOL_CALL policy + human-consent elicitation.
 
 Vs. the Goose executor this generalizes, it additionally: renders the agent's
-tool calls as Omnigent tool cards (``tool_call`` → ``ToolCallRequest``,
+tool calls as tesseract tool cards (``tool_call`` → ``ToolCallRequest``,
 ``tool_call_update`` → ``ToolCallComplete``), forwards reasoning
 (``agent_thought_chunk`` → ``ReasoningChunk``), and honors interrupts via the ACP
 ``session/cancel`` notification.
@@ -193,7 +193,7 @@ class AcpAgentConfig:
     :param send_model_in_session_new: Send a non-standard ``model`` field in
         ``session/new``. Off by default because a strict agent may reject unknown
         params; enable per-agent for Qwen-shaped agents that honor it.
-    :param omnigent_mcp: Expose Omnigent's builtin tools to the agent via
+    :param omnigent_mcp: Expose tesseract's builtin tools to the agent via
         ``session/new.mcpServers`` (the shared ``serve-mcp`` relay). On by
         default; the global ``OMNIGENT_ACP_MCP=0`` kill switch also disables it.
     :param env_passthrough: Environment variable *names* this agent may read at
@@ -202,15 +202,15 @@ class AcpAgentConfig:
         the agent authenticates with — an agent that reads a variable must name
         it here (or in ``os_env.sandbox.env_passthrough``) or it starts
         unauthenticated. Names only; values come from the host environment.
-    :param permission_mode: Omnigent permission stance, e.g. ``"auto"``
+    :param permission_mode: tesseract permission stance, e.g. ``"auto"``
         (default) or ``"bypassPermissions"``. Only the latter changes anything:
         it skips the human approval card for a request no policy had an opinion
         on, matching claude-sdk's ``can_use_tool`` gate. Policy still runs in
         every mode, so a DENY still blocks and an explicit ASK still prompts.
-    :param inject_system_prompt: Fold the Omnigent system prompt into the first
+    :param inject_system_prompt: Fold the tesseract system prompt into the first
         ACP turn (ACP has no dedicated system-prompt field). On by default. Set
         to ``False`` for agents like Pi forks (``omp``) that fully own their own
-        system prompt: those agents prepend Omnigent's text to the user message,
+        system prompt: those agents prepend tesseract's text to the user message,
         which can confuse their internal Claude model into emitting XML tool-call
         fragments (``</function></tool_call>``) when there is no MCP relay
         backing the described tools. Disabling injection leaves the first turn as
@@ -375,7 +375,7 @@ class AcpExecutor(Executor):
         self._cwd = cwd or os.getcwd()
         self._os_env = os_env
         # Advertise ``clientCapabilities.fs`` so the agent delegates file
-        # reads/writes back to us (executed through the Omnigent OSEnvironment,
+        # reads/writes back to us (executed through the tesseract OSEnvironment,
         # which enforces the spec's sandbox read/write roots). Enabled only when
         # an os_env is configured and it isn't a ``fork`` env — a forked env
         # operates on a *copied* tree whose path diverges from the agent's cwd.
@@ -434,22 +434,22 @@ class AcpExecutor(Executor):
         self._context_window: int | None = None
 
         # Bridges the ExecutorAdapter installs (by attribute) so the agent's
-        # mid-turn ``session/request_permission`` routes through Omnigent's
+        # mid-turn ``session/request_permission`` routes through tesseract's
         # TOOL_CALL policy + human-consent elicitation. ``None`` → no bridge
         # wired (standalone / unit tests) → permission falls back to allow.
         self._policy_evaluator: _PolicyEvaluator | None = None
         self._elicitation_handler: _ElicitationHandler | None = None
         self._elicitation_choice_handler: _ElicitationChoiceHandler | None = None
         # Adapter-injected tool-execution bridge (the same ``_tool_executor``
-        # attribute the SDK harnesses use); backs the Omnigent MCP relay.
+        # attribute the SDK harnesses use); backs the tesseract MCP relay.
         self._tool_executor: _ToolExecutor | None = None
 
-        # Omnigent-tool MCP bridge — exposes builtin tools to the agent via
+        # tesseract-tool MCP bridge — exposes builtin tools to the agent via
         # session/new.mcpServers (lazily started at first session; torn down in
         # :meth:`close`). ``_omnigent_tools`` is captured each turn for the relay.
         self._mcp = OmnigentAcpMcp(label=config.name)
         self._omnigent_tools: list[ToolSpec] = []
-        # Tool names the agent can use to reach the Omnigent MCP bridge, snapshotted
+        # Tool names the agent can use to reach the tesseract MCP bridge, snapshotted
         # from what session/new advertised. Empty means nothing is a bridge call.
         self._bridge_tool_aliases: frozenset[str] = frozenset()
 
@@ -805,7 +805,7 @@ class AcpExecutor(Executor):
 
         In ``server`` mode we send only ``cwd`` + ``mcpServers`` and adopt the id
         the agent returns. In ``client`` mode we generate the id and send it.
-        ``mcpServers`` carries Omnigent's builtin tools (via the shared serve-mcp
+        ``mcpServers`` carries tesseract's builtin tools (via the shared serve-mcp
         relay) unless disabled — see :class:`OmnigentAcpMcp`.
         """
         if self._session_id is not None:
@@ -814,7 +814,7 @@ class AcpExecutor(Executor):
         params: _AcpJsonObject = {
             "cwd": self._cwd,
             # ACP requires this field even with no per-session MCP servers; the
-            # helper returns [] when Omnigent MCP is disabled.
+            # helper returns [] when tesseract MCP is disabled.
             "mcpServers": self._session_mcp_servers(),
         }
         client_id: str | None = None
@@ -851,7 +851,7 @@ class AcpExecutor(Executor):
         """Build ``session/new.mcpServers`` and snapshot the bridge aliases.
 
         Relay creation and tool-call classification happen here together so they
-        cannot drift apart. No entries means no aliases, so with Omnigent MCP
+        cannot drift apart. No entries means no aliases, so with tesseract MCP
         disabled every call classifies as agent-native.
         """
         mcp_servers: list[_AcpJsonObject] = []
@@ -887,11 +887,11 @@ class AcpExecutor(Executor):
     async def _respond_to_agent_request(self, request: _AcpJsonObject) -> None:
         """Answer a server-initiated ACP request from the agent.
 
-        - ``session/request_permission`` — decide via Omnigent's TOOL_CALL policy
+        - ``session/request_permission`` — decide via tesseract's TOOL_CALL policy
           + human-consent elicitation (:meth:`_decide_permission`), then select
           the matching allow/reject option. NOT a blind approve.
         - ``fs/read_text_file`` / ``fs/write_text_file`` — when fs delegation is
-          advertised, execute through the Omnigent OSEnvironment so the spec's
+          advertised, execute through the tesseract OSEnvironment so the spec's
           sandbox read/write roots are enforced. Off → never arrive.
         - anything else — reply with JSON-RPC ``method not found`` so the agent
           fails loudly rather than acting on empty data.
@@ -1302,11 +1302,11 @@ class AcpExecutor(Executor):
 
     @staticmethod
     def _usage_from_result(result: _AcpJsonObject) -> dict[str, Any] | None:
-        """Map an agent's final ``result.usage`` to Omnigent's usage keys.
+        """Map an agent's final ``result.usage`` to tesseract's usage keys.
 
         ACP does not standardize usage, but agents that report it (Goose, Devin,
         jcode) use ``{totalTokens, inputTokens, outputTokens}`` plus optional
-        ``cachedReadTokens`` / ``cachedWriteTokens``; Omnigent's ``TurnComplete.usage``
+        ``cachedReadTokens`` / ``cachedWriteTokens``; tesseract's ``TurnComplete.usage``
         uses ``{input_tokens, output_tokens, total_tokens, cache_read_input_tokens,
         cache_creation_input_tokens}``. Absent → ``None`` (usage simply isn't shown for
         agents that don't report).
@@ -1354,7 +1354,7 @@ class AcpExecutor(Executor):
         return usage
 
     def _is_bridge_tool_call(self, name: str, update: _AcpJsonObject) -> bool:
-        """True when this tool call reaches Omnigent through the MCP bridge.
+        """True when this tool call reaches tesseract through the MCP bridge.
 
         Candidates are the reported name plus the machine names some agents carry
         beside a humanized title. An unrecognized shape reads as agent-native,
@@ -1446,7 +1446,7 @@ class AcpExecutor(Executor):
                 self._tool_inputs[call_id] = args
                 metadata: _AcpJsonObject = {"call_id": call_id}
                 # An agent-native tool ran inside the agent's own loop and never
-                # round-trips Omnigent dispatch. Leaving its id in the correlation
+                # round-trips tesseract dispatch. Leaving its id in the correlation
                 # queue would mis-pair the next bridge completion.
                 if not self._is_bridge_tool_call(str(name), update):
                     metadata["internally_executed"] = True
@@ -1587,7 +1587,7 @@ class AcpExecutor(Executor):
         ``session/request_permission`` mid-turn, until the final response
         (``stopReason``) arrives — then yields ``TurnComplete`` with usage.
 
-        ``tools`` (Omnigent's builtin tool schemas) are captured for the Omnigent
+        ``tools`` (tesseract's builtin tool schemas) are captured for the tesseract
         MCP relay set up at ``session/new`` — the agent still runs its OWN tools.
         When ``omnigent_mcp`` is ``False`` the relay is disabled, so the schemas
         serve no purpose and are discarded immediately rather than stored.
@@ -1647,7 +1647,7 @@ class AcpExecutor(Executor):
             user_text = f"{history_prefix}\n\nuser: {user_text}" if user_text else history_prefix
 
         # ACP has no system-prompt field. When inject_system_prompt is enabled
-        # (the default), fold the Omnigent system prompt into the first turn so
+        # (the default), fold the tesseract system prompt into the first turn so
         # the agent's model sees the spec instructions. When disabled (e.g. for
         # Pi forks like omp that fully own their own system prompt), skip the
         # injection to avoid prepending text that confuses the agent's internal
@@ -1768,7 +1768,7 @@ class AcpExecutor(Executor):
     async def close(self) -> None:
         """Terminate the agent subprocess and clean up."""
         self._reset_session_state()
-        # Tear down the Omnigent MCP relay HTTP server + its bridge dir first.
+        # Tear down the tesseract MCP relay HTTP server + its bridge dir first.
         with contextlib.suppress(Exception):
             self._mcp.close()
         if self._reader_task:

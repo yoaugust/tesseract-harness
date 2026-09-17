@@ -1,5 +1,5 @@
-// Worker that fronts the Omnigent container and proxies all HTTP (and
-// WebSocket) traffic to it. Omnigent needs a SINGLE server instance (in-memory
+// Worker that fronts the tesseract container and proxies all HTTP (and
+// WebSocket) traffic to it. tesseract needs a SINGLE server instance (in-memory
 // runner registry), so every request routes to one fixed container instance.
 import { Container, getContainer } from "@cloudflare/containers";
 

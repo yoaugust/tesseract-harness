@@ -6,13 +6,13 @@ snapshots the structural observations (exit code, stderr absence,
 assistant text length).
 
 **What breaks if this fails:**
-- Omnigent' ``ClaudeSDKExecutor`` regresses (auth, MCP tool
+- tesseract' ``ClaudeSDKExecutor`` regresses (auth, MCP tool
   bridging, Claude Code binary discovery, or the message-stream
   translation in ``claude_sdk_executor.run_turn``).
 - ``omnigent.cli._run_agent`` for the ``-p`` one-shot path
   stops printing the assistant text to stdout on turn complete.
 - The Claude Agent SDK dependency or the ``claude`` CLI binary
-  goes missing from the Omnigent venv.
+  goes missing from the tesseract venv.
 
 Design reference: ``designs/OMNIGENT_INTEGRATION.md`` §Phase 0
 per-harness suite.

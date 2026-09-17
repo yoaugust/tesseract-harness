@@ -1,7 +1,7 @@
-name: Run Omnigent agent
+name: Run tesseract agent
 description: >-
-  Set up uv + the Claude Code CLI + an Omnigent gateway provider, run a tools-less
-  Omnigent agent headlessly on a prompt file, and secret-scan its output. Shared by
+  Set up uv + the Claude Code CLI + an tesseract gateway provider, run a tools-less
+  tesseract agent headlessly on a prompt file, and secret-scan its output. Shared by
   the release-cut (draft-release-notes) and publish (publish-changelog) workflows so
   the LLM-runner scaffold lives in one place. The caller mints no write-token until
   after this action returns — the only secret here is the model key.
@@ -78,7 +78,7 @@ runs:
         node node_modules/@anthropic-ai/claude-code/install.cjs
         echo "$CC_CLI_DIR/node_modules/.bin" >> "$GITHUB_PATH"
 
-    - name: Write Omnigent provider config
+    - name: Write tesseract provider config
       shell: bash
       env:
         GATEWAY_BASE_URL: ${{ inputs.gateway-base-url }}
