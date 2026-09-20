@@ -2,6 +2,10 @@ import { authenticatedFetch } from "@/lib/identity";
 
 let activeAudio: HTMLAudioElement | null = null;
 let activeObjectUrl: string | null = null;
+let settleActivePlayback: ((result: VoicePlaybackResult) => void) | null = null;
+let activeSynthesisRequest: AbortController | null = null;
+
+export type VoicePlaybackResult = "completed" | "interrupted";
 
 const SILENT_WAV =
   "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
@@ -37,8 +41,15 @@ export function unlockVoicePlayback(): void {
 }
 
 export function stopVoicePlayback(): void {
+  const settle = settleActivePlayback;
+  settleActivePlayback = null;
+  settle?.("interrupted");
+  activeSynthesisRequest?.abort();
+  activeSynthesisRequest = null;
   if (typeof window !== "undefined") window.speechSynthesis?.cancel();
   if (activeAudio) {
+    activeAudio.onended = null;
+    activeAudio.onerror = null;
     activeAudio.pause();
     activeAudio.removeAttribute("src");
     activeAudio.load();
@@ -47,26 +58,53 @@ export function stopVoicePlayback(): void {
   activeObjectUrl = null;
 }
 
-function speakWithBrowser(text: string): Promise<void> {
+function playbackPromise(
+  start: (finish: () => void, fail: (error: Error) => void) => void,
+): Promise<VoicePlaybackResult> {
   return new Promise((resolve, reject) => {
+    let settled = false;
+    const settle = (result: VoicePlaybackResult) => {
+      if (settled) return;
+      settled = true;
+      if (settleActivePlayback === settle) settleActivePlayback = null;
+      resolve(result);
+    };
+    settleActivePlayback = settle;
+    const fail = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      if (settleActivePlayback === settle) settleActivePlayback = null;
+      reject(error);
+    };
+    try {
+      start(() => settle("completed"), fail);
+    } catch (cause) {
+      fail(cause instanceof Error ? cause : new Error("Speech output failed"));
+    }
+  });
+}
+
+function speakWithBrowser(text: string): Promise<VoicePlaybackResult> {
+  return playbackPromise((finish, fail) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      reject(new Error("Speech output is unavailable"));
+      fail(new Error("Speech output is unavailable"));
       return;
     }
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1.02;
-    utterance.onend = () => resolve();
-    utterance.onerror = () => reject(new Error("Speech output failed"));
+    utterance.onend = finish;
+    utterance.onerror = () => fail(new Error("Speech output failed"));
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
   });
 }
 
-async function speakWithServer(text: string): Promise<void> {
+async function speakWithServer(text: string, signal: AbortSignal): Promise<VoicePlaybackResult> {
   const response = await authenticatedFetch("/v1/voice/synthesize", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text }),
+    signal,
   });
   if (!response.ok) throw new Error("Local voice synthesis failed");
   const blob = await response.blob();
@@ -75,29 +113,41 @@ async function speakWithServer(text: string): Promise<void> {
   activeAudio ??= new Audio();
   activeAudio.volume = 1;
   activeAudio.src = activeObjectUrl;
-  const finished = new Promise<void>((resolve, reject) => {
+  const finished = playbackPromise((finish, fail) => {
     if (!activeAudio) {
-      reject(new Error("Audio output is unavailable"));
+      fail(new Error("Audio output is unavailable"));
       return;
     }
-    activeAudio.onended = () => resolve();
-    activeAudio.onerror = () => reject(new Error("Audio playback failed"));
+    activeAudio.onended = finish;
+    activeAudio.onerror = () => fail(new Error("Audio playback failed"));
   });
-  await activeAudio.play();
-  await finished;
+  try {
+    await activeAudio.play();
+  } catch (cause) {
+    stopVoicePlayback();
+    throw cause;
+  }
+  return finished;
 }
 
-export async function speakVoiceReply(markdown: string, serverAvailable: boolean): Promise<void> {
+export async function speakVoiceReply(
+  markdown: string,
+  serverAvailable: boolean,
+): Promise<VoicePlaybackResult> {
   const text = speechText(markdown);
-  if (!text) return;
+  if (!text) return "completed";
   stopVoicePlayback();
   if (serverAvailable) {
+    const request = new AbortController();
+    activeSynthesisRequest = request;
     try {
-      await speakWithServer(text);
-      return;
+      return await speakWithServer(text, request.signal);
     } catch {
+      if (request.signal.aborted) return "interrupted";
       // Keep voice mode usable while the optional local model is warming up.
+    } finally {
+      if (activeSynthesisRequest === request) activeSynthesisRequest = null;
     }
   }
-  await speakWithBrowser(text);
+  return speakWithBrowser(text);
 }

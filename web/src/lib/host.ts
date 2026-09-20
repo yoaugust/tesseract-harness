@@ -191,6 +191,20 @@ export function setOmnigentHostConfig(config: OmnigentHostConfig): void {
   hostConfigGeneration += 1;
 }
 
+/** Point the standalone web shell at a separately hosted Tesseract server. */
+export function setRemoteServerOrigin(origin: string): void {
+  const websocketOrigin = origin.replace(/^http/, "ws");
+  setOmnigentHostConfig({
+    serverIdentity: origin,
+    fetcher: (path, init) =>
+      fetch(new URL(path, origin), {
+        ...init,
+        credentials: "include",
+      }),
+    resolveWebSocketUrl: (path) => new URL(path, websocketOrigin).toString(),
+  });
+}
+
 export function getOmnigentHostConfig(): OmnigentHostConfig {
   return hostConfig;
 }

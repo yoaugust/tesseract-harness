@@ -17,6 +17,7 @@ from typing import Any, Literal, Protocol
 from fastapi import FastAPI, Query, Request
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -81,6 +82,7 @@ from omnigent.server.performance_metrics import (
     set_request_session_id_for_access_log,
     set_request_user_agent_for_access_log,
 )
+from omnigent.server.remote_access import PairingCodeStore, get_tailscale_access_store
 from omnigent.server.routes.builtin_agents import create_builtin_agents_router
 from omnigent.server.routes.comments import create_comments_router
 from omnigent.server.routes.default_policies import create_default_policies_router
@@ -91,6 +93,7 @@ from omnigent.server.routes.harnesses import create_harnesses_router
 from omnigent.server.routes.imports import create_imports_router
 from omnigent.server.routes.policy_registry import create_policy_registry_router
 from omnigent.server.routes.projects import create_projects_router
+from omnigent.server.routes.remote_access import create_remote_access_router
 from omnigent.server.routes.runner_tunnel import create_runner_tunnel_router
 from omnigent.server.routes.scheduled_tasks import create_scheduled_tasks_router
 from omnigent.server.routes.session_mcp_servers import create_session_mcp_servers_router
@@ -108,7 +111,10 @@ from omnigent.server.routes.usage import create_usage_router
 from omnigent.server.routes.voice import create_voice_router
 from omnigent.server.runner_session_init import RunnerSessionInitializer
 from omnigent.server.scheduled import ScheduledTaskScheduler
-from omnigent.server.ws_origin import WebSocketOriginMiddleware
+from omnigent.server.ws_origin import (
+    WebSocketOriginMiddleware,
+    parse_allowed_origins,
+)
 from omnigent.stores import (
     AgentStore,
     ArtifactStore,
@@ -1675,6 +1681,19 @@ def create_app(
     app.state.server_metrics = server_metrics
     app.state.server_metrics_otel = server_metrics_otel
     app.add_middleware(_WebSocketMetricsMiddleware, metrics=server_metrics)
+    allowed_browser_origins = parse_allowed_origins()
+    if allowed_browser_origins:
+        # The same explicit browser-origin roster protects WebSockets and
+        # enables the separately hosted mobile shell to call this private
+        # Tailscale server directly. Credentials are allowed for deployments
+        # using cookie auth; Tailscale itself authenticates at the Serve proxy.
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=sorted(allowed_browser_origins),
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
     # CSWSH guard: reject cross-origin WebSocket handshakes before any
     # route accepts them. Added after the metrics middleware so it is the
     # outermost WS middleware — a forbidden origin is closed without even
@@ -2714,6 +2733,15 @@ def create_app(
         create_harnesses_router(auth_provider=auth_provider),
         prefix="/v1",
         tags=["harnesses"],
+    )
+    app.include_router(
+        create_remote_access_router(
+            auth_provider=auth_provider,
+            access_store=get_tailscale_access_store(),
+            pairing_codes=PairingCodeStore(),
+        ),
+        prefix="/v1",
+        tags=["remote-access"],
     )
     app.include_router(
         create_extensions_router(

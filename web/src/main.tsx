@@ -17,6 +17,12 @@ import { isLoginRedirectPending, resolveIdentity } from "./lib/identity";
 import { hideNativeChatTerminalBar } from "./lib/nativeChatTerminalBar";
 import { initNativeInsets } from "./lib/nativeInsets";
 import { initBrowserTelemetry } from "./lib/telemetry";
+import { setRemoteServerOrigin } from "./lib/host";
+import {
+  normalizeRemoteServerOrigin,
+  readRemoteOrigin,
+  readRemotePairingEndpoint,
+} from "./lib/remotePairing";
 import {
   applyDesktopUiFontSize,
   applyUiFontFamily,
@@ -29,6 +35,17 @@ import { initChatStore } from "./store/chatStore";
 import "katex/dist/katex.min.css";
 import "streamdown/styles.css";
 import "./index.css";
+
+// A separately hosted mobile shell (for example harness.tesseract.computer)
+// talks straight to the paired Mac over its private Tailscale Serve URL. The
+// QR fragment supplies the endpoint on first load; a successful pairing keeps
+// it in this origin's localStorage for later visits.
+const remoteServerOrigin =
+  readRemotePairingEndpoint(window.location.hash) ??
+  normalizeRemoteServerOrigin(readRemoteOrigin(""));
+if (remoteServerOrigin !== null && remoteServerOrigin !== window.location.origin) {
+  setRemoteServerOrigin(remoteServerOrigin);
+}
 
 // Start tracing before any request fires so fetch/XHR are patched in time
 // and a trace begins in the browser. No-op unless a collector endpoint is

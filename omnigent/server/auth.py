@@ -11,7 +11,9 @@ selected via the ``OMNIGENT_AUTH_PROVIDER`` env var:
   Requests without the header are rejected (401) unless the server
   was explicitly started as a single-user local runtime
   (``OMNIGENT_LOCAL_SINGLE_USER=1``), in which case they fall back
-  to the reserved ``"local"`` user.
+  to the reserved ``"local"`` user. Tailscale Serve requests are
+  handled specially: its verified login header must be approved in
+  the local owner-managed allowlist, then acts as the local computer.
 - ``"oidc"``: reads the ``__Host-ap_session`` signed cookie minted
   after a full OIDC authorization-code+PKCE login flow.
 - ``"accounts"``: same signed cookie machinery as OIDC, but minted
@@ -685,6 +687,34 @@ class UnifiedAuthProvider(AuthProvider):
             header is absent on a single-user local runtime; else
             ``None`` (→ 401).
         """
+        # Tailscale Serve strips any client-supplied copies of its identity
+        # headers, then injects the verified tailnet login. Trust that assertion
+        # only when the reverse proxy reached this loopback server locally.
+        # Approved people intentionally act as the single-user ``local`` owner:
+        # they are controlling this Mac, so its existing hosts and sessions stay
+        # visible instead of becoming a separate empty tenant per roommate.
+        from omnigent.server.remote_access import (
+            TAILSCALE_LOGIN_HEADER,
+            get_tailscale_access_store,
+        )
+
+        tailscale_login = request.headers.get(TAILSCALE_LOGIN_HEADER)
+        if tailscale_login:
+            client_host = request.client.host if request.client is not None else ""
+            if not bind_host_is_loopback(client_host):
+                logger.warning("Ignoring Tailscale identity header from non-loopback client")
+                return None
+            if get_tailscale_access_store().is_allowed(tailscale_login):
+                return RESERVED_USER_LOCAL
+            return None
+
+        # A Tailscale Serve hostname without its verified identity header must
+        # fail closed. In particular, never let the local-single-user fallback
+        # turn a proxy/header failure into unauthenticated remote owner access.
+        hostname = getattr(request.url, "hostname", "")
+        if isinstance(hostname, str) and hostname.lower().endswith(".ts.net"):
+            return None
+
         email = request.headers.get(self._header_name)
         if email:
             if self._header_strip_prefix:

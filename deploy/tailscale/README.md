@@ -16,7 +16,8 @@ other device you own.
 ## Prerequisites
 
 - Tailscale installed on your server machine and every client device.
-  All signed in to the same Tailscale account.
+  Each person may use their own Tailscale login, but their device must be able
+  to reach this machine through the tailnet.
 - tesseract server running locally using either:
   - the bare CLI (`omnigent start` or `omnigent server`) on the default
     `localhost:6767`; or
@@ -48,12 +49,16 @@ Set two environment variables on the server before starting it:
 ```dotenv
 # Trust the Tailscale origin so WebSocket handshakes and multipart
 # uploads are accepted from the browser on your phone/tablet.
-OMNIGENT_WS_ALLOWED_ORIGINS=https://<machine>.ts.net
+OMNIGENT_WS_ALLOWED_ORIGINS=https://<machine>.ts.net,https://harness.tesseract.computer
 
 # Public base URL — used to build the correct __Host- cookie prefix
 # and any invite / magic-link URLs.
 OMNIGENT_ACCOUNTS_BASE_URL=https://<machine>.ts.net
 ```
+
+The first origin is the app served directly by the Mac. The second is the
+optional Vercel-hosted mobile shell; omit it until you deploy that shell.
+The same explicit list enables credentialed CORS for shell-to-Mac API calls.
 
 Without `OMNIGENT_WS_ALLOWED_ORIGINS` the browser will get WebSocket close
 code `4403` and an HTTP 403 *"Forbidden: this endpoint requires a trusted
@@ -68,7 +73,7 @@ the wrong host.
 cp deploy/docker/.env.example deploy/docker/.env
 
 # add to .env:
-OMNIGENT_WS_ALLOWED_ORIGINS=https://<machine>.ts.net
+OMNIGENT_WS_ALLOWED_ORIGINS=https://<machine>.ts.net,https://harness.tesseract.computer
 OMNIGENT_ACCOUNTS_BASE_URL=https://<machine>.ts.net
 ```
 
@@ -78,7 +83,38 @@ Then restart:
 docker compose up -d
 ```
 
-Open `https://<machine>.ts.net` on any device on your tailnet.
+Before opening the remote URL, use the local app on the Mac:
+
+1. Open **Settings → Remote access**.
+2. Add each person's exact Tailscale login (usually their email address).
+3. Select the computer, enter `https://<machine>.ts.net` as the private server,
+   and enter the deployed mobile shell URL (for example
+   `https://harness.tesseract.computer`). Until the shell is deployed, use the
+   private server URL in both fields.
+4. Generate and scan the QR code.
+
+Tailscale Serve supplies a verified `Tailscale-User-Login` header. Tesseract
+accepts it only from the loopback proxy and only when that login is in the
+owner-managed allowlist. Approved people act on the shared local computer, but
+only a browser opened directly on the Mac can change the allowlist. Pairing QR
+codes expire after five minutes, work once, and keep their code in the URL
+fragment so it is not sent in the initial HTTP request or normal access logs.
+
+Removing a login in **Settings → Remote access** takes effect on its next HTTP
+or WebSocket request. The allowlist is stored at
+`~/.omnigent/tailscale_users` by default.
+
+The Vercel site contains only the static web app. It does not proxy commands or
+hold computer credentials: after pairing, the browser calls the private
+`.ts.net` server directly. The private endpoint is carried in the QR fragment
+and saved only in that phone browser after the one-time code succeeds.
+
+To deploy that shell, import this repository into Vercel with the repository
+root as the project root. The checked-in `vercel.json` installs the pnpm
+workspace, builds `web/`, publishes the generated static bundle, and rewrites
+client-side routes such as `/remote/connect` to `index.html`. Attach
+`harness.tesseract.computer` to that Vercel project, then use that exact origin
+in both the Mac's allowed-origins setting and the Remote Access screen.
 
 ## Cloud sandbox hosts and Tailscale Funnel
 
@@ -136,6 +172,7 @@ sandbox:
 
 | Variable | Purpose |
 |---|---|
-| `OMNIGENT_WS_ALLOWED_ORIGINS` | Comma-separated origin allowlist. Set to `https://<machine>.ts.net` to trust the Tailscale origin for WebSocket and multipart routes. |
+| `OMNIGENT_WS_ALLOWED_ORIGINS` | Comma-separated browser-origin allowlist for WebSockets, protected multipart routes, and CORS. Include both `https://<machine>.ts.net` and the mobile shell origin when using Vercel. |
 | `OMNIGENT_ACCOUNTS_BASE_URL` | Public base URL. Used for session cookie security (`__Host-` prefix) and invite / magic-link URLs. |
 | `OMNIGENT_AUTH_ENABLED` | `1` to require login. Recommended when using Tailscale Funnel (public internet exposure). |
+| `OMNIGENT_TAILSCALE_ALLOWLIST_PATH` | Optional path for the owner-managed Tailscale login allowlist. Defaults to `<data_dir>/tailscale_users`. |

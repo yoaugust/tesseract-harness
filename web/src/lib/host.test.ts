@@ -53,3 +53,30 @@ describe("isDatabricksWorkspace", () => {
     expect(isDatabricksWorkspace()).toBe(true);
   });
 });
+
+describe("setRemoteServerOrigin", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it("rebases HTTP and WebSocket traffic onto the paired private server", async () => {
+    const nativeFetch = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", nativeFetch);
+    const { hostFetch, resolveWebSocketUrl, setRemoteServerOrigin } = await import("./host");
+
+    setRemoteServerOrigin("https://mac.example.ts.net");
+    await hostFetch("/v1/me", { headers: { Accept: "application/json" } });
+
+    expect(nativeFetch).toHaveBeenCalledWith(
+      new URL("https://mac.example.ts.net/v1/me"),
+      expect.objectContaining({
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      }),
+    );
+    expect(resolveWebSocketUrl("/v1/sessions/updates")).toBe(
+      "wss://mac.example.ts.net/v1/sessions/updates",
+    );
+  });
+});

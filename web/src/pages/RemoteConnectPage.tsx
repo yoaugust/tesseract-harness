@@ -1,53 +1,83 @@
-import { useEffect, useMemo, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { CheckCircle2Icon, LaptopIcon, Loader2Icon, TriangleAlertIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useHosts } from "@/hooks/useHosts";
-import { saveRemoteComputerBinding } from "@/lib/remotePairing";
-import { useNavigate, useSearchParams } from "@/lib/routing";
+import { redeemPairingCode, type PairingResult } from "@/lib/remoteAccessApi";
+import {
+  readRemotePairingCode,
+  readRemotePairingEndpoint,
+  saveRemoteComputerBinding,
+  writeRemoteOrigin,
+} from "@/lib/remotePairing";
+import { useNavigate } from "@/lib/routing";
+
+const redemptions = new Map<string, Promise<PairingResult>>();
+
+function redeemOnce(code: string): Promise<PairingResult> {
+  let request = redemptions.get(code);
+  if (request === undefined) {
+    request = redeemPairingCode(code);
+    redemptions.set(code, request);
+  }
+  return request;
+}
+
+type PairingState =
+  | { status: "connecting" }
+  | { status: "connected"; result: PairingResult }
+  | { status: "error"; message: string };
 
 export function RemoteConnectPage() {
   const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const hostId = params.get("host_id")?.trim() ?? "";
-  const { data: hosts, isLoading, error } = useHosts({ refetchOnFocus: true });
-  const host = useMemo(
-    () => hosts?.find((candidate) => candidate.host_id === hostId),
-    [hostId, hosts],
-  );
+  const [state, setState] = useState<PairingState>({ status: "connecting" });
 
   useEffect(() => {
-    if (!host) return;
-    saveRemoteComputerBinding(host);
-  }, [host]);
+    const code = readRemotePairingCode(window.location.hash);
+    const endpoint = readRemotePairingEndpoint(window.location.hash);
+    if (!code || endpoint === null) {
+      setState({ status: "error", message: "This pairing link is incomplete." });
+      return;
+    }
+    let cancelled = false;
+    void redeemOnce(code)
+      .then((result) => {
+        if (cancelled) return;
+        saveRemoteComputerBinding({ host_id: result.host_id, name: result.host_name });
+        writeRemoteOrigin(endpoint);
+        window.history.replaceState({}, "", "/remote/connect");
+        setState({ status: "connected", result });
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        setState({
+          status: "error",
+          message: error instanceof Error ? error.message : "Could not pair this phone.",
+        });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  if (isLoading) {
+  if (state.status === "connecting") {
     return (
       <PairingShell icon={<Loader2Icon className="size-8 animate-spin" />} title="Connecting…">
-        Verifying this Tesseract computer.
+        Confirming your Tailscale identity and pairing this phone.
       </PairingShell>
     );
   }
 
-  if (error) {
+  if (state.status === "error") {
     return (
       <PairingShell
         icon={<TriangleAlertIcon className="size-8 text-destructive" />}
         title="Could not connect"
       >
-        The phone could not reach the Tesseract server. Confirm that Tailscale is connected and try
-        the QR code again.
-      </PairingShell>
-    );
-  }
-
-  if (!hostId || !host) {
-    return (
-      <PairingShell
-        icon={<TriangleAlertIcon className="size-8 text-destructive" />}
-        title="Pairing link expired"
-      >
-        This computer is unavailable to the current Tesseract account. Generate a new QR code from
-        Remote Access settings.
+        <div className="flex flex-col gap-3">
+          <p>{state.message}</p>
+          <p className="text-sm">
+            Connect Tailscale with an approved account, then generate a new QR code on the Mac.
+          </p>
+        </div>
       </PairingShell>
     );
   }
@@ -59,12 +89,13 @@ export function RemoteConnectPage() {
     >
       <div className="flex flex-col items-center gap-4">
         <p>
-          This phone will use <span className="font-medium text-foreground">{host.name}</span> as
-          its default Tesseract computer.
+          This phone will use{" "}
+          <span className="font-medium text-foreground">{state.result.host_name}</span> as its
+          Tesseract computer.
         </p>
         <div className="flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2 text-sm">
           <LaptopIcon className="size-4" />
-          <span>{host.status === "online" ? "Computer online" : "Computer currently offline"}</span>
+          <span>Authenticated as {state.result.paired_login}</span>
         </div>
         <Button onClick={() => navigate("/", { replace: true })}>Open Tesseract</Button>
       </div>
